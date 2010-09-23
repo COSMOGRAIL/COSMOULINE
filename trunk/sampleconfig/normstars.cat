@@ -1,0 +1,11 @@
+#
+#	The stars that you want to use for the first quick normalisation.
+#	This can be virtually identical to alistars.cat
+#	You might want to remove some not-that-clean or very red stars etc.
+#
+
+a	 844.23 1112.05  844.23
+b	 981.98 1025.95  981.98
+c	 972.03  862.46  972.03
+d	 932.19  858.72  932.19
+
