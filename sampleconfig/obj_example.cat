@@ -1,0 +1,9 @@
+#
+#	This file specifies the position of an object to extract.
+#	Format : name x y
+#	... where name *is* the name you wrote in settings.py, and also
+#	the one to put in the filename. So there will be one such file
+#	per object extraction, and each file contains only one line.
+#
+
+example	562.84	912.14

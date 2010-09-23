@@ -1,0 +1,20 @@
+#
+#	Here you specify the alignment stars that you want to use,
+#	once you have chosen a reference image that you want to align on.
+#	So the coordinates are in pixels of the reference image.
+#	Format :
+#	name	x	y	flux
+#	Here x and y do not need to be precise : they will be identified
+#	to the positions in the sextractor catalog.
+#	Also, the flux is not required in this file, but we suggest, while
+#	you are at it, to write it down as well.
+#
+
+a	844.23	1112.05	844.23
+b	981.98	1025.95	981.98
+c	972.03	862.46	972.03
+d	932.19	858.72	932.19
+
+
+
+

@@ -1,0 +1,61 @@
+-------------------------------------------------------
+|Nombre de digits des images d'entrée    |4		#don't touch
+-----------------------------------------|-------------
+|Number of images                        |$nbimg$
+|----------------------------------------|-------------
+|Number of point sources                 |$nbptsrc$
+|----------------------------------------|-------------
+|Value of FWHM                           |2.		#chosen fwhm of deconvolved image in small pixels
+|----------------------------------------|-------------
+|do you want an analytic model  (y/n)    |n		#normally no need for a model, only in case of a strong and regular galaxy, you could try...
+|----------------------------------------|-------------
+|Value alpha for the analytic model      |0.125		#exponent of ellipse: 0.125 for Vaucouleurs, 0.5 for expodisk and 1. for gaussean
+|(0.5 ou 0.125 ou 1.)                    |
+|----------------------------------------|-------------
+|do you want a mask for the model (y/n)  |y		#fit the model in a limited zone of the mask, for example: 
+|----------------------------------------|-------------	#if you do not want the model to include a ring structure
+|Value of cx of mask                     |130.		#centre of mask in small pixels along x axis
+|----------------------------------------|-------------
+|Value of cy of mask                     |127.		#centre of mask in small pixels along y axis
+|----------------------------------------|-------------
+|Value of radius of mask                 |20		#radius of mask in small pixels
+|----------------------------------------|-------------
+|do you want a radius of cut    (y/n)    |n		#if you want to cut off the wings of your psf, don't really need this, or handle with care
+|----------------------------------------|-------------
+|Value of v  (rayon de coupure)          |15.		#radius outside of which you want to cut your psf
+|----------------------------------------|-------------
+|do you want the variable intensity (y/n)|y		#don't touch!!!! CRITICAL for us!!!
+|----------------------------------------|-------------
+|Name of input file                      |in.txt	#don't touch: IMPORTANT for pipeline
+|----------------------------------------|-------------
+|Name of output file n°1                 |out.txt	#don't touch: IMPORTANT for pipeline
+|----------------------------------------|-------------
+|Name of output file n°2                 |in2.txt	#don't touch: IMPORTANT for pipeline
+|----------------------------------------|-------------
+|Number of iterations for minimi         |2000		#criterium to stop minimizing, can be less if you want
+|----------------------------------------|-------------
+|Variation minimal entre 10 khi carré    |0.01		#criterium to stop minimizing
+|----------------------------------------|-------------
+|Number of iterations between backups    |100		#as you want, slows down program if you include too many backups
+|----------------------------------------|-------------
+|do you want the positivity constraint   |n		#theoretically no with background substraction, but you can say yes in some cases
+|----------------------------------------|-------------
+|do you want an image for lambda (y/n)   |n		#don't touch, hardly ever useful
+|if "y" --> name  if "n" --> constant    |1.0		#weighting term for smoothing: the higher this value, the lower is smoothing (opposite of psf!!)
+|----------------------------------------|-------------
+|do you want a image for background (y/n)|n		#if you want to start from a numerical model of your background: 
+|if 'y' --> name  if "n" --> constant    |0.0		#useful for strong and irregular shapes of galaxies, rings etc.
+=======================================================
+| SOURCES A ENLEVER UNIQUEMENT POUR LES SAUVEGARDES   |
+-------------------------------------------------------
+|Nombre de source à enlever              |0		#don't touch, not useful for us
+|----------------------------------------|-------------
+|Numéro des sources à enlever  n° n° ... n°           |
+-------------------------------------------------------
+4 2 1							#don't need this
+=======================================================
+
+Comments on the use of a galaxy model:
+The alpha value is the exponent of the ellipse, for which you find the formula in the other commented_in.txt.
+The most useful is the de Vaucouleurs value of alpha=0.125 used to model elliptical galaxies and bulbes of disks.
+Expodisk is for spiral galaxies, not very useful for lenses.
