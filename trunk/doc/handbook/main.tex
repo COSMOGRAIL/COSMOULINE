@@ -40,13 +40,13 @@
 %\usepackage[firstpage]{draftwatermark}
 %\usepackage{draftwatermark}
 %\SetWatermarkText{DRAFT}
-%\SetWatermarkScale{2}
+%\SetWatermarkScale{5}
 %\SetWatermarkAngle{55}
 %\SetWatermarkLightness{0.8}
 
 
 
-% les liens :
+% links
 \usepackage[pdftex, bookmarks]{hyperref}
 %\usepackage[colorlinks=false, pdfstartview=FitV, linkcolor=red, citecolor=red, urlcolor=red]{hyperref}
 \hypersetup{colorlinks,% 
@@ -62,7 +62,7 @@ pdfproducer={},
 pdfkeywords={}
 } 
 
-% les retours a la ligne dans les liens : (pour utiliser : \url{http:// ...}
+% further link stuff (correct line breaks) : (USE LIKE THIS : \url{http:// ...}
 \usepackage{url}
 \makeatletter
 \def\url@leostyle{
@@ -71,41 +71,19 @@ pdfkeywords={}
 \urlstyle{leo}
 
 
-% les marges :
+% Margins :
 %\addtolength{\hoffset}{-0.5cm}
 \addtolength{\voffset}{0.2cm}
 %\addtolength{\textwidth}{1.0cm} 
 \addtolength{\textheight}{1.0cm}
 
-% le design perso des caption sous les figures :
+% Figure captions :
 \setlength\abovecaptionskip{0.1cm}
 \usepackage[small,hang]{caption2}
 \renewcommand{\captionfont}{\small}
 %\renewcommand{\captionfont}{\it \small}
 \renewcommand{\captionlabelfont}{\bf \small}
 \renewcommand{\captionlabeldelim}{ :}
-
-% numarotation des figures avec la section etc
-%\renewcommand{\thefigure}{\thesubsection.\arabic{figure}}
-%\newcommand{\Subsection}[1]{\subsection{#1} \setcounter{figure}{0}}
-% variante (seulement la section)
-%\renewcommand{\thefigure}{\thesection.\arabic{figure}}
-%\newcommand{\Section}[1]{\section{#1} \setcounter{figure}{0}}
-
-
-% les entetes et pieds de pages
-%\pagestyle{fancy}
-%\lhead{\footnotesize EPFL} 
-%\chead{} 
-%\rhead{\footnotesize \thesection }
-%\lhead{} 
-%\chead{} 
-%\rhead{}
-%\lfoot{}
-%\cfoot{\thepage}
-%\rfoot{}
-%\renewcommand{\headrulewidth}{0.0pt}
-%\renewcommand{\footrulewidth}{0pt}
 
 \newcommand\HRule{\noindent\rule{\linewidth}{1.0pt}}
 
@@ -120,11 +98,7 @@ pdfkeywords={}
 \input{sections/tutorial.tex}
 %\input{sections/deconv.tex}
 \input{sections/code.tex}
-
 \input{sections/future.tex}
-
-
-
 
 % ============================================================
 
