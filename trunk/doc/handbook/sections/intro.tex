@@ -1,0 +1,123 @@
+
+\section{Introduction and overview}
+
+\emph{Cosmouline} is a MCS-photometry pipeline that takes prereduced images of gravitational lenses as input and returns lightcurves of the deblended QSO images. The input images can differ in pixel size, field of view, exposure, etc : usually the aim is to perform a simultaneous deconvolution \emph{across} the different COSMOGRAIL telescopes.
+
+Cosmouline is not a programm -- it would like to be a working environment, defining a not-too-tight structure with robust scripts, supporting the fun and feasibility of the implementation of new ideas. To achieve this, cosmouline consists of an ordered list of independent scripts, each of which is kept as simple as possible, typically applying a specific task (``run SExtractor'', ``extract PSF-stars'', \ldots) to every concerned image.
+
+One central idea that connects these scripts together is the use of a simple relational database (even simpler : \emph{a table}), with one ``line'' (entry) for each input image, summarizing the information extracted from the images by each script. The typical cosmouline script reads some info about an image, performs a task, and then writes some new information back into the database. And at the end of the pipeline, the QSO-image fluxes themselves will be ``columns'' (attributes) of  this database.
+
+
+The division of the pipeline into independent scripts yields the not-too-tight structure : it should be easy to play, test, and improve the steps, with minimal coding effort. In principle the scripts have to be launched one after the other, which sounds \emph{un}-pipeline, but this could of couse be automated, with any simplistic shell script.
+
+Note that it's written nowhere that cosmouline is foolsafe : some of the scripts will guide you a bit to prevent you from erasing what you just calculated, but nevertheless we want to keep all scripts simple, short, and \emph{tweakable}\texttrademark.
+
+Final remark : so far, I've focused on the infrastructure; there might be gross errors in the provided parameter choices for SExtractor and the MCS programs, so you are welcome to double-check these.
+
+
+
+\subsection{A walkthrough}
+
+The pipeline will :
+\minilist
+\item sky-subtract the images (SExtractor -- but cosmouline is terribly flexible for better ideas),
+\item align all the images (sub-pixel alignment with IRAF -- same remark !),
+\item (pre-)normalize the images (SExtractor again),
+\item build a PSF for each image (you will need a few tries, different MCS versions \ldots),
+\item deconvolve some stars and the lens.
+\miniend
+
+The next step is then to inspect the deconvolution outputs and light curves (those from stars are used to re-normalize the QSO-image fluxes, fighting systematics), to bin observations by nights, estimate some errors\ldots It's the ``loose end'' of the pipeline, as this is dependent from lens to lens, and needs a lot of experimentation.
+
+\subsection{Implementation in Python}
+
+Python\footnote{\url{http://www.python.org}} : (just in case of doubt)
+\minilist
+\item is free (\ldots like in beer AND speech), portable, high-level, clean and fast,
+\item glues these steps together, with great system scripting capabilities,
+\item allows to control IRAF via pyraf,
+\item offers lots of possibilities to make plots, and tons of numerical techniques,
+\item evolves, with great documentation, to the language of choice in the astronomical community
+\item reads FITS (of course\ldots as well as everything else),
+\item speaks to many other languages and softwares (fortran, and yes, even SM...),
+\item would allow you to make 3D visualizations, multi-platform GUIs, interactive websites \ldots
+\item and does well replace all the rest anyway.
+\miniend
+
+
+
+\subsection{Practical organization}
+
+The cosmouline scripts come in a single directory, neatly called something like\\ \verb+cosmouline_1.0/PIPE+. The content looks approximately like this :
+
+\vspace{0.5cm}
+\begin{minipage}[t]{4cm}
+\begin{verbatim}
+0_preparation_scripts/	
+1_character_scripts/	
+2_skysub_scripts/	
+3_align_scripts/	
+4_norm_scripts/		
+5_new_psf_scripts/
+5_old_psf_scripts/
+5_pymcs_psf_scripts/
+\end{verbatim}
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}[t]{4cm}
+\begin{verbatim}
+6_extract_scripts/	
+7_deconv_scripts/
+8a_renorm_scripts/
+8b_lookback_scripts/
+9_lightcurves_scripts/
+extrascripts/
+plotscripts/	
+\end{verbatim}
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}[t]{4cm}
+\begin{verbatim}
+config.py	
+sampleconfig/
+modules/ 
+progs/
+playground/
+\end{verbatim}
+\end{minipage}
+\vspace{0.5cm}
+
+We will meet this content in the tutorial, but for now we can accept that there is no place for anything else than code here ! The usage of cosmouline relies indeed on a firm structure of 3 directories. These directories could be placed side by side, as well as on different disks. Here comes their description :
+
+\begin{itemize}
+
+\item The \verb+pipedir+ : this is the directory we just met above, of which the unix name was something like \verb+cosmouline_1.0/PIPE+. ``\verb+pipedir+'' is the name of the python string containing the full path to this directory. So from here on, we will just refer to \verb+pipedir+.  \verb+pipedir+ contains all the scripts and modules, and one central configuration file called \verb+config.py+. This file is plain python ! It is read by every script (through \verb+execfile("../config.py")+), and thus contains ``global variables'' needed by the scripts.
+
+Among the most important of these global variables are the locations of the directories we are talking about in this bullet list. The first one is \verb+pipedir+, and so you will have to write in \verb+config.py+ that \verb+pipedir = "/my/long/path/to/cosmouline/"+ (starting from the root).
+
+The \verb+config.py+ says what should be done, how and where. But nothing in this file nor in the entire \verb+pipedir+ is related to a particular lens or set of images : you won't find any pixel-size nor alignment star catalog here !
+
+
+
+
+
+\item The \verb+configdir+ : all the input data to the pipeline, and related to a particular lens (choice of stars for alignment, MCS configuration, and a lot more) will go here. But no "products" of the pipeline : input \emph{only} ! This directory is small and precious. Information is stored in various files in this directory; the scripts will tell you if they need some files, and you will have to fill them in.
+To get you started, a \verb+sampleconfig+ is provided in the \verb+pipedir/+ (see the tutorial section).
+
+
+
+\item The \verb+workdir+ : all the products and intermediary files of the pipeline. This will get massive\footnote{Get ready for something between 2 or 3 times the input data volume, even if the pipelines uses softlinks whenever possible.}, but is somehow ``less precious''. Ideally, these products can all be rebuilt with only minimal human interaction. The pipeline completely handles the content of this directory. You can have a look at the contents, but you should not have to modify, create, or remove anything in this  \verb+workdir+\footnote{Unless you know what you are doing of course ! There is no big danger in removing something to free disk space; some scripts will simply crash, but a "confusion" of images should be impossible.}.
+
+The most important single file in there is the database (i.e. \verb+workdir/database.dat+). As the database is entirely written and edited by the scripts, it is obviously kept in this \verb+workdir+ and not elsewhere.
+
+At the beginning of a new cosmouline run, this \verb+workdir+ is blank. You just have to \verb+mkdir+ it, and tell \verb+settings.py+ where it is.
+All the further subdirectories, of which the names can be chosen in the \verb+config.py+ or the \verb+settings.py+, will be created by the pipeline, within this \verb+workdir+.
+
+\end{itemize}
+
+
+
+Obviously the first script also wants to know where the ``raw'' (prereduced) images are. You will indicate this in the \verb+settings.py+, as we will see in the tutorial. The contents (FITS files) of this or these image directories will only be read, but never touched, by cosmouline.
+
+
+

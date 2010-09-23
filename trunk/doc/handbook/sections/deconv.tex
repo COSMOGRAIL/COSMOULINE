@@ -1,0 +1,105 @@
+
+\section{Tuning the deconvolution}
+
+\begin{lstlisting}
+
+==============================================
+FICHIER POUR PSFSIM_SIG_MINI_new4.f
+==============================================
+=======================================================
+| Nombre d'images                        |1
+|----------------------------------------|-------------
+| Nombre de sources ponctuelles          |$nbrpsf$
+|----------------------------------------|-------------
+| Est-ce une image recomposée (y/n)      |y
+=======================================================
+| FWHM finale des sources                |2. 				# this is the width of the final resoltuion you want to reach in the deconvolved image.
+|----------------------------------------|-------------
+| FWHM de G                              |$resolpix$ 			# this is the resolution of the input image (i.e. the seeing) : but usually we put higher values, so that it works better.
+|(résolution image de départ en GP)      |
+|----------------------------------------|-------------
+| FWHM pour le terme de lissage          |7.0 				# sigma of the filter is used in the smoothing (the sigma, not the lambda multplier !) -> put 3.0
+=======================================================
+| Nb d'itérations entre 2 sauvegardes    |1000
+|----------------------------------------|-------------
+| Nb d'itérations max. pour minimi moffat|3000
+|----------------------------------------|-------------
+| Nb d'itérations max. pour minimi fond  |1000
+|----------------------------------------|-------------
+| Valeur deltaCHI min entre 10 itérations|1.E-2				# stop ciretrion : put to 1E-40 if you never want the programm to stop because of this.
+=======================================================
+| PARAMETRES POUR LE FOND						# this is now replaced by the famous "gaussian"
+=======================================================			# so : we do not want to use this feature : to stop it, put 
+| Rayon ini pour zone fond à modifier    |100				# same value for initial radius and the final radius.
+| Elargissement par à-coups              |10				#
+| Rayon de lissage pour la parabole      |5				#
+| Rayon maximum à traiter                |100				#
+=======================================================
+| MINIMI MOFFAT
+=======================================================
+| Pas pour la moffat:         B1 =       |0.0004			# B1 and B2 are some x and y anisotropy
+|                             B2 =       |0.0004
+|                             B3 =       |0.00002			# B3 has to do with the rotation, not related to B1 and B2
+|                             Beta =     |0.02				# this is the moffat exponent.
+|----------------------------------------|-------------
+| Pas pour les paramètres du  plan       |0.0				# keep very small (1.E-7) : this is a step related to the construction of a flat background. 
+|----------------------------------------|-------------
+| Pas pour les décalages      en X =     |0.0				# step for movements from one ccd image to the other : but we use stars from one image
+|                             en Y =     |0.0				# so put this to 0 : the PSF-stars from one image will still adapt for shifts !
+|----------------------------------------|-------------
+| Pas pour les sources        A (%) =    |50.				# Step on intensity : 1% is a good starting point. the exact value is the peak ADU value measured on the input image.
+|                             C =        |0.1				# this is a step in pixels of movement of the Moffat center
+=======================================================
+| MINIMI FOND
+=======================================================
+| Pas sur le Fond                        |1.				# this is not in ADU !!!! it is a multiplicative factor that relates
+| Constante                              |0.				# the background variation to the convergence speed. keep 1 to 4 ... put constant to 0. It's a constant on the step, not on the background. Nobody understands this, keep it to zero !!!
+|------------------------------------------------------
+| FWHM initiale de la gaussienne         |$fondgaussini$		# this is the evolution of the smooting, replaces the parabola. Initial width
+|------------------------------------------------------
+| FWHM finale de la gaussienne           |60.				# final width (good values : initial 30, final 50)
+|------------------------------------------------------
+| Nombre d'itérations pour la gaussienne |1000				# number of iterations
+|------------------------------------------------------
+| Résidu minimum (resi_min)              |0.3
+=======================================================
+| VALEURS INITIALES
+=======================================================
+| Valeur du lambda  (lambda(1) ... lambda(ni))        |			# we use only one image as source for our PSFs, so we have only 1 lambda
+|------------------------------------------------------
+ 1.									# 
+|------------------------------------------------------
+| Valeur initiale du fond                             |
+|------------------------------------------------------
+ 0.									# this is zero as we subtracted the background : keep it 
+|------------------------------------------------------
+| Minimisation de la moffat                           |
+| {y ou n         }  ou  {i        }                  |
+| {b1 b2 b3 beta  }  ou  {nom_image}  * ni            |
+|------------------------------------------------------
+ y									# do not touch this; 0.0 means that he will use the initial values.
+ 0.  0.  0.  0.
+|------------------------------------------------------
+| Paramètres initiaux du plan (alpha beta gamma) * ni |			# parameters for the flat background : 0 means that the background is horizontal.
+|------------------------------------------------------
+ 0.  0.  0.
+|------------------------------------------------------
+| Paramètres initiaux des décalages                   |
+| ( deltaX deltaY ) * ni                              |
+|------------------------------------------------------
+ 0.  0.									# keep them to zero
+|------------------------------------------------------
+| Paramètres initiaux des sources                     |
+| a(1) ... a(ni) }                                    |
+| cx cy          } * ns                               |
+|------------------------------------------------------
+$paramsrc$
+
+
+format :
+central peak in big pixel as ADU
+x_center, y_center
+
+
+
+\end{lstlisting}

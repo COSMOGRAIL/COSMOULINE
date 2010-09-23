@@ -1,0 +1,48 @@
+
+\ProvidesPackage{MalteDivers}
+
+\usepackage{verbatim} 
+
+% pour des remarques qu'on peut allumer ou Žteindre
+\definecolor{hiddencolor}{rgb}{1.0,0.8,0.6}
+\newcommand{\hidd}[1]{
+\noindent
+\begin{center}
+\colorbox{hiddencolor}{
+	\begin{minipage}{0.97\textwidth}
+	\vspace{6pt}
+	#1
+	\vspace{6pt}
+	\end{minipage}
+}
+\end{center}
+}
+
+% et pour les cacher il suffit de decommenter cette ligne :
+
+\renewcommand{\hidd}[1]{}
+
+
+% smaller lists with less whitespace
+
+\newcommand{\minilist}{
+\begin{list}{--}
+{\setlength{\itemsep}{0pt}
+\setlength{\parsep}{3pt}
+\setlength{\topsep}{3pt}
+\setlength{\partopsep}{0pt}
+\setlength{\leftmargin}{1.5em}
+\setlength{\labelwidth}{1em}
+\setlength{\labelsep}{0.5em}}
+}
+
+\newcommand{\miniend}{\end{list}}
+
+% to use them :
+%	\minilist    %% \begin{itemize}
+%	\item First item
+%	\item Second item
+%	\minilend     %% \end{itemize}
+
+
+  
