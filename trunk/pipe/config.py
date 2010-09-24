@@ -6,7 +6,7 @@
 computer = "obs"
 
 # The pipeline dir that contains all the scripts (and this "config.py" ) :
-pipedir = "/home/epfl/tewes/cosmouline/PIPE"
+pipedir = "/home/epfl/rathna/cosmouline/PIPE"
 
 # The configuration directory that contains the configuration files ("small-precious-frequently-backuped-disk")
 # The scripts do only read, but never write, from here !
