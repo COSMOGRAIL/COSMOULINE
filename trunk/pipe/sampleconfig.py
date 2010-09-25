@@ -1,18 +1,31 @@
+#---------------------------------------------------------------------------
+# Sample configuration file for cosmouline.
+# This file is under version control, don't tweak your settings here !
+# Instead, copy me to config.py, and then edit config.py.
+# config.py is excluded from svn.
+#---------------------------------------------------------------------------
 
 
+#---------------------------------------------------------------------------
+# User settings :
 #---------------------------------------------------------------------------
 
 # Choose a computer :
-computer = "obs"
+computer = "obsds"
 
 # The pipeline dir that contains all the scripts (and this "config.py" ) :
-pipedir = "/home/epfl/rathna/cosmouline/PIPE"
+pipedir = "/my/absolute/path/to/cosmouline/pipe_svn"
 
-# The configuration directory that contains the configuration files ("small-precious-frequently-backuped-disk")
+# The configuration directory that contains the configuration files :
+# ("small-precious-frequently-backuped-disk")
 # The scripts do only read, but never write, from here !
-configdir = "/home/epfl/tewes/cosmouline/configs/HE0435"
+configdir = "/my/absolute/path/to/cosmouline/configs/config_HE0435"
 
+# All further settings are made into the configdir.
+# You should normally not have to change other lines of this config.py
 #---------------------------------------------------------------------------
+
+
 
 
 
@@ -35,8 +48,11 @@ if computer=="maltemac":
 	sex = "/Applications/sextractor/sex"
 	#sex = "/usr/local/bin/sex"
 #---------------------------------------------------------------------------
-if computer=="obs":
+if computer=="obsds":
 	sex = "nice -n 19 /scisoft/bin/sex"
+#---------------------------------------------------------------------------
+if computer=="obssr1":
+	sex = "nice -n 19 /usr/bin/sex"
 #---------------------------------------------------------------------------
 if computer=="rathna":
 	sex = "nice -n 19 /scisoft/bin/sex"
