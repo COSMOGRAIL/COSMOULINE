@@ -1,7 +1,8 @@
 #------------------------------------------------------------------------------------------------------------------
 
 
-# The "working" dir where all the pipeline products will be *written* ("big-old-never-backuped-disk")
+# The "working" dir where all the pipeline products will be *written*
+# ("big-old-never-backuped-disk")
 workdir = "/home/epfl/eulaers/unsaved/cosmouline_work/J1001"
 
 
@@ -54,7 +55,7 @@ rawdir = "/home/epfl/eulaers/unsaved/prered_Mercator/reduc/J1001+5027_RG_crop"
 # In this case, we have : name, f|Q = fixed quasar, RA (H:M:S), Dec (D:M:S), mag, epoch
 # This is used for the astronomical calculations (mainly HJD).
 
-xephemlens = "J1001+5027,f|Q,10:01:28.61,50:27:56.90,19.0,2000"
+#xephemlens = "J1001+5027,f|Q,10:01:28.61,50:27:56.90,19.0,2000"
 #xephemlens = "HS2209+1914,f|Q,22:11:30.30,19:29:12.00,19.0,2000"
 #xephemlens = "UCAC2_14535478,f|Q,1:25:15.40,-40:08:22.00,19.0,2000" # Euler test field taken 2009-11-04
 #xephemlens = "H1413+117,f|Q,14:15:46.40,+11:29:41.40,19.0,2000"
@@ -67,6 +68,7 @@ xephemlens = "J1001+5027,f|Q,10:01:28.61,50:27:56.90,19.0,2000"
 #xephemlens = "RXJ1131-123,f|Q,11:31:55.40,-12:31:55.00,19.0,2000"
 #xephemlens = "UM673,f|Q,01:45:16.59,-09:45:17.30,19.0,2000"
 #xephemlens = "J1650+425,f|Q,16:50:43.44,+42:51:45.00,19.0,2000"
+xephemlens = "J1330+1810,f|Q,13:30:18.65,+18:10:32.15,19.0,2000"
 
 # Now you can run all the srcipts until the alignment !
 
