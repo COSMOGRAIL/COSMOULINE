@@ -40,11 +40,15 @@ SATUR_LEVEL	50000.0		# level (in ADUs) at which arises saturation
 MAG_ZEROPOINT	0.0		# magnitude zero-point
 MAG_GAMMA	4.0		# gamma of emulsion (for photographic scans)
 
-GAIN		2.2		# detector gain in e-/ADU.				EULER
-PIXEL_SCALE	0.344 		# size of pixel in arcsec (0=use FITS WCS info).	EULER
+#GAIN		2.2		# detector gain in e-/ADU.				EULER
+#PIXEL_SCALE	0.344 		# size of pixel in arcsec (0=use FITS WCS info).	EULER
 
 #GAIN		0.93		# detector gain in e-/ADU.				MERCATOR
 #PIXEL_SCALE	0.1934 		# size of pixel in arcsec (0=use FITS WCS info).	MERCATOR
+
+GAIN		2.2		# detector gain in e-/ADU.				LIVERPOOL
+PIXEL_SCALE	0.135 		# size of pixel in arcsec (0=use FITS WCS info).	LIVERPOOL
+
 
 #------------------------- Star/Galaxy Separation ----------------------------
 

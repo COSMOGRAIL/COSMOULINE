@@ -343,6 +343,85 @@ def mercatorheader(rawimg):
 	return returndict
 
 
+###############################################################################################
+
+
+def liverpoolheader(rawimg):
+	"""
+	Reading the header of 2010 RATCam LRT images.
+	Probably also ok for previous RATCam images.
+	"""
+	print rawimg
+	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
+	
+	#pixsize = 0.279 # (if a 2 x 2 binning is used)
+	pixsize = 0.135 # (if a 1 x 1 binning is used, as we do for cosmograil)
+	# hmm in the header they give 0.1395 ???
+	
+	#gain = 0 # We will take it from the header, it's around 2.2, keyword GAIN
+	#readnoise = 0.0 # idem, keyword READNOIS, 7.0
+	scalingfactor = 1.0 # Not measured : to be done !
+
+	telescopelongitude = "-17:52:47.99" # Same location as Mercator ...
+	telescopelatitude = "28:45:29.99"
+	telescopeelevation = 2327.0
+	
+	header = pyfits.getheader(rawimg)
+	availablekeywords = header.ascardlist().keys()
+	
+	treatme = True
+	gogogo = True
+	whynot = "na"
+	testlist = False
+	testcomment = "na"
+
+	gain = float(header['GAIN'])
+	readnoise = float(header['READNOIS'])
+	rotator = float(header['ROTSKYPA'])
+	
+	# Just a test :
+	binning = int(header['CCDXBIN'])
+	if binning != 1:
+		raise mterror("Binning is not 1 x 1 !")
+	
+	# Now the date and time stuff :
+	pythondt = datetime.datetime.strptime(header["DATE-OBS"][0:19], "%Y-%m-%dT%H:%M:%S") # beginning of exposure in UTC
+	exptime = float(header['EXPTIME'])
+	pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
+	
+	# Now we produce the date and datet fields, middle of exposure :
+	date = pythondt.strftime("%Y-%m-%d")
+	datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+	myownjdfloat = juliandate(pythondt)
+	myownmjdfloat = myownjdfloat - 2400000.5
+	jd = "%.6f" % myownjdfloat 
+	mjd = myownmjdfloat
+	
+	# Quick test agains header mjd :
+	headermjd = float(header['MJD'])
+ 	if abs(myownmjdfloat - headermjd) > 0.01: # loose, as we have added exptime/2 ...
+ 		raise mterror("Header DATE-OBS and MJD disagree !!!")
+	
+	
+	# The pre-reduction info :
+	preredcomment1 = "None"
+	preredcomment2 = "None"
+	preredfloat1 = 0.0
+	preredfloat2 = 0.0
+	
+	# We return a dictionnary containing all this info, that is ready to be inserted into the database.
+	returndict = {'imgname':imgname, 'treatme':treatme, 'gogogo':gogogo, 'whynot':whynot, 'testlist':testlist,'testcomment':testcomment ,
+	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
+	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
+	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator,
+	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
+	}
+
+	return returndict
+
+
 
 ###############################################################################################
 
