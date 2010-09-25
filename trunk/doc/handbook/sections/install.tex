@@ -1,21 +1,21 @@
 
-\section{Requirements and dependencies}
+\section{Installation, requirements and dependencies}
 
 
 Cosmouline is focused on the ESO scisoft distribution : \\
 \url{http://www.eso.org/sci/data-processing/software/scisoft/}\\
-Installing this is the easiest solution to meet nearly all of the requirements (all but pyephem and f77-MCS, see below). Once scisoft is installed, you just have to check if you have not-too-old versions of everything (especially Python Imaging Library -- they tend to include older versions, but this is very easy to update).
+Installing this is the easiest solution to meet nearly all of the requirements (all but pyephem, see below). Once scisoft is installed, you just have to check if you have not-too-old versions of everything (especially Python Imaging Library -- they tend to include older versions, but this is very easy to update, see below).
 
 \subsection{Python and some modules}
 
-First of all, we need python, ideally version 2.5 (as comes with a recent scisoft). But older versions ($> 2.0$) should also work fine. Python 2.6 might display warnings, telling us that the pipeline will have to be adapted for python 3k\footnote{This will not be a major issue, and anyway let's wait until python 3k is out and got popular (this could take a decade, according to some).}.
+First of all, we need python 2 (not 3)\footnote{Sooner or later we will adapt cosmouline for python 3k. This will not be a major issue, and anyway let's wait until python 3k got popular.}, version 2.5 or newer (as comes with a recent scisoft).
 
 \subsubsection{Scipy, numpy \& matplotlib}
 
 Then we need numpy, scipy and matplotlib (all this is quite common, also standard with scisoft as well as with other python disctibutions). If you do not want scisoft, you can also have a look at other scientific-ready-to-use distributions like \url{http://www.enthought.com/products/epd.php}.
 
 \subsubsection{Pyraf}
-This is the main reason to use scisoft, as pyraf is hard to install otherwise.\\
+This is the main reason to use scisoft, as pyraf is hard to install otherwise. It is used for the image registration, I haven't found a better alternative until now.
 \url{http://www.stsci.edu/resources/software_hardware/pyraf}
 
 \subsubsection{Pyfits}
@@ -34,7 +34,7 @@ print Image.VERSION
 
 \subsubsection{Pyephem}
 This is not part of scisoft, but really straightforward to install upon scisoft. \\
-( la \verb+python setup.py install+)\\
+(à la \verb+python setup.py install+)\\
 \url{http://rhodesmill.org/pyephem/}
 
 
@@ -65,9 +65,14 @@ The pipeline uses the following ``external'' non-python software. You can instal
 \subsubsection{SExtractor}
 Source Extrator, \url{http://terapix.iap.fr/rubrique.php?id_rubrique=91}. I'm using version 2.5.4 (the latest, bloody edge), but ``any'' version will work. It's a good idea to make sure that the \verb+-BACKGROUND+ check image output works fine. SExtractor is, of course, also part of scisoft.
 
-\subsubsection{MCS f77 deconvolution programs}
-This is the core of cosmouline, but also the core difficulty in installing cosmouline\ldots\\
-We need the latest extract.f and deconv.f (in which it is a good idea to remove the question about the positivity constraint). For the PSF, you can use the latest version, or an old, much simpler one. Might change a lot in future\ldots. Once installed, see \verb+config.py+.
+\subsubsection{Fortran compiler + cfitsio}
+We need a fortran compiler for the f77 MCS programs. A more recent fortran compiler (than f77) will usually also work, try for instance to get \verb+gfortran+ running on your machine. The fortan MCS source code is included with cosmouline, but you will have to compile it. This requires the cfitsio library :
+\url{http://heasarc.gsfc.nasa.gov/fitsio/}
+
+
+
+\subsection{Compiling MCS}
+After checking out cosmouline from svn, you will have to compile the fortran MCS programs. They are located in the \verb+pipedir+, under \verb+progs/MCSf77+ (go there now). Several csh scripts for different machines are already there, telling you what you will have to do on your machine. For instance, on \verb+obssr1+ at LASTRO, just run \verb+csh compile-obssr1.csh+. This creates the exectuables in the current directory, no further actions are required if the compilation works fine. Please commit your own compilation file to SVN !
 
 
 %\subsection{Non-mandatory}
