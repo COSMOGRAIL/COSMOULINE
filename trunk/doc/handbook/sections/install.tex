@@ -69,6 +69,12 @@ Source Extrator, \url{http://terapix.iap.fr/rubrique.php?id_rubrique=91}. I'm us
 We need a fortran compiler for the f77 MCS programs. A more recent fortran compiler (than f77) will usually also work, try for instance to get \verb+gfortran+ running on your machine. The fortan MCS source code is included with cosmouline, but you will have to compile it. This requires the cfitsio library :
 \url{http://heasarc.gsfc.nasa.gov/fitsio/}
 
+\subsubsection{ImageMagick + tar}
+Cosmouline can optionally convert png files into jpg and archive them using \verb+tar+. For this \verb+tar+ and \emph{ImageMagick} are required, both are very common and probably already installed on your system. Try \verb+which tar+ and \verb+which convert+. ImageMagick ( = \verb+convert+) could be installed from here :
+\url{http://www.imagemagick.org}.
+Note that you do not need these if you turn off the jpg conversion, by setting \verb+makejpgarchives = False+ in \verb+settings.py+.
+
+
 
 
 \subsection{Compiling MCS}
