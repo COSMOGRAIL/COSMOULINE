@@ -55,6 +55,7 @@ for i,image in enumerate(images):
 	aliimg = alidir + image['imgname'] + "_ali.fits"
 	
 	if os.path.isfile(aliimg):
+		"Removing existing aligned image."
 		os.remove(aliimg)
 	
 	databasename = "geodatabase"
