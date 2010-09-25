@@ -21,6 +21,7 @@ pipedir = "/my/absolute/path/to/cosmouline/pipe_svn"
 # The scripts do only read, but never write, from here !
 configdir = "/my/absolute/path/to/cosmouline/configs/config_HE0435"
 
+#---------------------------------------------------------------------------
 # All further settings are made into the configdir.
 # You should normally not have to change other lines of this config.py
 #---------------------------------------------------------------------------
