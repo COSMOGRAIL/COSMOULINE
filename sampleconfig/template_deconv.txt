@@ -1,5 +1,5 @@
 -------------------------------------------------------
-|Nombre de digits des images d'entrée    |4
+|Nombre de digits des images d'entree    |4
 -----------------------------------------|-------------
 |Number of images                        |$nbimg$
 |----------------------------------------|-------------
@@ -28,13 +28,13 @@
 |----------------------------------------|-------------
 |Name of input file                      |in.txt
 |----------------------------------------|-------------
-|Name of output file n°1                 |out.txt
+|Name of output file nb1                 |out.txt
 |----------------------------------------|-------------
-|Name of output file n°2                 |in2.txt
+|Name of output file nb2                 |in2.txt
 |----------------------------------------|-------------
 |Number of iterations for minimi         |2000
 |----------------------------------------|-------------
-|Variation minimal entre 10 khi carré    |0.01
+|Variation minimal entre 10 khi carre    |0.01
 |----------------------------------------|-------------
 |Number if iterations between backups    |100
 |----------------------------------------|-------------
@@ -48,9 +48,9 @@
 =======================================================
 | SOURCES A ENLEVER UNIQUEMENT POUR LES SAUVEGARDES   |
 -------------------------------------------------------
-|Nombre de source à enlever              |0
+|Nombre de source a enlever              |0
 |----------------------------------------|-------------
-|Numéro des sources à enlever  n° n° ... n°           |
+|Numero des sources a enlever  nb nb ... nb           |
 -------------------------------------------------------
 4 2 1
 =======================================================
