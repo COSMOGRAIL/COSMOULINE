@@ -18,16 +18,16 @@
 |Step for delta1 et delta2 max et min    |0.01              	#keep this small enough so that the total delta after convergence <1.0 small pixel 	         
 |                                        |0.00001      		#(avoid degenerescence with coordinates)               
 |----------------------------------------|-------------               
-|Step for Io du modèle analytique   (%)  |5.                	#peak intensity of analytical model in reference image        
+|Step for Io du modele analytique   (%)  |5.                	#peak intensity of analytical model in reference image        
 |min et max                              |0.00001                     
 |----------------------------------------|-------------               
-|Step for A B  du modèle analytique      |50.              	#inverse semimajor and semiminor axis of analytical model            
+|Step for A B  du modele analytique      |50.              	#inverse semimajor and semiminor axis of analytical model            
 |min et max                              |0.00001                     
 |----------------------------------------|-------------               
-|Step for C du modèle analytique         |20.                  	#twisting of ellips according to axes        
+|Step for C du modele analytique         |20.                  	#twisting of ellips according to axes        
 |min et max                              |0.0001                      
 |----------------------------------------|-------------               
-|Step for Cx et Cy du modèle analytique  |0.005             	#centre of analytical model           
+|Step for Cx et Cy du modele analytique  |0.005             	#centre of analytical model           
 |min et max                              |0.0001                      
 |----------------------------------------|-------------               
 |For one star: nb * intensity (nb = number of images) |               
@@ -36,11 +36,11 @@
 $intandposblock$						#python script transforms large into small pixels
 -------------------------------------------------------
 |Valeurs intiales de z1, z2, delta1 et delta2         |
-|nb * (4 valeurs) où nb = nombre d'images             |
+|nb * (4 valeurs) ou nb = nombre d'images             |
 -------------------------------------------------------
 $otheriniblock$							#no need to change
 -------------------------------------------------------
-|Modèle analytique: valeurs de Io A B C Cx et Cy      |		#initial values for analytical model
+|Modele analytique: valeurs de Io A B C Cx et Cy      |		#initial values for analytical model
 |    (6 valeurs : Io A B C Cx Cy)                     |
 -------------------------------------------------------
  0.0000000000000E+00      0.000000      0.000000      0.000000      0.000000      0.000000 
@@ -49,7 +49,7 @@ $otheriniblock$							#no need to change
  If your galaxy looks very symmetrical, you could use an analytical model for it, so that the background does not have to take that into acocunt.
  (if not: rather use a self-made numerical model as initial background)
  The model is a function of the formula used for an ellipse:
- A(x-Cx)²+B(y-Cy)²+C(x-Cx)(y-Cy)
+ A(x-Cx)^2+B(y-Cy)^2+C(x-Cx)(y-Cy)
  The smaller the galaxy, the bigger the values for A and B
  The best way to proceed is in two steps: first fit the analytical model while fixing other parameters, then fix the best obtained model and leave other parameters free.
  See also remarks in commented_deconv.txt

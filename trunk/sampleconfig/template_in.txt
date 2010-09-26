@@ -18,16 +18,16 @@
 |Step for delta1 et delta2 max et min    |0.01                       
 |                                        |0.00001                      
 |----------------------------------------|-------------               
-|Step for Io du modèle analytique   (%)  |5.                          
+|Step for Io du modele analytique   (%)  |5.                          
 |min et max                              |0.00001                     
 |----------------------------------------|-------------               
-|Step for A B  du modèle analytique      |50.                         
+|Step for A B  du modele analytique      |50.                         
 |min et max                              |0.00001                     
 |----------------------------------------|-------------               
-|Step for C du modèle analytique         |20.                         
+|Step for C du modele analytique         |20.                         
 |min et max                              |0.0001                      
 |----------------------------------------|-------------               
-|Step for Cx et Cy du modèle analytique  |0.005                       
+|Step for Cx et Cy du modele analytique  |0.005                       
 |min et max                              |0.0001                      
 |----------------------------------------|-------------               
 |For one star: nb * intensity (nb = number of images) |               
@@ -36,11 +36,11 @@
 $intandposblock$
 -------------------------------------------------------
 |Valeurs intiales de z1, z2, delta1 et delta2         |
-|nb * (4 valeurs) où nb = nombre d'images             |
+|nb * (4 valeurs) ou nb = nombre d'images             |
 -------------------------------------------------------
 $otheriniblock$
 -------------------------------------------------------
-|Modèle analytique: valeurs de Io A B C Cx et Cy      |
+|Modele analytique: valeurs de Io A B C Cx et Cy      |
 |    (6 valeurs : Io A B C Cx Cy)                     |
 -------------------------------------------------------
  0.0000000000000E+00      0.000000      0.000000      0.000000      0.000000      0.000000 

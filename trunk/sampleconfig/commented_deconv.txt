@@ -1,5 +1,5 @@
 -------------------------------------------------------
-|Nombre de digits des images d'entrée    |4		#don't touch
+|Nombre de digits des images d'entree    |4		#don't touch
 -----------------------------------------|-------------
 |Number of images                        |$nbimg$
 |----------------------------------------|-------------
@@ -28,13 +28,13 @@
 |----------------------------------------|-------------
 |Name of input file                      |in.txt	#don't touch: IMPORTANT for pipeline
 |----------------------------------------|-------------
-|Name of output file n°1                 |out.txt	#don't touch: IMPORTANT for pipeline
+|Name of output file nb1                 |out.txt	#don't touch: IMPORTANT for pipeline
 |----------------------------------------|-------------
-|Name of output file n°2                 |in2.txt	#don't touch: IMPORTANT for pipeline
+|Name of output file nb2                 |in2.txt	#don't touch: IMPORTANT for pipeline
 |----------------------------------------|-------------
 |Number of iterations for minimi         |2000		#criterium to stop minimizing, can be less if you want
 |----------------------------------------|-------------
-|Variation minimal entre 10 khi carré    |0.01		#criterium to stop minimizing
+|Variation minimal entre 10 khi carre    |0.01		#criterium to stop minimizing
 |----------------------------------------|-------------
 |Number of iterations between backups    |100		#as you want, slows down program if you include too many backups
 |----------------------------------------|-------------
@@ -48,9 +48,9 @@
 =======================================================
 | SOURCES A ENLEVER UNIQUEMENT POUR LES SAUVEGARDES   |
 -------------------------------------------------------
-|Nombre de source à enlever              |0		#don't touch, not useful for us
+|Nombre de source a enlever              |0		#don't touch, not useful for us
 |----------------------------------------|-------------
-|Numéro des sources à enlever  n° n° ... n°           |
+|Numero des sources a enlever  nb nb ... nb           |
 -------------------------------------------------------
 4 2 1							#don't need this
 =======================================================

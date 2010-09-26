@@ -6,29 +6,29 @@ FICHIER POUR PSFSIM_SIG_MINI_new4.f
 |----------------------------------------|-------------
 | Nombre de sources ponctuelles          |$nbrpsf$	#don't touch, number of PSF stars
 |----------------------------------------|-------------
-| Est-ce une image recomposée (y/n)      |y		#don't touch
+| Est-ce une image recomposee (y/n)      |y		#don't touch
 =======================================================
 | FWHM finale des sources                |2.		#don't touch, chosen fwhm in small pixels after deconvolution
 |----------------------------------------|-------------
 | FWHM de G                              |$resolpix$	#don't touch, seeing of original image in large pixels
-|(résolution image de départ en GP)      |
+|(resolution image de depart en GP)      |
 |----------------------------------------|-------------
 | FWHM pour le terme de lissage          |3.0		#fwhm of gaussean used for smoothing; unit: small pixels
 =======================================================
-| Nb d'itérations entre 2 sauvegardes    |1000		#number of iterations between backups, slows down program if you backup too often
+| Nb d'iterations entre 2 sauvegardes    |1000		#number of iterations between backups, slows down program if you backup too often
 |----------------------------------------|-------------
-| Nb d'itérations max. pour minimi moffat|3000		#max number of iterations for minimizing Moffat
+| Nb d'iterations max. pour minimi moffat|3000		#max number of iterations for minimizing Moffat
 |----------------------------------------|-------------
-| Nb d'itérations max. pour minimi fond  |1000		#max number of iterations for minimizing background
+| Nb d'iterations max. pour minimi fond  |1000		#max number of iterations for minimizing background
 |----------------------------------------|-------------
-| Valeur deltaCHI min entre 10 itérations|1.E-40	#criterium to stop minimizing: difference between chi2 is smaller than this value
+| Valeur deltaCHI min entre 10 iterations|1.E-40	#criterium to stop minimizing: difference between chi2 is smaller than this value
 =======================================================
 | PARAMETRES POUR LE FOND
 =======================================================
-| Rayon ini pour zone fond à modifier    |100		#don't touch, old stuff, not used if initial radius=max radius
-| Elargissement par à-coups              |10		#don't touch, old stuff, not used if initial radius=max radius
+| Rayon ini pour zone fond a modifier    |100		#don't touch, old stuff, not used if initial radius=max radius
+| Elargissement par a-coups              |10		#don't touch, old stuff, not used if initial radius=max radius
 | Rayon de lissage pour la parabole      |5		#don't touch, old stuff, not used if initial radius=max radius
-| Rayon maximum à traiter                |100		#don't touch, old stuff, not used if initial radius=max radius
+| Rayon maximum a traiter                |100		#don't touch, old stuff, not used if initial radius=max radius
 =======================================================
 | MINIMI MOFFAT
 =======================================================
@@ -37,9 +37,9 @@ FICHIER POUR PSFSIM_SIG_MINI_new4.f
 |                             B3 =       |0.0001	#see formula 2dimensional Moffat function: skewness
 |                             Beta =     |0.02		#see formula 2dimensional Moffat function: exponent
 |----------------------------------------|-------------
-| Pas pour les paramètres du  plan       |0.0		#step for the plane you could use to correct for background variation due to close star: keep step small
+| Pas pour les parametres du  plan       |0.0		#step for the plane you could use to correct for background variation due to close star: keep step small
 |----------------------------------------|-------------
-| Pas pour les décalages      en X =     |0.0		#step for movement between images, but we only use one image, so must be 0.0
+| Pas pour les decalages      en X =     |0.0		#step for movement between images, but we only use one image, so must be 0.0
 |                             en Y =     |0.0		#step for movement between images, but we only use one image, so must be 0.0
 |----------------------------------------|-------------
 | Pas pour les sources        A (%) =    |2.0		#step on peak intensity in ADU of input image
@@ -54,9 +54,9 @@ FICHIER POUR PSFSIM_SIG_MINI_new4.f
 |------------------------------------------------------
 | FWHM finale de la gaussienne           |50.		#unit: pixels; see explanation underneath
 |------------------------------------------------------
-| Nombre d'itérations pour la gaussienne |1000		#number of iterations to get from initial to final fwhm for gaussean in background
+| Nombre d'iterations pour la gaussienne |1000		#number of iterations to get from initial to final fwhm for gaussean in background
 |------------------------------------------------------
-| Résidu minimum (resi_min)              |0.3		#see explanation underneath
+| Residu minimum (resi_min)              |0.3		#see explanation underneath
 =======================================================
 | VALEURS INITIALES
 =======================================================
@@ -75,16 +75,16 @@ FICHIER POUR PSFSIM_SIG_MINI_new4.f
  y							#putting all 0 here means that the program calculates initial values by itself
  0.  0.  0.  0.						#for B1 to B3: they are based on fwhm of the input image and beta=3
 |------------------------------------------------------
-| Paramètres initiaux du plan (alpha beta gamma) * ni |
+| Parametres initiaux du plan (alpha beta gamma) * ni |
 |------------------------------------------------------
  0.  0.  0.						#initial parameters for plane: alpha*x + beta*y +gamma is flat when alpha=beta=gamma=0.
 |------------------------------------------------------
-| Paramètres initiaux des décalages                   |
+| Parametres initiaux des decalages                   |
 | ( deltaX deltaY ) * ni                              |
 |------------------------------------------------------
  0.  0.							#not used, so keep at 0.
 |------------------------------------------------------
-| Paramètres initiaux des sources                     |
+| Parametres initiaux des sources                     |
 | a(1) ... a(ni) }                                    |
 | cx cy          } * ns                               |
 |------------------------------------------------------
@@ -97,7 +97,7 @@ x_centre, y_centre
 
 
 Formula 2dimensional Moffat function:
-A(1+B1(x-cx)²+B2(y-cy)²+B3(x-cx)(y-cy))^-beta with coordinates of centre being (cx,cy)
+A(1+B1(x-cx)^2+B2(y-cy)^2+B3(x-cx)(y-cy))^-beta with coordinates of centre being (cx,cy)
 
 Comments on background:
 The step on the background you have to fill in here is not in ADU. The real step (so not this value) consists of 
@@ -125,10 +125,10 @@ Because of a combination of coincidences...
 Let's explain (only read if you really want to understand):
 Normally, the flux in the initial image should be equal to the flux in the deconvolved image.
 This flux = peak value in ADU * double integral of 2dim gaussean (flux of psf=1).
-So this flux = peak value * fwhm_ini² * pi/4*ln2 (fwhm_ini in pixels)
+So this flux = peak value * fwhm_ini^2 * pi/4*ln2 (fwhm_ini in pixels)
 BUT: while passing from large to small pixels, the ADU of a large pixel is used 4 times for the 4 small pixels (strange feature of program...)
 SO: flux_final = 4 * flux_ini
-So: peak_final * fwhm_final² * pi/4*ln2 = 4 * flux_ini
+So: peak_final * fwhm_final^2 * pi/4*ln2 = 4 * flux_ini
 Knowing that we have chosen fwhm_final=2 small pixels, we find:
 peak_final * 4 * 1.133 = 4 * flux_ini
 SO: peak_final * 1.133 = flux_ini
