@@ -33,6 +33,8 @@ def readheader(telescopename, rawimg):
 		dbdict = mercatorheader(rawimg)
 	elif telescopename == "Liverpool":
 		dbdict = liverpoolheader(rawimg)
+	elif telescopename == "MaidanakSITE":
+		dbdict = maidanaksiteheader(rawimg)
 	elif telescopename == "NOHEADER":
 		dbdict = noheader(rawimg)
 			
