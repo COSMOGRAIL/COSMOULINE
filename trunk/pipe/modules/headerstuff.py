@@ -423,6 +423,84 @@ def liverpoolheader(rawimg):
 
 
 
+
+###############################################################################################
+
+
+def maidanaksiteheader(rawimg):
+	"""
+	Maidanak SITE = raw image format 2030 x 800
+	Written 2010 Malte & Denis
+	For image prereduced by pypr in 2010
+	"""
+	print rawimg
+	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
+	
+	pixsize = 0.266
+	gain = 1.16 # From Ildar, to be checked ?
+	readnoise = 5.3 # idem
+	scalingfactor = 0.723333 #
+	
+	telescopelongitude = "66:53:47.07"
+	telescopelatitude = "38:40:23.95"
+	telescopeelevation = 2593.0
+
+	header = pyfits.getheader(rawimg)
+	availablekeywords = header.ascardlist().keys()
+	
+	treatme = True
+	gogogo = True
+	whynot = "na"
+	testlist = False
+	testcomment = "na"
+
+	rotator = 0.0
+	
+	# Now the date and time stuff :
+	
+	if not (len(header["DATE-OBS"]) == 10 and len(header["DATE"]) == 10):
+		raise mterror("Length error in DATE-OBS and DATE")
+	if header["DATE-OBS"] != header["DATE"]:
+		print "DATE-OBS : %s" % (header["DATE-OBS"])
+		print "DATE : %s" % (header["DATE"])
+		print "TM_START : %s" % (header["TM_START"])
+		#raise mterror("DATE-OBS and DATE do not agree")
+	
+	pythondt = datetime.datetime.strptime(header["DATE-OBS"][0:10], "%Y-%m-%d")
+	pythondt += datetime.timedelta(seconds = header["TM_START"])
+	exptime = float(header['EXPTIME'])
+	if (exptime < 10.0) or (exptime > 1800):
+		raise mterror("Problem with exptime...")
+		
+	pythondt += datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
+	
+	# Now we produce the date and datet fields, middle of exposure :
+	date = pythondt.strftime("%Y-%m-%d")
+	datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+	myownjdfloat = juliandate(pythondt)
+	myownmjdfloat = myownjdfloat - 2400000.5
+	jd = "%.6f" % myownjdfloat 
+	mjd = myownmjdfloat
+	
+	# The pre-reduction info :
+	preredcomment1 = str(header["PR_NFLAT"])
+	preredcomment2 = str(header["PR_NIGHT"])
+	preredfloat1 = float(header["PR_FSPAN"])
+	preredfloat2 = float(header["PR_FDISP"])
+	
+	# We return a dictionnary containing all this info, that is ready to be inserted into the database.
+	returndict = {'imgname':imgname, 'treatme':treatme, 'gogogo':gogogo, 'whynot':whynot, 'testlist':testlist,'testcomment':testcomment ,
+	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
+	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
+	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator,
+	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
+	}
+
+	return returndict
+
+
 ###############################################################################################
 
 def noheader(rawimg):
