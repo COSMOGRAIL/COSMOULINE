@@ -24,7 +24,7 @@ from datetime import datetime, timedelta
 pngkey = "full"
 
 crop = False
-cropregion = "[790:1725,715:995]"
+cropregion = "[330:1680,108:682]"
 rebin = 2
 z1 = -40
 z2 =  2000
