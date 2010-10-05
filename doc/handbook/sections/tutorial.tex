@@ -192,7 +192,7 @@ python 2b_report.py
 
 \subsubsection{Measuring the seeing}
 
-Whenever possible, the scripts are split in two categories:fast ones that manipulate the database, and slower ones that just read the database once at the beginning. It then gets very easy to ``parallelize'' the the slow scripts, by calling them for successive setnames one after the other (but this is essential only for the PSF construction, which otherwise tends to take some nights).
+Whenever possible, the scripts are split in two categories:fast ones that manipulate the database, and slower ones that just read the database once at the beginning. It then gets very easy to ``parallelize'' the slow scripts, by calling them for successive setnames one after the other (but this is essential only for the PSF construction, which otherwise tends to take some nights).
 
 The next script is a ``slow'' one.
 First open the \verb+default_see.sex+ (``see'' for seeing:this file is located in this same directory \verb+1_character_scripts+, and it's the file that will actually be used by cosmouline). You should for instance adapt the \verb+PIXEL_SCALE+\footnote{The SExtractor output is given in pixels anyway; there is no big danger if this parameter is inaccurate.} and \verb+GAIN+ to the images you want to treat, but you could also change the other parameters like the aperture or background estimation. Note that we do \emph{not} use this SExtractor run to subtract the background:it's really just to measure the seeing.
