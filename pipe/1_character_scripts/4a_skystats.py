@@ -30,7 +30,7 @@ if not checkplots : # Then we will update the database.
 	# We make a backup copy of our database :
 	backupfile(imgdb, dbbudir, "skystats")
 
-	# We add some new fields into the holy database :
+	# We add some new fields into the holy moly database :
 	if "skylevel" not in db.getFieldNames(imgdb) :
 		db.addFields(imgdb, ['skylevel:float', 'prealistddev:float'])
 
@@ -78,11 +78,13 @@ for i,image in enumerate(images):
 	if checkplots :
 		plt.hist(pixelarray.ravel(), facecolor='green', bins=np.linspace(0,3*medianlevel,100), normed=True, log=False)
 		#plt.plot(bin_centers, hist, "b.")
-		plt.axvline(x=medianlevel, linewidth=2, color='green')
-		plt.axvline(x=skylevel, linewidth=2, color='red')
-		plt.axvline(x=skylevel - 1*skystddev, linewidth=2, color='blue')
-		plt.axvline(x=skylevel + 1*skystddev, linewidth=2, color='blue')
+		plt.axvline(x=medianlevel, linewidth=2, color='green', label='median')
+		plt.axvline(x=skylevel, linewidth=2, color='red', label='skylevel')
+		plt.axvline(x=skylevel - 1*skystddev, linewidth=2, color='blue', label='skylevel - skystddev')
+		plt.axvline(x=skylevel + 1*skystddev, linewidth=2, color='blue', label='skylevel + skystddev')
 		plt.xlabel("Pixel value [ADU]")
+		plt.title('Histogram of all pixel values for image %s: %s' %(image['imgname'], image['testcomment']))
+		plt.legend(loc='best')
 		plt.show()
 		print "Remember : the database is NOT UPDATED !"
 	else:
