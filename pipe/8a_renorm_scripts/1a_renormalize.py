@@ -131,7 +131,7 @@ for i, image in enumerate(allimages):
 	# now each image has such a tmp_coeff.
 
 
-# We are ready for a frist plot, to compare the stars :
+# We are ready for a first plot, to compare the stars :
 plt.figure(figsize=(12,8))	# sets figure size
 
 for source in plotdb:
