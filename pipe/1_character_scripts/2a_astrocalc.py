@@ -50,7 +50,7 @@ backupfile(imgdb, dbbudir, "astrocalc")
 
 # We add some new fields into the holy database.
 if "hjd" not in db.getFieldNames(imgdb) :
-	db.addFields(imgdb, ['hjd:str', 'mhjd:float', 'calctime:str', "alt:float", "az:float", 'airmass:float', 'moonpercent:float', 'moondist:float', 'sundist:float', 'sunalt:float', 'astrofishy:bool', 'astrocomment:str'])
+	db.addFields(imgdb, ['hjd:str', 'mhjd:float', 'calctime:str', "alt:float", "az:float", 'airmass:float', 'moonpercent:float', 'moondist:float', 'moonalt:float', 'sundist:float', 'sunalt:float', 'astrofishy:bool', 'astrocomment:str'])
 
 for i,image in enumerate(images):
 
@@ -91,6 +91,8 @@ for i,image in enumerate(images):
 	print "Separation to the Moon is %.2f degrees." % moondist
 	moonpercent = float(moon.phase)
 	print "Moon illumation : %5.2f %%" % moonpercent
+	moonalt=math.degrees(float(moon.alt))
+	print 'Moon altitude [degrees]: %.2f' % moonalt
 
 	sun = ephem.Sun()
 	sun.compute(telescope)
@@ -140,7 +142,7 @@ for i,image in enumerate(images):
 		astrocomment = astrocomment + "FITS date is %s, but calctime is %s !?" %(image['date'], calctime)
 		
 	# We update the data
-	db.update(imgdb, ['recno'], [image['recno']], {'hjd': hjd, 'mhjd':mhjd, 'calctime':calctime, 'alt':lensalt, 'az':lensaz, 'airmass':airmassvalue, 'moonpercent':moonpercent, 'moondist':moondist, 'sundist':sundist, 'sunalt':sunalt, 'astrofishy':astrofishy, 'astrocomment':astrocomment})
+	db.update(imgdb, ['recno'], [image['recno']], {'hjd': hjd, 'mhjd':mhjd, 'calctime':calctime, 'alt':lensalt, 'az':lensaz, 'airmass':airmassvalue, 'moonpercent':moonpercent, 'moondist':moondist, 'moonalt':moonalt, 'sundist':sundist, 'sunalt':sunalt, 'astrofishy':astrofishy, 'astrocomment':astrocomment})
 	
 	
 db.pack(imgdb) # to erase the blank lines

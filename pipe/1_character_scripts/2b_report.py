@@ -7,7 +7,7 @@ from kirbybase import KirbyBase, KBError
 from variousfct import *
 
 
-fields = ['imgname', 'datet','calctime', 'mhjd', 'airmass', 'moonpercent', 'moondist', 'sunalt', 'sundist']
+fields = ['imgname', 'datet','calctime', 'mhjd', 'airmass', 'moonpercent', 'moondist', 'moonalt', 'sunalt', 'sundist']
 
 
 db = KirbyBase()
