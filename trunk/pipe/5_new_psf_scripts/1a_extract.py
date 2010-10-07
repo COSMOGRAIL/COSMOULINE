@@ -33,7 +33,7 @@ proquest(askquestions)
 backupfile(imgdb, dbbudir, "extract_" + psfkey)
 
 
-# Then, we inpect the current siutation.
+# Then, we inspect the current situation.
 # Check if the psfdir already exists
 if os.path.isdir(psfdir):
 	print "Ok, this psfdir already exists. I will add or rebuild psfs in this set."
