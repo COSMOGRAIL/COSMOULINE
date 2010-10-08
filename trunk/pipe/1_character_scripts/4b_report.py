@@ -2,7 +2,7 @@ execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 
-fields = ['imgname', 'skylevel', 'prealistddev', 'seeing', 'goodstars']
+fields = ['imgname', 'skylevel', 'prealistddev', 'seeing', 'goodstars', 'moonpercent', 'moondist', 'moonalt', 'sunalt']
 
 
 db = KirbyBase()
