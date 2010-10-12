@@ -44,7 +44,8 @@ newfields = []
 for src in ptsrcs:
 
 	newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_flux", "type": "float"}) # This will contain the flux (as would be measured by aperture  photometry on the original raw image)
-	newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_int", "type": "float"}) # We keep this "intensity" only for retrocompatibility.
+	#newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_int", "type": "float"}) # We keep this "intensity" only for retrocompatibility.
+	# Let's remove this "int", it should not be used anymore.
 	newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_x", "type": "float"})
 	newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_y", "type": "float"})
 newfields.append({"fieldname": "out_" + deckey + "_z1", "type":"float"})
@@ -66,7 +67,7 @@ for image in images:
 	
 	for i, src in enumerate(ptsrcs):
 
-		image["updatedict"]["out_" + deckey + "_" + src.name + "_int"] = intpostable[i][outputindex][0]
+		# image["updatedict"]["out_" + deckey + "_" + src.name + "_int"] = intpostable[i][outputindex][0]
 		image["updatedict"]["out_" + deckey + "_" + src.name + "_x"] = intpostable[i][outputindex][1]
 		image["updatedict"]["out_" + deckey + "_" + src.name + "_y"] = intpostable[i][outputindex][2]
 		
