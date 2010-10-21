@@ -37,12 +37,12 @@ def readheader(telescopename, rawimg):
 		dbdict = maidanaksiteheader(rawimg)
 	elif telescopename == "MaidanakSI":
 		dbdict = maidanaksiheader(rawimg)
+	elif telescopename == "HCT":
+		dbdict = hctheader(rawimg)
 	elif telescopename == "NOHEADER":
 		dbdict = noheader(rawimg)
 			
 	"""
-	elif telescopename == "HCT":
-		dbdict = hctheader(rawimg)
 	elif telescopename == "MaidanakSITE":
 		dbdict = hctheader(rawimg) # Yes, we can use the same as for HCT
 	elif telescopename == "MaidanakSI":
