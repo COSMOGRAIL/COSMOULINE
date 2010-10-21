@@ -49,8 +49,11 @@ MAG_GAMMA	4.0		# gamma of emulsion (for photographic scans)
 #GAIN		2.2		# detector gain in e-/ADU.				LIVERPOOL
 #PIXEL_SCALE	0.135 		# size of pixel in arcsec (0=use FITS WCS info).	LIVERPOOL
 
-GAIN		1.16		# detector gain in e-/ADU.				MaidanakSITE
-PIXEL_SCALE	0.266 		# size of pixel in arcsec (0=use FITS WCS info).	MaidanakSITE
+#GAIN		1.16		# detector gain in e-/ADU.				MaidanakSITE
+#PIXEL_SCALE	0.266 		# size of pixel in arcsec (0=use FITS WCS info).	MaidanakSITE
+
+GAIN		1.22		# detector gain in e-/ADU.				HCT
+PIXEL_SCALE	0.296 		# size of pixel in arcsec (0=use FITS WCS info).	HCT
 	
 #------------------------- Star/Galaxy Separation ----------------------------
 
