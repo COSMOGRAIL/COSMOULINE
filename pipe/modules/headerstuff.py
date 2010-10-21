@@ -570,6 +570,77 @@ def maidanaksiheader(rawimg):
 
 	return returndict
 
+###############################################################################################
+
+
+def hctheader(rawimg):
+	"""
+	HCT : will have to be adapted later so to handle new fields added by pypr prereduction.
+	"""
+	print rawimg
+	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
+	
+	pixsize = 0.296
+	gain = 1.22
+	readnoise = 4.8
+	scalingfactor = 0.65189 # measured scalingfactor (with respect to Mercator = 1.0)#
+	
+	telescopelongitude = "78:57:50.99"
+	telescopelatitude = "32:46:46.00"
+	telescopeelevation = 4500.0
+
+	header = pyfits.getheader(rawimg)
+	availablekeywords = header.ascardlist().keys()
+	
+	treatme = True
+	gogogo = True
+	whynot = "na"
+	testlist = False
+	testcomment = "na"
+
+	rotator = 0.0
+	
+	# Now the date and time stuff :
+	pythondt = datetime.datetime.strptime(header['DATE-OBS'], "%Y-%m-%d")
+	pythondt += datetime.timedelta(seconds = int(header["TM_START"]))
+	exptime = float(header['EXPTIME'])
+	if (exptime < 10.0) or (exptime > 1800):
+		raise mterror("Problem with exptime...")
+		
+	pythondt += datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
+	
+	# Now we produce the date and datet fields, middle of exposure :
+	date = pythondt.strftime("%Y-%m-%d")
+	datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+	myownjdfloat = juliandate(pythondt)
+	myownmjdfloat = myownjdfloat - 2400000.5
+	jd = "%.6f" % myownjdfloat 
+	mjd = myownmjdfloat
+	
+	# The pre-reduction info :
+	#preredcomment1 = str(header["PR_NFLAT"])
+	#preredcomment2 = str(header["PR_NIGHT"])
+	#preredfloat1 = float(header["PR_FSPAN"])
+	#preredfloat2 = float(header["PR_FDISP"])
+	
+	preredcomment1 = "na"
+	preredcomment2 = "na"
+	preredfloat1 = 0.0
+	preredfloat2 = 0.0
+	
+	
+	
+	# We return a dictionnary containing all this info, that is ready to be inserted into the database.
+	returndict = {'imgname':imgname, 'treatme':treatme, 'gogogo':gogogo, 'whynot':whynot, 'testlist':testlist,'testcomment':testcomment ,
+	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
+	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
+	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator,
+	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
+	}
+
+	return returndict
 
 ###############################################################################################
 
