@@ -42,7 +42,7 @@ plt.figure(figsize=(12,8))	# sets figure size
 
 for src in ptsrc:
 
-	key = 'out_'+deckey+'_'+ src.name +'_int'
+	key = 'out_'+deckey+'_'+ src.name +'_flux'
 	mags = -2.5*log10(asarray([image[key] for image in images]))
 	
 	mhjds = asarray([image["mhjd"] for image in images])
