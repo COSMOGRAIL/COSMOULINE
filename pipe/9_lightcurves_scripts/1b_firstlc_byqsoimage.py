@@ -52,14 +52,24 @@ print "Number of nights :", len(groupedimages)
 
 colors = ["red", "blue", "purple", "green"]
 for j, src in enumerate(ptsrc):
-	mymags = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_int')['median'])
-	mymagups = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_int')['up'])
-	mymagdowns = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_int')['down'])
+	mymags = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_flux')['median'])
+	mymagups = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_flux')['up'])
+	mymagdowns = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_flux')['down'])
 	mhjds = asarray(values(groupedimages, 'mhjd')['median'])
 	#dates = mhjds - 54000
 	nbrimgs = map(len, groupedimages)
 	
 	plt.errorbar(mhjds, mymags, [mymagdowns,mymagups], linestyle="None", marker=".", label = src.name, color = colors[j])
+	
+	
+	# Computation of the mean and median span for each point source
+	mean_span = mean(abs(mymagups-mymagdowns))
+	median_span = median(abs(mymagups-mymagdowns))
+	std_span = std(abs(mymagups-mymagdowns))
+	print "Mean span of magnitude over all the nights for source %s : %f" %(src.name, mean_span)
+	print "Median span of magnitude over all the nights for source %s : %f" %(src.name, median_span)
+	print "Std span of magnitude over all the nights for source %s : %f" %(src.name, std_span)
+	
 	
 	#for i, nbrimg in enumerate(nbrimgs):
 	#	plt.text(mhjds[i]+3, mymags[i]-0.01, "%i" % nbrimg)
