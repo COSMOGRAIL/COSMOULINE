@@ -65,6 +65,8 @@ def readheader(telescopename, rawimg):
 print "Here we go !"
 print "You want to add the set " + setname + " to the database."
 print rawdir
+if not os.path.isdir(rawdir):
+	raise mterror("This directory does not exist!")
 fitsfiles = glob.glob(os.path.join(rawdir, "*.fits"))
 print "Number of images :", len(fitsfiles)
 #fitslist = sorted(map((lambda x: x.split("/")[-1]), fitsfiles))
