@@ -7,8 +7,11 @@ execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
+from readandreplace_fct import *
+import shutil
+import os
 
-print "Same here : please change pixel size in sextractor input by hand."
+print "Note that the program set itself the gain and the pixel scale in the default_sky.sex according to the database. Great!"
 proquest(askquestions)
 
 db = KirbyBase()
@@ -25,15 +28,43 @@ proquest(askquestions)
 
 starttime = datetime.now()
 
+# default parameter for the sextractor input
+
+scriptdir = os.path.join(pipedir, "2_skysub_scripts")
+key = "sky"	# key is a key word according to what you're doing with sextractor (mesuring seeing: key = see)
+default_template_filename = os.path.join(scriptdir, "default_" +key+ "_template.sex")
+pixesize = 0.0	
+gain = 0.0
+
+sexin = "default_" +key+ ".sex" 	#name of the sextractor input file
+
+
 for i,image in enumerate(images):
 
 	recno = image['recno']
 	justname = image['imgname']
 	filename = image['rawimg']
+	
 	print "+++++++++++++++++++++++++++++++++++++++++++++++"
 	print i+1, "/", nbrimages, ":", justname
 	
-	sexout = os.system(sex +" "+ filename + " -c default_sky.sex")
+	if pixesize != image["pixsize"] or gain != image["gain"]:
+		# I write default_sky.sex
+		
+		pixesize = image["pixsize"]
+		gain = image["gain"]
+	
+		default_sky_template = justread(default_template_filename)
+		defaultdict = {"$gain$": str(image["gain"]), "$px_size$": str(image["pixsize"])}
+		defaultsex = justreplace(default_sky_template, defaultdict)
+		defaultfile = open(os.path.join(scriptdir, sexin), "w")	
+		defaultfile.write(defaultsex)
+		defaultfile.close()
+		
+		print "Wrote default_sky.sex"
+		
+	
+	sexout = os.system(sex +" "+ filename + " -c " +sexin)
 	os.remove("sex.cat")
 	
 	# The normal way to go, saving the skysubtracted image :
@@ -42,6 +73,10 @@ for i,image in enumerate(images):
 	# But maybe you want to have a look at the subtracted background (change sextractor !)
 	#os.system("mv check.fits " + alidir + justname + "_background.fits")
 	
+	
+	
+#We delete the default_sky.sex to keep the directory clean
+os.remove(os.path.join(scriptdir, sexin))
 
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
