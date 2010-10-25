@@ -11,7 +11,7 @@ from readandreplace_fct import *
 import shutil
 import os
 
-print "Note that the program set itself the gain and the pixel scale in the default_sky.sex according to the database. Great!"
+print "Note that the program set itself the gain and the pixel scale in the default.sex according to the database. Great!"
 # The following line will interactively ask if you want to go on or abort.
 # "askquestions" can be set to False in config.py, in which case we skip this. 
 proquest(askquestions)
