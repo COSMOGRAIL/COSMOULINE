@@ -1,6 +1,9 @@
 """
 TEST to imporove the sextractor reliability...
 Facultative : we look for plain "0" cols and lines, and fill them for random noise.
+
+It seems to work.
+
 """
 
 execfile("../config.py")
@@ -25,20 +28,17 @@ for n, image in enumerate(images):
 	
 	(a, h) = cosmics.fromfits(aliimg, verbose=False)
 	
-	zeroa = a <= 0.0001 * image["stddev"]
+	zeroa = a <= 0.01 * image["stddev"]
 	cols = zeroa.all(axis = 0)
 	lins = zeroa.all(axis = 1)
 	
 	colsshape = a[:,cols].shape
 	a[:,cols] = (np.random.randn(colsshape[0] * colsshape[1])*image["stddev"]).reshape(colsshape)
 	
-
 	linsshape = a[lins,:].shape
 	a[lins,:] = (np.random.randn(linsshape[0] * linsshape[1])*image["stddev"]).reshape(linsshape)
 	
-	
 	cosmics.tofits(aliimg, a, verbose=False)
 
-	
 notify(computer, withsound, "Done.")
 
