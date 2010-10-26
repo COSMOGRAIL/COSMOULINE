@@ -360,6 +360,7 @@ python 2a_alignimages.py
 
 This will use IRAF (pyraf) for the first time. I hope everything is fine with your installation. Normally this should use the usual \verb+login.cl+ in your IRAF-directory.
 
+\tbrem{In case of images with large shifts with respect to the reference image, you would now have large non-overlapping regions of these files set to 0.0 ADU. Small strips of zeroes are not a problem, but if these regions cover more then say a fourth of an image, sextractor will get fooled and produce a crappy catalog. Hence there is an optional script to fill these 0.0 regions with plain noise.}
 
 \begin{Verbatim}
 python 2b_report.py
