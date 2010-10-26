@@ -7,11 +7,12 @@ execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import pyfits
+import numpy as np
 import cosmics # used to read and write the fits files
 
 
 db = KirbyBase()
-images = db.select(imgdb, ['flagali','gogogo','treatme'], ['==1',True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
+images = db.select(imgdb, ['flagali','gogogo','treatme'], ['==1',True, True], ['recno','imgname', 'stddev'], sortFields=['imgname'], returnType='dict')
 
 print "I will treat %i images." % len(images)
 proquest(askquestions)
@@ -24,13 +25,19 @@ for n, image in enumerate(images):
 	
 	(a, h) = cosmics.fromfits(aliimg, verbose=False)
 	
-	zeroa = a == 0
-	cols = zeroa.a(axis = 0)
-	lins = zeroa.a(axis = 1)
-	a[cols,:] = np.random.randn(a.shape[1])*image["stddev"]
-	a[:,lins] = np.random.randn(a.shape[0])*image["stddev"]
+	zeroa = a <= 0.0001 * image["stddev"]
+	cols = zeroa.all(axis = 0)
+	lins = zeroa.all(axis = 1)
 	
-	cosmics.tofits(aliimg, a, h, verbose=False)
+	colsshape = a[:,cols].shape
+	a[:,cols] = (np.random.randn(colsshape[0] * colsshape[1])*image["stddev"]).reshape(colsshape)
+	
+
+	linsshape = a[lins,:].shape
+	a[lins,:] = (np.random.randn(linsshape[0] * linsshape[1])*image["stddev"]).reshape(linsshape)
+	
+	
+	cosmics.tofits(aliimg, a, verbose=False)
 
 	
 notify(computer, withsound, "Done.")
