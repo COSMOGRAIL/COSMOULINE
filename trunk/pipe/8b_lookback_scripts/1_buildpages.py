@@ -215,7 +215,7 @@ for j, image in enumerate(images):
 
 	
 	posplotbydate(images, image, deckey, ptsrc, os.path.join(destdir, "overview.png"), maglims = None)
-	posplotbyimg(images, nightlims, image, deckey, ptsrc, os.path.join(destdir,"zoom.png"), maglims = lookbackzoomgraphmaglims)
+	#posplotbyimg(images, nightlims, image, deckey, ptsrc, os.path.join(destdir,"zoom.png"), maglims = lookbackzoomgraphmaglims)
 	posplotbyimg(images, nightlims, image, deckey, ptsrc, os.path.join(destdir,"zoom_auto.png"), maglims = None)
 	
 	
