@@ -11,7 +11,7 @@ from readandreplace_fct import *
 import shutil
 import os
 
-print "Note that the program set itself the gain and the pixel scale in the default.sex according to the database. Great!"
+print "Note that the program sets itself the gain and the pixel scale in the default.sex according to the database. Great!"
 proquest(askquestions)
 
 	# select images to treat
