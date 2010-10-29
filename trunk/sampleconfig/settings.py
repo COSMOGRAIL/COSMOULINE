@@ -68,7 +68,13 @@ rawdir = "/home/epfl/eulaers/unsaved/prered_Mercator/reduc/J1001+5027_RG_crop"
 #xephemlens = "RXJ1131-123,f|Q,11:31:55.40,-12:31:55.00,19.0,2000"
 #xephemlens = "UM673,f|Q,01:45:16.59,-09:45:17.30,19.0,2000"
 #xephemlens = "J1650+425,f|Q,16:50:43.44,+42:51:45.00,19.0,2000"
-xephemlens = "J1330+1810,f|Q,13:30:18.65,+18:10:32.15,19.0,2000"
+#xephemlens = "J1330+1810,f|Q,13:30:18.65,+18:10:32.15,19.0,2000"
+#xephemlens = "SBS+1520+530,f|Q,15:21:44.83,+52:54:48.6,17.61,2000"
+#xephemlens = "SDSS1004+4112,f|Q,10:04:34.91,+41:12:42.8,17.53,2000"
+#xephemlens = "SDSS1029+2623,f|Q,10:29:13.35,+26:23:31.8,18.8,2000"
+#xephemlens = "SDSS1206+4332,f|Q,12:06:29.64,+43:32:17.59,18.95,2000"
+#xephemlens = "SDSS0819+5356,f|Q,08:19:59.79,+53:56:24.3,19.9,2000"
+#xephemlens = "SDSS1400+3134,f|Q,14:00:12.77,+31:34:54.1,19.4,2000"
 
 # Now you can run all the srcipts until the alignment !
 
