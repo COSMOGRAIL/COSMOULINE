@@ -66,9 +66,9 @@ for imgset in setlist:
 	srcmagdownlist = []
 	srcdatelist = []
 	for src in ptsrc:
-		mymags = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_int')['median'])
-		mymagups = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_int')['up'])
-		mymagdowns = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_int')['down'])
+		mymags = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_flux')['median'])
+		mymagups = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_flux')['up'])
+		mymagdowns = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_flux')['down'])
 		mhjds = asarray(values(groupedimages, 'mhjd')['median'])
 		dates = mhjds - 54000
 		
