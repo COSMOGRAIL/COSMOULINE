@@ -11,6 +11,11 @@ So don't worry and read on. Details and mechanisms are shown along the way, and 
 
 Step number 0 is to get the images ready. Let's assume you have some images somewhere on your disk. All we need is a plain directory containing FITS files. If not, you can use the two Mercator sample images I've put on the web. This directory could also be your image database: cosmouline will not modify anything in there, but it will simply copy them as soon as a first copy is required (more precisely:for the sky subtraction).
 
+\tbrem{Warning : we have now changed the pipeline so that images will be converted into electrons just after the import. This is done using pyfits. The problem : in case your input images are for instance stored as integers but contain these two conversion factors in the header so that ds9 etc convert them on the fly to floats, you should make sure that this is handled well by pyfits ! 
+
+
+In other words, to be safe : use images that are directly written as floats, in ADU. For cosmouline, the gains is to be given in e-/ADU, and the readnoise is in electrons.
+}
 
 Two remarks on these images :
 
