@@ -18,7 +18,9 @@
 
 #tocompare = [('dec_1_a_newac1','a'), ('dec_1_b_newac1','b',+0.5), ('dec_1_c_newac1','c'), ('dec_1_g_newac1','g')]
 
-tocompare = [('dec_full_lens_defg1_fg1','A'), ('dec_full_lens_defg1_defg1','A')]
+tocompare = [('dec_test1_lens_HIJ1_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','A',-4), ('dec_test1_lens_medcoeff_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','A',-2),
+('dec_test1_lens_HI1_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','A'), ('dec_test1_lens_HI1_new_HI2_new_HLKI1','A',2),('dec_test1_lens_HIJ1_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','B',-4), ('dec_test1_lens_medcoeff_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','B',-2),
+('dec_test1_lens_HI1_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','B'), ('dec_test1_lens_HI1_new_HI2_new_HLKI1','B',2)]
 
 # - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -48,8 +50,8 @@ for item in tocompare:
 	mhjds = asarray(map(lambda x: x['mhjd'], images))# - 54000
 	seeing = asarray(map(lambda x: x['seeing'], images))
 
-	intfieldname = "out_" + deckey + "_" + sourcename + "_int"
-	mags = -2.5 * log10(asarray(map(lambda x: x[intfieldname], images)))
+	fluxfieldname = "out_" + deckey + "_" + sourcename + "_flux"
+	mags = -2.5 * log10(asarray(map(lambda x: x[fluxfieldname], images)))
 	
 	label = sourcename + "/" + deckey
 	#label = sourcename
