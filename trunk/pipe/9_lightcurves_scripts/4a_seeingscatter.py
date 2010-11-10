@@ -8,12 +8,12 @@
 # give a list of tuples : [("deckey", "sourcename"), ...]
 # optionally, you can also give ("deckey", "sourcename", magshift)
 
-#toplot = [('dec_3_lens_renorm_abc_abcSharp','A'), ('dec_3_lens_renorm_abc_abcSharp','B')]
-toplot = [('dec_full8_lens_1256_1234','A'),
-('dec_full8_lens_1256_1234','B', -0.2),
-('dec_full8_lens_1256_1234','C', +0.15),
-('dec_full8_lens_1256_1234','D', +0.25)
+toplot = [('dec_test1_lens_BM_new_BM1_new_BMPS1_new_BM2_new_BMPS2','A'), ('dec_test1_lens_BM_new_BM1_new_BMPS1_new_BM2_new_BMPS2','B')]
+"""
+toplot = [('dec_test2_lens_renorm_test2_HGE_new_HG1_new_HGE2_new_EG1_new_HG2_new_HEM1_new_HGE3','A'),
+('dec_test2_lens_renorm_test2_HGE_new_HG1_new_HGE2_new_EG1_new_HG2_new_HEM1_new_HGE3','B', +0.0),
 ]
+"""
 
 # - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -39,7 +39,7 @@ for item in toplot:
 	deckey = item[0]
 	sourcename = item[1]
 	deckeyfilenum = "decfilenum_" + deckey
-	intfieldname = "out_" + deckey + "_" + sourcename + "_int"
+	fluxfieldname = "out_" + deckey + "_" + sourcename + "_flux"
 	
 	#images = [image for image in allimages if image[deckeyfilenum] != None and image["setname"] == setname]
 	images = [image for image in allimages if image[deckeyfilenum] != None]
@@ -51,7 +51,7 @@ for item in toplot:
 	groupedimages = groupbynights(images)
 		
 	
-	groupedmags = asarray(mags(groupedimages, intfieldname)['median'])
+	groupedmags = asarray(mags(groupedimages, fluxfieldname)['median'])
 	
 	groupedmhjds = asarray(values(groupedimages, 'mhjd')['median'])
 	
@@ -65,7 +65,7 @@ for item in toplot:
 	#plt.errorbar(renormgroupedmhjds, renormgroupedmagsarray, [renormgroupedmags["down"],renormgroupedmags["up"]], linestyle="None", marker=".", label = label)
 	#plt.plot(groupedmhjds, groupedmags, linestyle="None", marker=".", label = label)
 	
-	plt.scatter(groupedmhjds, groupedmags, s=12, c=groupedseeings, vmin=0.5,vmax=3.0, edgecolors='none')
+	plt.scatter(groupedmhjds, groupedmags, s=12, c=groupedseeings, vmin=0.5,vmax=2.3, edgecolors='none')
 
 
 
