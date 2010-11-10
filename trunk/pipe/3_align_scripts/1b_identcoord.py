@@ -22,7 +22,7 @@ from star import *
 
 findtolerance = 5.0	# error (in pixels) for star identification when finding the shift and rotation
 			# 5.0 should work (even 2.0 does), put higher values if you have strong distortion (maybe 20.0 ?)
-findminnbrstars = 3	# number of stars that must match for the finding to be sucessfull
+findminnbrstars = 5	# number of stars that must match for the finding to be sucessfull
 			# a default value would be half of the number of alignment stars for instance.
 			# minimum is 3 of course
 			# A small number will give higher probability of wrong alignment, if the field is rich and tolerance high...
