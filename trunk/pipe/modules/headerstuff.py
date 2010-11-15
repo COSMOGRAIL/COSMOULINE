@@ -711,6 +711,77 @@ def holiheader(rawimg): # HoLiCam header
 
 ###############################################################################################
 
+def skysimheader(rawimg):
+
+    """
+    skysim = skymaker simulated images
+    Written 2010 Gianni
+    """
+	
+    print rawimg
+    imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
+	
+    header = pyfits.getheader(rawimg)
+    availablekeywords = header.ascardlist().keys()
+
+
+    pixsize = float(header['PIXSIZE'])
+    gain = float(header['GAIN'])
+    readnoise = float(header['RON'])
+    scalingfactor = 1.0
+	
+    telescopelongitude = "00:00:00.00"
+    telescopelatitude = "00:00:00.00"
+    telescopeelevation = 0.0
+	
+    treatme = True
+    gogogo = True
+    whynot = "na"
+    testlist = False
+    testcomment = "na"
+
+    rotator = 0.0
+
+
+    dateobsstring = "%sT%s" % (header["COMMENT"][36:46], header["DATE-OBS"]) # looks like standart DATE-OBS field
+    pythondt = datetime.datetime.strptime(dateobsstring, "%Y-%m-%dT%H:%M:%S") # beginning of exposure in UTC
+    exptime = float(header['EXPOTIME'])
+    pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
+	
+    if (exptime < 10.0) or (exptime > 1800):
+        raise mterror("Problem with exptime...")
+	
+	
+    # Now we produce the date and datet fields, middle of exposure :
+    date = pythondt.strftime("%Y-%m-%d")
+    datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+
+    myownjdfloat = juliandate(pythondt)
+    myownmjdfloat = myownjdfloat - 2400000.5
+    jd = "%.6f" % myownjdfloat 
+    mjd = myownmjdfloat
+	
+	
+    # The pre-reduction info :
+    preredcomment1 = "None"
+    preredcomment2 = "None"
+    preredfloat1 = 0.0
+    preredfloat2 = 0.0
+	
+    # We return a dictionnary containing all this info, that is ready to be inserted into the database.
+    returndict = {'imgname':imgname, 'treatme':treatme, 'gogogo':gogogo, 'whynot':whynot, 'testlist':testlist,'testcomment':testcomment ,
+    'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
+    'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
+    'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
+    'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator,
+    'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
+    }
+
+    return returndict
+
+##############################################################################################################
+
 def noheader(rawimg):
 	
 	print rawimg
