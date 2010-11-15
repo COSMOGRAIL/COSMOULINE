@@ -89,7 +89,7 @@ for i,image in enumerate(images):
 		if maxpos == 0:
 			print "FWHMs ="
 			print "\n".join(["%.3f" % (fwhm) for fwhm in fwhms])
-			raise mterror("This FWHM distribution is anormal (many cosmics). Something is wrong with sextractor...")
+			raise mterror("This FWHM distribution is anormal (many cosmics). Something is wrong with sextractor... Problematic img: " + image['imgname'])
 		elif maxpos == len(hist) -1:
 			print "This image if funny, it seems to have many high-FWHM objects."
 			print "I can only make a crude guess ..."
