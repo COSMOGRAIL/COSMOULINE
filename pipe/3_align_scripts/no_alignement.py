@@ -41,12 +41,12 @@ starttime = datetime.now()
 
 # Prepare database : add new fields
 if "flagali" not in db.getFieldNames(imgdb) :
-	print "I will add some fields to the database."
+	print "I will add the fields flagali, nbralistars, maxalistars, angle, alicomment to the database."
 	proquest(askquestions)
 	db.addFields(imgdb, ['flagali:int', 'nbralistars:int', 'maxalistars:int', 'angle:float', 'alicomment:str'])
 	
 if "geomapangle" not in db.getFieldNames(imgdb) :
-	print "I will add some fields to the database."
+	print "I will add the fields geomapangle, geomaprms, geomapscale  to the database."
 	proquest(askquestions)
 	db.addFields(imgdb, ['geomapangle:float', 'geomaprms:float', 'geomapscale:float'])
 
