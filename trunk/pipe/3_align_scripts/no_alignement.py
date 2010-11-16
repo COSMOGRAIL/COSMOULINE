@@ -1,5 +1,5 @@
 #
-#	here we do a speudo alignement on the combined images (they are already aligned)
+#	here we do a pseudo alignement on the combined images (or on simulated images) (they are already aligned)
 #	indeed, we simply make renamed copies but we also update the database with the fields expected.
 #	Warning: we have to copy the skysubtracted images (_skysub.fits) otherwise sextractor will crash in the next scripts!!!
 #
@@ -13,7 +13,7 @@ from variousfct import *
 from datetime import datetime, timedelta
 
 
-	# As we will tweak the database, let's do a backup
+# As we will tweak the database, let's do a backup
 backupfile(imgdb, dbbudir, "alignimages")
 
 
@@ -59,7 +59,7 @@ for i,image in enumerate(images):
 	print "+++++++++++++++++++++++++++++++++++++++++++++++"
 	print i+1, "/", nbrofimages, ":", justname
 	
-	# I update the database with speudo value for alignement so that we still have the same structure later.
+	# I update the database with pseudo values for alignement so that we still have the same structure later.
 	db.update(imgdb, ['recno'], [recno], {'flagali': 1, 'nbralistars': 0, 'maxalistars': 0, 'alicomment':'Pseudo alignenement', 'angle': 0.0, 'geomapangle': 0.0, 'geomaprms': 0.0, 'geomapscale': 0.0})
 	
 	# The normal way to go, saving the skysubtracted image :
