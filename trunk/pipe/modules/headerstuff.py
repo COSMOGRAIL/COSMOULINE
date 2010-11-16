@@ -459,7 +459,8 @@ def maidanaksiteheader(rawimg):
 	# Now the date and time stuff :
 	
 	if not (len(header["DATE-OBS"]) == 10 and len(header["DATE"]) == 10):
-		raise mterror("Length error in DATE-OBS and DATE")
+		print "Length error in DATE-OBS and DATE!"
+		#raise mterror("Length error in DATE-OBS and DATE")
 	if header["DATE-OBS"] != header["DATE"]:
 		print "DATE-OBS : %s" % (header["DATE-OBS"])
 		print "DATE : %s" % (header["DATE"])
@@ -470,7 +471,8 @@ def maidanaksiteheader(rawimg):
 	pythondt += datetime.timedelta(seconds = header["TM_START"])
 	exptime = float(header['EXPTIME'])
 	if (exptime < 10.0) or (exptime > 1800):
-		raise mterror("Problem with exptime...")
+		print "Exptime : ", exptime
+		#raise mterror("Problem with exptime...")
 		
 	pythondt += datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
 	
