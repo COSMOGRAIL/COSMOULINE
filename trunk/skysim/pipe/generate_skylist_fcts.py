@@ -19,7 +19,7 @@ def skylist_singlestar(x,y,mag=None):       #if mag is not specified, skymaker w
     starlist.header.append('3 y')
 
 
-    starlist[0][0]=100                  #code for a star
+    starlist[0][0]=100                  #code for a stars is 100, for galaxies it would be 200
     starlist[1][0]=x
     starlist[2][0]=y
     
@@ -49,7 +49,7 @@ def skylist_starnetwork(imgdimx, imgdimy, nstars_x, nstars_y, distance=None, mag
     starlist.header.append('3 y')
 
     for index in range(starlist.nrows):
-        starlist['Code'][index]=100             #code for stars
+        starlist['Code'][index]=100             #code for stars is 100, for galaxies it would be 200
 
     if mag != None:
         starlist.append('mag')
