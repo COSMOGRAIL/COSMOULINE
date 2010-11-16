@@ -46,6 +46,11 @@ for i,image in enumerate(listimages):
 	# I write config.sky
 
 	pythondtnow = datetime.now()
+	delay = i
+	print pythondtnow
+	dt = timedelta(seconds = delay) 
+	pythondtnow = pythondtnow + dt
+	print pythondtnow
 	imgname = simname + "_" + pythondtnow.strftime("%Y-%m-%dT%H%M%S")
 	imgfilename = imgname + ".fits"		#the name of the simulate image
 	imgfilepath = os.path.join(thissimdir, imgfilename)
@@ -71,9 +76,9 @@ for i,image in enumerate(listimages):
 	skymakerout = os.system(sky + " " + command)
 	
 	#saving the output simulated image and the star.list into the correct directory
-	os.system("mv %s %s " %(imgfilename,thissimdir))
+	shutil.move(imgfilename,thissimdir)
 	star_list = imgname + ".list"
-	os.system("mv %s %s " %(star_list,thissimdir))
+	shutil.move(star_list,thissimdir)
 
 
 
