@@ -41,8 +41,11 @@ def readheader(telescopename, rawimg):
 		dbdict = hctheader(rawimg)
 	elif telescopename == "HoLi":
 		dbdict = holiheader(rawimg)
+	elif telescopename == 'skysim':
+		dbdict = skysimheader(rawimg)
 	elif telescopename == "NOHEADER":
 		dbdict = noheader(rawimg)
+
 			
 	"""
 	elif telescopename == "MaidanakSITE":
