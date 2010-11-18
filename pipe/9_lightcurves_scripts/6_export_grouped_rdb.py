@@ -2,6 +2,8 @@
 #	This is to export the light curve from one image.
 #	quick and dirty test for now... not yet the clean way
 #
+#	we export GROUPED images
+#
 
 
 toexport = ('dec_full8_lens_1256_1234','C')
