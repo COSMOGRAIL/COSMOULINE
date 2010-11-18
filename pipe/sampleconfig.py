@@ -11,7 +11,7 @@
 #---------------------------------------------------------------------------
 
 # Choose a computer :
-computer = "obsds"
+computer = "obssr1"
 
 # The pipeline dir that contains all the scripts (and this "config.py" ) :
 pipedir = "/my/absolute/path/to/cosmouline/pipe_svn"
