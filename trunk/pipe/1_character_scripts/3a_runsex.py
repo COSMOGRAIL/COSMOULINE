@@ -32,10 +32,7 @@ starttime = datetime.now()
 scriptdir = os.path.join(pipedir, "1_character_scripts")
 key = "see"	# key is a key word according to what you're doing with sextractor (mesuring seeing: key = see)
 default_template_filename = os.path.join(scriptdir, "default_" +key+ "_template.sex")
-pixesize = 0.0	
-gain = 0.0
-satur_level = 0.0
-satur_levelADU = 65000.0
+
 
 sexin = "default_" +key+ ".sex" 	#name of the sextractor input file
 
@@ -45,18 +42,11 @@ for i,image in enumerate(images):
 	print "- " * 30
 	print i+1, "/", nbrofimages, ":", image['imgname']
 	
-	# I write default_sky.sex
-		
-	pixesize = image["pixsize"]
-	gain = image["gain"]
-		
-	if image[combinumname] < 0.0:		#in this case, we have a combine image and therefore the satur_level must be multiply by the number of combined images
-		satur_level = image["origin_gain"]*satur_levelADU*image["preredfloat1"]
-	else:
-		satur_level = image["origin_gain"]*satur_levelADU
+	# I write default_sky.sex]
+	
 	
 	default_sky_template = justread(default_template_filename)
-	defaultdict = {"$gain$": str(image["gain"]), "$px_size$": str(image["pixsize"]), "$satur_level$": str(satur_level)}
+	defaultdict = {"$gain$": str(image["gain"]), "$px_size$": str(image["pixsize"]), "$satur_level$": str(image["satur_level"])}
 	defaultsex = justreplace(default_sky_template, defaultdict)
 	defaultfile = open(os.path.join(scriptdir, sexin), "w")	 
 	defaultfile.write(defaultsex)
