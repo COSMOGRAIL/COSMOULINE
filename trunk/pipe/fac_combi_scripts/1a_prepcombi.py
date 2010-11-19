@@ -159,7 +159,7 @@ for j, images in enumerate(groupedimages):
 	
 	listcoeff = [image[renormcoeff] for image in images]
 	
-	dbdict = {combinumname:-(j+1) ,'skylevel': values(images, "skylevel")['sum'], 'telslon': images[0]['telescopelongitude'],'telslat': images[0]['telescopelatitude'],'telsele':images[0]['telescopeelevation'], 'gain': values(images, "gain")['median'], 'rdnoise': values(images, "readnoise")['median'], 'jd': jdmin, 'date': datenightobsmin, 'exptime': values(images, "exptime")['sum'], 'pixsize': imgrefdict['pixsize'], 'scfactor': imgrefdict['scalingfactor'], 'imgname': combidirname +'_'+ datenightobsmin, 'ncombine':len(images), 'listcoeff':listcoeff}
+	dbdict = {combinumname:-(j+1) , 'saturlvl': values(images, "satur_level")['sum'], 'skylevel': values(images, "skylevel")['sum'], 'telslon': images[0]['telescopelongitude'],'telslat': images[0]['telescopelatitude'],'telsele':images[0]['telescopeelevation'], 'gain': values(images, "gain")['median'], 'rdnoise': values(images, "readnoise")['median'], 'jd': jdmin, 'date': datenightobsmin, 'exptime': values(images, "exptime")['sum'], 'pixsize': imgrefdict['pixsize'], 'scfactor': imgrefdict['scalingfactor'], 'imgname': combidirname +'_'+ datenightobsmin, 'ncombine':len(images), 'listcoeff':listcoeff}
 	
 	
 	infoofnights.append(dbdict) # In this case we build a big list to create a pickle
