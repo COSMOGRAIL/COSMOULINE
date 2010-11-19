@@ -35,7 +35,7 @@ MASK_TYPE	CORRECT		# type of detection MASKing: can be one of
 PHOT_APERTURES	20		# MAG_APER aperture diameter(s) in pixels
 PHOT_AUTOPARAMS	2.5, 3.5	# MAG_AUTO parameters: <Kron_fact>,<min_radius>
 
-SATUR_LEVEL	50000.0		# level (in ADUs) at which arises saturation
+SATUR_LEVEL	$satur_level$		# level (in ADUs) at which arises saturation
 
 MAG_ZEROPOINT	0.0		# magnitude zero-point
 MAG_GAMMA	4.0		# gamma of emulsion (for photographic scans)
