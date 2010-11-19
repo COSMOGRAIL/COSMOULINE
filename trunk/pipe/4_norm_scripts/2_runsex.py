@@ -11,12 +11,12 @@ from readandreplace_fct import *
 import shutil
 import os
 
-print "Note that the program sets itself the gain and the pixel scale in the default.sex according to the database. Great!"
+print "Note that the program sets itself the gain, the satur level and the pixel scale in the default.sex according to the database. Great!"
 proquest(askquestions)
 
 	# select images to treat
 db = KirbyBase()
-images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], ['recno','imgname','pixsize', 'gain'], returnType='dict')
+images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], ['recno','imgname','pixsize', 'gain', 'origin_gain'], returnType='dict')
 
 nbrofimages = len(images)
 print "I have", nbrofimages, "images to treat."
@@ -32,6 +32,8 @@ key = "norm"	# key is a key word according to what you're doing with sextractor 
 default_template_filename = os.path.join(scriptdir, "default_" +key+ "_template.sex")
 pixesize = 0.0	
 gain = 0.0
+satur_level = 0.0
+satur_levelADU = 65000.0
 
 sexin = "default_" +key+ ".sex" 	#name of the sextractor input file
 
@@ -42,20 +44,25 @@ for i, image in enumerate(images):
 	img = alidir + image['imgname'] + "_ali.fits"
 	sexcat = alidir + image['imgname'] + ".alicat"
 	
-	if pixesize != image["pixsize"] or gain != image["gain"]:
-		# I write default_sky.sex
+	# I write default_sky.sex
 		
-		pixesize = image["pixsize"]
-		gain = image["gain"]
-	
-		default_sky_template = justread(default_template_filename)
-		defaultdict = {"$gain$": str(image["gain"]), "$px_size$": str(image["pixsize"])}
-		defaultsex = justreplace(default_sky_template, defaultdict)
-		defaultfile = open(os.path.join(scriptdir, sexin), "w")	 
-		defaultfile.write(defaultsex)
-		defaultfile.close()
+	pixesize = image["pixsize"]
+	gain = image["gain"]
 		
-		print "Wrote default_sky.sex"
+	if image[combinumname] < 0.0:		#in this case, we have a combine image and therefore the satur_level must be multiply by the number of combined images
+		satur_level = image["origin_gain"]*satur_levelADU*image["preredfloat1"]
+		print "saturation level : ", satur_level
+	else:
+		satur_level = image["origin_gain"]*satur_levelADU
+
+	default_sky_template = justread(default_template_filename)
+	defaultdict = {"$gain$": str(image["gain"]), "$px_size$": str(image["pixsize"]), "$satur_level$": str(satur_level)}
+	defaultsex = justreplace(default_sky_template, defaultdict)
+	defaultfile = open(os.path.join(scriptdir, sexin), "w")	 
+	defaultfile.write(defaultsex)
+	defaultfile.close()
+		
+	print "Wrote default_sky.sex"
 	
 	
 	sexout = os.system(sex +" "+ img + " -c " +sexin)
