@@ -1,0 +1,69 @@
+% Dernière mise à jour 02.04.2007
+% boite simple de remarque : \tbrem{}
+% remarque : \rem{}
+% boite de nouveau texte : \newtxt{}
+% grandes boites grisées pour abstracts : \tbabstrtwocol{} et \tbabstronecol{}
+% entourer du texte par boite arrondie : \ovalbox{}
+
+\ProvidesPackage{MalteBox}
+
+\usepackage{color}
+\usepackage{soul} % pour le "markeur"
+
+% textbox pour les remarques :
+%\definecolor{boiteremarque}{rgb}{1.0,0.9,0.6}
+\definecolor{boiteremarque}{rgb}{0.6,1.0,0.6}
+\newcommand{\tbrem}[1]{
+\noindent
+\begin{center}
+\colorbox{boiteremarque}{
+	\begin{minipage}{0.97\textwidth}
+	\vspace{6pt}
+	#1
+	\vspace{6pt}
+	\end{minipage}
+}
+\end{center}
+}
+
+% et la couleur pour les petites annotations
+\definecolor{remarque}{rgb}{0.6,1.0,0.6}
+\sethlcolor{remarque}
+\newcommand{\rem}[1]{
+\hl{ #1 }
+}
+
+
+% textbox pour des abstracts :
+\usepackage{color}
+\usepackage{multicol}
+\definecolor{grisabstr}{rgb}{0.9,0.9,0.9}
+\newcommand{\tbabstrtwocol}[1]{
+\noindent
+\begin{center}
+\colorbox{grisabstr}{
+	\parbox{0.1\columnwidth}{
+		\vspace{-10pt}
+		\begin{multicols}{2}
+		#1
+		\end{multicols}
+		\vspace{-6pt}
+	}
+}
+\end{center}
+}
+\newcommand{\tbabstronecol}[1]{
+\noindent
+\begin{center}
+\colorbox{grisabstr}{
+	\begin{minipage}{0.97\textwidth}
+	\vspace{6pt}
+	#1
+	\vspace{6pt}
+	\end{minipage}
+}
+\end{center}
+}
+
+% boite arrondie
+%\usepackage{fancybox}

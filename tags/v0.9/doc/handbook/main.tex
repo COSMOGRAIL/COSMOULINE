@@ -1,0 +1,106 @@
+%\documentclass[11pt, onecolumn, notitlepage, oneside, fleqn]{scrartcl}
+\documentclass[12pt, onecolumn, notitlepage, oneside, fleqn, abstracton]{scrartcl} % scrbook scrartcl
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage[pdftex]{graphicx}
+
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+%\usepackage{verbatim}
+
+\usepackage{pifont}
+\usepackage{textcomp}
+
+\usepackage{MalteMaths}
+\usepackage{MalteAstro}
+\usepackage{MalteBox}
+\usepackage{MalteCode}
+\usepackage{MalteDivers}
+
+%\usepackage{longtable} % large multipage tables
+%\usepackage{rotating} % to rotate figures
+
+\usepackage{amssymb, bm}
+%\usepackage{rotating}
+%\usepackage{amsthm}
+%\usepackage{amsmath}
+%\usepackage{amsfonts}
+%\usepackage{latexsym}
+%\usepackage{verbatim}
+%\usepackage{makeidx}
+%\usepackage{textcomp}
+%\usepackage{syntonly} 
+%\usepackage{paralist} 
+%\usepackage{pifont}
+%\usepackage{epsfig}
+
+%\usepackage[firstpage]{draftwatermark}
+%\usepackage{draftwatermark}
+%\SetWatermarkText{DRAFT}
+%\SetWatermarkScale{5}
+%\SetWatermarkAngle{55}
+%\SetWatermarkLightness{0.8}
+
+
+
+% links
+\usepackage[pdftex, bookmarks]{hyperref}
+%\usepackage[colorlinks=false, pdfstartview=FitV, linkcolor=red, citecolor=red, urlcolor=red]{hyperref}
+\hypersetup{colorlinks,% 
+citecolor=black,
+filecolor=black, 
+linkcolor=black, 
+urlcolor=blue,
+pdftitle={python COSMOGRAIL reduction pipeline manual},
+pdfauthor={Malte Tewes},
+pdfsubject={python COSMOGRAIL reduction pipeline manual},
+pdfcreator={pdfeTeXk},
+pdfproducer={},
+pdfkeywords={}
+} 
+
+% further link stuff (correct line breaks) : (USE LIKE THIS : \url{http:// ...}
+\usepackage{url}
+\makeatletter
+\def\url@leostyle{
+\@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\small\ttfamily}}}
+\makeatother
+\urlstyle{leo}
+
+
+% Margins :
+%\addtolength{\hoffset}{-0.5cm}
+\addtolength{\voffset}{0.2cm}
+%\addtolength{\textwidth}{1.0cm} 
+\addtolength{\textheight}{1.0cm}
+
+% Figure captions :
+\setlength\abovecaptionskip{0.1cm}
+\usepackage[small,hang]{caption2}
+\renewcommand{\captionfont}{\small}
+%\renewcommand{\captionfont}{\it \small}
+\renewcommand{\captionlabelfont}{\bf \small}
+\renewcommand{\captionlabeldelim}{ :}
+
+\newcommand\HRule{\noindent\rule{\linewidth}{1.0pt}}
+
+\begin{document}
+
+
+% ============================================================
+
+\input{sections/front.tex}
+\input{sections/intro.tex}
+\input{sections/install.tex}
+\input{sections/tutorial.tex}
+%\input{sections/deconv.tex}
+\input{sections/code.tex}
+\input{sections/future.tex}
+
+% ============================================================
+
+
+\end{document}

@@ -1,0 +1,101 @@
+
+\section{Installation, requirements and dependencies}
+
+
+Cosmouline is focused on the ESO scisoft distribution : \\
+\url{http://www.eso.org/sci/data-processing/software/scisoft/}\\
+Installing this is the easiest solution to meet nearly all of the requirements (all but pyephem, see below). Once scisoft is installed, you just have to check if you have not-too-old versions of everything (especially Python Imaging Library -- they tend to include older versions, but this is very easy to update, see below).
+
+\subsection{Python and some modules}
+
+First of all, we need python 2 (not 3)\footnote{Sooner or later we will adapt cosmouline for python 3k. This will not be a major issue, and anyway let's wait until python 3k got popular.}, version 2.5 or newer (as comes with a recent scisoft).
+
+\subsubsection{Scipy, numpy \& matplotlib}
+
+Then we need numpy, scipy and matplotlib (all this is quite common, also standard with scisoft as well as with other python disctibutions). If you do not want scisoft, you can also have a look at other scientific-ready-to-use distributions like \url{http://www.enthought.com/products/epd.php}.
+
+\subsubsection{Pyraf}
+This is the main reason to use scisoft, as pyraf is hard to install otherwise. It is used for the image registration, I haven't found a better alternative until now.
+\url{http://www.stsci.edu/resources/software_hardware/pyraf}
+
+\subsubsection{Pyfits}
+Again, included with scisoft.\\
+\url{http://www.stsci.edu/resources/software_hardware/pyfits}
+
+\subsubsection{Python Imaging Library (PIL)}
+Is part of scisoft, but perhaps you need to update to the latest version (we need 1.1.6) for f2n.py.
+\url{http://www.pythonware.com/products/pil/}. Very easy to install, will be something like \verb+python setup.py install+ (follow the instructions).
+To find out your current version :
+\begin{lstlisting}
+import Image
+print Image.VERSION
+\end{lstlisting}
+
+
+\subsubsection{Pyephem}
+This is not part of scisoft, but really straightforward to install upon scisoft. \\
+(à la \verb+python setup.py install+)\\
+\url{http://rhodesmill.org/pyephem/}
+
+
+\subsection{Python modules that ship with cosmouline}
+Cosmouline includes some rather specific modules that you don't have to install separately. This is done to avoid further dependencies, plus it allows us to tweak a bit these modules. Just for your information, here they are :
+
+\subsubsection{KirbyBase}
+\label{kirby}
+We use a text-file based database named KirbyBase (\url{http://www.netpromi.com/kirbybase_python.html}), which is itself written in Python. The advantages are that there are no dependencies on special packages, and you don't have to install anything else; it holds in one file, and as mentionned it's directly included in the pipeline, as a class among others.
+
+The bad news is that this database is not kept up to date anymore. But on the other hand it's so simple that we can take care of this. For now I've tweaked it a little bit to avoid raising deprecated string exceptions. These versions and the manual can be found in the \verb+docs/kirbybase/+ directory (and of course the tweaked version is also in \verb+modules/+ as it is the one used by the scripts) -- we are thus completely independent of the official version.
+
+\subsubsection{AstroAsciiData from AstroLib}
+
+In fact this is now also part of scisoft.\\
+AstroAsciiData (\url{http://www.stecf.org/software/PYTHONtools/astroasciidata/}) is a module from STECF. This one is useful to read SExtractor catalogs the way God wants us to read them. You could also write or modify such catalogs, but for now we do not use it for anything else than reading SExtractor ouput.
+
+\subsubsection{f2n.py}
+
+f2n.py transforms FITS images into png files, and has lots of further options.\\
+\url{http://obswww.unige.ch/~tewes/f2n_dot_py/}
+
+
+\subsection{Non-python}
+
+The pipeline uses the following ``external'' non-python software. You can install it wherever you want on your system. Once installed, the path to these binaries has to be specified in \verb+pipedir/config.py+
+
+\subsubsection{SExtractor}
+Source Extrator, \url{http://terapix.iap.fr/rubrique.php?id_rubrique=91}. I'm using version 2.5.4 (the latest, bloody edge), but ``any'' version will work. It's a good idea to make sure that the \verb+-BACKGROUND+ check image output works fine. SExtractor is, of course, also part of scisoft.
+
+\subsubsection{Fortran compiler + cfitsio}
+We need a fortran compiler for the f77 MCS programs. A more recent fortran compiler (than f77) will usually also work, try for instance to get \verb+gfortran+ running on your machine. The fortan MCS source code is included with cosmouline, but you will have to compile it. This requires the cfitsio library :
+\url{http://heasarc.gsfc.nasa.gov/fitsio/}
+
+\subsubsection{ImageMagick + tar}
+Cosmouline can optionally convert png files into jpg and archive them using \verb+tar+. For this \verb+tar+ and \emph{ImageMagick} are required, both are very common and probably already installed on your system. Try \verb+which tar+ and \verb+which convert+. ImageMagick ( = \verb+convert+) could be installed from here :
+\url{http://www.imagemagick.org}.
+Note that you do not need these if you turn off the jpg conversion, by setting \verb+makejpgarchives = False+ in \verb+settings.py+.
+
+
+
+
+\subsection{Compiling MCS}
+After checking out cosmouline from svn, you will have to compile the fortran MCS programs. They are located in the \verb+pipedir+, under \verb+progs/MCSf77+ (go there now). Several csh scripts for different machines are already there, telling you what you will have to do on your machine. For instance, on \verb+obssr1+ at LASTRO, just run \verb+csh compile-obssr1.csh+. This creates the exectuables in the current directory, no further actions are required if the compilation works fine. Please commit your own compilation file to SVN !
+
+
+%\subsection{Non-mandatory}
+
+%The following softs are used to inspect the reduction and deconvolution steps. You don't \emph{need} them if you don't lauch the scripts like ``\verb+pngcheck.py+'', but then you would miss something. So nothing essential, but very useful.
+
+%\subsubsection{f2n}
+%f2n is not used anymore by this version of cosmouline !
+%f2n (\url{http://obswww.unige.ch/~tewes/f2n/}) is currently used to transform various FITS images into quicklook pngs. This should be done directly in python in future... As i like to say, f2n in C is a product of ignorance.
+
+%
+%\subsubsection{ImageMagick}
+%ImageMagick is still used to combine pngs.
+%After f2n has run, ImageMagick (\verb+convert+ and \verb+mogrify+) is used to rescale, combine, and annotage the pngs.
+
+%ImageMagick (\url{http://www.imagemagick.org/script/index.php}) is probably already installed on your computer\ldots
+
+
+
+

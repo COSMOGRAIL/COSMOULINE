@@ -1,0 +1,37 @@
+
+
+\ProvidesPackage{MalteCode}
+
+
+
+% for python :
+\usepackage{listings}
+
+\usepackage{color}
+\definecolor{orange}{cmyk}{0,0.4,0.8,0.2}
+\definecolor{grey}{rgb}{0.5, 0.5, 0.5}
+\definecolor{darkgreen}{rgb}{0.2, 0.6, 0.2}
+
+\lstset{
+   language=Python,
+   numbers=left,
+   numberstyle=\tiny,
+   numbersep=10pt,
+%   basicstyle=\footnotesize\ttfamily,
+   basicstyle=\scriptsize\ttfamily,
+   commentstyle=\color{darkgreen},
+   stringstyle=\color{orange},
+   keywordstyle=\color{blue},
+   showstringspaces=false,
+   breaklines=true,
+   postbreak = \space\dots
+}
+
+
+% for the rest :
+\usepackage{fancyvrb, relsize}
+
+% sample usage :
+% \begin{Verbatim}[fontsize=\relsize{-2}, numbers=left]
+%      foobar
+% \end{Verbatim}

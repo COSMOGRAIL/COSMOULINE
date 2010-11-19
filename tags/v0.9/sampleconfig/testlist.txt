@@ -1,0 +1,8 @@
+
+
+Mer1_093307_RG_J1001+5027	best seeing reference image
+
+Mer1_090961_RG_J1001+5027	good seeing
+Mer1_037321_RG_J1001+5027	medium seeing
+Mer1_047880_RG_J1001+5027	bad seeing
+Mer1_020044_RG_J1001+5027	ellongated 0.23

@@ -1,0 +1,85 @@
+
+
+\section{Code your own scripts !}
+
+Tab width is 8 spaces. Most scripts have a common or very similar structure.
+
+The usual script begins with :
+
+\begin{lstlisting}
+execfile("../config.py")	# global variables, imports sys and os
+from pyraf import iraf		# if needed
+from kirbybase import KirbyBase, KBError
+from variousfct import *	# reading, backups, raising errors, etc...
+\end{lstlisting}
+
+To ask the standard question :
+
+\begin{lstlisting}
+print "I might do something unexpected."
+proquest(askquestions)	# askquestions is a boolean flag set in config.py :
+			# if False, we just go on
+\end{lstlisting}
+
+
+To select some images :
+
+\begin{lstlisting}
+db = KirbyBase()
+images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], sortFields=['mjd'], returnType='dict')
+# imgdb : the path to database.dat
+# ['gogogo', 'treatme'] : the fields on which you want to select
+# [True, True] : the corresponding values (logical and)
+# sortFields=['mjd'] is obvious...
+# returnType='dict' : "images" is now a list of dictionaries of the selected entries.
+\end{lstlisting}
+
+You can now access any value from these dictionaries :
+
+\begin{lstlisting}
+for image in images:
+	print image['seeing']
+\end{lstlisting}
+
+Or transform them to lists, if for instance you want to plot something :
+
+\begin{lstlisting}
+from pylab import *	# imports matplotlib and co
+seeinglist = [image['seeing'] for image in images]
+hist(seeinglist, 100)
+show()
+# you can replace show() by : savefig("seeing_histo.eps")
+\end{lstlisting}
+
+Adding a field to the database is easy :
+
+\begin{lstlisting}
+if "observername" not in db.getFieldNames(imgdb) :
+	db.addFields(imgdb, ['observername:str'])
+\end{lstlisting}
+
+The typical main loop of the scripts looks like :
+
+\begin{lstlisting}
+for i, image in enumerate(images):
+	print i+1, "/", len(images), ":", image['imgname']
+	# this is useful to see the progress of slow scripts...
+	[...]
+
+\end{lstlisting}
+
+If you want to update the database, do it from within the mainloop :
+
+\begin{lstlisting}
+	db.update(imgdb, ['recno'], [image['recno']], {'observername': "Hubble"})
+	# directly writes to the database file
+	# ['recno'] is name of the field (record number) that ...
+	# [image['recno']] should match (i.e. record number of the current image).
+	# {'observername': "Hubble"} : field and value to update
+
+# (end of main loop)
+db.pack(imgdb) # database maintenance...
+
+\end{lstlisting}
+
+And of course : send me any reusable scripts and let me know about suggestions.
