@@ -36,11 +36,11 @@ def skylist_singlestar(x,y,mag=None):       #if mag is not specified, skymaker w
 
 
 
-#a fct that creates a matrix of stars; you have to specifie the nb of stars in x and y direction; you may define the distance between neighbouring stars
-def skylist_starnetwork(imgdimx, imgdimy, nstars_x, nstars_y, distance=None, mag=None):
+#a fct that creates a matrix of stars; you have to specifie the dimensions of the matrix which; you may define the distance between neighbouring stars
+def skylist_starnetwork(imgdimx, imgdimy, matrix_x, matrix_y, distance=None, mag=None):
 
     #we create the list
-    starlist=asciidata.create(3, nstars_x*nstars_y)
+    starlist=asciidata.create(3, matrix_x*matrix_y)
     starlist[0].rename('Code')
     starlist.header.append('1 Code')
     starlist[1].rename('x')
@@ -73,8 +73,8 @@ def skylist_starnetwork(imgdimx, imgdimy, nstars_x, nstars_y, distance=None, mag
     ################ case with unspecified distance   ###############
     if distance==None:
 
-        dist_x=effective_x / float(nstars_x + 1)
-        dist_y=effective_y / float(nstars_y + 1)
+        dist_x=effective_x / float(matrix_x + 1)
+        dist_y=effective_y / float(matrix_y + 1)
 
 
         #fill in the list
@@ -85,29 +85,29 @@ def skylist_starnetwork(imgdimx, imgdimy, nstars_x, nstars_y, distance=None, mag
         #1 3 5
         #0 2 4
 
-        for i in range(nstars_x):
-            for j in range(nstars_y):
-                starlist['x'][j+i*nstars_y] = xborder + (i+1)*dist_x
-                starlist['y'][j+i*nstars_y] = yborder + (j+1)*dist_y
+        for i in range(matrix_x):
+            for j in range(matrix_y):
+                starlist['x'][j+i*matrix_y] = xborder + (i+1)*dist_x
+                starlist['y'][j+i*matrix_y] = yborder + (j+1)*dist_y
 
 
 
 
     ############### case with specified distance   #################
     else:
-        if (nstars_x-1)*distance > effective_x or (nstars_y-1)*distance > effective_y:
+        if (matrix_x-1)*distance > effective_x or (matrix_y-1)*distance > effective_y:
             print 'Problem while creating starnetwork list:'
             print 'distance between stars to big to put specified nb of stars into the image'
             sys.exit()
 
         
-        start_x = xborder + (effective_x - (nstars_x-1)*distance)/2.0       #where to put the first star in x direction
-        start_y = yborder + (effective_y - (nstars_y-1)*distance)/2.0       #where to put the first star in y direction
+        start_x = xborder + (effective_x - (matrix_x-1)*distance)/2.0       #where to put the first star in x direction
+        start_y = yborder + (effective_y - (matrix_y-1)*distance)/2.0       #where to put the first star in y direction
 
-        for i in range(nstars_x):
-            for j in range(nstars_y):
-                starlist['x'][j+i*nstars_y] = start_x + i*distance
-                starlist['y'][j+i*nstars_y] = start_y + j*distance
+        for i in range(matrix_x):
+            for j in range(matrix_y):
+                starlist['x'][j+i*matrix_y] = start_x + i*distance
+                starlist['y'][j+i*matrix_y] = start_y + j*distance
 
 
 
