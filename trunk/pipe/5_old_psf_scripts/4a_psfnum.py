@@ -35,29 +35,29 @@ for i, image in enumerate(images):
 	print i+1, image['imgname']
 	#notify(computer, withsound, "Number %i, out of %i." %(i+1, len(images)))
 	
-	imgpsfdir = psfdir + image['imgname'] + "/"
+	imgpsfdir = os.path.join(psfdir, image['imgname'])
 	
-	if not os.path.isfile(imgpsfdir + "mofc.fits"):
+	if not os.path.isfile(os.path.join(imgpsfdir, "mofc.fits")):
 		print "no mofc.fits"
 		incompletedirs.append(image['imgname'])
 		continue # psfm.exe has not worked here so we skip it
 		
 	# lambda.txt : first line = inner, second line = outer, third = radius
-	if os.path.isfile(imgpsfdir + "lambda.txt"):
-		os.remove(imgpsfdir + "lambda.txt")
+	if os.path.isfile(os.path.join(imgpsfdir, "lambda.txt")):
+		os.remove(os.path.join(imgpsfdir, "lambda.txt"))
 	
 	if uselinks :
-		os.symlink(old_lambda_template_filename , imgpsfdir + "lambda.txt")
+		os.symlink(old_lambda_template_filename , os.path.join(imgpsfdir, "lambda.txt"))
 	else: # copy the file
-		shutil.copyfile(old_lambda_template_filename , imgpsfdir + "lambda.txt")
+		shutil.copyfile(old_lambda_template_filename , os.path.join(imgpsfdir, "lambda.txt"))
 	
 		
 	
 	
 		# LET'S GO !!!
 		
-	if os.path.isfile(imgpsfdir + "s001.fits"):
-		os.remove(imgpsfdir + "s001.fits")
+	if os.path.isfile(os.path.join(imgpsfdir, "s001.fits")):
+		os.remove(os.path.join(imgpsfdir, "s001.fits"))
 	os.chdir(imgpsfdir)
 	os.system(oldpsfexe)
 	os.rename("s.fits", "s001.fits")
