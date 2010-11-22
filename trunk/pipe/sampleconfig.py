@@ -74,10 +74,16 @@ if silencemcs == True:
 	deconvexe = "nice -n 19 " + os.path.join(mcsf77dir, "deconv_silence.exe") 
 
 
+oldpsfmcsf77dir = os.path.join(pipedir, "progs", "oldpsfMCSf77")
+oldextractexe = "nice -n 19 " + os.path.join(oldpsfmcsf77dir, "extract.exe") 
+oldpsfmexe = "nice -n 19 " + os.path.join(oldpsfmcsf77dir, "psfm.exe") 
+oldpsfexe = "nice -n 19 " + os.path.join(oldpsfmcsf77dir, "psf-auto.exe") 
+
+
 
 # Path to pyMCS :
 # (not yet needed ...)
-pymcsdir = "/Users/mtewes/Documents/Prog/Python/pyMCS/pyMCS_jan2010/"
+#pymcsdir = "/Users/mtewes/Documents/Prog/Python/pyMCS/pyMCS_jan2010/"
 
 #---------------------------------------------------------------------------
 
@@ -87,7 +93,7 @@ pymcsdir = "/Users/mtewes/Documents/Prog/Python/pyMCS/pyMCS_jan2010/"
 
 # The database of the images, fundamental for all scripts :
 imgdb = os.path.join(workdir, "database.dat")	# This will be a nice KirbyBase.
-dbbudir = os.path.join(workdir, "backups")		# The database is automatically backuped here.
+dbbudir = os.path.join(workdir, "backups")	# The database is automatically backuped here.
 
 
 alidir = os.path.join(workdir, "ali/")		# Alignment etc is done here
@@ -95,7 +101,7 @@ plotdir = os.path.join(workdir, "plots/")	# Some plots will go here
 
 # Image lists (line format : imgname comment (you can leave blank lines and use "#" to comment a line !)) :
 
-imgkicklist = os.path.join(configdir, "kicklist.txt")# Images that get "gogogo" set to False by the extrascript "kickimg.py",
+imgkicklist = os.path.join(configdir, "kicklist.txt")	# Images that get "gogogo" set to False by the extrascript "kickimg.py",
 							# as they simply cannot be used (too faint, cosmic on lens, etc)
 							# No other script uses that list.
 
@@ -170,9 +176,9 @@ renormcommentfieldname = renormname + "_comment"
 extract_template_filename = os.path.join(configdir, "template_extract.txt")
 psf_template_filename = os.path.join(configdir, "template_psfmofsour8.txt")
 
-#old_extract_template_filename = os.path.join(configdir, "old_extract_template.txt")
-#old_psfm_template_filename = os.path.join(configdir, "old_psfmof_template.txt")
-#old_lambda_template_filename = os.path.join(configdir, "old_lambda_template.txt")
+old_extract_template_filename = os.path.join(configdir, "template_old_extract.txt")
+old_psfm_template_filename = os.path.join(configdir, "template_old_psfmof.txt")
+old_lambda_template_filename = os.path.join(configdir, "template_old_lambda.txt")
 
 in_template_filename = os.path.join(configdir, "template_in.txt")
 deconv_template_filename = os.path.join(configdir, "template_deconv.txt")
