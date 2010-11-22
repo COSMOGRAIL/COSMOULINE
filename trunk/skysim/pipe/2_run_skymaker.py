@@ -89,7 +89,7 @@ os.remove(sky_list_filepath)
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
 
-print "I'me done with the simulation. It took me %s" % timetaken
+print "I'm done with the simulation. It took me %s" % timetaken
 
 
 
