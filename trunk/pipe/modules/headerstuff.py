@@ -784,7 +784,7 @@ def skysimheader(rawimg):
     'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
     'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
     'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
-    'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'satur_level':satur_level
+    'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'satur_level':satur_level,
     'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
     }
 
