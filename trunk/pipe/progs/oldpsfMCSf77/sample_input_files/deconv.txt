@@ -1,0 +1,36 @@
+-------------------------------------------------------
+|Number of images                        |1
+|----------------------------------------|-------------
+|Number of point sources                 |1
+|----------------------------------------|-------------
+|Value of FWHM  (final en petit pixels)  |2.
+|----------------------------------------|-------------
+|Value of FWHM  (g en gros pixels)       |10.
+|----------------------------------------|-------------
+|Name of input file                      |in.txt
+|----------------------------------------|-------------
+|Name of output file n°1                 |out.txt
+|----------------------------------------|-------------
+|Name of output file n°2                 |in2.txt
+|----------------------------------------|-------------
+|Number of iterations for minimi         |10000
+|----------------------------------------|-------------
+|Variation minimal entre 10 khi carré    |1.
+|----------------------------------------|-------------
+|Number of iterations for gradient       |0
+|----------------------------------------|-------------
+|Number if iterations between backups    |5000
+|----------------------------------------|-------------
+|do you want the positivity constraint   |n
+|----------------------------------------|-------------
+|do you want a image for lambda (y/n)    |n
+|if "y" --> name  if "n" --> constant    |10.
+|----------------------------------------|-------------
+|do you want a image for background (y/n)|n
+|if 'y' --> name  if "n" --> constant    |0.
+|----------------------------------------|-------------
+|do you want the table H (variable psf)  |n
+-------------------------------------------------------
+IMAGES OR CONSTANT for MU:
+n
+0.
