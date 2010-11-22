@@ -16,7 +16,7 @@ proquest(askquestions)
 
 	# select images to treat
 db = KirbyBase()
-images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], ['recno','imgname','pixsize', 'gain', 'origin_gain'], returnType='dict')
+images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 
 nbrofimages = len(images)
 print "I have", nbrofimages, "images to treat."
