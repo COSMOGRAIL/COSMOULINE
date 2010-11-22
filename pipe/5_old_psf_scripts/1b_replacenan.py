@@ -49,7 +49,7 @@ def replacezeroes(filename, value):
 for i, image in enumerate(images):
 	
 	print i+1, image['imgname']
-	imgpsfdir = psfdir + image['imgname'] + "/"
+	imgpsfdir = os.path.join(psfdir, image['imgname'])
 	
 	os.chdir(imgpsfdir)
 	

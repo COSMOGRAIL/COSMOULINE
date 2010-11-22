@@ -103,7 +103,7 @@ for image in images:
 	print "- " * 40
 	print n+1, "/", len(images), ":", image['imgname']
 	n+=1
-	imgpsfdir = psfdir + image['imgname'] + "/"
+	imgpsfdir = os.path.join(psfdir, image['imgname'])
 	
 	if os.path.isdir(imgpsfdir):
 		print "Deleting existing stuff."
@@ -111,9 +111,9 @@ for image in images:
 	os.mkdir(imgpsfdir)
 	
 	if uselinks :
-		os.symlink(alidir + image['imgname'] + "_ali.fits" , imgpsfdir + "in.fits")
+		os.symlink(os.path.join(alidir, image['imgname'] + "_ali.fits"), os.path.join(imgpsfdir, "in.fits"))
 	else: # copy the image
-		shutil.copyfile(alidir + image['imgname'] + "_ali.fits" , imgpsfdir + "in.fits")
+		shutil.copyfile(os.path.join(alidir, image['imgname'] + "_ali.fits"), os.path.join(imgpsfdir, "in.fits"))
 	
 	
 	# we fill out our extract.txt
@@ -129,7 +129,7 @@ for image in images:
 	extracttxt = justreplace(extract_template, extrdict)
 	
 	# and we write this into the file.
-	extractfile = open(imgpsfdir + "extract.txt", "w")
+	extractfile = open(os.path.join(imgpsfdir, "extract.txt"), "w")
 	extractfile.write(extracttxt)
 	extractfile.close()
 	
@@ -138,10 +138,8 @@ for image in images:
 	os.system(oldextractexe)
 	os.chdir(origdir)
 	
-	#os.remove(imgpsfdir + "g.fits")	# not needed anymore, as I said no in input for extract.exe
-	#os.remove(imgpsfdir + "sig.fits")
-	os.remove(imgpsfdir + "psfmof.txt") 	# incredibly useful file created by extract.exe ...
-	os.remove(imgpsfdir + "param_psf.f") 	# even worse ...
+	os.remove(os.path.join(imgpsfdir, "psfmof.txt")) 	# incredibly useful file created by extract.exe ...
+	os.remove(os.path.join(imgpsfdir, "param_psf.f")) 	# even worse ...
 
 	# and we update the database with a "True" for field psfkeyflag :
 	db.update(imgdb, ['recno'], [image['recno']], [True], [psfkeyflag])

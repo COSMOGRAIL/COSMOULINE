@@ -16,11 +16,13 @@ origdir = os.getcwd()
 db = KirbyBase()
 images = db.select(imgdb, ['gogogo', 'treatme', psfkeyflag], [True, True, True], returnType='dict')
 
+
+print "Images for which the psf construction has failed :"
 	
 for image in images:
-	imgpsfdir = psfdir + image['imgname'] + "/"
+	imgpsfdir = os.path.join(psfdir, image['imgname'])
 	
-	if not os.path.isfile(imgpsfdir + "mofc.fits"):
+	if not os.path.isfile(os.path.join(imgpsfdir, "mofc.fits")):
 		print image['imgname']
 	
 print "Done."

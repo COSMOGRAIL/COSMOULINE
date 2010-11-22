@@ -44,7 +44,7 @@ for i, image in enumerate(images):
 	notify(computer, withsound, "Number %i, out of %i." %(i+1, len(images)))
 	
 	
-	imgpsfdir = psfdir + image['imgname'] + "/"
+	imgpsfdir = os.path.join(psfdir, image['imgname'])
 	
 	# psfmof.txt
 	
@@ -65,7 +65,7 @@ for i, image in enumerate(images):
 	psfdict = {"$nbrpsf$": str(nbrpsf), "$resolpix$": str(resolpix), "$parampsf$": parampsf}
 	
 	psfmoftxt = justreplace(psf_template, psfdict)
-	psfmoffile = open(imgpsfdir + "psfmof.txt", "w")
+	psfmoffile = open(os.path.join(imgpsfdir, "psfmof.txt"), "w")
 	psfmoffile.write(psfmoftxt)
 	psfmoffile.close()
 	
