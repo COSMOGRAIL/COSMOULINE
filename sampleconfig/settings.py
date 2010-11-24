@@ -41,8 +41,9 @@ silencemcs = False
 
 setname = "Mer1"
 telescopename = "Mercator"
-# names : Mercator, Euler, HCT, MaidanakSITE, MaidanakSI, MaidanakPeltier, HoLi, NOTalfosc, NOHEADER
-# where NOHEADER is a special name to not read any header information from the FITS files.
+# names : Mercator, Euler, HCT, MaidanakSITE, MaidanakSI, MaidanakPeltier, HoLi, NOTalfosc, skysim, NOHEADER
+# where skysim if for skymaker simulated images and
+# NOHEADER is a special name to not read any header information from the FITS files.
 
 # Where are these images ?
 rawdir = "/home/epfl/eulaers/unsaved/prered_Mercator/reduc/J1001+5027_RG_crop"
