@@ -1,6 +1,8 @@
 #Configuration file for the generation of simulated images
 import sys
 import os
+import numpy as np
+
 
 #default parameters
 
