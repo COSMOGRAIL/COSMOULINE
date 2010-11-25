@@ -121,6 +121,14 @@ normstarscat = os.path.join(configdir, "normstars.cat")
 
 combibestkey = "combi_" + combibestname
 
+
+#------------------------ COMBINATION BY NIGHT ------------------------------
+
+combidirname = 'combibynight_' +combiname
+
+combidir = os.path.join(workdir, combidirname)
+
+
 #------------------------ PSF CONSTRUCTION ---------------------------------
 
 psfkey = "psf_" + psfname		# Don't touch (all this is hard-coded in the first dec prepfiles script !)
