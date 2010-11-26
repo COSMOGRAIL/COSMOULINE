@@ -33,7 +33,7 @@ def skylist_singlestar(x,y,mag=None):       #if mag is not specified, skymaker w
 
 
 
-#a simple fct that creates a list containing the position of 2 stars; this list has to be given to skymaker that simulates 2 stars at the given position
+#a simple fct that creates a list containing the position of 2 stars; this list has to be given to skymaker that simulates 2 stars at the given positions
 def skylist_twostars(x1,y1,x2,y2,mag1=None,mag2=None):       #if mag is not specified, skymaker will give a random value that depends on certain parameters in the configfile of skymaker
     
     starlist=asciidata.create(3,2)
@@ -68,7 +68,7 @@ def skylist_twostars(x1,y1,x2,y2,mag1=None,mag2=None):       #if mag is not spec
 
 
 
-#a fct that creates a matrix of stars; you have to specifie the dimensions of the matrix which; you may define the distance between neighbouring stars
+#a fct that creates a matrix of stars; you have to specifie the dimensions of the matrix; you may define the distance between neighbouring stars
 def skylist_starnetwork(imgdimx, imgdimy, matrix_x, matrix_y, distance=None, mag=None):
 
     #we create the list
@@ -113,7 +113,7 @@ def skylist_starnetwork(imgdimx, imgdimy, matrix_x, matrix_y, distance=None, mag
 
 
 
-        # we iterate in the following way over the matrix (example with nstars_x=3, nstars_y=2):
+        # we iterate in the following way over the matrix (example with matrix_x=3, matrix_y=2):
         #1 3 5
         #0 2 4
 
