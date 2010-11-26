@@ -58,7 +58,7 @@ for i,image in enumerate(images):
 	sexout = os.system(sex +" "+ image['rawimg'] + " -c " +sexin)
 	#print sex +" "+ filename + " -c default_see.sex"
 	catfilename = alidir+image['imgname']+".cat"
-	os.system("mv sex.cat "+catfilename)
+	shutil.move("sex.cat", catfilename)
 	
 	
 	
