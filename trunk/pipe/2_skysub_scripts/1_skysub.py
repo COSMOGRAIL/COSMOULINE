@@ -64,7 +64,7 @@ for i,image in enumerate(images):
 	os.remove("sex.cat")
 	
 	# The normal way to go, saving the skysubtracted image :
-	os.system("mv check.fits " + alidir + justname + "_skysub.fits")
+	shutil.move("check.fits", alidir + justname + "_skysub.fits")
 	
 	# But maybe you want to have a look at the subtracted background (change sextractor !)
 	#os.system("mv check.fits " + alidir + justname + "_background.fits")
