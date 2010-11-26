@@ -55,7 +55,7 @@ for i, image in enumerate(images):
 	
 	sexout = os.system(sex +" "+ img + " -c " +sexin)
 	
-	os.system("mv sex.cat " + sexcat)
+	shutil.move("sex.cat", sexcat)
 	#os.system("rm check.fits")
 
 
