@@ -45,12 +45,12 @@ for n, image in enumerate(images):
 		
 	print "seeingpixels :", image["seeingpixels"]
 	
-	resolpix = 1.2 * image["seeingpixels"]
+	resolpix = 1.2 * image["seeingpixels"]	# 1.2
 	print "resolpix :", resolpix
 	
-	fondgaussini = 30.0
+	#fondgaussini = 30.0
 	#fondgaussini = 0.5 * image["seeingpixels"]
-	print "fondgaussini :", fondgaussini
+	#print "fondgaussini :", fondgaussini
 	
 	
 	# Preparation of the last lines of the input file = the "sources"
@@ -66,7 +66,7 @@ for n, image in enumerate(images):
 		# I add a 0.9 factor, to keep some "movement" in the optimization.
 		
 		#stupint = 1.45*0.9*(psfstar['flux'] / image['medcoeff'])
-		stupint = 0.9*(psfstar['flux'] / image['medcoeff'])
+		stupint = 1.5*(psfstar['flux'] / image['medcoeff'])
 		
 		# Indeed coeff is defined by "coeff = reference / star"
 		# So star = ref / coeff
@@ -87,7 +87,7 @@ for n, image in enumerate(images):
 	paramsrc = paramsrc.rstrip("\n") # remove the last newline
 	
 	# A dictionnary of the info that will be written into the input file :
-	psfdict = {"$nbrpsf$": str(nbrpsf), "$resolpix$": str(resolpix), "$paramsrc$": paramsrc, "$fondgaussini$": str(fondgaussini)}
+	psfdict = {"$nbrpsf$": str(nbrpsf), "$resolpix$": str(resolpix), "$paramsrc$": paramsrc}
 	
 	# We write the file :
 	psfmofsour8txt = justreplace(psf_template, psfdict)
