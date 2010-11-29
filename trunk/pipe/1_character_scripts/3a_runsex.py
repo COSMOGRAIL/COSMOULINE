@@ -42,7 +42,7 @@ for i,image in enumerate(images):
 	print "- " * 30
 	print i+1, "/", nbrofimages, ":", image['imgname']
 	
-	# I write default_sky.sex]
+	# I write default_sky.sex
 	
 	
 	default_sky_template = justread(default_template_filename)
@@ -54,10 +54,11 @@ for i,image in enumerate(images):
 		
 	print "Wrote default_sky.sex"
 	
+	imagepath = os.path.join(alidir, image['imgname']+".fits")
+	sexout = os.system("%s %s -c %s" % (sex, imagepath, sexin))
 	
-	sexout = os.system(sex +" "+ image['rawimg'] + " -c " +sexin)
 	#print sex +" "+ filename + " -c default_see.sex"
-	catfilename = alidir+image['imgname']+".cat"
+	catfilename = os.path.join(alidir, image['imgname']+".cat")
 	shutil.move("sex.cat", catfilename)
 	
 	

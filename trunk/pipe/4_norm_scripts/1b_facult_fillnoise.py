@@ -28,7 +28,7 @@ for n, image in enumerate(images):
 	
 	(a, h) = cosmics.fromfits(aliimg, verbose=False)
 	
-	zeroa = a <= 0.01 * image["stddev"]
+	zeroa = a <= (0.01 * image["stddev"])
 	cols = zeroa.all(axis = 0)
 	lins = zeroa.all(axis = 1)
 	

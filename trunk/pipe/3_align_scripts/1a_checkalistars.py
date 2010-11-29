@@ -7,7 +7,7 @@
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
-from star import *
+import star
 #import shutil
 import f2n
 #from datetime import datetime, timedelta
@@ -41,25 +41,41 @@ proquest(askquestions)
 
 # Load the reference sextractor catalog
 refsexcat = os.path.join(alidir, refimage['imgname'] + ".cat")
-refautostars = readsexcatasstars(refsexcat)
-refautostars = sortstarlistbyflux(refautostars)
+refautostars = star.readsexcat(refsexcat)
+refautostars = star.sortstarlistbyflux(refautostars)
 refscalingfactor = refimage['scalingfactor']
 
 # read and identify the manual reference catalog
-refmanstars = readmancatasstars(alistarscat) # So these are the "manual" star coordinates
-preciserefmanstars = listidentify(refmanstars, refautostars, 3.0) # We find the corresponding precise sextractor coordinates
-preciserefmanstars = sortstarlistbyflux(preciserefmanstars)
+refmanstars = star.readmancat(alistarscat) # So these are the "manual" star coordinates
+id = star.listidentify(refmanstars, refautostars, tolerance = identtolerance, onlysingle = True, verbose = True) # We find the corresponding precise sextractor coordinates
+
+if len (id["nomatchnames"]) != 0:
+	print "Warning : the following stars could not be identified in the sextractor catalog :"
+	print "\n".join(id["nomatchnames"])
+	print "I will go on, disregarding these stars."
+	proquest(askquestions) 
+	
+preciserefmanstars = star.sortstarlistbyflux(id["match"])
 maxalistars = len(refmanstars)
 
 
 print "%i stars in your manual star catalog." % (len(refmanstars))
 print "%i stars among them could be found in the sextractor catalog." % (len(preciserefmanstars))
 
+# The user might want to put the fluxes and precise coordinates into his mancat :
+print "If you want, you could copy and paste this into your mancat (same stars, but precise coords and FLUX_AUTO) :"
+
+for s in id["match"] : # We use this id instead of preciserefmanstars to keep them in your order
+	print "%s\t%.2f\t%.2f\t%.2f" % (s.name, s.x, s.y, s.flux)
+
+print "I will now generate a png map."
+proquest(askquestions)
+
 # We convert the star objects into dictionnaries, to plot them using f2n.py
 # (f2n.py does not use these "star" objects...)
-refmanstarsasdicts = [{"name":star.name, "x":star.x, "y":star.y} for star in refmanstars]
-preciserefmanstarsasdicts = [{"name":star.name, "x":star.x, "y":star.y} for star in preciserefmanstars]
-refautostarsasdicts = [{"name":star.name, "x":star.x, "y":star.y} for star in refautostars]
+refmanstarsasdicts = [{"name":s.name, "x":s.x, "y":s.y} for s in refmanstars]
+preciserefmanstarsasdicts = [{"name":s.name, "x":s.x, "y":s.y} for s in preciserefmanstars]
+refautostarsasdicts = [{"name":s.name, "x":s.x, "y":s.y} for s in refautostars]
 
 #print refmanstarsasdicts
 
@@ -98,14 +114,5 @@ f2nimg.tonet(pngpath)
 print "I have written a map into"
 print pngpath
 
-
-# Now we also put an alias to the reference image into the workdir (for humans only) :
-
-fullrefimgname = refimgname + ".fits"
-#linkname = "ref.fits"
-#if os.path.isfile(linkname):
-#	os.remove(linkname)
-#os.symlink(fullrefimgname, linkname)
-#os.chdir(curdir)
 
 

@@ -4,15 +4,19 @@
 #	*proud*
 #	Final victory over this lovely deconv.exe output file ...
 #
-# For each source we insert x, y, int = the intensity as written in out.txt, flux = the acutal flux, calculated with a bizarre formula from this intensity.
+# For each source we insert x, y, flux = the acutal flux, calculated with a bizarre formula from the MCS intensity.
 # Plus there is z1, z2, delta1 and delta2
+#
+#	WARNING  : the flux is "denormalized" by whatever normalization coeff you had used.
+#	So we write raw fluxes into the db, not normalized ones !
+#
 
 
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from readandreplace_fct import *
-from star import *
+import star
 import progressbar
 
 
@@ -24,7 +28,7 @@ nbimg = len(images)
 print "Number of images :", nbimg
 
 	# read params of point sources
-ptsrcs = readmancatasstars(ptsrccat)
+ptsrcs = star.readmancat(ptsrccat)
 nbptsrcs = len(ptsrcs)
 print "Number of point sources :", nbptsrcs
 print "Names of sources : "
@@ -44,8 +48,6 @@ newfields = []
 for src in ptsrcs:
 
 	newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_flux", "type": "float"}) # This will contain the flux (as would be measured by aperture  photometry on the original raw image)
-	#newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_int", "type": "float"}) # We keep this "intensity" only for retrocompatibility.
-	# Let's remove this "int", it should not be used anymore.
 	newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_x", "type": "float"})
 	newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_y", "type": "float"})
 newfields.append({"fieldname": "out_" + deckey + "_z1", "type":"float"})
@@ -79,6 +81,10 @@ for image in images:
 		
 		mcsint = intpostable[i][outputindex][0]
 		flux = mcsint * ( fwhm**2 / 4.0 ) * pi / (4.0 * ln2)
+		
+		# We denormalize :
+		flux = flux / image[deckeynormused]
+		
 		
 		image["updatedict"]["out_" + deckey + "_" + src.name + "_flux"] = flux
 		

@@ -15,24 +15,7 @@
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
-from star import *
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - 
-# Some parameters to tweak the identification :
-
-findtolerance = 5.0	# error (in pixels) for star identification when finding the shift and rotation
-			# 5.0 should work (even 2.0 does), put higher values if you have strong distortion (maybe 20.0 ?)
-findminnbrstars = 5	# number of stars that must match for the finding to be sucessfull
-			# a default value would be half of the number of alignment stars for instance.
-			# minimum is 3 of course
-			# A small number will give higher probability of wrong alignment, if the field is rich and tolerance high...
-findmindist = 200	# distances (in pixels) of stars to consider for finding pairs in the algorithm
-			# 200 pixels is good. Put smaller values if you have only a few close stars for alignment.
-
-pairstolerance = findtolerance # Keep it like this, it's simpler.
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
+import star
 
 
 # Select images to treat
@@ -64,37 +47,29 @@ if len(refimage) != 1:
 	sys.exit()
 refimage = refimage[0]
 
-# We make a link to the reference image, in the alidir.
-# That's usefull for human softies only. Real computers don't need such stuff.
-#curdir = os.getcwd()
-#os.chdir(alidir)
-#fullrefimgname = refimgname + ".fits"
-#linkname = "ref.fits"
-#if os.path.isfile(linkname):
-#	os.remove(linkname)
-#os.symlink(fullrefimgname, linkname)
-#os.chdir(curdir)
-
 
 # load the reference sextractor catalog
-refsexcat = alidir + refimage['imgname'] + ".cat"
-refautostars = readsexcatasstars(refsexcat)
-refautostars = sortstarlistbyflux(refautostars)
+refsexcat = os.path.join(alidir, refimage['imgname'] + ".cat")
+refautostars = star.readsexcat(refsexcat, maxflag = 2, posflux = True)
+refautostars = star.sortstarlistbyflux(refautostars)
 refscalingfactor = refimage['scalingfactor']
 
 # read and identify the manual reference catalog
-refmanstars = readmancatasstars(alistarscat)
-preciserefmanstars = listidentify(refmanstars, refautostars, 3.0)
-preciserefmanstars = sortstarlistbyflux(preciserefmanstars)
+refmanstars = star.readmancat(alistarscat) # So these are the "manual" star coordinates
+id = star.listidentify(refmanstars, refautostars, tolerance = identtolerance, onlysingle = True, verbose = True) # We find the corresponding precise sextractor coordinates
+
+if len (id["nomatchnames"]) != 0:
+	print "Warning : the following stars could not be identified in the sextractor catalog :"
+	print "\n".join(id["nomatchnames"])
+	print "You should correct this, I stop here."
+	sys.exit()
+	
+
+preciserefmanstars = star.sortstarlistbyflux(id["match"])
 maxalistars = len(refmanstars)
 
 print "I've read", len(refmanstars), "stars to use for alignment."
 proquest(askquestions) 
-
-if len(preciserefmanstars) != len(refmanstars):
-	print "Could not identify all the alignment stars in the sextractor catalog of ref image..."
-	sys.exit()
-
 
 
 for i,image in enumerate(images):
@@ -105,45 +80,46 @@ for i,image in enumerate(images):
 	scalingratio = refscalingfactor/scalingfactor
 	print "scalingratio :", scalingratio
 	
-	sexcat = alidir + image['imgname'] + ".cat"
-	autostars = readsexcatasstars(sexcat)
-	autostars = sortstarlistbyflux(autostars) # crucial for speed !
+	sexcat = os.path.join(alidir, image['imgname'] + ".cat")
+	autostars = star.readsexcat(sexcat)
+	autostars = star.sortstarlistbyflux(autostars) # crucial !
 	
-	geomapin = alidir + image['imgname'] + ".geomap"
+	geomapin = os.path.join(alidir, image['imgname'] + ".geomap")
 	
 	
-	#autostars[0].write()
-	#autostars[1].write()
-	#zoomstarlist(autostars, scalingratio)
-	#autostars[0].write()
-	#autostars[1].write()
+	trans = star.findtrans(preciserefmanstars, autostars, scalingratio = scalingratio, tolerance = identtolerance, minnbrstars = identminnbrstars, mindist = identfindmindist, nref = 10, nauto = 30, verbose=True)
 	
-	#sys.exit()
-	
-	(flag, foundangle, foundshift) = findtrans(autostars, preciserefmanstars, scalingratio, tolerance = findtolerance,  minnbrstars = findminnbrstars,  mindist = findmindist)
-	
-	if flag < 0:
+	if trans["nbrids"] < 0:
 		db.update(imgdb, ['recno'], [image['recno']], {'flagali': 0, 'nbralistars': 0})
 		print "I'll have to skip this one ...\n"
 		continue
 
-	# transform all these autostars to match the manual
-	# alignment selection of the reference
-	
-	#rotatestarlist(autostars, foundangle, (0, 0))
-	#shiftstarlist(autostars, foundshift)
-	
-	(comment, pairs) = formpairs(preciserefmanstars, autostars, foundangle, foundshift, scalingratio, tolerance = pairstolerance)
+	pairs = star.formpairs(preciserefmanstars, autostars, tolerance = identtolerance, onlysingle = True, transform = True, scalingratio = scalingratio, angle = trans["angle"], shift = trans["shift"], verbose = True)
+
+	# We build a comment string about the non matching stars :
+	comment = []
+ 	if len(pairs["nomatch"]) > 0 :
+ 		comment.append("No match :")
+ 		for s in pairs["nomatch"]:
+ 			comment.append(" " + s.name)
+ 		comment.append(" ")
+ 	if len(pairs["notsure"]) > 0 :
+ 		comment.append("Not sure :")
+ 		for s in pairs["notsure"]:
+ 			comment.append(" " + s.name)
+ 	comment = "".join(comment)
 	print "Comment :", comment
 		
 	
-	nbralistars = len(pairs)
+	nbralistars = len(pairs["idlist1"])
 	print "nbralistars :", nbralistars	
-	db.update(imgdb, ['recno'], [image['recno']], {'flagali': 1, 'nbralistars': nbralistars, 'maxalistars': maxalistars, 'alicomment':comment, 'angle':foundangle})
+	db.update(imgdb, ['recno'], [image['recno']], {'flagali': 1, 'nbralistars': nbralistars, 'maxalistars': maxalistars, 'alicomment':comment, 'angle':trans["angle"]})
 	
-	# write the input file for the iraf geomap task
+	# We write the input file for the iraf geomap task
 	# "xref yref x y"
-	writeforgeomap(geomapin, pairs)
+	# we have a function to do this in star :
+	
+	star.writeforgeomap(geomapin, zip(pairs["idlist1"], pairs["idlist2"]))
 	print "Done"
 
 print "- " * 40

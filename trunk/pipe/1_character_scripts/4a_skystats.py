@@ -43,7 +43,7 @@ for i,image in enumerate(images):
 	print "%i / %i : %s" % (i+1, nbrofimages, image['imgname'])
 	
 	# Read the FITS file as numpy array :
-	pixelarray, header = pyfits.getdata(image['rawimg'], header=True)
+	pixelarray, header = pyfits.getdata(os.path.join(alidir, image['imgname']+".fits"), header=True)
 	pixelarray = np.asarray(pixelarray).transpose() # This is to put it in right orientation, would not be needed here.
 	
 	# Print some info about the image :

@@ -8,7 +8,7 @@ execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from calccoeff_fct import *
 from variousfct import *
-from star import *
+import star
 
 	# As we will tweak the database, do a backup first
 backupfile(imgdb, dbbudir, 'calccoeff')
@@ -26,12 +26,13 @@ if "nbrcoeffstars" not in db.getFieldNames(imgdb) :
 
 
 # we read the handwritten star catalog
-normstars = readmancatasstars(normstarscat)
+normstars = star.readmancat(normstarscat)
 
 print "Checking reference image ..."
-refsexcat = alidir + refimgname + ".alicat"
-refcatstars = readsexcatasstars(refsexcat)
-refidentstars = listidentify(normstars, refcatstars, 5.0)
+refsexcat = os.path.join(alidir, refimgname + ".alicat")
+refcatstars = star.readsexcat(refsexcat)
+id = listidentify(normstars, refcatstars, tolerance = identtolerance)
+refidentstars = id["match"]
 # now refidentstars contains the same stars as normstars, but with sex fluxes.
 
 
@@ -52,17 +53,17 @@ for i, image in enumerate(images):
 	print i+1, "/", nbrofimages, ":", image['imgname']
 	
 	# the catalog we will read
-	sexcat = alidir + image['imgname'] + ".alicat"
+	sexcat = os.path.join(alidir, image['imgname'] + ".alicat")
 	
 	# read sextractor catalog
-	catstars = readsexcatasstars(sexcat)
+	catstars = star.readsexcat(sexcat, maxflag = 0, posflux = True)
 	if len(catstars) == 0:
 		print "No stars in catalog !"
 		db.update(imgdb, ['recno'], [image['recno']], {'nbrcoeffstars': 0, 'maxcoeffstars': maxcoeffstars, 'medcoeff': 1.0, 'sigcoeff': 99.0, 'spancoeff': 99.0})
 		continue
 		
 	# cross-identify the stars with the handwritten selection
-	identstars = listidentify(normstars, catstars, 5.0)
+	identstars = star.listidentify(normstars, catstars, 5.0)["match"]
 
 	# calculate the normalization coefficient
 	nbrcoeff, medcoeff, sigcoeff, spancoeff = simplemediancoeff(refidentstars, identstars)

@@ -55,7 +55,6 @@ plotdb = []
 for renormsource in renormsources:
 	deckey = renormsource[0]
 	sourcename = renormsource[1]
-	sourcedecnormfieldname = "decnorm_" + deckey
 	deckeyfilenumfield = "decfilenum_" + deckey
 	fluxfieldname = "out_" + deckey + "_" + sourcename + "_flux"
 	
@@ -64,9 +63,8 @@ for renormsource in renormsources:
 	images = [image for image in allimages if image[deckeyfilenumfield] != None]
 	print "%20s %5s : %4i deconvolutions available" % (deckey, sourcename, len(images))
 	
-	coeffs = asarray(map(lambda x: x[sourcedecnormfieldname], images))
 	fluxes = asarray(map(lambda x: x[fluxfieldname], images))
-	medflux = median(fluxes/coeffs) # so this median always refers to the "raw" fluxes, before any normalization
+	medflux = median(fluxes) # so this median always refers to the "raw" fluxes, before any normalization
 	
 	mags = -2.5 * log10(fluxes/coeffs)
 	# note that all this mag stuff is just for the plots.
@@ -89,9 +87,7 @@ for renormsource in renormsources:
 	for i, image in enumerate(allimages):
 		if image[deckeyfilenumfield] != None: # then we have a deconvolution
 		
-			thiscoeff = image[sourcedecnormfieldname] 	# the coeff used for this deconvolution
-			
-			thisflux = image[fluxfieldname]/thiscoeff		# the intensity in the "raw" image
+			thisflux = image[fluxfieldname] # the intensity in the "raw" image
 			
 			indivcoeff = (medflux / thisflux) 		# the "new" absolute coeff for that image and star
 			

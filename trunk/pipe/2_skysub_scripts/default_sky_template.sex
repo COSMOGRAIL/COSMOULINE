@@ -35,13 +35,13 @@ MASK_TYPE	CORRECT		# type of detection MASKing: can be one of
 PHOT_APERTURES	20		# MAG_APER aperture diameter(s) in pixels
 PHOT_AUTOPARAMS	2.5, 3.5	# MAG_AUTO parameters: <Kron_fact>,<min_radius>
 
-SATUR_LEVEL	$satur_level$		# level (in ADUs) at which arises saturation
+SATUR_LEVEL	0.0		# level (in ADUs) at which arises saturation
 
 MAG_ZEROPOINT	0.0		# magnitude zero-point
 MAG_GAMMA	4.0		# gamma of emulsion (for photographic scans)
 
-GAIN		$gain$		# detector gain in e-/ADU.				
-PIXEL_SCALE	$px_size$ 	# size of pixel in arcsec (0=use FITS WCS info).	
+GAIN		0.0		# detector gain in e-/ADU.				
+PIXEL_SCALE	0.0 	# size of pixel in arcsec (0=use FITS WCS info).	
 
 
 
@@ -60,11 +60,11 @@ BACKPHOTO_THICK	24		# thickness of the background LOCAL annulus (*)
 
 #------------------------------ Check Image ----------------------------------
 
-CHECKIMAGE_TYPE	-BACKGROUND	# can be one of "NONE", "BACKGROUND",
+CHECKIMAGE_TYPE	BACKGROUND	# can be one of "NONE", "BACKGROUND",
 				# "MINIBACKGROUND", "-BACKGROUND", "OBJECTS",
 				# "-OBJECTS", "SEGMENTATION", "APERTURES",
 				# or "FILTERED" (*)
-CHECKIMAGE_NAME	check.fits	# Filename for the check-image (*)
+CHECKIMAGE_NAME	background.fits	# Filename for the check-image (*)
 
 #--------------------- Memory (change with caution!) -------------------------
 
