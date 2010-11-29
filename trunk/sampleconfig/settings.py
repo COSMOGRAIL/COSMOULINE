@@ -115,6 +115,26 @@ identfindmindist = 300
 # 300 pixels is good. Put smaller values if you have only a few close stars available for alignment.
 
 
+
+#----------------------------- Sextractor photometry readout -----------------------------
+
+sexphotomname = "sexphotom1"
+
+# Fields you want in the database. Not restricted to photometry, you could add any fields.
+# Note the convention : if you ask sextractor for 3 apertures, those fields will be named
+# FLUX_APER, FLUX_APER1, FLUX_APER2 (this is done by astroasciidata, not by sextractor)
+# Do not forget to update both default.sex and default.param if you want to make changes to
+# the apertures.
+
+sexphotomfields = [
+{"sexname":"FLUX_AUTO", "dbname":"auto_flux", "type":"float"},
+{"sexname":"FLUX_APER", "dbname":"ap20_flux", "type":"float"},
+{"sexname":"FLUX_APER1", "dbname":"ap30_flux", "type":"float"},
+{"sexname":"FLUX_APER2", "dbname":"ap60_flux", "type":"float"},
+{"sexname":"FLUX_APER3", "dbname":"ap90_flux", "type":"float"},
+{"sexname":"FLUX_APER4", "dbname":"ap120_flux", "type":"float"}
+]
+
 #----------------------------- Combination of best images -----------------------------
 
 # Choose a plain name for your combination (like for instance "1" for your first try...)
