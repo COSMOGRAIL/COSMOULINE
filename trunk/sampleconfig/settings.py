@@ -25,7 +25,7 @@ checkplots = False
 	# This is used by : 1_character_scripts/4_skystats.py, 3b_measureseeing.py
 
 # A switch to ring a bell if some (long) scripts have finished or want to talk to you.
-withsound = True
+withsound = False
 
 # A switch to tell if you want pngs to be transformed into jpg
 makejpgarchives = True
@@ -98,10 +98,24 @@ lensregion = "[871:911,969:1006]"
 emptyregion = "[1005:1105,1000:1100]"
 # these regions apply to the aligned images (ie the reference) !
 
+# And now some alignment parameters that you should actually not have to change at all.
+
+# Tolerance in pixels when identifying stars and finding the transformation.
+identtolerance = 5.0
+# 5.0 should work (even 2.0 does), higher values would be required in case of strong distortion.
+
+identminnbrstars = 5
+# number of stars that must match for the finding to be sucessfull
+# a default value would be half of the number of alignment stars for instance.
+# minimum is 3 of course. 5 is fine, it will work well in nearly all cases.
+# A small number will give higher probability of wrong alignment
+
+identfindmindist = 300
+# distances (in pixels) of stars to consider for finding pairs in the algorithm
+# 300 pixels is good. Put smaller values if you have only a few close stars available for alignment.
 
 
-
-#----------------------------- facultative combination of some images -----------------------------
+#----------------------------- Combination of best images -----------------------------
 
 # Choose a plain name for your combination (like for instance "1" for your first try...)
 combibestname = "best1"
@@ -112,13 +126,14 @@ combibestmaxmedcoeff = 1.2	# Maximum medcoeff (ref image has 1.0)
 combibestmaxstddev = 20.0 	# Maximum sky stddev, in ADU
 
 
-#----------------------------- Combination of the images per night of observation------------------------------
+#----------------------------- Combination of images per night ------------------------------
 
 #Choose a name for your combination. It should reflect the normalization coeff that your using ('medcoeff' or 'renormabc1' if you computed some new one)
 # Suggestion for names : 'medcoeff1' for your first try using the medcoeff
 combiname = "medcoeff1"
 
 renormcoeff = 'medcoeff'	# you can choose which coeff you want to use for the combination
+
 
 
 #------------------------ PSF CONSTRUCTION ---------------------------------
