@@ -6,7 +6,7 @@ execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from readandreplace_fct import *
-from star import *
+import star
 import numpy as np
 
 
@@ -18,7 +18,7 @@ in2file.close()
 print "Reading from :"
 print in2filepath
 
-ptsrcs = readmancatasstars(ptsrccat)
+ptsrcs = star.readmancat(ptsrccat)
 nbptsrcs = len(ptsrcs)
 
 #print in2filelines

@@ -8,7 +8,7 @@ import f2n
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from readandreplace_fct import *
-from star import *
+import star
 
 pngkey = deckey + "_png"
 pngdir = os.path.join(workdir, pngkey)
@@ -25,7 +25,7 @@ if os.path.isdir(pngdir):
 os.mkdir(pngdir)
 
 # Read input positions of point sources, to draw a legend.
-ptsrcs = readmancatasstars(ptsrccat)
+ptsrcs = star.readmancat(ptsrccat)
 print "Number of point sources :", len(ptsrcs)
 
 

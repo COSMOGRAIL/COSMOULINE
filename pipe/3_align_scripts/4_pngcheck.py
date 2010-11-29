@@ -10,7 +10,7 @@
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
-from star import *
+import star
 import shutil
 import f2n
 from datetime import datetime, timedelta
@@ -72,11 +72,11 @@ proquest(askquestions)
 refimage = db.select(imgdb, ['imgname'], [refimgname], returnType='dict')
 refimage = refimage[0]
 refsexcat = os.path.join(alidir, refimage['imgname'] + ".cat")
-refautostars = readsexcatasstars(refsexcat)
-refautostars = sortstarlistbyflux(refautostars)
-refmanstars = readmancatasstars(alistarscat) # So these are the "manual" star coordinates
-preciserefmanstars = listidentify(refmanstars, refautostars, 3.0) # We find the corresponding precise sextractor coordinates
-preciserefmanstars = sortstarlistbyflux(preciserefmanstars)
+refautostars = star.readsexcat(refsexcat)
+refautostars = star.sortstarlistbyflux(refautostars)
+refmanstars = star.readmancat(alistarscat) # So these are the "manual" star coordinates
+id = star.listidentify(refmanstars, refautostars, tolerance = identtolerance) # We find the corresponding precise sextractor coordinates
+preciserefmanstars = star.sortstarlistbyflux(id["match"])
 preciserefmanstarsasdicts = [{"name":star.name, "x":star.x, "y":star.y} for star in preciserefmanstars]
 
 starttime = datetime.now()

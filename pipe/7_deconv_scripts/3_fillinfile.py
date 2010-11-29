@@ -6,7 +6,7 @@ execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 #from variousfct import *
 from readandreplace_fct import *
-from star import *
+import star
 import shutil
 from variousfct import *
 
@@ -21,7 +21,7 @@ print "Number of images :", nbimg
 
 
 	# read params of point sources
-ptsrc = readmancatasstars(ptsrccat)
+ptsrc = star.readmancat(ptsrccat)
 nbptsrc = len(ptsrc)
 print "Number of point sources :", nbptsrc
 

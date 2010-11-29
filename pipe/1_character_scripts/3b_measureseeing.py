@@ -9,7 +9,7 @@ execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 
 from variousfct import *
-from star import *
+import star
 import numpy as np
 if checkplots :
 	import matplotlib.pyplot as plt
@@ -43,9 +43,9 @@ for i,image in enumerate(images):
 	catfilename = alidir+image['imgname']+".cat"
 	
 	# We read and sort the sextractor catalog
-	goodsexstars = readsexcatasstars(catfilename)
+	goodsexstars = star.readsexcat(catfilename, maxflag = 2, posflux = True)
 	nbrstars = len(goodsexstars)
-	sortedsexstars = sortstarlistby(goodsexstars, 'fwhm')
+	sortedsexstars = star.sortstarlistby(goodsexstars, 'fwhm')
 	#print "Best and worst FWHM:"
 	#sortedsexstars[0].write()
 	#sortedsexstars[-1].write()
@@ -54,7 +54,7 @@ for i,image in enumerate(images):
 	peakpos = -5.0
 			
 	# We make an array to measure the seeing
-	fwhms = np.array([star.fwhm for star in sortedsexstars])
+	fwhms = np.array([s.fwhm for s in sortedsexstars])
 	
 	if len(fwhms) > 10:
 	
@@ -144,8 +144,8 @@ for i,image in enumerate(images):
 	# And we measure the ellipticity of the images, by looking at sources with similar width then our seeingpixels
 	# Now look at this beauty : :-)
 	
-	ells = np.array([star.ell for star in sortedsexstars])
-	starells = np.array([star.ell for star in sortedsexstars if abs(star.fwhm - seeingpixels) < 1.0])
+	ells = np.array([s.ell for s in sortedsexstars])
+	starells = np.array([s.ell for s in sortedsexstars if abs(s.fwhm - seeingpixels) < 1.0])
 	
 	print "I found", len(ells), "stars for ellipticity measure."
 	

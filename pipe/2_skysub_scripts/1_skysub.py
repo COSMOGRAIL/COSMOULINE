@@ -1,18 +1,17 @@
 #
 #	subtracts the sky from the images, using sextractor
-#	You can switch a line below (and change the default.sex !) to save it as a "background" image.
+#	We save the sky image into a file, then subtract it.
+#	This has a large footprint on diskspace, but you can delete some afterwards.
 #
+
 
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
-from readandreplace_fct import *
 import shutil
 import os
 
-print "Note that the program sets itself the gain, the satur level and the pixel scale in the default.sex according to the database. Great!"
-proquest(askquestions)
 
 db = KirbyBase()
 if thisisatest:
@@ -28,52 +27,36 @@ proquest(askquestions)
 
 starttime = datetime.now()
 
-# default parameter for the sextractor input
-
-scriptdir = os.path.join(pipedir, "2_skysub_scripts")
-key = "sky"	# key is a key word according to what you're doing with sextractor (mesuring seeing: key = see)
-default_template_filename = os.path.join(scriptdir, "default_" +key+ "_template.sex")
-
-
-sexin = "default_" +key+ ".sex" 	#name of the sextractor input file
-
-
 for i,image in enumerate(images):
-
-	recno = image['recno']
-	justname = image['imgname']
-	filename = os.path.join(alidir,justname + ".fits")	# we use now the images in electron not the raw images anymore
 	
-	print "+++++++++++++++++++++++++++++++++++++++++++++++"
-	print i+1, "/", nbrimages, ":", justname
+	print "+ " * 30
+	print "%5i/%i : %s" % (i+1, nbrimages, image["imgname"])
 	
-	# I write default_sky.sex
-
-
-	default_sky_template = justread(default_template_filename)
-	defaultdict = {"$gain$": str(image["gain"]), "$px_size$": str(image["pixsize"]), "$satur_level$": str(image["satur_level"])}
-	defaultsex = justreplace(default_sky_template, defaultdict)
-	defaultfile = open(os.path.join(scriptdir, sexin), "w")	
-	defaultfile.write(defaultsex)
-	defaultfile.close()
-		
-	print "Wrote default_sky.sex"
-		
+	imagepath = os.path.join(alidir, image["imgname"] + ".fits")
 	
-	sexout = os.system(sex +" "+ filename + " -c " +sexin)
-	os.remove("sex.cat")
+	# We run sextractor  on the image in electrons :
+	os.system("%s %s -c default_sky_template.sex -CATALOG_TYPE NONE -GAIN %.3f -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f" % (sex, imagepath, image["gain"], image["pixsize"], image["satur_level"]))
 	
-	# The normal way to go, saving the skysubtracted image :
-	shutil.move("check.fits", alidir + justname + "_skysub.fits")
+	# Saving the sky image :
 	
-	# But maybe you want to have a look at the subtracted background (change sextractor !)
-	#os.system("mv check.fits " + alidir + justname + "_background.fits")
+	skyimagepath = os.path.join(alidir,  image["imgname"] + "_sky.fits")
+	if os.path.isfile(skyimagepath):
+		os.remove(skyimagepath)
+	
+	shutil.move("background.fits", skyimagepath)
+	
+	(skya, skyh) = fromfits(os.path.join(alidir,  image["imgname"] + "_sky.fits"), verbose = False)
+	(imagea, imageh) = fromfits(os.path.join(alidir, image["imgname"] + ".fits"), verbose = False)
+	
+	skysubimagea = imagea - skya
+	
+	skysubimagepath = os.path.join(alidir, image["imgname"] + "_skysub.fits")
+	if os.path.isfile(skysubimagepath):
+		os.remove(skysubimagepath)
+	
+	tofits(skysubimagepath, skysubimagea, hdr = imageh, verbose = True)
 	
 	
-	
-#We delete the default_sky.sex to keep the directory clean
-os.remove(os.path.join(scriptdir, sexin))
-
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
 

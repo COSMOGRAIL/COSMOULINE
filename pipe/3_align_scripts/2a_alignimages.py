@@ -12,10 +12,8 @@ from pyraf import iraf
 from variousfct import *
 from datetime import datetime, timedelta
 
-
-	# As we will tweak the database, let's do a backup
+# As we will tweak the database, let's do a backup
 backupfile(imgdb, dbbudir, "alignimages")
-
 
 db = KirbyBase()
 images = db.select(imgdb, ['flagali','gogogo','treatme'], ['==1',True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
@@ -49,10 +47,10 @@ for i,image in enumerate(images):
 	print "--------------------"
 	print i+1, "/", nbrofimages, image['imgname']
 	
-	imgtorotate = alidir + image['imgname'] + "_skysub.fits"
-	geomapin = alidir + image['imgname'] + ".geomap"
+	imgtorotate = os.path.join(alidir, image['imgname'] + "_skysub.fits")
+	geomapin = os.path.join(alidir, image['imgname'] + ".geomap")
 	
-	aliimg = alidir + image['imgname'] + "_ali.fits"
+	aliimg = os.path.join(alidir, image['imgname'] + "_ali.fits")
 	
 	if os.path.isfile(aliimg):
 		"Removing existing aligned image."
