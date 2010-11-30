@@ -16,21 +16,8 @@ from datetime import datetime, timedelta
 # As we will tweak the database, let's do a backup
 backupfile(imgdb, dbbudir, "alignimages")
 
-
 db = KirbyBase()
 images = db.select(imgdb, ['gogogo','treatme'], [True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
-
-# perhaps you want to tweak this to run the alignment only on a few images :
-
-#images = db.select(imgdb, ['flagali','gogogo','treatme','maxalistars'], ['==1', True, True, '==7'], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
-#images = db.select(imgdb, ['flagali', 'geomaprms'], ['==1', '> 1.0'], ['recno','imgname','rotator'], returnType='dict')
-#images = db.select(imgdb, ['flagali','imgname'], ['==1','c_e_20080526_35_1_1_1'], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
-
-#for image in images:
-#	print image['imgname']
-
-#recnos = [image['recno'] for image in images]
-#sys.exit()
 
 
 nbrofimages = len(images)
@@ -66,14 +53,11 @@ for i,image in enumerate(images):
 	shutil.copy(filepath + "_skysub.fits", filepath + "_ali.fits")
 	
 
-	print "\npseudo alignement done"
-
-
 db.pack(imgdb)
 
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
 
 
-notify(computer, withsound, "Dear user, I'm done with the alignment. I did it in %s." % timetaken)
+notify(computer, withsound, "Dear user, I'm done with the pseudoalignment. I did it in %s." % timetaken)
 
