@@ -1,0 +1,3 @@
+1000.		# Inner smoothing lambda (higher value = stronger smoothing)
+100000.		# Outer smoothgin lambda
+25.		# Radius between outer and inner
