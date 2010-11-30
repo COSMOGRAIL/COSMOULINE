@@ -48,11 +48,6 @@ for n, image in enumerate(images):
 	resolpix = 1.2 * image["seeingpixels"]	# 1.2
 	print "resolpix :", resolpix
 	
-	#fondgaussini = 30.0
-	#fondgaussini = 0.5 * image["seeingpixels"]
-	#print "fondgaussini :", fondgaussini
-	
-	
 	# Preparation of the last lines of the input file = the "sources"
 	
 	paramsrc = ""
