@@ -152,7 +152,7 @@ for i, image in enumerate(images):
 
 	
 	f2ns001 = f2n.fromfits(os.path.join(imgpath, "s001.fits"), verbose=False) # 128 x 128
-	f2ns001.setzscale(1e-8, "ex")
+	f2ns001.setzscale(1e-8, 1e-3)
 	f2ns001.makepilimage(scale = "log", negative = False)
 	f2ns001.upsample(2) # Now 256 x 256
 	f2ns001.writeinfo(["s001.fits"])
