@@ -11,15 +11,8 @@ from readandreplace_fct import *
 import shutil
 import os
 
-
-print "Note that the program sets itself the gain, the satur level and the pixel scale in the default_see.sex according to the database. Great!"
-# The following line will interactively ask if you want to go on or abort.
-# "askquestions" can be set to False in config.py, in which case we skip this. 
-proquest(askquestions)
-
 db = KirbyBase()
 images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
-
 
 nbrofimages = len(images)
 print "Number of images to treat :", nbrofimages
@@ -27,48 +20,25 @@ proquest(askquestions)
 
 starttime = datetime.now()
 
-# default parameter for the sextractor input
-
-scriptdir = os.path.join(pipedir, "1_character_scripts")
-key = "see"	# key is a key word according to what you're doing with sextractor (mesuring seeing: key = see)
-default_template_filename = os.path.join(scriptdir, "default_" +key+ "_template.sex")
-
-
-sexin = "default_" +key+ ".sex" 	#name of the sextractor input file
-
 
 for i,image in enumerate(images):
 
 	print "- " * 30
 	print i+1, "/", nbrofimages, ":", image['imgname']
 	
-	# I write default_sky.sex
-	
-	
-	default_sky_template = justread(default_template_filename)
-	defaultdict = {"$gain$": str(image["gain"]), "$px_size$": str(image["pixsize"]), "$satur_level$": str(image["satur_level"])}
-	defaultsex = justreplace(default_sky_template, defaultdict)
-	defaultfile = open(os.path.join(scriptdir, sexin), "w")	 
-	defaultfile.write(defaultsex)
-	defaultfile.close()
-		
-	print "Wrote default_sky.sex"
-	
 	imagepath = os.path.join(alidir, image['imgname']+".fits")
-	sexout = os.system("%s %s -c %s" % (sex, imagepath, sexin))
 	
-	#print sex +" "+ filename + " -c default_see.sex"
+	# We run sextractor on the images converted to electrons :
+	os.system("%s %s -c default_see_template.sex -GAIN %.3f -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f" % (sex, imagepath, image["gain"], image["pixsize"], image["satur_level"]))
+	
+	
 	catfilename = os.path.join(alidir, image['imgname']+".cat")
 	shutil.move("sex.cat", catfilename)
-	
 	
 	
 	# remove check image in case it was created
 	if os.path.isfile("check.fits"):
 		os.remove("check.fits")
-
-#We delete the default_sky.sex to keep the directory clean
-os.remove(os.path.join(scriptdir, sexin))
 
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
