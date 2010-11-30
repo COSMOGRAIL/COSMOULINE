@@ -108,7 +108,7 @@ for i, image in enumerate(images):
 		inputfitspath = os.path.join(imgpath, "difc%02i.fits"%(j+1))
 		
 		f2nimg = f2n.fromfits(inputfitspath, verbose=False)
-		f2nimg.setzscale(-0.1, 0.1)
+		f2nimg.setzscale(-0.03, 0.03)
 		f2nimg.makepilimage(scale = "lin", negative = False)
 		f2nimg.upsample(3)
 		#f2nimg.writeinfo([image['imgname']], (255, 0, 0))
@@ -158,26 +158,26 @@ for i, image in enumerate(images):
 	
 	
 	f2ns001 = f2n.fromfits(os.path.join(imgpath, "s001.fits"), verbose=False)
-	f2ns001.setzscale(1e-7, 0.004)
+	f2ns001.setzscale(0, 0.001)
 	f2ns001.makepilimage(scale = "log", negative = False)
 	f2ns001.upsample(2) # Now 256 x 256
 	f2ns001.writetitle("s")
 	
 	
 	f2npsff = f2n.fromfits(os.path.join(imgpath, "psff.fits"), verbose=False)
-	f2npsff.setzscale(-0.1, 0.1)
+	f2npsff.setzscale(-0.005, 0.005)
 	f2npsff.makepilimage(scale = "lin", negative = False)
 	f2npsff.upsample(2) # Now 256 x 256
 	f2npsff.writetitle("psff")
 	
 	f2npsfr = f2n.fromfits(os.path.join(imgpath, "psfr.fits"), verbose=False)
-	f2npsfr.setzscale(-0.1, 0.1)
+	f2npsfr.setzscale(-0.005, 0.005)
 	f2npsfr.makepilimage(scale = "lin", negative = False)
 	f2npsfr.upsample(2) # Now 256 x 256
 	f2npsfr.writetitle("psfr")
 	
 	f2nt = f2n.fromfits(os.path.join(imgpath, "t.fits"), verbose=False)
-	f2nt.setzscale(0, 1)
+	f2nt.setzscale(0, 0.05)
 	f2nt.makepilimage(scale = "log", negative = False)
 	f2nt.upsample(2) # Now 256 x 256
 	f2nt.writetitle("t")
