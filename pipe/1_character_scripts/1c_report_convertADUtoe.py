@@ -8,7 +8,7 @@ from kirbybase import KirbyBase, KBError
 from variousfct import *
 
 
-fields = ['imgname','gain', 'origin_gain']
+fields = ['imgname','gain', 'origin_gain', "satur_level"]
 
 db = KirbyBase()
 reporttxt = ""
