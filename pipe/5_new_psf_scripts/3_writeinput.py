@@ -48,6 +48,11 @@ for n, image in enumerate(images):
 	resolpix = 1.2 * image["seeingpixels"]	# 1.2
 	print "resolpix :", resolpix
 	
+	fwhmini = image["seeingpixels"] * 1.0
+	fwhmfin = image["seeingpixels"] * 4.0
+	
+	print "Gaussian : %.2f -> %.2f" % (fwhmini, fwhmfin)
+	
 	# Preparation of the last lines of the input file = the "sources"
 	
 	paramsrc = ""
@@ -82,7 +87,7 @@ for n, image in enumerate(images):
 	paramsrc = paramsrc.rstrip("\n") # remove the last newline
 	
 	# A dictionnary of the info that will be written into the input file :
-	psfdict = {"$nbrpsf$": str(nbrpsf), "$resolpix$": str(resolpix), "$paramsrc$": paramsrc}
+	psfdict = {"$nbrpsf$": str(nbrpsf), "$resolpix$": str(resolpix), "$paramsrc$": paramsrc, "$fwhmini$":"%.2f" % (fwhmini), "$fwhmfin$":"%.2f" % (fwhmfin)}
 	
 	# We write the file :
 	psfmofsour8txt = justreplace(psf_template, psfdict)
