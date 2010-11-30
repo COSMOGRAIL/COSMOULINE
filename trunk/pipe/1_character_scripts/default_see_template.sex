@@ -35,14 +35,14 @@ MASK_TYPE	CORRECT		# type of detection MASKing: can be one of
 PHOT_APERTURES	20, 30, 60, 90, 120	# MAG_APER aperture diameter(s) in pixels
 PHOT_AUTOPARAMS	3.5, 10		# MAG_AUTO parameters: <Kron_fact>,<min_radius>
 
-SATUR_LEVEL	$satur_level$		# level (in ADUs) at which arises saturation
+SATUR_LEVEL	0.0		# level (in ADUs) at which arises saturation
 
 
 MAG_ZEROPOINT	0.0		# magnitude zero-point
 MAG_GAMMA	4.0		# gamma of emulsion (for photographic scans)
 
-GAIN		$gain$		# detector gain in e-/ADU.				
-PIXEL_SCALE	$px_size$ 	# size of pixel in arcsec (0=use FITS WCS info).	
+GAIN		0.0		# detector gain in e-/ADU.				
+PIXEL_SCALE	0.0 	# size of pixel in arcsec (0=use FITS WCS info).	
 
 	
 #------------------------- Star/Galaxy Separation ----------------------------
