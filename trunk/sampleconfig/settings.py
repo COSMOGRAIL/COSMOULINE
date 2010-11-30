@@ -28,10 +28,10 @@ checkplots = False
 withsound = False
 
 # A switch to tell if you want pngs to be transformed into jpg
-makejpgarchives = True
+makejpgarchives = False
 
 # A switch to reduce the verbosity of the fortran MCS programs :
-silencemcs = False
+silencemcs = True
 
 
 #------------------------- import new images  ---------------------------------------------------------------
