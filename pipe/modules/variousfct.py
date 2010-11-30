@@ -188,8 +188,9 @@ def notify(computer, withsound, comment="Hmm. Sorry. I kindly ask you to have a 
 			sys.stdout.write('\a\a\a')
 			sys.stdout.flush()
 	else:
-		print "(Sorry, nobody told me how to produce a sound on this computer...)"
 		print comment
+		if withsound:
+			print "(Sorry, nobody told me how to produce a sound on this computer...)"
 
 	# has to be tested :
 	# open('/dev/dsp','w').write(''.join(chr(128 * (1 + math.sin(math.pi * 440 * i / 100.0))) for i in xrange(1000)))

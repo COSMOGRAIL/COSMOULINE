@@ -9,7 +9,7 @@
 from variousfct import *
 
 
-def writerdb(columns, filename):
+def writerdb(columns, filename, writeheader=True):
 	# columns = [{"name":string, "data":pythonlist}, ...], ordered as you want them to be in the rdb file.
 	# filename = full path to the file to write.
 	
@@ -39,10 +39,10 @@ def writerdb(columns, filename):
 	writer = csv.writer(outfile, delimiter="\t")
 	
 	
-	writer.writerow(colnames)
-	writer.writerow(underline)
+	if writeheader :
+		writer.writerow(colnames)
+		writer.writerow(underline)
 	writer.writerows(data)
-	
 	
 	outfile.close()
 

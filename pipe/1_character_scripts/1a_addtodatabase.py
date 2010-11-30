@@ -27,8 +27,10 @@ minimaldbfields = ['imgname:str', 'treatme:bool', 'gogogo:bool', 'whynot:str', '
 # Function that selects the one that reads the header, according to telescopename
 
 def readheader(telescopename, rawimg):
-	if telescopename == "Euler":
-		dbdict = eulerheader(rawimg)	
+	if telescopename == "EulerC2":
+		dbdict = eulerc2header(rawimg)
+	elif telescopename == "EulerCAM":
+		dbdict = eulercamheader(rawimg)
 	elif telescopename == "Mercator":
 		dbdict = mercatorheader(rawimg)
 	elif telescopename == "Liverpool":
@@ -44,24 +46,9 @@ def readheader(telescopename, rawimg):
 	elif telescopename == 'skysim':
 		dbdict = skysimheader(rawimg)
 	elif telescopename == "NOHEADER":
-		dbdict = noheader(rawimg)
-
-			
-	"""
-	elif telescopename == "MaidanakSITE":
-		dbdict = hctheader(rawimg) # Yes, we can use the same as for HCT
-	elif telescopename == "MaidanakSI":
-		dbdict = koreanheader(rawimg)
-	elif telescopename == "MaidanakPeltier":
-		dbdict = peltierheader(rawimg)
-	elif telescopename == "NOTalfosc":
-		dbdict = notalfoscheader(rawimg)
-	elif telescopename == "HoLi":
-		dbdict = holiheader(rawimg)
-	"""
-	
-	#else:
-	#	raise mterror("Unknown telescope.")	
+		dbdict = noheader(rawimg)	
+	else:
+		raise mterror("Unknown telescope.")	
 
 	return dbdict
 	
