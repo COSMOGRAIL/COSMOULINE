@@ -47,10 +47,10 @@ FICHIER POUR PSFSIM_SIG_MINI_new4.f
 =======================================================
 | MINIMI FOND
 =======================================================
-| Pas sur le Fond                        |3.
+| Pas sur le Fond                        |2.
 | Constante                              |0.
 |------------------------------------------------------
-| FWHM initiale de la gaussienne         |$fondgaussini$
+| FWHM initiale de la gaussienne         |30.
 |------------------------------------------------------
 | FWHM finale de la gaussienne           |50.
 |------------------------------------------------------
