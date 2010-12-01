@@ -83,8 +83,13 @@ for i,image in enumerate(listimages):
 
 
 
-#We delete the sky_list.txt to keep the directory clean
+#We delete the sky_list.txt and the pickle to keep the directory clean
 os.remove(sky_list_filepath)
+
+print "\nDo you want to remove the pickle used to lunch the simulation? (Say 'no' if you plan to relunch this script with the same parameters) : "
+proquest(askquestions)
+
+os.remove(filepath) #the pickle to delete
 
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
