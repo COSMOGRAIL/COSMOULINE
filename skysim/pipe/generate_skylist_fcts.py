@@ -245,14 +245,14 @@ def skylist_randomstars(imgdimx, imgdimy, nb_stars = 0, mag_min = 17.0, mag_max 
 
 	for index in range(starlist.nrows):
 
-	starlist['Code'][index]=100	#code for stars is 100, for galaxies it would be 200
+		starlist['Code'][index]=100	#code for stars is 100, for galaxies it would be 200
 
-	#we set randomly the position of the stars avoiding to put some on the borders of the image
-	starlist['x'][index] = random.uniform(xborder_min, xborder_max)
-	starlist['y'][index] = random.uniform(yborder_min, yborder_max)
+		#we set randomly the position of the stars avoiding to put some on the borders of the image
+		starlist['x'][index] = random.uniform(xborder_min, xborder_max)
+		starlist['y'][index] = random.uniform(yborder_min, yborder_max)
 
-	# we set randomly the magnitude between a max and a min value
-	starlist['mag'][index] = random.uniform(mag_min, mag_max) 
+		# we set randomly the magnitude between a max and a min value
+		starlist['mag'][index] = random.uniform(mag_min, mag_max) 
 
 
 
