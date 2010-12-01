@@ -3,6 +3,7 @@ execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from readandreplace_fct import *
+import star
 
 
 db = KirbyBase()
@@ -10,14 +11,13 @@ db = KirbyBase()
 print "Hehe."
 
 print "psfkey =", psfkey
-proquest(askquestions)
 
-# Let's see if the psfstarcat exists
 print "Reading psf star catalog ..."
-psfstars = readmancat(psfstarcat)
+psfstars = star.readmancat(psfstarcat)
 print "You want to use stars :"
 for star in psfstars:
-	print star['name']
+	print star.name
+
 proquest(askquestions)
 
 backupfile(imgdb, dbbudir, "prepare_" + psfkey)
@@ -63,25 +63,13 @@ else :
 print "I will treat %i images." % len(images)
 proquest(askquestions)
 
-	# remember where we are.
-origdir = os.getcwd()
 
-	# Copy the pyMCS directory to where we need it ...
+	# Read the config template
+config_template = justread(os.path.join(configdir, "template_pyMCS_psf_config.py"))
 
-pymcsworkdir = os.path.join(psfdir, "pyMCS")
-if os.path.isdir(pymcsworkdir): # We remove any previous copy of pyMCS
-	shutil.rmtree(pymcsworkdir)
-if not os.path.isdir(pymcsdir):
-	raise mterror("Cannot find pyMCS !")
-shutil.copytree(pymcsdir, pymcsworkdir)
-
-	# Read the config templage
-
-config_template = justread(pyMCS_config_template_filename)
-
-	# format the psf stars catalog
+	# Format the psf stars catalog
 nbrpsf = len(psfstars)
-starlist = repr([(int(star['x']), int(star['y'])) for star in psfstars])
+starscouplelist = repr([(int(s.x), int(s.y)) for s in psfstars])
 
 for i,image in enumerate(images):
 
@@ -89,53 +77,36 @@ for i,image in enumerate(images):
 	print "%i / %i : %s" % (i+1, len(images), image['imgname'])
 	
 	# we clean the imgpsfdir :
-	imgpsfdir = psfdir + image['imgname'] + "/"
+	imgpsfdir = os.path.join(psfdir, image['imgname'])
 	if os.path.isdir(imgpsfdir):
 		print "Deleting existing stuff."
 		shutil.rmtree(imgpsfdir)
 	os.mkdir(imgpsfdir)
 	
-	# and the pymcsworkdir :
-	if os.path.isdir(os.path.join(pymcsworkdir, "results")):
-		shutil.rmtree(os.path.join(pymcsworkdir, "results"))
-		os.mkdir(os.path.join(pymcsworkdir, "results"))
-	if os.path.isdir(os.path.join(pymcsworkdir, "results")):
-		shutil.rmtree(os.path.join(pymcsworkdir, "results"))
-		os.mkdir(os.path.join(pymcsworkdir, "results"))
+	
+	os.mkdir(os.path.join(imgpsfdir, "images"))
+	os.mkdir(os.path.join(imgpsfdir, "results"))
 	
 	# we put in the input image :
-	if os.path.isfile(os.path.join(pymcsworkdir, "img", "in.fits")):
-		os.remove(os.path.join(pymcsworkdir, "img", "in.fits"))
-	os.symlink(alidir + image['imgname'] + "_ali.fits" , os.path.join(pymcsworkdir, "img", "in.fits"))
+	if os.path.exists(os.path.join(imgpsfdir, "images", "in.fits")):
+		os.remove(os.path.join(imgpsfdir, "images", "in.fits"))
+	os.symlink(os.path.join(alidir, image['imgname'] + "_ali.fits") , os.path.join(imgpsfdir, "images", "in.fits"))
 	
-	os.symlink(alidir + image['imgname'] + "_ali.fits" , os.path.join(imgpsfdir, "in.fits"))
 	
 	# we prepare the config :
 	gain = "%f" % image["gain"]
 	stddev = "%f" % image["stddev"]
-	repdict = {'$gain$':gain, '$stddev$':stddev, '$starlist$':starlist}	
+	repdict = {'$gain$':gain, '$sigmasky$':stddev, '$starscouplelist$':starscouplelist}	
 	
 	pyMCS_config = justreplace(config_template, repdict)
-	extractfile = open(os.path.join(pymcsworkdir, "config.py"), "w")
+	extractfile = open(os.path.join(imgpsfdir, "pyMCS_psf_config.py"), "w")
 	extractfile.write(pyMCS_config)
 	extractfile.close()
-	
-	# and now ...
-	os.chdir(pymcsworkdir)
-	os.system("python _3_fitmof.py")
-	os.system("python _4_fitgaus.py")
-	os.chdir(origdir)
-	
-	# we move all this stuff into the imgpsfdir :
-	if os.path.isdir( os.path.join(imgpsfdir, "results")):
-		shutil.rmtree(os.path.join(imgpsfdir, "results"))
-	shutil.copytree(os.path.join(pymcsworkdir, "results"), os.path.join(imgpsfdir, "results"))
-	
-	shutil.copy(os.path.join(pymcsworkdir, "config.py"), os.path.join(imgpsfdir, "config.py"))
 	
 	
 	# and we update the database with a "True" for field psfkeyflag :
 	db.update(imgdb, ['recno'], [image['recno']], [True], [psfkeyflag])
+	
 
 
 print "- " * 40
@@ -143,3 +114,4 @@ print "- " * 40
 db.pack(imgdb)
 	
 print "Done."
+
