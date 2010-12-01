@@ -18,7 +18,7 @@ import glob
 # This pngkey is nothing more than the name of a directory in which the pngs will be written.
 # Change it to avoid overwriting an existing set of pngs.
 
-print "You want to make pngs for the simulated images"
+print "You want to make pngs for the set of simulated images called : ", simname
 print "Is this correct, my dear master?"
 proquest(askquestions)
 
