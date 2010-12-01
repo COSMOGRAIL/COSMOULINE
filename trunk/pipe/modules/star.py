@@ -20,7 +20,6 @@ Overhaul : November 2010
 
 
 import sys, os
-import numpy as np
 import math
 import operator # For sorting
 import copy
