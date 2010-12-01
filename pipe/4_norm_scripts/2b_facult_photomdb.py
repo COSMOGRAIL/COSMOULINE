@@ -68,7 +68,12 @@ for i, image in enumerate(images):
 	for s in id["match"]:
 		for f in sexphotomfields:
 			updatefieldnames.append("%s_%s_%s" % (sexphotomname, s.name, f["dbname"]))
-			updatefieldvalues.append(s.props[f["sexname"]])
+			if f["type"] == "float":
+				updatefieldvalues.append(float(s.props[f["sexname"]]))
+			if f["type"] == "int":
+				updatefieldvalues.append(int(s.props[f["sexname"]]))
+			else:
+				updatefieldvalues.append(s.props[f["sexname"]])
 		
 
 	db.update(imgdb, ['recno'], [image["recno"]], updatefieldvalues, updatefieldnames)
