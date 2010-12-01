@@ -59,7 +59,8 @@ class simimg:
 	#--------------------------------- stars on the field ------------------------------------
 
 	self.sky_list=sky_list
-	
+
+"""	
 # this class unable use to iter over every python class that we create (like simimg)
 
 class IterableObject(object):	
@@ -67,7 +68,7 @@ class IterableObject(object):
         	for item in self.__dict__:
             		yield self.__dict__[item]
 
-
+"""
 
 
 
