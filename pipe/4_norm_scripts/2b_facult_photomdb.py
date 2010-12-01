@@ -70,7 +70,7 @@ for i, image in enumerate(images):
 			updatefieldnames.append("%s_%s_%s" % (sexphotomname, s.name, f["dbname"]))
 			if f["type"] == "float":
 				updatefieldvalues.append(float(s.props[f["sexname"]]))
-			if f["type"] == "int":
+			elif f["type"] == "int":
 				updatefieldvalues.append(int(s.props[f["sexname"]]))
 			else:
 				updatefieldvalues.append(s.props[f["sexname"]])
