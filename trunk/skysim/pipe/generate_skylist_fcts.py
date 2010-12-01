@@ -82,8 +82,63 @@ def skylist_twostars(x1,y1,x2,y2,mag1=None,mag2=None):       #if mag is not spec
 
 
 
+#a fct that creates a list containing the position of 5 stars (4 psf and 1 "quasar"); this list has to be given to skymaker that simulates 5 stars at the given position
+def skylist_fivestars(x1,y1,x2,y2,x3,y3,x4,y4,x5,y5,mag1=None,mag2=None,mag3=None,mag4=None,mag5=None):       #if mag is not specified, skymaker will give a random value that depends on certain parameters
+    
+    starlist=asciidata.create(3,5)
+    starlist[0].rename('Code')
+    starlist.header.append('1 Code')
+    starlist[1].rename('x')
+    starlist.header.append('2 x')
+    starlist[2].rename('y')
+    starlist.header.append('3 y')
+
+    
+    starlist[0][0]=100                  #code for a star
+    starlist[1][0]=x1
+    starlist[2][0]=y1
+
+
+    starlist[0][1]=100                  
+    starlist[1][1]=x2
+    starlist[2][1]=y2
+
+    starlist[0][2]=100                  
+    starlist[1][2]=x3
+    starlist[2][2]=y3  
+
+    starlist[0][3]=100                  
+    starlist[1][3]=x4
+    starlist[2][3]=y4
+
+    starlist[0][4]=100                  
+    starlist[1][4]=x5
+    starlist[2][4]=y5    
+
+    
+    starlist.append('mag')
+    starlist.header.append('4 mag')
+    starlist[3][0]=mag1
+    starlist[3][1]=mag2
+    starlist[3][2]=mag3
+    starlist[3][3]=mag4
+    starlist[3][4]=mag5 
+
+  
+    return starlist                    #this is an AsciiData object
+
+
+
+
+
+#######################################################################################################################
+
+
+
+
 #a fct that creates a matrix of stars; you have to specifie the dimensions of the matrix; you may define the distance between neighbouring stars
 def skylist_starnetwork(imgdimx, imgdimy, matrix_x, matrix_y, distance=None, mag=None):
+
 
     #we create the list
     starlist=asciidata.create(3, matrix_x*matrix_y)
@@ -161,9 +216,47 @@ def skylist_starnetwork(imgdimx, imgdimy, matrix_x, matrix_y, distance=None, mag
     return starlist                        #an asciidata object
 
 
-   
+
+#######################################################################################################################
 
 
+
+ #a fct that creates a list of stars with random positions and magnitudes (although skymaker is also able to do that but we want to have the control on it)
+  
+def skylist_randomstars(imgdimx, imgdimy, nb_stars = 0, mag_min = 17.0, mag_max = 20.0):
+	#we create the list
+	starlist=asciidata.create(4, nb_stars)
+	starlist[0].rename('Code')
+	starlist.header.append('1 Code')
+	starlist[1].rename('x')
+	starlist.header.append('2 x')
+	starlist[2].rename('y')
+	starlist.header.append('3 y')	
+	starlist[3].rename('mag')
+	starlist.header.append('4 mag')
+
+    	#we exclude the borders of the image
+    	xborder_min=0.1*imgdimx        #no stars on the borders
+    	yborder_min=0.1*imgdimy
+
+    	xborder_max=0.9*imgdimx
+    	yborder_max=0.9*imgdimy
+
+
+	for index in range(starlist.nrows):
+
+	starlist['Code'][index]=100	#code for stars is 100, for galaxies it would be 200
+
+	#we set randomly the position of the stars avoiding to put some on the borders of the image
+	starlist['x'][index] = random.uniform(xborder_min, xborder_max)
+	starlist['y'][index] = random.uniform(yborder_min, yborder_max)
+
+	# we set randomly the magnitude between a max and a min value
+	starlist['mag'][index] = random.uniform(mag_min, mag_max) 
+
+
+
+	return starlist		#an asciidata object
 
 
 #####################################################################################################################
@@ -192,14 +285,6 @@ def rot_shift_starlist(inputlist, shiftx, shifty, angle):
 
 
     return outputlist
-
-
-
-
-
-
-
-
 
 
 
