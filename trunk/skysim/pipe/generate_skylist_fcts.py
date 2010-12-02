@@ -5,7 +5,7 @@ import sys
 import random
 import math
 import cmath
-
+from star import *
 
 
 # a simple function to write an ascii file from a list of stars
@@ -29,25 +29,7 @@ def skylist_starnetwork(imgdimx, imgdimy, matrix_x, matrix_y, distance=None, mag
 
 
     #we create the list
-    starlist=asciidata.create(3, matrix_x*matrix_y)
-    starlist[0].rename('Code')
-    starlist.header.append('1 Code')
-    starlist[1].rename('x')
-    starlist.header.append('2 x')
-    starlist[2].rename('y')
-    starlist.header.append('3 y')
-
-    for index in range(starlist.nrows):
-        starlist['Code'][index]=100             #code for stars is 100, for galaxies it would be 200
-
-    if mag != None:
-        starlist.append('mag')
-        starlist.header.append('4 mag')
-        for index in range(starlist.nrows):
-            starlist['mag'][index]=mag
-
-
-
+    starlist = []
 
 
     #we exclude the borders of the image
@@ -76,9 +58,9 @@ def skylist_starnetwork(imgdimx, imgdimy, matrix_x, matrix_y, distance=None, mag
 
         for i in range(matrix_x):
             for j in range(matrix_y):
-                starlist['x'][j+i*matrix_y] = xborder + (i+1)*dist_x
-                starlist['y'][j+i*matrix_y] = yborder + (j+1)*dist_y
-
+                x = xborder + (i+1)*dist_x
+                y = yborder + (j+1)*dist_y
+		starlist.append(Star(pos_x = x, pos_y = y, star_mag = mag))
 
 
 
@@ -95,13 +77,13 @@ def skylist_starnetwork(imgdimx, imgdimy, matrix_x, matrix_y, distance=None, mag
 
         for i in range(matrix_x):
             for j in range(matrix_y):
-                starlist['x'][j+i*matrix_y] = start_x + i*distance
-                starlist['y'][j+i*matrix_y] = start_y + j*distance
+                x = start_x + i*distance
+                y = start_y + j*distance
+		starlist.append(Star(pos_x = x, pos_y = y, star_mag = mag))
 
 
 
-
-    return starlist                        #an asciidata object
+    return starlist                        #a list python
 
 
 
@@ -113,15 +95,7 @@ def skylist_starnetwork(imgdimx, imgdimy, matrix_x, matrix_y, distance=None, mag
   
 def skylist_randomstars(imgdimx, imgdimy, nb_stars = 0, mag_min = 17.0, mag_max = 20.0):
 	#we create the list
-	starlist=asciidata.create(4, nb_stars)
-	starlist[0].rename('Code')
-	starlist.header.append('1 Code')
-	starlist[1].rename('x')
-	starlist.header.append('2 x')
-	starlist[2].rename('y')
-	starlist.header.append('3 y')	
-	starlist[3].rename('mag')
-	starlist.header.append('4 mag')
+	starlist = []
 
     	#we exclude the borders of the image
     	xborder_min=0.1*imgdimx        #no stars on the borders
@@ -131,20 +105,18 @@ def skylist_randomstars(imgdimx, imgdimy, nb_stars = 0, mag_min = 17.0, mag_max 
     	yborder_max=0.9*imgdimy
 
 
-	for index in range(starlist.nrows):
-
-		starlist['Code'][index]=100	#code for stars is 100, for galaxies it would be 200
+	for index in range(nb_stars):
 
 		#we set randomly the position of the stars avoiding to put some on the borders of the image
-		starlist['x'][index] = random.uniform(xborder_min, xborder_max)
-		starlist['y'][index] = random.uniform(yborder_min, yborder_max)
+		x = random.uniform(xborder_min, xborder_max)
+		y = random.uniform(yborder_min, yborder_max)
 
 		# we set randomly the magnitude between a max and a min value
-		starlist['mag'][index] = random.uniform(mag_min, mag_max) 
+		mag = random.uniform(mag_min, mag_max) 
 
+		starlist.append(Star(pos_x = x, pos_y = y, star_mag = mag))
 
-
-	return starlist		#an asciidata object
+	return starlist		#a list python
 
 
 #####################################################################################################################
