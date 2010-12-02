@@ -37,7 +37,6 @@ z2 = "auto"
 
 print "You can configure some lines of this script."
 print "(e.g. to produce full frame pngs, or zoom, etc)"
-print "I respect thisisatest, so you can use this to try your settings..."
 
 proquest(askquestions)
 
