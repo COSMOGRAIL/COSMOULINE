@@ -15,9 +15,17 @@ from variousfct import *
 	
 db = KirbyBase()
 images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum]) # WARNING the sorting is important !!!!!!!
+
+# We duplicate the ref image :
+refimage = [image for image in images if image['imgname'] == refimgname][0] # we take the first and only element.
+images.insert(0, refimage.copy()) # This copy is important !!!
+images[0][deckeyfilenum] = mcsname(1) # The duplicated ref image gets number 1
+
+
 nbimg = len(images)
 #nbimg = int(os.popen("ls -1 " + decdir + "g???.fits" + " | wc -l").readlines()[0])
-print "Number of images :", nbimg
+
+print "We have %i images (ref image is duplicated)." % nbimg
 
 
 	# read params of point sources

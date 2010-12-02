@@ -37,7 +37,7 @@ for (i, ptsrc) in enumerate(ptsrcs):
 	xpos = (float(goodlines[2*i + 1].split()[0])+0.5)/2.0
 	ypos = (float(goodlines[2*i + 1].split()[1])+0.5)/2.0
 	influx = ptsrc.flux
-	in2flux = float(np.median(map(float, np.array(goodlines[2*i].split()))))
+	in2flux = float(np.median(map(float, np.array(goodlines[2*i].split()[1:])))) # we count the ref image only once here.
 	ptsrcdb.append({"name":ptsrc.name, "xpos":xpos, "ypos":ypos, "influx":influx, "in2flux":in2flux})
 
 

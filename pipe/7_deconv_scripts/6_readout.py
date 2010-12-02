@@ -24,8 +24,17 @@ import progressbar
 db = KirbyBase()
 # We select only the images that are deconvolved (and thus have a deckeyfilenum)
 images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True) # the sorting is not  important
+
+# We duplicate the ref image, this will be easier for the output reading.
+refimage = [image for image in images if image['imgname'] == refimgname][0] # we take the first and only element.
+images.insert(0, refimage.copy()) # This copy is important !!!
+images[0][deckeyfilenum] = mcsname(1) # The duplicated ref image gets number 1
+
 nbimg = len(images)
-print "Number of images :", nbimg
+print "Number of images (including duplicated reference) : %i" % (nbimg)
+
+
+
 
 	# read params of point sources
 ptsrcs = star.readmancat(ptsrccat)
@@ -36,6 +45,7 @@ for src in ptsrcs: print src.name
 
 # The readout itself is fast :
 intpostable, zdeltatable = readouttxt(os.path.join(decdir, "out.txt"), nbimg)
+# We give nbimg, so the readouttxt fct does not know that the first image is a duplication of the ref.
 
 print "Ok, I've read the deconvolution output.\n"
 
@@ -105,12 +115,12 @@ for field in newfields:
 print "New fields added."
 
 
-# The writing itself :
+# The writing itself : here we will skip the duplicated reference.
 
 widgets = [progressbar.Bar('>'), ' ', progressbar.ETA(), ' ', progressbar.ReverseBar('<')]
 pbar = progressbar.ProgressBar(widgets=widgets, maxval=nbimg+2).start()
 
-for i, image in enumerate(images):
+for i, image in enumerate(images[1:]): # we skip the duplicated reference.
 	pbar.update(i)	
 	db.update(imgdb, [deckeyfilenum], [image[deckeyfilenum]], image["updatedict"])
 	

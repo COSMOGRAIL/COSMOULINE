@@ -13,12 +13,13 @@ db = KirbyBase()
 images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=['setname', 'mjd']) # the \d\d* is a trick to select both 0000-like and 000-like
 # we select all images that have a deckeyfilenum
 
-print "I've selected", len(images), "images."
-proquest(askquestions)
+# We duplicate the ref image :
+refimage = [image for image in images if image['imgname'] == refimgname][0] # we take the first and only element.
+images.insert(0, refimage.copy()) # This copy is important !!!
+images[0][deckeyfilenum] = mcsname(1) # The duplicated ref image gets number 1
 
-# No longer used :
-#iraf.imutil()
-#iraf.unlearn(iraf.imutil.imarith)
+print "I've selected %i images (ref image is duplicated)." % len(images)
+proquest(askquestions)
 
 for image in images:
 		
@@ -54,22 +55,6 @@ for image in images:
 	hdu = pyfits.PrimaryHDU(a, h)
 	hdu.writeto(outname)
 	
-	
-	# The old way, using pyraf :
-	"""
-	inname = decdir + "g" + image[deckeyfilenum] + "_notnorm.fits"
-	outname = decdir + "g" + image[deckeyfilenum] + ".fits"
-	if os.path.isfile(outname):
-		os.remove(outname)
-	iraf.imutil.imarith(operand1=inname, op="*", operand2=mycoeff, result=outname)
-
-	inname = decdir + "sig" + image[deckeyfilenum] + "_notnorm.fits"
-	outname = decdir + "sig" + image[deckeyfilenum] + ".fits"
-	if os.path.isfile(outname):
-		os.remove(outname)
-	iraf.imutil.imarith(operand1=inname, op="/", operand2=mycoeff, result=outname)
-	# yep, sigma would be multiplied but this image is 1/sigma !
-	"""
 
 notify(computer, withsound, "I've normalized the images for %s" %deckey)
 

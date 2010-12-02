@@ -33,6 +33,21 @@ print "Number of point sources :", len(ptsrcs)
 db = KirbyBase()
 images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum])
 
+# This time we do not include the duplicated reference !
+print "Number of images (we disregard the duplicated reference) : %i" % (len(images))
+
+# Now, just for these pngs, lets put the unique ref image into the first position :
+# We select the reference image
+refimage = [image for image in images if image['imgname'] == refimgname][0] # we take the first and only element.
+# The "others" :
+images = [image for image in images if image['imgname'] != refimgname]
+# And put the ref into the first positon :
+images.insert(0, refimage)
+
+
+
+
+
 for i, image in enumerate(images):
 	
 	print "- " * 40
@@ -59,7 +74,7 @@ for i, image in enumerate(images):
 	f2ng.setzscale(-20, "auto")
 	f2ng.makepilimage(scale = "log", negative = False)
 	f2ng.upsample(4)
-	f2ng.drawstarslist(cosmicslist)
+	f2ng.drawstarslist(cosmicslist, r=5)
 	f2ng.writeinfo(["Input"])
 	
 	#f2ng.writeinfo(["","g001.fits"])
@@ -105,9 +120,10 @@ for i, image in enumerate(images):
 	legend.makepilimage(scale = "lin", negative = False)
 	legend.upsample(4)
 	for ptsrc in ptsrcs:
-		legend.drawcircle(ptsrc.x, ptsrc.y, r=0.5, colour=(255), label = ptsrc.name)
+		print ptsrc.name
+		#legend.drawcircle(ptsrc.x, ptsrc.y, r=0.5, colour=255, label=ptsrc.name)
+		legend.drawcircle(ptsrc.x, ptsrc.y, r=5, colour=255, label=str(ptsrc.name))
 	legend.writeinfo(["Legend"])
-	
 	
 	
 	txtendpiece = f2n.f2nimage(shape = (256,256), fill = 0.0, verbose=False)
@@ -139,7 +155,9 @@ for i, image in enumerate(images):
 
 	f2n.compose([[f2ng, f2ndec, f2nback, txtendpiece], [f2ns, f2nresi, f2nresi_sm, legend]], pngpath)	
 	
-	orderlink = os.path.join(pngdir, "%s.png" % code)
+	orderlink = os.path.join(pngdir, "%05i.png" % (i+1))
+	# WARNING : for the links, we do not use the code !!! We want to start at 0001
+	
 	os.symlink(pngpath, orderlink)
 	
 	
@@ -156,9 +174,9 @@ for i, image in enumerate(images):
 		
 		# We do something similar with the background image as fits :
 		copyorlink(os.path.join(decdir, "back0001.fits"), os.path.join(workdir, deckey + "_back.fits"), uselinks)
+		# here we use the fact that code 0001 is the duplicated ref image.
 		
 		proquest(askquestions)
-	
 	
 print "- " * 40
 
