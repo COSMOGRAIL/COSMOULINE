@@ -7,7 +7,6 @@ execfile("./config.py")
 from datetime import datetime, timedelta
 import shutil
 from variousfct import *
-import asciidata
 from generate_skylist_fcts import *
 import pyfits
 
