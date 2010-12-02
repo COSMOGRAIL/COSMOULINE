@@ -8,126 +8,14 @@ import cmath
 
 
 
+# a simple function to write an ascii file from a list of stars
+def writeto(filepath, list_stars):
+	import sys
+	import os
 
-
-#a simple fct that creates a list containing the position of a star; this list has to be given to skymaker that simulates a star at the given position
-def skylist_singlestar(x,y,mag=None):       #if mag is not specified, skymaker will give a random value that depends on certain parameters in the configfile of skymaker
-    
-    starlist=asciidata.create(3,1)
-    starlist[0].rename('Code')
-    starlist.header.append('1 Code')
-    starlist[1].rename('x')
-    starlist.header.append('2 x')
-    starlist[2].rename('y')
-    starlist.header.append('3 y')
-
-
-    starlist[0][0]=100                  #code for a stars is 100, for galaxies it would be 200
-    starlist[1][0]=x
-    starlist[2][0]=y
-    
-    if mag!=None:
-        starlist.append('mag')
-        starlist.header.append('4 mag')
-        starlist[3][0]=mag
-    
-    return starlist                    #this is an AsciiData object
-
-
-
-
-
-##########################################################################################################################################33
-
-
-
-
-#a simple fct that creates a list containing the position of 2 stars; this list has to be given to skymaker that simulates 2 stars at the given positions
-def skylist_twostars(x1,y1,x2,y2,mag1=None,mag2=None):       #if mag is not specified, skymaker will give a random value that depends on certain parameters in the configfile of skymaker
-    
-    starlist=asciidata.create(3,2)
-    starlist[0].rename('Code')
-    starlist.header.append('1 Code')
-    starlist[1].rename('x')
-    starlist.header.append('2 x')
-    starlist[2].rename('y')
-    starlist.header.append('3 y')
-
-
-    starlist[0][0]=100                  #code for a star
-    starlist[1][0]=x1
-    starlist[2][0]=y1
-
-
-    starlist[0][1]=100                  #code for a star
-    starlist[1][1]=x2
-    starlist[2][1]=y2
-    
-    if mag1!=None or mag2!=None:
-        starlist.append('mag')
-        starlist.header.append('4 mag')
-        starlist[3][0]=mag1
-	starlist[3][1]=mag2
-
-
-    
-  
-    return starlist                    #this is an AsciiData object
-
-
-
-
-#######################################################################################################################
-
-
-
-
-#a fct that creates a list containing the position of 5 stars (4 psf and 1 "quasar"); this list has to be given to skymaker that simulates 5 stars at the given position
-def skylist_fivestars(x1,y1,x2,y2,x3,y3,x4,y4,x5,y5,mag1=None,mag2=None,mag3=None,mag4=None,mag5=None):       #if mag is not specified, skymaker will give a random value that depends on certain parameters
-    
-    starlist=asciidata.create(3,5)
-    starlist[0].rename('Code')
-    starlist.header.append('1 Code')
-    starlist[1].rename('x')
-    starlist.header.append('2 x')
-    starlist[2].rename('y')
-    starlist.header.append('3 y')
-
-    
-    starlist[0][0]=100                  #code for a star
-    starlist[1][0]=x1
-    starlist[2][0]=y1
-
-
-    starlist[0][1]=100                  
-    starlist[1][1]=x2
-    starlist[2][1]=y2
-
-    starlist[0][2]=100                  
-    starlist[1][2]=x3
-    starlist[2][2]=y3  
-
-    starlist[0][3]=100                  
-    starlist[1][3]=x4
-    starlist[2][3]=y4
-
-    starlist[0][4]=100                  
-    starlist[1][4]=x5
-    starlist[2][4]=y5    
-
-    
-    starlist.append('mag')
-    starlist.header.append('4 mag')
-    starlist[3][0]=mag1
-    starlist[3][1]=mag2
-    starlist[3][2]=mag3
-    starlist[3][3]=mag4
-    starlist[3][4]=mag5 
-
-  
-    return starlist                    #this is an AsciiData object
-
-
+	outfile = open(filepath, 'w')
+	outfile.write("\n".join([str(star) for star in list_stars]))
+	outfile.close()
 
 
 
