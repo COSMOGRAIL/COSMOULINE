@@ -17,9 +17,9 @@ FICHIER POUR PSFSIM_SIG_MINI_new4.f
 =======================================================
 | Nb d'iterations entre 2 sauvegardes    |1000
 |----------------------------------------|-------------
-| Nb d'iterations max. pour minimi moffat|3000
+| Nb d'iterations max. pour minimi moffat|300
 |----------------------------------------|-------------
-| Nb d'iterations max. pour minimi fond  |1000
+| Nb d'iterations max. pour minimi fond  |200
 |----------------------------------------|-------------
 | Valeur deltaCHI min entre 10 iterations|1.E-40
 =======================================================
@@ -50,11 +50,11 @@ FICHIER POUR PSFSIM_SIG_MINI_new4.f
 | Pas sur le Fond                        |2.
 | Constante                              |0.
 |------------------------------------------------------
-| FWHM initiale de la gaussienne         |30.
+| FWHM initiale de la gaussienne         |$fwhmini$
 |------------------------------------------------------
-| FWHM finale de la gaussienne           |50.
+| FWHM finale de la gaussienne           |$fwhmfin$
 |------------------------------------------------------
-| Nombre d'iterations pour la gaussienne |300
+| Nombre d'iterations pour la gaussienne |100
 |------------------------------------------------------
 | Residu minimum (resi_min)              |0.4
 =======================================================
