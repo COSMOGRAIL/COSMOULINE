@@ -817,8 +817,8 @@ def skysimheader(rawimg):
     rotator = 0.0
 
 
-    dateobsstring = "%sT%s" % (header["COMMENT"][36:46], header["DATE-OBS"]) # looks like standart DATE-OBS field
-    pythondt = datetime.datetime.strptime(dateobsstring, "%Y-%m-%dT%H:%M:%S") # beginning of exposure in UTC
+    dateobsstring = "%s" % (header["DATE-OBS"]) # looks like standart DATE-OBS field
+    pythondt = datetime.datetime.strptime(dateobsstring, "%Y-%m-%dT%H%M%S") # beginning of exposure in UTC
     exptime = float(header['EXPOTIME'])
     pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
 	
