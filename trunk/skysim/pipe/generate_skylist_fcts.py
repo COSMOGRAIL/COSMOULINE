@@ -1,6 +1,5 @@
-#we define some functions to create instances of the class simimg; 
+#we define some functions that are useful to create instances of the class simimg in another script; 
 
-import asciidata
 import sys
 import random
 import math
