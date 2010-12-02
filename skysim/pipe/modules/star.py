@@ -17,18 +17,15 @@ class Star:
         return "%i\t%.3f\t%.3f\t%.3f" % (self.code, self.pos_x, self.pos_y, self.mag)
 
 
-    def shift(self, shift_x, shift_y)
+    def shift(self, shift_x, shift_y):
         self.pos_x += shift_x
         self.pos_y += shift_y
 
 
-    def rotate(self, angle)           #the angle is in degrees
+    def rotate(self, angle):           #the angle is in degrees
         old_coord=complex(self.pos_x, self.pos_y)
         rotation=cmath.exp(math.radians(angle) * 1j)
         new_coord= rotation * old_coord
         self.pos_x=new_coord.real
         self.pos_y=new_coord.imag
-
-
-#myfile.write("\n".join([str(s) for s in catalog])
 
