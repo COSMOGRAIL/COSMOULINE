@@ -34,7 +34,7 @@ for seeing in np.linspace(0.45,3.0,1):
 
 
 #we write the catalogue into a pickle
-writepickle(catalogue, os.path.join(pipedir, simname + '.pkl'))
+writepickle(catalogue, os.path.join(workdir, simname + '.pkl'))
 
 
 
