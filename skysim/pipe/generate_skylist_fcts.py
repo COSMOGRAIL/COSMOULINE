@@ -8,9 +8,6 @@ from star import *
 
 # a simple function to write an ascii file from a list of stars
 def writeto(filepath, list_stars):
-	import sys
-	import os
-
 	outfile = open(filepath, 'w')
 	outfile.write("\n".join([str(star) for star in list_stars]))
 	outfile.close()
@@ -116,10 +113,10 @@ def skylist_randomstars(imgdimx, imgdimy, nb_stars = 0, mag_min = 17.0, mag_max 
 
 
 #####################################################################################################################
-#a fct that takes an input list and return a list with all the stars shifted and rotated
+#a fct that takes an input list and return a list with all the stars shifted and rotated. Notice that we first apply the shift and then the rotation!
 #the angle is in degrees, the shift in pixels
 
-def rot_shift_starlist(inputlist, shiftx, shifty, angle):
+def shift_rot_starlist(inputlist, shiftx, shifty, angle):
 
     #we create a deep copy of the input starlist:
     outputlist = copy.deepcopy(inputlist)
@@ -138,10 +135,10 @@ def rot_shift_starlist(inputlist, shiftx, shifty, angle):
 
 
 ######################################################################################################################
-#a fct that applies a random shift/rotation to a starlist, where the shift is contained in [-shift_max, shift_max] and the angle is contained in [-angle_max, angle_max]
+#a fct that applies a random shift and a random rotation to a starlist, where the shift is contained in [-shift_max, shift_max] and the angle is contained in [-angle_max, angle_max]
 #Units: shift [pixel], angle [degrees]
 
-def random_rot_shift_starlist(inputlist, shiftx_max, shifty_max, angle_max):
+def random_shift_rot_starlist(inputlist, shiftx_max, shifty_max, angle_max):
     print 'I will apply a coordinate transformation with the following properties:'
     print 'Shift in x direction between %.2f and %.2f pixels.' %(-abs(shiftx_max), abs(shiftx_max))
     print 'Shift in y direction between %.2f and %.2f pixels.' %(-abs(shifty_max), abs(shifty_max))
@@ -151,7 +148,7 @@ def random_rot_shift_starlist(inputlist, shiftx_max, shifty_max, angle_max):
     shifty = random.uniform( - shifty_max, shifty_max)
     angle = random.uniform( - angle_max, angle_max)
 
-    return rot_shift_starlist(inputlist, shiftx, shifty, angle)
+    return shift_rot_starlist(inputlist, shiftx, shifty, angle)
 
 
 
