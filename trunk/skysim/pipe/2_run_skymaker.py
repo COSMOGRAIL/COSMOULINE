@@ -67,10 +67,10 @@ for i,image in enumerate(listimages):
 	parameters += " -IMAGE_NAME %s" %imgfilepath 	#sky maker will save the img directly in the good directory		
 
 	for attr, value in image.__dict__.iteritems():
-		if attr == "sky_list" and type(value) != None:
+		if attr == "sky_list" and value != None:
 			writeto(sky_list_filepath, value)		# I write the skylist.txt
 		
-		elif attr == "image_size" and type(value) != None:
+		elif attr == "image_size" and value != None:
 			attr = attr.upper()
 			parameters += " -%s %s,%s" %(attr, value[0], value[1])
 
