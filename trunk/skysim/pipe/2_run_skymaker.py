@@ -13,7 +13,7 @@ import pyfits
 print "You want to simulate the set of images : ", simname 
 proquest(askquestions)
 
-filepath = os.path.join(pipedir, simname + '.pkl')
+filepath = os.path.join(workdir, simname + '.pkl')
 listimages = readpickle(filepath)	# this is a list of object simimg
 
 nbrofimages = len(listimages)
