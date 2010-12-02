@@ -65,7 +65,7 @@ for i, image in enumerate(images):
 	print "- " * 40
 	print i+1, "/", len(images), ":"
 
-	imgname = os.path.basename(image)
+	imgname = os.path.basename(image).split(".")[0]		#drop extension
 	fitsfile = image
 	
 	f2nimg = f2n.fromfits(fitsfile)
