@@ -28,10 +28,6 @@ configdir = "/my/absolute/path/to/cosmouline/configs/config_HE0435"
 
 
 
-
-
-
-
 import os
 import shutil
 import sys
@@ -79,11 +75,6 @@ oldextractexe = "nice -n 19 " + os.path.join(oldpsfmcsf77dir, "extract.exe")
 oldpsfmexe = "nice -n 19 " + os.path.join(oldpsfmcsf77dir, "psfm.exe") 
 oldpsfexe = "nice -n 19 " + os.path.join(oldpsfmcsf77dir, "psf-auto.exe") 
 
-
-
-# Path to pyMCS :
-# (not yet needed ...)
-#pymcsdir = "/Users/mtewes/Documents/Prog/Python/pyMCS/pyMCS_jan2010/"
 
 #---------------------------------------------------------------------------
 
@@ -190,8 +181,6 @@ old_lambda_template_filename = os.path.join(configdir, "template_old_lambda.txt"
 
 in_template_filename = os.path.join(configdir, "template_in.txt")
 deconv_template_filename = os.path.join(configdir, "template_deconv.txt")
-
-#pyMCS_config_template_filename = os.path.join(configdir, "emplate_pyMCS.py")
 
 #---------------------------------------------------------------------------
 
