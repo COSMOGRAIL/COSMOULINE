@@ -2,12 +2,13 @@
 
 class simimg:
 
-    def __init__(self, image_size=None, image_type=None, grid_size=None, image_header=None, gain=None, satur_level=None, readout_noise=None,
+    def __init__(self, image_size=None, image_type=None, image_name=None, grid_size=None, image_header=None, gain=None, satur_level=None, readout_noise=None,
         exposure_time=None, mag_zeropoint=None, pixel_size=None, psf_type=None, psf_name=None, seeing_type=None, seeing_fwhm=None, aureole_radius=None,
         aureole_sb=None, psf_oversamp=None, psf_mapsize=None, trackerror_type=None, trackerror_maj=None, trackerror_min=None, trackerror_ang=None,
         m1_diameter=None, m2_diameter=None, arm_count=None, arm_thickness=None, arm_posangle=None, back_mag=None, sky_list=None):
 
         #--------------------------------- Image -------------------------------------
+	self.image_name=image_name		# The name of the image
         self.image_size=image_size		# Width,[height] of the output frame
         self.image_type=image_type		# PUPIL_REAL,PUPIL_IMAGINARY,PUPIL_MODULUS,
 						# PUPIL_PHASE,PUPIL_MTF,PSF_MTF,PSF_FULLRES,
@@ -61,7 +62,7 @@ class simimg:
 	self.sky_list=sky_list
 
 """	
-# this class unable use to iter over every python class that we create (like simimg)
+# this class unable us to iter over every python class that we create (like simimg)
 
 class IterableObject(object):	
    	def __iter__(self):
