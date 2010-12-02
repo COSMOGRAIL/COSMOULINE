@@ -37,7 +37,7 @@ SIGMA_SKY = [$sigmasky$]
 IMG_GAIN = $gain$
 NPIX = 64
 S_FACT = 2.0
-G_RES = 2.0
+G_RES = 2.5
 # Position of the central pixel (NE-SW-O)
 CENTER = 'NE'
 
