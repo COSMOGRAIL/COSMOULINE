@@ -203,20 +203,20 @@ db.addFields(imgdb, ['%s:str' % deckeyfilenum, '%s:str' % deckeypsfused, '%s:flo
 	
 
 
-# Now we have to put the reference image in first position.
+# Now we have to "copy" the reference image to the first position.
+# But we will leave it inside the normal list, so it will be duplicated.
+
 
 
 # We select the reference image
 refimage = [image for image in readyimages if image['imgname'] == refimgname][0] # we take the first and only element.
-# And the other images :
-readyimages = [image for image in readyimages if image['imgname'] != refimgname]
-# And we put the ref image back into the first positon :
+# And copy it into the first positon :
 readyimages.insert(0, refimage)
-
+# readyimages now contains n+1 images !!!!
 
 for i, image in enumerate(readyimages):
 
-	decfilenum = mcsname(i+1); # so we start at i = 1
+	decfilenum = mcsname(i+1); # so we start at i = 1 !!! i = 1 is reserved for the copy of the ref image.
 	print "- " * 40
 	print decfilenum, "/", len(readyimages), ":", image['imgname']
 	
@@ -244,11 +244,14 @@ for i, image in enumerate(readyimages):
 	os.symlink(os.path.join(imgobjdir, "g.fits") , os.path.join(decdir, "g%s_notnorm.fits" % decfilenum))
 	os.symlink(os.path.join(imgobjdir, "sig.fits") , os.path.join(decdir, "sig%s_notnorm.fits" % decfilenum))
 
-	db.update(imgdb, ['recno'], [image['recno']], {deckeyfilenum: decfilenum, deckeypsfused: image['choosenpsf'], deckeynormused: image["choosennormcoeff"]})
 
+	# For the duplicated ref image, we do not update the database !
+	# As in fact, there is no duplicated ref image in the database...
+	if i != 0 :
+		db.update(imgdb, ['recno'], [image['recno']], {deckeyfilenum: decfilenum, deckeypsfused: image['choosenpsf'], deckeynormused: image["choosennormcoeff"]})
 
 
 print "- " * 40
 db.pack(imgdb)
 notify(computer, withsound, "Hello again.\nI've prepared %i images for %s"%(len(readyimages), deckey))
-
+print "(Yes, one more, as I duplicated the ref image.)"
