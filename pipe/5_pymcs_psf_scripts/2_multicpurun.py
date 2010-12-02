@@ -47,5 +47,14 @@ forkmap.map(buildpsf, images, n = ncorestouse)
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
 
+if not os.path.isfile(psfkicklist):
+	print "The psfkicklist already exists :"
+else:
+	cmd = "touch " + psfkicklist
+	os.system(cmd)
+	print "I have just touched the psfkicklist for you :"
+print psfkicklist
+
+
 notify(computer, withsound, "PSF construction for psfname: %s using %i cores. It took me %s ." % (psfname, ncorestouse, timetaken))
 
