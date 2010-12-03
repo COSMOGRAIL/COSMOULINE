@@ -47,7 +47,7 @@ forkmap.map(buildpsf, images, n = ncorestouse)
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
 
-if not os.path.isfile(psfkicklist):
+if os.path.isfile(psfkicklist):
 	print "The psfkicklist already exists :"
 else:
 	cmd = "touch " + psfkicklist
