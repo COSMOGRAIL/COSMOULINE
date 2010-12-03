@@ -143,3 +143,21 @@ for i, image in enumerate(images):
 	
 print "- " * 30
 
+
+
+
+if os.path.isfile(psfkicklist):
+	print "The psfkicklist already exists :"
+else:
+	cmd = "touch " + psfkicklist
+	os.system(cmd)
+	print "I have just touched the psfkicklist for you :"
+
+print psfkicklist
+print "Once you have checked the PSFs (for instance by looking at the pngs),"
+print "you should append problematic psf constructions to that list."
+print "(Same format as for testlist.txt etc)"
+print ""
+
+if makejpgarchives :
+	makejpgtgz(pngdir, workdir, askquestions = askquestions)
