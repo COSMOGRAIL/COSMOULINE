@@ -5,7 +5,7 @@
 #	Final victory over this lovely deconv.exe output file ...
 #
 # For each source we insert x, y, flux = the acutal flux, calculated with a bizarre formula from the MCS intensity.
-# Plus there is z1, z2, delta1 and delta2
+# Plus there is z1, z2, delta1, delta2 and the photonic shot noise.
 #
 #	WARNING  : the flux is "denormalized" by whatever normalization coeff you had used.
 #	So we write raw fluxes into the db, not normalized ones !
@@ -18,6 +18,7 @@ from variousfct import *
 from readandreplace_fct import *
 import star
 import progressbar
+import numpy as np
 
 
 
@@ -60,6 +61,7 @@ for src in ptsrcs:
 	newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_flux", "type": "float"}) # This will contain the flux (as would be measured by aperture  photometry on the original raw image)
 	newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_x", "type": "float"})
 	newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_y", "type": "float"})
+	newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_shotnoise", "type": "float"}) # this will contain the photonic shot noise of the flux including the sky level of course.
 newfields.append({"fieldname": "out_" + deckey + "_z1", "type":"float"})
 newfields.append({"fieldname": "out_" + deckey + "_z2", "type":"float"})
 newfields.append({"fieldname": "out_" + deckey + "_delta1", "type":"float"})
@@ -102,6 +104,11 @@ for image in images:
 		if mcsint < 0.0:
 			print "%s, %s, %s : %f " % (image["imgname"], image["datet"], src.name, flux)
 
+		# now we can calculate the shot noise
+		skyflux = 64.0*64.0*image["skylevel"]	# this is the flux of the sky in a box of the size of the frame used to deconvole objects
+		shotnoise = np.sqrt(skyflux + flux)	# this is the shot noise of the not normalized flux (skyflux is anyway not normalized)
+
+		image["updatedict"]["out_" + deckey + "_" + src.name + "_shotnoise"] = float(shotnoise)
 	
 print "\nI would now update the database."
 proquest(askquestions)
