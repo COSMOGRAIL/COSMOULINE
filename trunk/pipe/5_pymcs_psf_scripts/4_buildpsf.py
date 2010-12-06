@@ -35,11 +35,13 @@ def buildpsf(image):
 	
 	mcs = MCS_interface("pyMCS_psf_config.py")
 	
-	mcs.set_up_workspace(extract=True, clear=False, backup=False)
 	mcs.fitmof()
 	mcs.fitnum()
 	
-	os.symlink(os.path.join(imgpsfdir, "results", "s_1.fits"), os.path.join(imgpsfdir, "s001.fits"))
+	psffilepath = os.path.join(imgpsfdir, "s001.fits")
+	if os.path.exists(psffilepath):
+		os.remove(psffilepath)
+	os.symlink(os.path.join(imgpsfdir, "results", "s_1.fits"), psffilepath)
 	
 	
 starttime = datetime.now()

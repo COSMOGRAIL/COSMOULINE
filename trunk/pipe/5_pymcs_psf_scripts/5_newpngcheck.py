@@ -86,11 +86,18 @@ for i, image in enumerate(images):
 	for j in range(nbrpsf):
 		
 		inputfitspath = os.path.join(resultsdir, "star_%03i.fits" % (j+1) )
+		starcosmicspklfilepath = os.path.join(resultsdir, "starcosmics_%03i.pkl" % (j+1))
+		
+		if os.path.exists(starcosmicspklfilepath):
+			cosmicslist = readpickle(starcosmicspklfilepath, verbose=False)
+		else:
+			cosmicslist = []
 		
 		f2nimg = f2n.fromfits(inputfitspath, verbose=False)
 		f2nimg.setzscale("auto", "auto")
 		f2nimg.makepilimage(scale = "log", negative = False)
 		f2nimg.upsample(4)
+		f2nimg.drawstarslist(cosmicslist, r=10)
 		f2nimg.writetitle("%s" % (psfstars[j].name))
 		psfstarimglist.append(f2nimg)
 	
@@ -126,9 +133,9 @@ for i, image in enumerate(images):
 		inputfitspath = os.path.join(resultsdir, "difnum%02i.fits" % (j+1) )
 		
 		f2nimg = f2n.fromfits(inputfitspath, verbose=False)
-		f2nimg.setzscale(-3, 3)
+		f2nimg.setzscale(-0.03, 0.03)
 		f2nimg.makepilimage(scale = "lin", negative = False)
-		f2nimg.upsample(2)
+		f2nimg.upsample(4)
 		#f2nimg.writeinfo([image['imgname']], (255, 0, 0))
 		#f2nimg.writeinfo(["","g001.fits"])
 		f2nimg.writetitle("difnum%02i.fits" % (j+1))
