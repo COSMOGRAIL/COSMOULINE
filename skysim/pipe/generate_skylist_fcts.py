@@ -121,6 +121,7 @@ def skylist_nicerandomfield(imgdimx, imgdimy, nb_stars = 0, mag_min = 17.0, mag_
             for star in starlist:
                 if ((star.pos_x-thisstar.pos_x)**2.0 + (star.pos_y-thisstar.pos_y)**2.0)**(0.5) < min_dist:
                     too_close=True
+                    break
 
             if not too_close:
                 starlist.append(thisstar)
