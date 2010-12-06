@@ -37,7 +37,7 @@ SIGMA_SKY = [$sigmasky$]
 IMG_GAIN = $gain$
 NPIX = 64
 S_FACT = 2.0
-G_RES = 2.5
+G_RES = 2.0
 # Position of the central pixel (NE-SW-O)
 CENTER = 'NE'
 
@@ -74,7 +74,7 @@ G_POS = [[]]
 #### PSF (num) parameters ####
 ##############################
 MAX_IT_N = 200
-LAMBDA_NUM = 0.9
+LAMBDA_NUM = 0.01 # smaller value -> stronger smoothing.
 BKG_STEP_RATIO_NUM = 10.0
 PSF_RAD = 10.0
 
