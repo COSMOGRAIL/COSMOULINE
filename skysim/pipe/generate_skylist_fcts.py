@@ -83,7 +83,7 @@ def skylist_starnetwork(imgdimx, imgdimy, matrix_x, matrix_y, distance=None, mag
 
 
 #a fct that creates a list of stars with random positions and magnitudes
-#you can specify a minimal distance between the stars, the avoid overlapping stars
+#you can specify a minimal distance between the stars, the avoid stars too close to each other
 
   
 def skylist_nicerandomfield(imgdimx, imgdimy, nb_stars = 0, mag_min = 17.0, mag_max = 20.0, min_dist=None):
