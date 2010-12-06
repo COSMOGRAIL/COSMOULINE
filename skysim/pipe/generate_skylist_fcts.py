@@ -82,32 +82,51 @@ def skylist_starnetwork(imgdimx, imgdimy, matrix_x, matrix_y, distance=None, mag
 
 
 
- #a fct that creates a list of stars with random positions and magnitudes (although skymaker is also able to do that but we want to have the control on it)
+#a fct that creates a list of stars with random positions and magnitudes
+#you can specify a minimal distance between the stars, the avoid overlapping stars
+
   
-def skylist_randomstars(imgdimx, imgdimy, nb_stars = 0, mag_min = 17.0, mag_max = 20.0):
-	#we create the list
-	starlist = []
+def skylist_nicerandomfield(imgdimx, imgdimy, nb_stars = 0, mag_min = 17.0, mag_max = 20.0, min_dist=None):
 
-    	#we exclude the borders of the image
-    	xborder_min=0.1*imgdimx        #no stars on the borders
-    	yborder_min=0.1*imgdimy
+    starlist = []
 
-    	xborder_max=0.9*imgdimx
-    	yborder_max=0.9*imgdimy
+    #we exclude the borders of the image;no stars on the borders 
+    xborder_min=0.1*imgdimx
+    yborder_min=0.1*imgdimy
+
+    xborder_max=0.9*imgdimx
+    yborder_max=0.9*imgdimy
+
+    
+    ##############################   case with no minimal distance    #########################
+    if min_dist == None:
+        for i in range(nb_stars):
+            #we set randomly the position of the stars avoiding to put some on the borders of the image; we also generate the mag
+            x = random.uniform(xborder_min, xborder_max)
+            y = random.uniform(yborder_min, yborder_max)
+            mag = random.uniform(mag_min, mag_max)
+
+            starlist.append(Star(pos_x = x, pos_y = y, mag = mag))
 
 
-	for index in range(nb_stars):
+    #################################  case with specified minimal distance    ##############
+    else:
+        while len(starlist) < nb_stars:
+            x = random.uniform(xborder_min, xborder_max)
+            y = random.uniform(yborder_min, yborder_max)
+            mag = random.uniform(mag_min, mag_max)
+            thisstar=Star(pos_x = x, pos_y = y, mag = mag )
+            #now we test if the generated coords do not violate the minimal distance condition
+            too_close=False
+            for star in starlist:
+                if ((star.pos_x-thisstar.pos_x)**2.0 + (star.pos_y-thisstar.pos_y)**2.0)**(0.5) < min_dist:
+                    too_close=True
 
-		#we set randomly the position of the stars avoiding to put some on the borders of the image
-		x = random.uniform(xborder_min, xborder_max)
-		y = random.uniform(yborder_min, yborder_max)
+            if not too_close:
+                starlist.append(thisstar)
 
-		# we set randomly the magnitude between a max and a min value
-		mag = random.uniform(mag_min, mag_max) 
 
-		starlist.append(Star(pos_x = x, pos_y = y, mag = mag))
-
-	return starlist		
+    return starlist		
 
 
 
