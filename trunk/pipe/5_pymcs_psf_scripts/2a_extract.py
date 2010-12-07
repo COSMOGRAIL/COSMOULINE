@@ -2,9 +2,14 @@ execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import forkmap
+import glob
+import star
 
 import MCS_src.lib.utils as fn
 from MCS_interface import MCS_interface
+
+psfstars = star.readmancat(psfstarcat)
+
 
 # Select images to treat
 db = KirbyBase()
@@ -36,4 +41,27 @@ def extractpsf(image):
 forkmap.map(extractpsf, images, n = ncorestouse)
 
 notify(computer, withsound, "PSF extraction done for psfname %s." % (psfname))
+
+# Now we help the user with the mask creation.
+if refimgname in [img["imgname"] for img in images]:
+	
+	imgpsfdir = os.path.join(psfdir, refimgname)
+	starfiles = glob.glob(os.path.join(imgpsfdir, "results", "star_*.fits"))
+	
+	
+	print "The stars extracted from the reference image are available here :"
+	print "\n".join(starfiles)
+	print "You can now open these files with DS9 to build your mask (optional)."
+	print "Don't mask cosmics, only companion stars !"
+	print "Save your corresponding region files here :"
+	
+	#starfilenames = [os.path.splitext(os.path.basename(s))[0] for s in starfiles]
+	
+	maskfilepaths = [os.path.join(configdir, "%s_mask_%s.reg" % (psfkey, name)) for name in [s.name for s in psfstars]]
+	print "\n".join(maskfilepaths)
+	
+	print "If asked, use physical coordinates and DS9 (or REG) file format."
+else:
+	print "By the way, the reference image was not among these images !"
+	print "You should always have the reference image in your selection."
 

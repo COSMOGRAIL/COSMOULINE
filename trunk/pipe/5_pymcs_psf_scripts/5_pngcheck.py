@@ -8,11 +8,29 @@ import shutil
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import star
+import ds9reg
 
 
 pngdir = os.path.join(workdir, psfkey + "_png")
 psfstars = star.readmancat(psfstarcat)
 nbrpsf = len(psfstars)
+
+# We read the mask files :
+for i, s in enumerate(psfstars):
+	
+	s.filenumber = (i+1)
+	possiblemaskfilepath = os.path.join(configdir, "%s_mask_%s.reg" % (psfkey, s.name))
+	if os.path.exists(possiblemaskfilepath):
+		
+		s.reg = ds9reg.regions(64, 64) # hardcoded for now ...
+		s.reg.readds9(possiblemaskfilepath, verbose=False)
+		s.reg.buildmask(verbose = False)
+		
+		# print "You masked %i pixels of star %s." % (np.sum(s.reg.mask), s.name)
+	else:
+		# print "No mask file for star %s." % (s.name)
+		pass
+
 
 if os.path.isdir(pngdir):
 	print "I would delete existing pngs."
@@ -81,6 +99,7 @@ for i, image in enumerate(images):
 	
 	txtendpiece.writeinfo(infolist)
 	
+	
 	# The psf stars
 	psfstarimglist = []
 	for j in range(nbrpsf):
@@ -93,11 +112,17 @@ for i, image in enumerate(images):
 		else:
 			cosmicslist = []
 		
+		
+			
+		
 		f2nimg = f2n.fromfits(inputfitspath, verbose=False)
 		f2nimg.setzscale("auto", "auto")
 		f2nimg.makepilimage(scale = "log", negative = False)
 		f2nimg.upsample(4)
-		f2nimg.drawstarslist(cosmicslist, r=10)
+		f2nimg.drawstarslist(cosmicslist, r=3)
+		if hasattr(psfstars[j], "reg"):
+			for circle in psfstars[j].reg.circles:
+				f2nimg.drawcircle(circle["x"], circle["y"], r = circle["r"], colour = (170))
 		f2nimg.writetitle("%s" % (psfstars[j].name))
 		psfstarimglist.append(f2nimg)
 	
@@ -106,18 +131,47 @@ for i, image in enumerate(images):
 	psfstarimglist = psfstarimglist[:4]
 	psfstarimglist.append(txtendpiece)
 	
+	
+	# The sigmas
+	sigmaimglist = []
+	for j in range(nbrpsf):
+		
+		inputfitspath = os.path.join(resultsdir, "starsig_%03i.fits" % (j+1) )
+		
+		f2nimg = f2n.fromfits(inputfitspath, verbose=False)
+		f2nimg.setzscale(0, 1.0e3)
+		f2nimg.makepilimage(scale = "log", negative = False)
+		f2nimg.upsample(4)
+		#f2nimg.drawstarslist(cosmicslist, r=10)
+		#f2nimg.writetitle("%s" % (psfstars[j].name))
+		sigmaimglist.append(f2nimg)
+	
+	# We fill with blanks and cut at 4 images :
+	sigmaimglist.extend([blank256, blank256, blank256, blank256])
+	sigmaimglist = sigmaimglist[:5]
+	#sigmaimglist.append(txtendpiece)
+	
 	# The difcm
 	difmlist = []
 	for j in range(nbrpsf):
-		
+	
+		starmaskfilepath =  os.path.join(resultsdir, "starmask_%03i.fits" % (j+1) )
 		inputfitspath = os.path.join(resultsdir, "difm01_%02i.fits" % (j+1) )
-		
 		f2nimg = f2n.fromfits(inputfitspath, verbose=False)
+		
+		if os.path.exists(starmaskfilepath):
+			(mask, h) = fromfits(starmaskfilepath, verbose = False)
+			f2nimg.numpyarray[mask > 0.5] = -50.0
+		
 		f2nimg.setzscale(-200, 200)
 		f2nimg.makepilimage(scale = "lin", negative = False)
 		f2nimg.upsample(4)
 		#f2nimg.writeinfo([image['imgname']], (255, 0, 0))
 		#f2nimg.writeinfo(["","g001.fits"])
+		if hasattr(psfstars[j], "reg"):
+			for circle in psfstars[j].reg.circles:
+				f2nimg.drawcircle(circle["x"], circle["y"], r = circle["r"], colour = (255))
+		
 		f2nimg.writetitle("difm01_%02i.fits" % (j+1))
 		difmlist.append(f2nimg)
 	
@@ -146,7 +200,7 @@ for i, image in enumerate(images):
 	difnumlist = difnumlist[:4]
 	difnumlist.append(totpsfimg)
 
-	f2n.compose([psfstarimglist, difmlist, difnumlist], pngpath)	
+	f2n.compose([psfstarimglist, sigmaimglist, difmlist, difnumlist], pngpath)	
 	
 print "- " * 30
 
