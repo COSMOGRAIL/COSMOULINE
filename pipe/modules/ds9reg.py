@@ -67,12 +67,13 @@ class regions:
 			
 		
 			
-	def buildmask(self):
+	def buildmask(self, verbose = True):
 		"""
 		Puts the interiors of self.circles to True
 		"""
 		
-		print "Building region mask ..."
+		if verbose:
+			print "Building region mask ..."
 		
 		for i in range(self.mask.shape[0]):
 			for j in range(self.mask.shape[1]):
