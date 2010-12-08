@@ -7,9 +7,12 @@ Does not bin the measurements by nights.
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 import variousfct
+import headerstuff
 import star
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.dates
+
 
 print "You want to analyze the deconvolution %s" %deckey
 print "Deconvolved object : %s" % decobjname
@@ -23,12 +26,13 @@ db = KirbyBase()
 images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True)
 
 
-plt.figure(figsize=(12,8))	# sets figure size
+#plt.figure(figsize=(12,8))	# sets figure size
+
+mhjds = np.array([image["mhjd"] for image in images])
 
 for s in ptsources:
 
 	mags = -2.5*np.log10(np.array([image["out_%s_%s_flux" % (deckey, s.name)]*image[deckeynormused] for image in images]))
-	mhjds = np.array([image["mhjd"] for image in images])
 	
 	plt.plot(mhjds, mags, linestyle="None", marker=".", label = s.name)
 
@@ -38,13 +42,32 @@ plt.grid(True)
 ax=plt.gca()
 ax.set_ylim(ax.get_ylim()[::-1])
 
-plt.title(deckey, fontsize=20)
+#plt.title(deckey, fontsize=20)
 plt.xlabel('MHJD [days]')
 plt.ylabel('Magnitude (instrumental)')
 
+titletext = deckey
+titletext = "%s (%i points)" % (xephemlens.split(",")[0], len(images))
+
+ax.text(0.02, 0.97, titletext, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
+
+
 #plt.legend()
-leg = ax.legend(loc='best', fancybox=True)
+leg = ax.legend(loc='upper right', fancybox=True)
 leg.get_frame().set_alpha(0.5)
+
+# Second x-axis with actual dates :
+yearx = ax.twiny()
+yearxmin = headerstuff.DateFromJulianDay(np.min(mhjds) + 2400000.5)
+yearxmax = headerstuff.DateFromJulianDay(np.max(mhjds) + 2400000.5)
+yearx.set_xlim(yearxmin, yearxmax)
+yearx.xaxis.set_minor_locator(matplotlib.dates.MonthLocator())
+yearx.xaxis.set_major_locator(matplotlib.dates.YearLocator())
+yearx.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%Y'))
+yearx.xaxis.tick_top()
+yearx.set_xlabel("Date")
+
+
 plt.show()
 
 	
