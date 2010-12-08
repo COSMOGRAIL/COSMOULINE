@@ -16,7 +16,7 @@ import star
 
 sigclip = cosmicssigclip
 sigfrac = 0.3
-objlim = 3.0
+objlim = 1.0
 
 ###########
 
@@ -34,7 +34,7 @@ print "For this I will run on %i cores." % ncorestouse
 proquest(askquestions)
 
 for i, img in enumerate(images):
-	img["execi"] = i # We do not write this into the db, it's just for this particular run.
+	img["execi"] = (i+1) # We do not write this into the db, it's just for this particular run.
 
 # We see how many stars we have :
 psfstars = star.readmancat(psfstarcat)
