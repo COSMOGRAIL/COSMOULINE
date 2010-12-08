@@ -66,7 +66,7 @@ for renormsource in renormsources:
 	fluxes = asarray(map(lambda x: x[fluxfieldname], images))
 	medflux = median(fluxes) # so this median always refers to the "raw" fluxes, before any normalization
 	
-	mags = -2.5 * log10(fluxes/coeffs)
+	mags = -2.5 * log10(fluxes)
 	# note that all this mag stuff is just for the plots.
 	# the coeff will be written as multiplicative in flux.
 	# again, we divide by the coeffs to come back to the raw fluxes before any normalization.
