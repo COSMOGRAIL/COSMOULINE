@@ -24,7 +24,7 @@ proquest(askquestions)
 
 
 for i, img in enumerate(images):
-	img["execi"] = i # We do not write this into the db, it's just for this particular run.
+	img["execi"] = (i+1) # We do not write this into the db, it's just for this particular run.
 
 def buildpsf(image):
 

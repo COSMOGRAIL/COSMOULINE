@@ -127,8 +127,8 @@ for i, image in enumerate(images):
 		psfstarimglist.append(f2nimg)
 	
 	# We fill with blanks and cut at 4 images :
-	psfstarimglist.extend([blank256, blank256, blank256])
-	psfstarimglist = psfstarimglist[:4]
+	#psfstarimglist.extend([blank256, blank256, blank256])
+	#psfstarimglist = psfstarimglist[:4]
 	psfstarimglist.append(txtendpiece)
 	
 	
@@ -147,9 +147,10 @@ for i, image in enumerate(images):
 		sigmaimglist.append(f2nimg)
 	
 	# We fill with blanks and cut at 4 images :
-	sigmaimglist.extend([blank256, blank256, blank256, blank256])
-	sigmaimglist = sigmaimglist[:5]
+	#sigmaimglist.extend([blank256, blank256, blank256, blank256])
+	#sigmaimglist = sigmaimglist[:5]
 	#sigmaimglist.append(txtendpiece)
+	sigmaimglist.append(blank256)
 	
 	# The difcm
 	difmlist = []
@@ -176,8 +177,8 @@ for i, image in enumerate(images):
 		difmlist.append(f2nimg)
 	
 	# We fill with blanks and cut at 4 images :
-	difmlist.extend([blank256, blank256, blank256])
-	difmlist = difmlist[:4]
+	#difmlist.extend([blank256, blank256, blank256])
+	#difmlist = difmlist[:4]
 	difmlist.append(numpsfimg)
 	
 	# The difg
@@ -196,8 +197,8 @@ for i, image in enumerate(images):
 		difnumlist.append(f2nimg)
 	
 	# We fill with blanks and cut at 4 images :
-	difnumlist.extend([blank256, blank256, blank256])
-	difnumlist = difnumlist[:4]
+	#difnumlist.extend([blank256, blank256, blank256])
+	#difnumlist = difnumlist[:4]
 	difnumlist.append(totpsfimg)
 
 	f2n.compose([psfstarimglist, sigmaimglist, difmlist, difnumlist], pngpath)	
