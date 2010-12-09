@@ -4,6 +4,7 @@ import sys
 import random
 import copy
 from star import *
+import asciidata
 
 
 # a simple function to write an ascii file from a list of stars
@@ -11,6 +12,28 @@ def writeto(filepath, list_stars):
 	outfile = open(filepath, 'w')
 	outfile.write("\n".join([str(star) for star in list_stars]))
 	outfile.close()
+
+
+
+
+# a fct that reads an ascii file and returns a list of stars
+def readasciistarlist(filepath):
+    starlist = []
+    inputfile = asciidata.open(filepath)
+    if not (inputfile.ncols==3 or inputfile.ncols==4):
+        print 'Problem with ascii input file: number of columns is not equal to 3 or 4!'
+        sys.exit()
+
+    #if the mags are not defined, we create a column containing None
+    if inputfile.ncols==3:
+        inputfile.append('mag')
+
+    for rindex in range(inputfile.nrows):
+        thisstar = Star(pos_x=inputfile[1][rindex], pos_y=inputfile[2][rindex], mag=inputfile[3][rindex])
+        starlist.append(thisstar)   
+                
+    return starlist    
+    
 
 
 
@@ -136,7 +159,7 @@ def skylist_nicerandomfield(imgdimx, imgdimy, nb_stars = 0, mag_min = 17.0, mag_
 #a fct that takes an input list and return a list with all the stars shifted and rotated. Notice that we first apply the shift and then the rotation!
 #the angle is in degrees, the shift in pixels
 
-def shift_rot_starlist(inputlist, shiftx, shifty, angle):
+def shift_rot_starlist(inputlist, shiftx=0, shifty=0, angle=0):
 
     #we create a deep copy of the input starlist:
     outputlist = copy.deepcopy(inputlist)
@@ -158,7 +181,7 @@ def shift_rot_starlist(inputlist, shiftx, shifty, angle):
 #a fct that applies a random shift and a random rotation to a starlist, where the shift is contained in [-shift_max, shift_max] and the angle is contained in [-angle_max, angle_max]
 #Units: shift [pixel], angle [degrees]
 
-def random_shift_rot_starlist(inputlist, shiftx_max, shifty_max, angle_max):
+def random_shift_rot_starlist(inputlist, shiftx_max=0, shifty_max=0, angle_max=0):
     print 'I will apply a coordinate transformation with the following properties:'
     print 'Shift in x direction between %.2f and %.2f pixels.' %(-abs(shiftx_max), abs(shiftx_max))
     print 'Shift in y direction between %.2f and %.2f pixels.' %(-abs(shifty_max), abs(shifty_max))
