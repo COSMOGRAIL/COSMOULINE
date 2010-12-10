@@ -250,6 +250,7 @@ for i, image in enumerate(readyimages):
 	if i != 0 :
 		db.update(imgdb, ['recno'], [image['recno']], {deckeyfilenum: decfilenum, deckeypsfused: image['choosenpsf'], deckeynormused: image["choosennormcoeff"]})
 
+	# numbers in the db start with 0002
 
 print "- " * 40
 db.pack(imgdb)
