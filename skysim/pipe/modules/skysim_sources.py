@@ -1,5 +1,5 @@
 """
-Definition of a classes and functions to be drawn by skymaker
+Classes and functions about sources to be drawn by Skymaker
 """
 
 import sys, os
@@ -12,17 +12,36 @@ class Star:
 	Stars for a skymaker field
 	"""
 	
-	def __init__(self, pos_x = None, pos_y = None, mag = None):
+	def __init__(self, pos_x = None, pos_y = None, mag = None, name = None):
 
-		self.code = 100
-		self.pos_x = pos_x
-		self.pos_y = pos_y
-		self.mag = mag
-
+		self.code = "100"
+		
+		if pos_x == None:
+			self.pos_x = 10.0
+		else:
+			self.pos_x = pos_x
+			
+		if pos_y == None:
+			self.pos_y = 10.0
+		else:
+			self.pos_y = pos_y
+				
+		if mag == None:
+			self.mag = 17.0
+		else:
+			self.mag = mag
+			
+		if name == None:
+			self.name = "Untitled"
+		else:
+			self.name = name
+		
 
 	def __str__(self) :
-		return "%i\t%.3f\t%.3f\t%.3f" % (self.code, self.pos_x, self.pos_y, self.mag)
+		return "%s\t%.3f\t%.3f\t%.3f" % (self.code, self.pos_x, self.pos_y, self.mag)
 
+	def manstr(self) :
+		return "%s\t%.2f\t%.2f\t%.3f" % (self.name, self.pos_x, self.pos_y, self.mag)
 
 	def shift(self, shift_x, shift_y):
 		self.pos_x += shift_x
@@ -40,6 +59,78 @@ class Star:
 		self.pos_y=new_coord.imag
 
 
+class Galaxy:
+	"""
+	Galaxies for a skymaker field
+	
+	# A galaxy at FITS coordinates (102.0,180.7) with "total" magnitude 19.41,
+	# bulge-to-total ratio 0.42, bulge equivalent-radius 2.3 arcsec,
+	# projected bulge aspect ratio 0.8,
+	# bulge position angle 32.3 degrees (CCW, with respect to x axis),
+	# disk scale-length 4.0 arcsec, disk inclination (aspect ratio) 0.2, and
+	# disk position angle 31.3 degrees (CCW, with respect to x axis),
+	200 102.0 180.7 19.41 0.42 2.3 0.8 32.3 4.0 0.2 31.3
+
+	
+	"""
+	
+	def __init__(self, pos_x = None, pos_y = None, mag = None, name = None):
+
+		self.code = "200"
+		
+		if pos_x == None:
+			self.pos_x = 10.0
+		else:
+			self.pos_x = pos_x
+			
+		if pos_y == None:
+			self.pos_y = 10.0
+		else:
+			self.pos_y = pos_y
+				
+		if mag == None:
+			self.mag = 17.0
+		else:
+			self.mag = mag
+			
+		if name == None:
+			self.name = "Untitled"
+		else:
+			self.name = name
+		
+		self.bulgratio = 0.3
+		self.bulgrad = 2.3 # Bulge radius, arcsec
+		self.bulgar = 0.8 # Bulge aspect ratio
+		self.bulgpa = 30.0 # Bulge position angle
+		self.disksl = 2.0 # Disk scale length, arcsec
+		self.diskar = 0.5 # Disk aspect ratio
+		self.diskpa = 60.0 # Disk position angle
+		
+
+	def __str__(self) :
+		return "%s\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f" % (self.code, self.pos_x, self.pos_y, self.mag, self.bulgratio, self.bulgrad, self.bulgar, self.bulgpa, self.disksl, self.diskar, self.diskpa)
+
+	def manstr(self) :
+		return "%s\t%.2f\t%.2f" % (self.name, self.pos_x, self.pos_y)
+
+	
+	def shift(self, shift_x, shift_y):
+		self.pos_x += shift_x
+		self.pos_y += shift_y
+
+
+	def rotate(self, angle):
+		"""
+		The angle is in degrees
+		"""
+		old_coord=complex(self.pos_x, self.pos_y)
+		rotation=cmath.exp(math.radians(angle) * 1j)
+		new_coord= rotation * old_coord
+		self.pos_x=new_coord.real
+		self.pos_y=new_coord.imag
+
+
+
 
 def write_sourcelist(filepath, sourcelist):
 	"""
@@ -49,10 +140,20 @@ def write_sourcelist(filepath, sourcelist):
 	outfile.write("\n".join([str(s) for s in sourcelist]))
 	outfile.close()
 
+def write_mancat(filepath, sourcelist):
+	"""
+	Writes a "mancat" (manual catalog) from a list of sources
+	Format :
+	sourcename	x	y	flux
+	"""
+	outfile = open(filepath, 'w')
+	outfile.write("\n".join([s.manstr() for s in sourcelist]))
+	outfile.close()
 
 
 
-def build_array_stars(imgdimx, imgdimy, matrix_x, matrix_y, distance=None, mag=None):
+
+def build_array_stars(image_size, matrix_x, matrix_y, distance=None, mag=None):
 	"""
 	a fct that creates a matrix of stars; you have to specifie the dimensions of the matrix; you may define the distance between neighbouring stars
 	"""
@@ -62,10 +163,10 @@ def build_array_stars(imgdimx, imgdimy, matrix_x, matrix_y, distance=None, mag=N
 
 
 	#we exclude the borders of the image
-	xborder=0.1*imgdimx        #no stars on the borders
-	yborder=0.1*imgdimy
-	effective_x=imgdimx - 2.0*xborder
-	effective_y=imgdimy - 2.0*yborder
+	xborder=0.1*image_size[0]        #no stars on the borders
+	yborder=0.1*image_size[1]
+	effective_x=image_size[0]  - 2.0*xborder
+	effective_y=image_size[1]  - 2.0*yborder
 
 
 
@@ -112,7 +213,7 @@ def build_array_stars(imgdimx, imgdimy, matrix_x, matrix_y, distance=None, mag=N
 
 
   
-def build_random_stars(imgdimx, imgdimy, nb_stars = 0, mag_min = 17.0, mag_max = 20.0, min_dist=None):
+def build_random_stars(image_size, nb_stars = 0, mag_min = 17.0, mag_max = 20.0, min_dist=None):
 	"""
 	a fct that creates a list of stars with random positions and magnitudes
 	you can specify a minimal distance between the stars, the avoid stars too close to each other
@@ -122,11 +223,11 @@ def build_random_stars(imgdimx, imgdimy, nb_stars = 0, mag_min = 17.0, mag_max =
 	starlist = []
 
 	#we exclude the borders of the image;no stars on the borders 
-	xborder_min=0.1*imgdimx
-	yborder_min=0.1*imgdimy
+	xborder_min=0.1*image_size[0]
+	yborder_min=0.1*image_size[1]
 
-	xborder_max=0.9*imgdimx
-	yborder_max=0.9*imgdimy
+	xborder_max=0.9*image_size[0]
+	yborder_max=0.9*image_size[1]
 
 
 	##############################   case with no minimal distance    #########################
@@ -153,8 +254,8 @@ def build_random_stars(imgdimx, imgdimy, nb_stars = 0, mag_min = 17.0, mag_max =
 
 			for star in starlist:
 				if ((star.pos_x-thisstar.pos_x)**2.0 + (star.pos_y-thisstar.pos_y)**2.0)**(0.5) < min_dist:
-				too_close=True
-				break
+					too_close = True
+					break
 
 			if not too_close:
 				starlist.append(thisstar)
