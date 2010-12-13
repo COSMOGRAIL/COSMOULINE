@@ -16,6 +16,9 @@ for i in range(6): # x = magnitudes
 		psfstars[6*i+j].mag = psfmags[i]
 		psfstars[6*i+j].name = "%s%i" % (psfnames[i], j)
 
+
+skysim_sources.jitter_sourcelist(psfstars)
+
 # Separation 0.85 arcsec
 lens1 = [skysim_sources.Star(1000, 750, 19, "L1A"), skysim_sources.Star(1003, 753, 19, "L1B")]
 lens2 = [skysim_sources.Star(1200, 750, 18, "L2A"), skysim_sources.Star(1203, 753, 20, "L2B")]

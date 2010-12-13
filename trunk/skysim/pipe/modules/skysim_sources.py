@@ -264,6 +264,18 @@ def build_random_stars(image_size, nb_stars = 0, mag_min = 17.0, mag_max = 20.0,
 	return starlist		
 
 
+def jitter_sourcelist(inputlist):
+	"""
+	Add a uniform shit in [0, 1] pixel X and Y to the sources in inputlist,
+	one random shift for each source.
+	"""
+	for s in inputlist:
+		shiftx = random.uniform(0.0, 1.0)
+		shifty = random.uniform(0.0, 1.0)
+		s.shift(shiftx, shifty)
+		
+	
+
 
 def shiftrot_sourcelist(inputlist, shiftx=0, shifty=0, angle=0):
 	"""
@@ -274,9 +286,9 @@ def shiftrot_sourcelist(inputlist, shiftx=0, shifty=0, angle=0):
 	outputlist = copy.deepcopy(inputlist)
 
 	#we apply the transformation
-	for Star in outputlist:
-		Star.shift(shiftx, shifty)
-		Star.rotate(angle)
+	for s in outputlist:
+		s.shift(shiftx, shifty)
+		s.rotate(angle)
 
 	return outputlist
 

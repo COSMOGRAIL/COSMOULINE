@@ -125,20 +125,28 @@ def write_images(imglist, simname="MySim", skypath="sky", workdir=".", skyconffi
 		parameters += " -IMAGE_NAME %s" % imgfilepath 	#sky maker will save the img directly in the good directory		
 	
 		for attr, value in image.__dict__.iteritems():
+			
+			if attr == "image_name":
+				continue
+			
 			if attr == "sky_list" and value != None:
 				skysim_sources.write_sourcelist(sourcelistfilepath, value)
 				skysim_sources.write_mancat(mancatfilepath, value)
-			
-			elif attr == "image_size" and value != None:
+				continue
+				
+			if attr == "image_size" and value != None:
 				attr = attr.upper()
 				parameters += " -%s %s,%s" %(attr, value[0], value[1])
+				continue
+				
 	
-			elif value != None:
+			if value != None:
 				attr = attr.upper()
 				parameters += " -%s %s" %(attr, value)
 		
 		command = "%s %s -c config.sky %s" %(skypath, sourcelistfilepath, parameters)
-	
+		print command
+		
 		skymakerout = os.system(command)
 		
 		# We rewrite the DATE-OBS field
