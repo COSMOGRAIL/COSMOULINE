@@ -1,6 +1,6 @@
 #definition of the class simimg, which represents an image to simulate with skymaker
 
-class simimg:
+class Simimg:
 
     def __init__(self, image_size=None, image_type=None, image_name=None, grid_size=None, image_header=None, gain=None, satur_level=None, readout_noise=None,
         exposure_time=None, mag_zeropoint=None, pixel_size=None, psf_type=None, psf_name=None, seeing_type=None, seeing_fwhm=None, aureole_radius=None,
