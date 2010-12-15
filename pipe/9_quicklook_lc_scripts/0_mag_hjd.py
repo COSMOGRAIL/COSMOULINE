@@ -24,7 +24,7 @@ print "Names of sources : %s" % ", ".join([s.name for s in ptsources])
 
 db = KirbyBase()
 images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True)
-
+fieldnames = db.getFieldNames(imgdb)
 
 #plt.figure(figsize=(12,8))	# sets figure size
 
@@ -32,9 +32,19 @@ mhjds = np.array([image["mhjd"] for image in images])
 
 for s in ptsources:
 
-	mags = -2.5*np.log10(np.array([image["out_%s_%s_flux" % (deckey, s.name)]*image[deckeynormused] for image in images]))
+	fluxfieldname = "out_%s_%s_flux" % (deckey, s.name)
+	mags = -2.5*np.log10(np.array([image[fluxfieldname]*image[deckeynormused] for image in images]))
 	
-	plt.plot(mhjds, mags, linestyle="None", marker=".", label = s.name)
+	randomerrorfieldname = "out_%s_%s_randerror" % (deckey, s.name)
+	
+	if randomerrorfieldname not in fieldnames :
+		plt.plot(mhjds, mags, linestyle="None", marker=".", label = s.name)
+	else :
+		upmags =   -2.5*np.log10(np.array([(image[fluxfieldname] - image[randomerrorfieldname])*image[deckeynormused] for image in images]))
+		downmags = -2.5*np.log10(np.array([(image[fluxfieldname] + image[randomerrorfieldname])*image[deckeynormused] for image in images]))
+
+		plt.errorbar(mhjds, mags, yerr=[upmags-mags, mags-downmags], linestyle="None", marker=".", label = s.name)
+	plt.errorbar
 
 plt.grid(True)
 
