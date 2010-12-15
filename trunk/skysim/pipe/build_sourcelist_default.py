@@ -17,7 +17,8 @@ for i in range(6): # x = magnitudes
 		psfstars[6*i+j].name = "%s%i" % (psfnames[i], j)
 
 
-skysim_sources.jitter_sourcelist(psfstars)
+# We want our PSF stars to lie on different sampling pixels, not always the same.
+skysim_sources.jitter_sourcelist(psfstars, allthesame=False)
 
 # Separation 0.85 arcsec
 lens1 = [skysim_sources.Star(1000, 750, 19, "L1A"), skysim_sources.Star(1003, 753, 19, "L1B")]
@@ -36,4 +37,4 @@ sn2[0].bulgratio = 0.0
 targets = lens1 + lens2 + lens3 + lens4 + sn1 + sn2
 
 
-variousfct.writepickle(psfstars + targets, "Malte1_sourcelist.pkl")
+variousfct.writepickle(psfstars + targets, "sourcelist_default.pkl")

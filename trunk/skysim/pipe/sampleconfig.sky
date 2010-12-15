@@ -47,7 +47,7 @@ TRACKERROR_ANG  0.0             # Tracking angle (in deg, CC/horizontal)
 M1_DIAMETER     1.2             # Diameter of the primary mirror (in meters)
 M2_DIAMETER     0.4             # Obstruction diam. from the 2nd mirror in m.
 ARM_COUNT       4               # Number of spider arms (0 = none)
-ARM_THICKNESS   10.0            # Thickness of the spider arms (in mm)
+ARM_THICKNESS   20.0            # Thickness of the spider arms (in mm)
 ARM_POSANGLE    30.0             # Position angle of the spider pattern / AXIS1
 DEFOC_D80       0.0             # Defocusing d80% diameter (arcsec)
 SPHER_D80       0.0             # Spherical d80% diameter (arcsec)
