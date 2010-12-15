@@ -31,7 +31,8 @@ proquest(askquestions)
 if "stddev" not in db.getFieldNames(imgdb) :
 	print "I will add some fields to the database."
 	proquest(askquestions)
-	db.addFields(imgdb, ['stddev:float', 'maxlens:float', 'sumlens:float'])
+	#db.addFields(imgdb, ['stddev:float', 'maxlens:float', 'sumlens:float'])
+	db.addFields(imgdb, ['stddev:float'])
 
 iraf.imutil()
 
@@ -74,37 +75,39 @@ for i, image in enumerate(images):
 	minval = float(elements[5])
 	maxval = float(elements[6])
 	
-	print image['imgname'], npix, mean, midpt, stddev, minval, maxval
+	#print image['imgname'], npix, mean, midpt, stddev, minval, maxval
+	print "Empty region stddev : %8.2f, median %8.2f" % (stddev, midpt)
 	db.update(imgdb, ['recno'], [image['recno']], {'stddev': stddev})
 
 ##################### qso region ########################
 
-	iraf.unlearn(iraf.imutil.imstat)	
-	iraf.imutil.imstat.fields = "image,npix,mean,midpt,stddev,min,max" # Fields to be printed
-	iraf.imutil.imstat.lower = "INDEF" # Lower limit for pixel values
-	iraf.imutil.imstat.upper = "INDEF" # Upper limit for pixel values
-	iraf.imutil.imstat.nclip = 3 # nbr of clipping iterations
-	iraf.imutil.imstat.lsigma = 6. # Lower side clipping factor in sigma
-	iraf.imutil.imstat.usigma = 6. # Upper side clipping factor in sigma
-	iraf.imutil.imstat.binwidt = 0.1 # Bin width of histogram in sigma
-	iraf.imutil.imstat.format = "yes" # Format output and print column labels ?
-	iraf.imutil.imstat.cache = "no" # Cache image in memory ?
-
-	imstatblabla = iraf.imutil.imstat(images = filename + lensregion, Stdout=1)
-
-	elements = imstatblabla[-1].split()
-	npix = int(elements[1])
-	mean = float(elements[2])
-	midpt = float(elements[3])
-	stddev = float(elements[4])
-	minval = float(elements[5])
-	maxval = float(elements[6])
-	
-	sumlens = float(mean * npix)
-	
-	print image['imgname'], npix, mean, midpt, stddev, minval, maxval
-	db.update(imgdb, ['recno'], [image['recno']], {'maxlens': maxval, 'sumlens': sumlens})
-
+# 	
+# 	iraf.unlearn(iraf.imutil.imstat)	
+# 	iraf.imutil.imstat.fields = "image,npix,mean,midpt,stddev,min,max" # Fields to be printed
+# 	iraf.imutil.imstat.lower = "INDEF" # Lower limit for pixel values
+# 	iraf.imutil.imstat.upper = "INDEF" # Upper limit for pixel values
+# 	iraf.imutil.imstat.nclip = 3 # nbr of clipping iterations
+# 	iraf.imutil.imstat.lsigma = 6. # Lower side clipping factor in sigma
+# 	iraf.imutil.imstat.usigma = 6. # Upper side clipping factor in sigma
+# 	iraf.imutil.imstat.binwidt = 0.1 # Bin width of histogram in sigma
+# 	iraf.imutil.imstat.format = "yes" # Format output and print column labels ?
+# 	iraf.imutil.imstat.cache = "no" # Cache image in memory ?
+# 
+# 	imstatblabla = iraf.imutil.imstat(images = filename + lensregion, Stdout=1)
+# 
+# 	elements = imstatblabla[-1].split()
+# 	npix = int(elements[1])
+# 	mean = float(elements[2])
+# 	midpt = float(elements[3])
+# 	stddev = float(elements[4])
+# 	minval = float(elements[5])
+# 	maxval = float(elements[6])
+# 	
+# 	sumlens = float(mean * npix)
+# 	
+# 	print image['imgname'], npix, mean, midpt, stddev, minval, maxval
+# 	db.update(imgdb, ['recno'], [image['recno']], {'maxlens': maxval, 'sumlens': sumlens})
+# 
 
 db.pack(imgdb) # to erase the blank lines
 
