@@ -264,16 +264,27 @@ def build_random_stars(image_size, nb_stars = 0, mag_min = 17.0, mag_max = 20.0,
 	return starlist		
 
 
-def jitter_sourcelist(inputlist):
+def jitter_sourcelist(inputlist, allthesame=False):
 	"""
 	Add a uniform shit in [0, 1] pixel X and Y to the sources in inputlist,
-	one random shift for each source.
+	either one random shift for each source, or one same shift for all sources.
+	This is made to avoid having PSF stars always on the same pixels etc.
 	"""
-	for s in inputlist:
+	
+	outputlist = copy.deepcopy(inputlist)
+	
+	if allthesame:
 		shiftx = random.uniform(0.0, 1.0)
 		shifty = random.uniform(0.0, 1.0)
-		s.shift(shiftx, shifty)
-		
+		for s in outputlist:
+			s.shift(shiftx, shifty)
+
+	else:
+		for s in outputlist:
+			shiftx = random.uniform(0.0, 1.0)
+			shifty = random.uniform(0.0, 1.0)
+			s.shift(shiftx, shifty)
+	return outputlist
 	
 
 

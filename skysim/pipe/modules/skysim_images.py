@@ -6,16 +6,26 @@ from datetime import datetime, timedelta
 #import variousfct
 import pyfits
 import skysim_sources
+import f2n
 
 class Simimg:
 	"""
 	Stores all the settings to generate a Skymaker image
 	"""
 	
-	def __init__(self, image_size=None, image_type=None, image_name=None, grid_size=None, image_header=None, gain=None, satur_level=None, readout_noise=None,
-		exposure_time=None, mag_zeropoint=None, pixel_size=None, psf_type=None, psf_name=None, seeing_type=None, seeing_fwhm=None, aureole_radius=None,
-		aureole_sb=None, psf_oversamp=None, psf_mapsize=None, trackerror_type=None, trackerror_maj=None, trackerror_min=None, trackerror_ang=None,
-		m1_diameter=None, m2_diameter=None, arm_count=None, arm_thickness=None, arm_posangle=None, back_mag=None, sky_list=None):
+	def __init__(self, image_name=None, image_size=None, image_type=None,
+		grid_size=None, image_header=None,
+		gain=None, satur_level=None, readout_noise=None, exposure_time=None, mag_zeropoint=None,
+		pixel_size=None,
+		psf_type=None, psf_name=None, seeing_type=None, seeing_fwhm=None,
+		psf_oversamp=None, psf_mapsize=None,
+		trackerror_type=None, trackerror_maj=None, trackerror_min=None, trackerror_ang=None,
+		m1_diameter=None, m2_diameter=None, arm_count=None, arm_thickness=None, arm_posangle=None,
+		defoc_d80=None, spher_d80=None, comax_d80=None, comay_d80=None,
+		ast00_d80=None, ast45_d80=None, tri00_d80=None, tri30_d80=None,
+		qua00_d80=None, qua22_d80=None,
+		wavelength=None,
+		back_mag=None, sky_list=None):
 
 		#--------------------------------- Image -------------------------------------
 		self.image_name=image_name		# The name of the image
@@ -45,8 +55,7 @@ class Simimg:
 		self.psf_name=psf_name			# Name of the FITS image containing the PSF
 		self.seeing_type=seeing_type		# (NONE, LONG_EXPOSURE or SHORT_EXPOSURE)
 		self.seeing_fwhm=seeing_fwhm		# FWHM of seeing in arcsec (incl. motion)
-		self.aureole_radius=aureole_radius	# Range covered by aureole (pix) 0=no aureole
-		self.aureole_sb=aureole_sb		# SB (mag/arcsec2) at 1' from a 0-mag star
+		
 		self.psf_oversamp=psf_oversamp		# Oversampling factor / final resolution
 		self.psf_mapsize=psf_mapsize		# PSF mask size (pixels): must be a power of 2
 		self.trackerror_type=trackerror_type	# Tracking error model: NONE, DRIFT or JITTER
@@ -62,12 +71,23 @@ class Simimg:
 		self.arm_thickness=arm_thickness	# Thickness of the spider arms (in mm)
 		self.arm_posangle=arm_posangle		# Position angle of the spider pattern / AXIS1
 		
+		self.defoc_d80 = defoc_d80		# Defocusing d80% diameter (arcsec)
+		self.spher_d80 = spher_d80		# Spherical d80% diameter (arcsec)
+		self.comax_d80 = comax_d80		# Coma along X d80% diameter (arcsec)
+		self.comay_d80 = comay_d80		# Coma along Y d80% diameter (arcsec)
+		self.ast00_d80 = ast00_d80		# 0 deg. astigmatism d80% diameter (arcsec)
+		self.ast45_d80 = ast45_d80		# 45 deg. astigmatism d80% diameter (arcsec)
+		self.tri00_d80 = tri00_d80		# 0 deg. triangular d80% diameter (arcsec)
+		self.tri30_d80 = tri30_d80		# 30 deg. triangular d80% diameter (arcsec)
+		self.qua00_d80 = qua00_d80		# 0 deg. quadratic d80% diameter (arcsec)
+		self.qua22_d80 = qua22_d80		# 22.5 deg. quadratic d80% diameter (arcsec)
 		
 		#--------------------------------- Signal ------------------------------------
 		
+		self.wavelength = wavelength		# average wavelength analysed (microns)
 		self.back_mag=back_mag			# background surface brightness (mag/arcsec2)
 		
-		#--------------------------------- stars on the field ------------------------------------
+		#--------------------------------- Sky to draw -------------------------------
 		
 		self.sky_list=sky_list
 
@@ -83,7 +103,7 @@ def proquest():
 	print ""
 
 
-def write_images(imglist, simname="MySim", skypath="sky", workdir=".", skyconffile="config.sky"):
+def write_images(imglist, simname="MySim", skypath="sky", workdir=".", skyconffile="config.sky", makepngs=True, pngrebin=2):
 	"""
 	Give me a list of Simimg objects, and I'll write the corresponding image files.
 	imglist = list of Simimg objects
@@ -117,6 +137,7 @@ def write_images(imglist, simname="MySim", skypath="sky", workdir=".", skyconffi
 			imgfilename = image.image_name
 			
 		imgfilepath = os.path.join(destdir, "%s.fits" % imgfilename)
+		pngfilepath = os.path.join(destdir, "%s.png" % imgfilename)
 		sourcelistfilepath = os.path.join(destdir, "%s.inlist" % imgfilename)
 		mancatfilepath = os.path.join(destdir, "%s.cat" % imgfilename)
 		
@@ -156,6 +177,14 @@ def write_images(imglist, simname="MySim", skypath="sky", workdir=".", skyconffi
 		hdulist = pyfits.open(imgfilepath, mode = "update")
 		hdulist[0].header.update("DATE-OBS", pythondtimage.strftime("%Y-%m-%dT%H%M%S"), "Tweaked simulation date")
 		hdulist.flush()
+		
+		if makepngs :
+			f2nimg = f2n.fromfits(imgfilepath)
+			f2nimg.setzscale("auto", "auto")
+			f2nimg.rebin(pngrebin)
+			f2nimg.makepilimage(scale = "log", negative = False)
+			f2nimg.writetitle("%s / %s" % (simname, imgfilename))
+			f2nimg.tonet(pngfilepath)
 	
 	
 	print "- " * 30
