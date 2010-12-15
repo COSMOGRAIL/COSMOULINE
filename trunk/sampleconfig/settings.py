@@ -93,11 +93,11 @@ dimy = 2000
 # currently this is used only in the stupid geomap, to make the transform valid
 # for the full frame.
 
-# small region around the lens (as small as possible without loosing flux)
+# Where is the lens ?
 lensregion = "[871:911,969:1006]"
-# region of empty sky (to estimate stddev etc)
-emptyregion = "[1005:1105,1000:1100]"
-# these regions apply to the aligned images (ie the reference) !
+# Region of empty sky (to estimate stddev), 100 x 100 pixel is more then enough.
+emptyregion = "[800:1000,350:550]"
+# These regions apply to the aligned images.
 
 # And now some alignment parameters that you should actually not have to change at all.
 
