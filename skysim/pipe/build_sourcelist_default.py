@@ -2,6 +2,7 @@ execfile("./config.py")
 
 import skysim_sources
 import skysim_images
+import variousfct
 
 
 # Matrix of PSF stars 
