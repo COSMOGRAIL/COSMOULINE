@@ -2,7 +2,6 @@ execfile("./config.py")
 
 import skysim_sources
 import skysim_images
-import variousfct
 import numpy as np
 
 sourcelist = variousfct.readpickle("sourcelist_default.pkl")
