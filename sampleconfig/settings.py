@@ -41,7 +41,7 @@ silencemcs = True
 
 setname = "Mer1"
 telescopename = "Mercator"
-# names : Mercator, Euler, HCT, MaidanakSITE (2080x800), MaidanakSI, MaidanakPeltier, HoLi, NOTalfosc, Combi, skysim, NOHEADER
+# names : Mercator, EulerC2, EulerCAM, HCT, MaidanakSITE (2080x800), MaidanakSI, MaidanakPeltier, HoLi, NOTalfosc, Combi, skysim, NOHEADER
 # where NOHEADER is a special name to not read any header information from the FITS files.
 # where Combi is a scecial name to read the header of the combined images.
 # where skysim is a scecial name to read the header of the simulated images.
