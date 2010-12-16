@@ -79,7 +79,7 @@ rawdir = "/home/epfl/eulaers/unsaved/prered_Mercator/reduc/J1001+5027_RG_crop"
 #xephemlens = "SDSS1400+3134,f|Q,14:00:12.77,+31:34:54.1,19.4,2000"
 xephemlens = "Simulation,f|Q,00:00:00.00,+00:00:00.0,20.0,2000"
 
-# Now you can run all the srcipts until the alignment !
+# Now you can run all the scripts until the alignment !
 
 #---------------------------- alignment and stats -----------------------------------------------------------------
 
