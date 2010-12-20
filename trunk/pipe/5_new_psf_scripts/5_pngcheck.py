@@ -95,6 +95,10 @@ for i, image in enumerate(images):
 	else:
 		infolist = [image['imgname']]
 	infolist.extend([date, seeing, ell, nbralistars, stddev, airmass, az, nbcosmics])
+
+	if thisisatest:
+		testcomment = 'Testcomment: %s' %image['testcomment']
+		infolist.append(testcomment)
 	
 	txtendpiece.writeinfo(infolist)
 	
