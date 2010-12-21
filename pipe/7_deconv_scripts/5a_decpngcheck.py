@@ -150,6 +150,12 @@ for i, image in enumerate(images):
 		infolist = [image['imgname']]
 	infolist.extend([date, seeing, ell, nbralistars, stddev, airmass, az, dkfn, ncosmics, selectedpsf, normcoeff])
 	
+	if thisisatest:
+		testcomment = 'Testcomment: %s' %image['testcomment']
+		infolist.append(testcomment)
+	
+	
+	
 	txtendpiece.writeinfo(infolist)
 	
 
