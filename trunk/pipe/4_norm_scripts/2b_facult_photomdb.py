@@ -37,7 +37,7 @@ print "I will add %i/%i fields to the database." % (len(dbfieldstoadd), len(dbfi
 proquest(askquestions)
 
 # As we will tweak the database, backup
-backupfile(imgdb, dbbudir, 'calccoeff')
+backupfile(imgdb, dbbudir, 'photomdb')
 	
 db.addFields(imgdb, ["%s:%s" % (f["name"], f["type"]) for f in dbfieldstoadd])
 
