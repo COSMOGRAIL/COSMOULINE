@@ -13,8 +13,6 @@ from kirbybase import KirbyBase, KBError
 from variousfct import *
 from headerstuff import *
 
-print "You want to convert your images from ADU to electron level."
-proquest(askquestions)
 
 # selection of all the images of the database
 db = KirbyBase()
@@ -53,16 +51,16 @@ for i, image in enumerate(images):
 
 		filename = image['rawimg']
 		origin_gain = image['gain']	# this is the orginial gain, i.e. before updating the database with the new gain of 1.0
-	
+		updatedsaturlevel = image['satur_level'] * origin_gain
 		pixelarray, header = fromfits(filename)
 	
 		pixelarray = pixelarray * origin_gain	# so that we have an image in electron and not in ADU
 	
 		outfilename = os.path.join(alidir, image['imgname'] + ".fits")
-		tofits(outfilename, pixelarray)			# we clean the header to avoid problematic conversion from iraf or sextractor
+		tofits(outfilename, pixelarray)			# we clean the header to avoid dangerous behaviors from iraf or sextractor
 
-		db.update(imgdb, ['recno'], [image['recno']], [image['gain']], ['origin_gain'])
-		db.update(imgdb, ['recno'], [image['recno']], [1.0], ['gain'])
+		db.update(imgdb, ['recno'], [image['recno']], [origin_gain, 1.0, updatedsaturlevel], ['origin_gain', 'gain', 'satur_level'])
+		
 	else:
 		print "This image has already been converted."	
 
