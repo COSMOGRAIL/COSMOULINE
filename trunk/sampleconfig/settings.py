@@ -77,6 +77,7 @@ rawdir = "/home/epfl/eulaers/unsaved/prered_Mercator/reduc/J1001+5027_RG_crop"
 #xephemlens = "SDSS1206+4332,f|Q,12:06:29.64,+43:32:17.59,18.95,2000"
 #xephemlens = "SDSS0819+5356,f|Q,08:19:59.79,+53:56:24.3,19.9,2000"
 #xephemlens = "SDSS1400+3134,f|Q,14:00:12.77,+31:34:54.1,19.4,2000"
+#xephemlens = "J0158-4325,f|Q,01:58:41.44,-43:25:04.19,19.0,2000"
 xephemlens = "Simulation,f|Q,00:00:00.00,+00:00:00.0,20.0,2000"
 
 # Now you can run all the scripts until the alignment !
