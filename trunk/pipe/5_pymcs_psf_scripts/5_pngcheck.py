@@ -15,6 +15,8 @@ pngdir = os.path.join(workdir, psfkey + "_png")
 psfstars = star.readmancat(psfstarcat)
 nbrpsf = len(psfstars)
 
+
+
 # We read the mask files :
 for i, s in enumerate(psfstars):
 	
@@ -40,6 +42,18 @@ os.mkdir(pngdir)
 
 db = KirbyBase()
 images = db.select(imgdb, ['gogogo','treatme',psfkeyflag], [True,True,True], returnType='dict', sortFields=['mjd'])
+
+
+
+print "Something very special here : I do already look at the psfskiplist, so that I don't crash even if some of your pyMCS PSFs are broken."
+if os.path.exists(psfkicklist):
+	psfskipimages = [image[0] for image in readimagelist(psfkicklist)] # image[1] would be the comment
+	print "It contains %i images." % len(psfskipimages)
+
+	images = [image for image in images if image["imgname"] not in psfskipimages]
+else:
+	print "No skiplist."
+
 
 print "Number of images :", len(images)
 proquest(askquestions)
@@ -208,6 +222,9 @@ for i, image in enumerate(images):
 
 	f2n.compose([psfstarimglist, sigmaimglist, difmlist, difnumlist], pngpath)	
 	
+	orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
+	os.symlink(pngpath, orderlink)
+	
 print "- " * 30
 
 
@@ -225,6 +242,8 @@ print "Once you have checked the PSFs (for instance by looking at the pngs),"
 print "you should append problematic psf constructions to that list."
 print "(Same format as for testlist.txt etc)"
 print ""
+
+print pngdir
 
 if makejpgarchives :
 	makejpgtgz(pngdir, workdir, askquestions = askquestions)
