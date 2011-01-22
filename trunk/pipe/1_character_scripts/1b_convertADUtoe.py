@@ -21,7 +21,7 @@ if thisisatest:
 	print "This is a test run!"
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict')
 else:
-	images = db.select(imgdb, ['recno'], ['*'], returnType='dict')
+	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 
 nbrofimages = len(images)
 
