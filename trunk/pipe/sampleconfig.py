@@ -207,6 +207,9 @@ if not os.path.isdir(dbbudir):
 #warnings.warn("deprecated", DeprecationWarning)
 #warnings.simplefilter("ignore")
 
+#---------------------------------------------------------------------------
+
+print "    ### Working in %s ###" % os.path.split(configdir)[-1]
 
 #---------------------------------------------------------------------------
 
