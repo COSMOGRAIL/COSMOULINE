@@ -94,11 +94,13 @@ for i, image in enumerate(images):
 	cosmics.tofits("sig.fits", sigarray, sigheader, verbose=False)
 	
 	# We write the number of cosmics in the database :
-	db.update(imgdb, ['recno'], [image['recno']], {objcosmicskey: int(ncosmics)})
+	# No, this is too slow, not worth it.
+	#db.update(imgdb, ['recno'], [image['recno']], {objcosmicskey: int(ncosmics)})
 
 	os.chdir(origdir)
 
-db.pack(imgdb) # To erase the blank lines
+# Not needed if we do not write the number of comsics
+#db.pack(imgdb) # To erase the blank lines
 
 notify(computer, withsound, "Done with masking cosmics for %s." % objkey)
 	
