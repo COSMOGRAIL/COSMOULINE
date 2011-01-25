@@ -25,7 +25,7 @@ for field in newfields:
 for image in images:
 	
 	print "- " * 30
-	print image["imgname"]
+	print i, image["imgname"]
 	
 	psffilepath = os.path.join(decdir, "s%s.fits" % image[deckeyfilenum])
 	
