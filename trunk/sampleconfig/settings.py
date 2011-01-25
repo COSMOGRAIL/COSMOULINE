@@ -3,7 +3,7 @@
 
 # The "working" dir where all the pipeline products will be *written*
 # ("big-old-never-backuped-disk")
-workdir = "/home/epfl/eulaers/unsaved/cosmouline_work/J1001"
+workdir = "/your/absolute/path/to/cosmouline_work/J1001"
 
 
 #------------------------ Switches -----------------------------------
@@ -203,13 +203,14 @@ decname = "full"		# YES WE CAN !
 decobjname = "lens"		# here you choose which object you want to deconvolve : give an existing objname.
 				# You don't have to set the objname in the "OBJECT EXTRACTION" section.
 
-decpsfnames = ["abce1"]	# here you choose the PSF(s) you want to use : give one or more psfnames in form of a list.
-				# The first psfname has the lowest priority
-
 decnormfieldname = "abce1"	# Give the name of the normalization coefficient to apply to the image prior to deconv.
 				# "None" is special, it means a coeff of 1.0 for every image.
 				# The name of the default sextractor photometry is "medcoeff"
 				# If you choose a renormalization, give an existing renormfieldname 
+
+
+decpsfnames = ["abce1"]		# here you choose the PSF(s) you want to use : give one or more psfnames in form of a list.
+				# The first psfname has the lowest priority
 
 
 #------------------------ RENORMALIZATION -----------------------------------
@@ -222,7 +223,12 @@ decnormfieldname = "abce1"	# Give the name of the normalization coefficient to a
 renormname = "abce1"
 
 # which sources do you want to use for the renormalization (give (deckey, sourcename) ):
-renormsources = [('dec_full_a_medcoeff_abce1', 'a'), ('dec_full_b_medcoeff_abce1', 'b'), ('dec_full_c_medcoeff_abce1', 'c'), ('dec_full_e_medcoeff_abce1', 'e')]
+renormsources = [
+('dec_full_a_medcoeff_abce1', 'a'),
+('dec_full_b_medcoeff_abce1', 'b'),
+('dec_full_c_medcoeff_abce1', 'c'),
+('dec_full_e_medcoeff_abce1', 'e')
+]
 
 #---------------------------------------------------------------------------
 
