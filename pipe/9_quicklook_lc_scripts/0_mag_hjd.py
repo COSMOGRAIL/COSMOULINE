@@ -51,6 +51,8 @@ plt.grid(True)
 # reverse y axis for magnitudes :
 ax=plt.gca()
 ax.set_ylim(ax.get_ylim()[::-1])
+ax.set_xlim(np.min(mhjds), np.max(mhjds)) # DO NOT REMOVE THIS !!!
+# IT IS IMPORTANT TO GET THE DATES RIGHT
 
 #plt.title(deckey, fontsize=20)
 plt.xlabel('MHJD [days]')
