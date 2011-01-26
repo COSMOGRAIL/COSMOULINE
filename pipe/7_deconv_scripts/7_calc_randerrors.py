@@ -22,7 +22,7 @@ for field in newfields:
 		db.addFields(imgdb, ["%s:%s" % (field["fieldname"], field["type"])])
 
 
-for image in images:
+for i, image in enumerate(images):
 	
 	print "- " * 30
 	print i, image["imgname"]
