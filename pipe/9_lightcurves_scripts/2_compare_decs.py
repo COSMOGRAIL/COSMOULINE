@@ -18,10 +18,17 @@
 
 #tocompare = [('dec_1_a_newac1','a'), ('dec_1_b_newac1','b',+0.5), ('dec_1_c_newac1','c'), ('dec_1_g_newac1','g')]
 
-tocompare = [('dec_test1_lens_HIJ1_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','A',-4), ('dec_test1_lens_medcoeff_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','A',-2),
-('dec_test1_lens_HI1_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','A'), ('dec_test1_lens_HI1_new_HI2_new_HLKI1','A',2),('dec_test1_lens_HIJ1_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','B',-4), ('dec_test1_lens_medcoeff_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','B',-2),
-('dec_test1_lens_HI1_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','B'), ('dec_test1_lens_HI1_new_HI2_new_HLKI1','B',2)]
+#tocompare = [('dec_test1_lens_HIJ1_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','A',-4), ('dec_test1_lens_medcoeff_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','A',-2),
+#('dec_test1_lens_HI1_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','A'), ('dec_test1_lens_HI1_new_HI2_new_HLKI1','A',2),('dec_test1_lens_HIJ1_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','B',-4), ('dec_test1_lens_medcoeff_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','B',-2),
+#('dec_test1_lens_HI1_new_HI2_new_HAI2_new_HAIJ2_new_HLKI1','B'), ('dec_test1_lens_HI1_new_HI2_new_HLKI1','B',2)]
 
+tocompare = [
+("dec_full_a_medcoeff_abcef", "a"),
+("dec_full_b_medcoeff_abcef", "b"),
+("dec_full_c_medcoeff_abcef", "c"),
+("dec_full_e_medcoeff_abcef", "e"),
+("dec_full_f_medcoeff_abcef", "f")
+]
 # - - - - - - - - - - - - - - - - - - - - - - - 
 
 execfile("../config.py")
@@ -51,7 +58,7 @@ for item in tocompare:
 	seeing = asarray(map(lambda x: x['seeing'], images))
 
 	fluxfieldname = "out_" + deckey + "_" + sourcename + "_flux"
-	mags = -2.5 * log10(asarray(map(lambda x: x[fluxfieldname], images)))
+	mags = -2.5 * log10(asarray(map(lambda x: x[fluxfieldname] * x[deckeynormused], images)))
 	
 	label = sourcename + "/" + deckey
 	#label = sourcename

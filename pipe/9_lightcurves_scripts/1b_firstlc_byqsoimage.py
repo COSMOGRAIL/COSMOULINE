@@ -15,7 +15,7 @@ execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from combibynight_fct import *
-from star import *
+import star
 
 
 from numpy import *
@@ -26,7 +26,7 @@ print "You want to analyze the deconvolution %s" %deckey
 print "Deconvolved object :", decobjname
 
 # we read params of point sources
-ptsrc = readmancatasstars(ptsrccat)
+ptsrc = star.readmancat(ptsrccat)
 nbptsrc = len(ptsrc)
 print "Number of point sources :", nbptsrc
 print "Names of sources : "
@@ -52,9 +52,10 @@ print "Number of nights :", len(groupedimages)
 
 colors = ["red", "blue", "purple", "green"]
 for j, src in enumerate(ptsrc):
-	mymags = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_flux')['median'])
-	mymagups = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_flux')['up'])
-	mymagdowns = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_flux')['down'])
+	deckeynormused = "medcoeff"
+	mymags = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_flux', normkey=deckeynormused)['median'])
+	mymagups = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_flux', normkey=deckeynormused)['up'])
+	mymagdowns = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_flux', normkey=deckeynormused)['down'])
 	mhjds = asarray(values(groupedimages, 'mhjd')['median'])
 	#dates = mhjds - 54000
 	nbrimgs = map(len, groupedimages)
