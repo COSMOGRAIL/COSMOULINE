@@ -14,7 +14,7 @@
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
-from star import *
+import star
 
 
 from numpy import *
@@ -25,7 +25,7 @@ print "You want to analyze the deconvolution %s" %deckey
 print "Deconvolved object :", decobjname
 
 # we read params of point sources
-ptsrc = readmancatasstars(ptsrccat)
+ptsrc = star.readmancat(ptsrccat)
 nbptsrc = len(ptsrc)
 print "Number of point sources :", nbptsrc
 print "Names of sources : "
@@ -43,7 +43,7 @@ plt.figure(figsize=(12,8))	# sets figure size
 for src in ptsrc:
 
 	key = 'out_'+deckey+'_'+ src.name +'_flux'
-	mags = -2.5*log10(asarray([image[key] for image in images]))
+	mags = -2.5*log10(asarray([image[key]*image["medcoeff"] for image in images]))
 	
 	mhjds = asarray([image["mhjd"] for image in images])
 	

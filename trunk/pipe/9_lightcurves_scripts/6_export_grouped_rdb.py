@@ -6,10 +6,10 @@
 #
 
 
-toexport = ('dec_full8_lens_1256_1234','C')
-filename = "C.txt"
+toexport = ('dec_full2_lens_medcoeff_abcikm1','A')
+filename = "A.txt"
 
-errorname = "magerror_1256"
+#errorname = "magerror_1256"
 
 
 
@@ -32,7 +32,7 @@ db = KirbyBase()
 deckey = toexport[0]
 sourcename = toexport[1]
 deckeyfilenum = "decfilenum_" + deckey
-intfieldname = "out_" + deckey + "_" + sourcename + "_int"
+intfieldname = "out_" + deckey + "_" + sourcename + "_flux"
 
 images = db.select(imgdb, ["gogogo", "treatme", deckeyfilenum], [True, True, '\d\d*'], returnType='dict', useRegExp=True)
 
