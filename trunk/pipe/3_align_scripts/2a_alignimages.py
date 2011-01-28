@@ -56,7 +56,8 @@ for i,image in enumerate(images):
 		"Removing existing aligned image."
 		os.remove(aliimg)
 	
-	databasename = "geodatabase"
+	#databasename = "geodatabase"
+	databasename = os.path.join(workdir, "geodatabase") # better, it prevents pbs when doing simultaneous alignments with same pipe.
 	if os.path.isfile(databasename):
 		os.remove(databasename)
 
