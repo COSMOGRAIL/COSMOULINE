@@ -34,6 +34,7 @@ os.symlink(refimgpath, linkpath)
 
 print "I made an alias to this reference image here :"
 print linkpath
+print "Saturation level (in e-) of ref image : %.2f" % refimage["satur_level"]
 
 
 print "Now I will need some alignment stars (write them into configdir/alistars.cat)."
