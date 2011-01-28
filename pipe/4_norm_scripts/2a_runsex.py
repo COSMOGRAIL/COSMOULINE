@@ -27,15 +27,16 @@ for i, image in enumerate(images):
 
 	print " -" * 20
 	print i+1, "/", nbrofimages, ":", image['imgname']	
+	
 	imgpath = os.path.join(alidir, image['imgname'] + "_ali.fits")
 	sexcatpath = os.path.join(alidir, image['imgname'] + ".alicat")
 		
 	# We run sextractor on the sky subtracted and aligned image :
-	command = "%s %s -c default_norm_template.sex -GAIN %.3f -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f" % (sex, imgpath, image["gain"], image["pixsize"], image["satur_level"])
+	command = "%s %s -c default_norm_template.sex -GAIN %.3f -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CATALOG_NAME %s" % (sex, imgpath, image["gain"], image["pixsize"], image["satur_level"], sexcatpath)
 	
 	print command
 	os.system(command)
-	shutil.move("sex.cat", sexcatpath)
+	
 	
 
 endtime = datetime.now()
