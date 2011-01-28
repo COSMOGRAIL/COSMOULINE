@@ -34,24 +34,23 @@ for i,image in enumerate(images):
 	
 	imagepath = os.path.join(alidir, image["imgname"] + ".fits")
 	
-	# We run sextractor  on the image in electrons :
-	os.system("%s %s -c default_sky_template.sex -CATALOG_TYPE NONE -GAIN %.3f -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f" % (sex, imagepath, image["gain"], image["pixsize"], image["satur_level"]))
-	
-	# Saving the sky image :
-	
 	skyimagepath = os.path.join(alidir,  image["imgname"] + "_sky.fits")
 	if os.path.isfile(skyimagepath):
+		print "Removing existing sky image."
 		os.remove(skyimagepath)
 	
-	shutil.move("background.fits", skyimagepath)
+	# We run sextractor  on the image in electrons :
+	os.system("%s %s -c default_sky_template.sex -GAIN %.3f -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CHECKIMAGE_NAME %s" % (sex, imagepath, image["gain"], image["pixsize"], image["satur_level"], skyimagepath))
 	
-	(skya, skyh) = fromfits(os.path.join(alidir,  image["imgname"] + "_sky.fits"), verbose = False)
-	(imagea, imageh) = fromfits(os.path.join(alidir, image["imgname"] + ".fits"), verbose = False)
+	
+	(skya, skyh) = fromfits(skyimagepath, verbose = False)
+	(imagea, imageh) = fromfits(imagepath, verbose = False)
 	
 	skysubimagea = imagea - skya
 	
 	skysubimagepath = os.path.join(alidir, image["imgname"] + "_skysub.fits")
 	if os.path.isfile(skysubimagepath):
+		print "Removing existing skysubtracted image."
 		os.remove(skysubimagepath)
 	
 	tofits(skysubimagepath, skysubimagea, hdr = imageh, verbose = True)
