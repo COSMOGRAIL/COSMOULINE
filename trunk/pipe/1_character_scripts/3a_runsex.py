@@ -28,17 +28,19 @@ for i,image in enumerate(images):
 	
 	imagepath = os.path.join(alidir, image['imgname']+".fits")
 	
-	# We run sextractor on the images converted to electrons :
-	os.system("%s %s -c default_see_template.sex -GAIN %.3f -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f" % (sex, imagepath, image["gain"], image["pixsize"], image["satur_level"]))
-	
-	
 	catfilename = os.path.join(alidir, image['imgname']+".cat")
-	shutil.move("sex.cat", catfilename)
+	
+	# We run sextractor on the images converted to electrons :
+	os.system("%s %s -c default_see_template.sex -GAIN %.3f -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CATALOG_NAME %s" % (sex, imagepath, image["gain"], image["pixsize"], image["satur_level"], catfilename))
+	
+	
+	#catfilename = os.path.join(alidir, image['imgname']+".cat")
+	#shutil.move("sex.cat", catfilename)
 	
 	
 	# remove check image in case it was created
-	if os.path.isfile("check.fits"):
-		os.remove("check.fits")
+	#if os.path.isfile("check.fits"):
+	#	os.remove("check.fits")
 
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
