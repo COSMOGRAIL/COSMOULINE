@@ -46,14 +46,14 @@ notify(computer, withsound, "PSF extraction done for psfname %s." % (psfname))
 if refimgname in [img["imgname"] for img in images]:
 	
 	imgpsfdir = os.path.join(psfdir, refimgname)
-	starfiles = glob.glob(os.path.join(imgpsfdir, "results", "star_*.fits"))
+	starfiles = sorted(glob.glob(os.path.join(imgpsfdir, "results", "star_*.fits")))
 	
 	
 	print "The stars extracted from the reference image are available here :"
 	print "\n".join(starfiles)
 	print "You can now open these files with DS9 to build your mask (optional)."
 	print "Don't mask cosmics, only companion stars !"
-	print "Save your corresponding region files here :"
+	print "Save your region files respectively here :"
 	
 	#starfilenames = [os.path.splitext(os.path.basename(s))[0] for s in starfiles]
 	
