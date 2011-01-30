@@ -76,8 +76,6 @@ def juliandate(pythondt):
 def DateFromJulianDay(JD):
 	"""
 
-	Currently this is not used by cosmouline, but it fits here quite nicely...
-
 	Returns the Gregorian calendar
 	Based on wikipedia:de and the interweb :-)
 	"""
@@ -783,6 +781,83 @@ def holiheader(rawimg): # HoLiCam header
 	return returndict
 
 ###############################################################################################
+
+
+def smartsandicamheader(rawimg):
+	"""
+	Malte, Jan 2011
+	Info from the web :
+	http://www.astronomy.ohio-state.edu/ANDICAM/detectors.html
+	Conversion Gain: 2.3 electrons/DN
+	Readout Noise: 6.5 electrons (rms)
+
+	0.369 arcsec pixel
+	1051x1028 pixels (binned 2x2 w/32 overscan columns):
+	BIASSEC  [2:16,2:1025]
+	DATASEC  [17:1039,1:1026]
+	TRIMSEC  [17:1039,2:1025]
+
+	"""
+	print rawimg
+	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
+	
+	pixsize = 0.369
+	readnoise = 6.5
+	gain = 2.3
+	scalingfactor = 0.519995356
+	# Measured scalingfactor, done in comparision with Euler (Mercator = 1.0)
+	satur_level = 65000.0
+
+	telescopelongitude = "-70:48:54.00"
+	telescopelatitude = "-30:09:54.00"
+	telescopeelevation = 2215.0
+		
+	header = pyfits.getheader(rawimg)
+	availablekeywords = header.ascardlist().keys()
+	
+	treatme = True
+	gogogo = True
+	whynot = "na"
+	testlist = False
+	testcomment = "na"
+	
+	
+	headerjd = float(header['JD']) # Should be UTC, beginning of exposure
+	exptime = float(header['EXPTIME']) # in seconds.
+	
+	pythondt = DateFromJulianDay(headerjd)	
+	pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
+	
+	# Now we produce the date and datet fields, middle of exposure :
+	
+	date = pythondt.strftime("%Y-%m-%d")
+	datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+	myownjdfloat = juliandate(pythondt) # The function from headerstuff.py
+	myownmjdfloat = myownjdfloat - 2400000.5
+	jd = "%.6f" % myownjdfloat 
+	mjd = myownmjdfloat
+		
+	rotator = 0.0
+	preredcomment1 = "Header TIME-OBS = %s" % header['TIME-OBS'] 
+	preredcomment2 = "Header HJD"
+	preredfloat1 = 0.0
+	preredfloat2 = float(header['HJD'])
+	
+	# We return a dictionnary containing all this info, that is ready to be inserted into the database.
+	returndict = {'imgname':imgname, 'treatme':treatme, 'gogogo':gogogo, 'whynot':whynot, 'testlist':testlist,'testcomment':testcomment ,
+	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
+	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
+	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'satur_level':satur_level,
+	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
+	}
+	
+	return returndict
+
+###############################################################################################
+
+
 
 def skysimheader(rawimg):
 
