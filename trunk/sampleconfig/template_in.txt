@@ -1,10 +1,10 @@
 -------------------------------------------------------               
 |Step for the subroutine MINIMI                       |               
 |------------------------------------------------------               
-|Step for the intensity max et min (%)   |5.0                         
+|Step for the intensity max et min (%)   |2.0                         
 |                                        |0.00001                        
 |----------------------------------------|-------------               
-|Step for coordinates  max et min        |0.1
+|Step for coordinates  max et min        |0.01
 |                                        |0.00001
 |----------------------------------------|-------------               
 |Step for the background  max et min     |0.1
@@ -15,7 +15,7 @@
 |Step for z2  max et min                 |0.0                      
 |                                        |0.0                      
 |----------------------------------------|-------------               
-|Step for delta1 et delta2 max et min    |0.01                       
+|Step for delta1 et delta2 max et min    |0.05                       
 |                                        |0.00001                      
 |----------------------------------------|-------------               
 |Step for Io du modele analytique   (%)  |5.                          
