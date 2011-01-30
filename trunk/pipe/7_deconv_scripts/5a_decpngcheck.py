@@ -98,10 +98,10 @@ for i, image in enumerate(images):
 	f2nresi_sm.writeinfo(["SM Residual"])
 	
 	f2nback = f2n.fromfits(os.path.join(decdir, "back" +code+".fits"), verbose=False)
-	f2nback.setzscale(-20, "ex")
+	f2nback.setzscale("ex", "ex")
 	f2nback.makepilimage(scale = "lin", negative = False)
 	f2nback.upsample(2)
-	f2nback.writeinfo(["Background"])
+	f2nback.writeinfo(["Background", "Ex : %g %g" % (f2nback.z1, f2nback.z2)])
 	
 	
 	f2ns = f2n.fromfits(os.path.join(decdir, "s" +code+".fits"), verbose=False)
