@@ -1,8 +1,9 @@
 import os, cPickle, copy
-from src import prepare, _1_get_sky, set_mask, _2_get_stars, _3_fitmof
-from src import _4_fitgaus, _4b_fitnum, _5_PSFgen, deconv_simult, get_ini_par
-import src.lib.wsutils as ws
-import src.lib.utils as fn
+from MCS_src import prepare, _1_get_sky, set_mask, _2_get_stars, _3_fitmof
+from MCS_src import _4_fitgaus, _4b_fitnum, _5_PSFgen, deconv_simult, get_ini_par
+import MCS_src.lib.wsutils as ws
+import MCS_src.lib.utils as fn
+
 
 out = fn.Verbose()
 
