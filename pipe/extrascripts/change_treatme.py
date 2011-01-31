@@ -23,7 +23,11 @@ db = KirbyBase()
 
 #n = db.update(imgdb, ['treatme'], [True], [False], ['treatme'])
 
-n = db.update(imgdb, ['seeingpixels'], ['>-100'], [True], ['treatme'])
+#n = db.update(imgdb, ['seeingpixels'], ['>-100'], [True], ['treatme'])
+
+
+n = db.update(imgdb, ['imgname'], [refimgname], [True], ['treatme'])
+
 
 print "Number of updates : %i" % n
 
