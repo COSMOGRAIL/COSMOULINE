@@ -25,7 +25,6 @@ db = KirbyBase()
 
 #n = db.update(imgdb, ['seeingpixels'], ['>-100'], [True], ['treatme'])
 
-
 n = db.update(imgdb, ['imgname'], [refimgname], [True], ['treatme'])
 
 
