@@ -1,8 +1,8 @@
 import os, cPickle, copy
-from MCS_src import prepare, _1_get_sky, set_mask, _2_get_stars, _3_fitmof
-from MCS_src import _4_fitgaus, _4b_fitnum, _5_PSFgen, deconv_simult, get_ini_par
-import MCS_src.lib.wsutils as ws
-import MCS_src.lib.utils as fn
+from src import prepare, _1_get_sky, set_mask, _2_get_stars, _3_fitmof
+from src import _4_fitgaus, _4b_fitnum, _5_PSFgen, deconv_simult, get_ini_par
+import src.lib.wsutils as ws
+import src.lib.utils as fn
 
 out = fn.Verbose()
 
@@ -143,6 +143,9 @@ class MCS_interface():
         Save the attributes and parameters, including the images if 'all' is True.
         The keywords from the 'needed_par' class attribute are saved \
         in the parameter file and the 'param.dat' file is updated.
+        
+        @type all: boolean
+        @param all: True for saving the .fits images (default: False)
         """
         d = {}
         for e in self.needed_par:
@@ -163,7 +166,7 @@ class MCS_interface():
         The sky value corresponds to the center of the gaussian, while the sigma of the sky corresponds to the width.
         
         Save the results in a list, one value for each of the images.
-        Parameter file keywords: SKY_BACKGROUND, SIGMA_SKY
+        Update the configuration file keywords SKY_BACKGROUND and SIGMA_SKY
         """
         self.refresh()
         fnb = self.params['filenb']
@@ -193,7 +196,7 @@ class MCS_interface():
         by prompting the user for ds9 regions.
         If not, the program will attempt to find stars by looking at different objects\
         and choosing those with correlated ellipticities. Those are found by fitting a gaussian \
-        or by looking at the 2nd order moments (USE_MOMENTS keyword of the config file).
+        or by looking at the 2nd order moments (USE_MOMENTS keyword of the configuration file).
         """
         self.refresh()
         files, cat = ws.get_files(self.params['FILENAME'], directory='images')
@@ -333,14 +336,14 @@ class MCS_interface():
 
     def switch_ini(self):
         """
-        Switch the initial parameters with the new ones
+        Switch the deconvolution initial parameters with the new ones
         """
         self.refresh()
         self.params['INI_PAR'] = copy.deepcopy(self.params['SRC_PARAMS'])
         bk = fn.get_data('bkg.fits')
         fn.array2fits(bk,  os.path.join('results','bkg_ini.fits'))
         self.save()
-        out(1, 'Parameters switched')
+        out(2, 'Parameters switched')
 
 
 
