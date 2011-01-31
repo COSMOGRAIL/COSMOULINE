@@ -9,10 +9,10 @@ import os, sys, glob, pyfits, numpy
 ################### CONFIGURATION ###################################################################
 
 # ABSOLUTE PATH to where the files are and how to select them :
-origpaths = sorted(glob.glob("/Users/mtewes/Desktop/testrun/smartstest_raw/*.fits")) 
+origpaths = sorted(glob.glob("/obs/lenses_EPFL/SMARTS/J0158/SMARTS2008/*.fits")) 
 
 # ABSOLUTE PATH to the directory where you want the croped images to be written :
-destdir="/Users/mtewes/Desktop/testrun/smartstest_rawcrop" 
+destdir="/obs/lenses_EPFL/SMARTS/J0158/SMARTS2008crop" 
 
 def newpath(origpath, destdir): 	# specifies how to change the name :
 					# origpath is the full path to a present file, and you have to
