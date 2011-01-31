@@ -87,9 +87,13 @@ for i,image in enumerate(images):
 		# We find the peak, and build a narrower hist around it
 		maxpos = np.argmax(hist)
 		if maxpos == 0:
-			print "FWHMs ="
-			print "\n".join(["%.3f" % (fwhm) for fwhm in fwhms])
-			raise mterror("This FWHM distribution is anormal (many cosmics). Something is wrong with sextractor... Problematic img: " + image['imgname'])
+			#print "FWHMs ="
+			#print "\n".join(["%.3f" % (fwhm) for fwhm in fwhms])
+			#raise mterror("This FWHM distribution is anormal (many cosmics). Something is wrong with sextractor... Problematic img: " + image['imgname'])
+			print "This image has many low-FWHM objects (cosmics ?)"
+			seeingpixels = np.median(fwhms)
+			seeing = seeingpixels * image['pixsize']
+
 		elif maxpos == len(hist) -1:
 			print "This image if funny, it seems to have many high-FWHM objects."
 			print "I can only make a crude guess ..."
