@@ -66,7 +66,7 @@ def fitnum(fit_id, data, params, savedir = 'results/'):
     c = lambda x,y: (x-c1)**2. + (y-c2)**2. > radius**2.
     mask = fromfunction(c, sshape)
     lamb = mask*lamb/500. + (np.invert(mask))*lamb
-    fn.array2ds9(lamb)
+    #fn.array2ds9(lamb)
     ini = array([])
     for i, s in enumerate(STAR_COL):
 #        c1, c2 = bshape[0]/2., bshape[1]/2.
