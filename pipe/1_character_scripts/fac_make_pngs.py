@@ -22,14 +22,13 @@ from datetime import datetime, timedelta
 
 print "You want to make pngs for the following setname:"
 print setname
-print "Is this correct, my dear master?"
 proquest(askquestions)
 
 pngkey = setname
 
 crop = False
 cropregion = "[330:1680,108:682]"
-rebin = 2
+rebin = 1
 #z1 = -40
 #z2 =  2000
 z1 = "auto"
@@ -90,10 +89,19 @@ for i, image in enumerate(images):
 	f2nimg.setzscale(z1, z2)
 	f2nimg.rebin(rebin)
 	f2nimg.makepilimage(scale = "log", negative = False)
-	f2nimg.writetitle(image['rawimg'])
+	f2nimg.writetitle(image['imgname'])
 	
-
-
+	
+	date = image['datet']
+	seeing = "Seeing : %4.2f" % image['seeing']
+	ell = "Ellipticity : %4.2f" % image['ell']
+	skylevel = "Sky level : %4.2f" % image['skylevel']
+	stddev = "Preali sky stddev : %4.2f" % image['prealistddev']
+	airmass = "Airmass : %4.2f" % image['airmass']
+	az = "Azimuth : %6.2f" % image['az']
+	
+	infolist = ["", date, seeing, ell, skylevel, stddev, airmass, az]
+	f2nimg.writeinfo(infolist)
 
 	#pngname = "%04d.png" % (i+1)
 	pngname = image['imgname'] + ".png"
