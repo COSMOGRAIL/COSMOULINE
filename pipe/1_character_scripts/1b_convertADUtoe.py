@@ -33,12 +33,8 @@ backupfile(imgdb, dbbudir, "convertADUtoe")
 # Check if the origin_gain is already in the database
 origingain = "origin_gain"
 if origingain not in db.getFieldNames(imgdb):
-	db.addFields(imgdb, ['%s:float' % origingain], after = 'gain')
+	db.addFields(imgdb, ['%s:float' % origingain])
 
-db.pack(imgdb)
-
-#I have to reload the database so that KirbyBase consider the field added previously.
-images = db.select(imgdb, ['recno'], ['*'], returnType='dict')
 
 for i, image in enumerate(images):
 
