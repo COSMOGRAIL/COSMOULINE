@@ -94,9 +94,12 @@ for i,image in enumerate(images):
 	
 	
 	# we prepare the config :
-	gain = "%f" % image["gain"]
-	stddev = "%f" % image["stddev"]
-	repdict = {'$gain$':gain, '$sigmasky$':stddev, '$starscouplelist$':starscouplelist}	
+	gain = "%f" % (image["gain"])
+	stddev = "%f" % (image["stddev"])
+	numpsfrad = "%f" % (6.0 * float(image["seeing"]))
+	lambdanum = "%f" % (0.001) # image["seeing"]
+	
+	repdict = {'$gain$':gain, '$sigmasky$':stddev, '$starscouplelist$':starscouplelist, '$numpsfrad$':numpsfrad, '$lambdanum$' : lambdanum}	
 	
 	pyMCS_config = justreplace(config_template, repdict)
 	extractfile = open(os.path.join(imgpsfdir, "pyMCS_psf_config.py"), "w")
