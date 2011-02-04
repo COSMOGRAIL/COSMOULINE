@@ -25,7 +25,7 @@ fieldnames = db.getFieldNames(imgdb)
 
 plt.figure(figsize=(12,8))
 
-mhjds = combibynight_fct.values(groupedimages, 'mhjd', normkey=None)['median']
+mhjds = combibynight_fct.values(groupedimages, 'mhjd', normkey=None)['mean']
 
 medairmasses = combibynight_fct.values(groupedimages, 'airmass', normkey=None)['median']
 medseeings = combibynight_fct.values(groupedimages, 'seeing', normkey=None)['median']
@@ -34,13 +34,19 @@ meddeccoeffs = combibynight_fct.values(groupedimages, deckeynormused, normkey=No
 
 meddates = [headerstuff.DateFromJulianDay(mhjd + 2400000.5).strftime("%Y-%m-%dT%H:%M:%S") for mhjd in mhjds]
 
+telescopenames = [night[0]["telescopename"] for night in groupedimages]
+setnames = [night[0]["setname"] for night in groupedimages]
+
+
 exportcols = [
 {"name":"mhjd", "data":mhjds},
 {"name":"datetime", "data":meddates},
+{"name":"telescope", "data":telescopenames},
+{"name":"setname", "data":setnames},
 {"name":"fwhm", "data":medseeings},
 {"name":"airmass", "data":medairmasses},
 {"name":"skylevel", "data":medskylevels},
-{"name":"deccoeff", "data":meddeccoeffs},
+{"name":"deccoeff", "data":meddeccoeffs}
 ]
 
 
