@@ -50,7 +50,7 @@ refimage = refimage[0]
 
 # load the reference sextractor catalog
 refsexcat = os.path.join(alidir, refimage['imgname'] + ".cat")
-refautostars = star.readsexcat(refsexcat, maxflag = 2, posflux = True)
+refautostars = star.readsexcat(refsexcat, maxflag = 16, posflux = True)
 refautostars = star.sortstarlistbyflux(refautostars)
 refscalingfactor = refimage['scalingfactor']
 
@@ -81,7 +81,7 @@ for i,image in enumerate(images):
 	print "scalingratio :", scalingratio
 	
 	sexcat = os.path.join(alidir, image['imgname'] + ".cat")
-	autostars = star.readsexcat(sexcat)
+	autostars = star.readsexcat(sexcat, maxflag = 16, posflux = True)
 	autostars = star.sortstarlistbyflux(autostars) # crucial !
 	
 	geomapin = os.path.join(alidir, image['imgname'] + ".geomap")
