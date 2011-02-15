@@ -49,6 +49,7 @@ exportcols = [
 {"name":"deccoeff", "data":meddeccoeffs}
 ]
 
+#deckeynormused = "medcoeff"
 
 colors = ["red", "blue", "purple", "green"]
 for j, ptsrc in enumerate(ptsrcs):
