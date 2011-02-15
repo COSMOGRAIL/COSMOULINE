@@ -36,11 +36,16 @@ if not os.path.isdir(destdir):
 
 
 for fitsfilepath in origpaths:
-	print os.path.split(fitsfilepath)[1]
+	#print os.path.split(fitsfilepath)[1]
 
 	newfitsfilepath = newpath(fitsfilepath, destdir)
 	
 	pixelarray, hdr = pyfits.getdata(fitsfilepath, header=True)
+	
+	if hdr["CCDFLTID"].strip() != "R":
+		print "2_%s\tFilter %s" % (os.path.splitext(os.path.split(fitsfilepath)[1])[0], hdr["CCDFLTID"])
+	
+	"""
 	pixelarray = numpy.asarray(pixelarray).transpose() # To put it in the usual ds9 orientation
 	
 	pixelarrayshape = pixelarray.shape
@@ -64,3 +69,4 @@ for fitsfilepath in origpaths:
 	hdu = pyfits.PrimaryHDU(pixelarray.transpose(), hdr)
 	hdu.verify("fix")
 	hdu.writeto(newfitsfilepath)
+	"""
