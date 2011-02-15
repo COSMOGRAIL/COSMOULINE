@@ -31,9 +31,9 @@ proquest(askquestions)
 backupfile(imgdb, dbbudir, "convertADUtoe")
 
 # Check if the origin_gain is already in the database
-origingain = "origin_gain"
-if origingain not in db.getFieldNames(imgdb):
-	db.addFields(imgdb, ['%s:float' % origingain])
+
+if "origin_gain" not in db.getFieldNames(imgdb):
+	db.addFields(imgdb, ['origin_gain:float'])
 
 
 for i, image in enumerate(images):
