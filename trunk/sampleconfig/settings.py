@@ -28,7 +28,7 @@ checkplots = False
 withsound = False
 
 # A switch to tell if you want pngs to be transformed into jpg
-makejpgarchives = False
+makejpgarchives = True
 
 # A switch to reduce the verbosity of the fortran MCS programs :
 silencemcs = True
@@ -80,6 +80,7 @@ rawdir = "/home/epfl/eulaers/unsaved/prered_Mercator/reduc/J1001+5027_RG_crop"
 #xephemlens = "J0158-4325,f|Q,01:58:41.44,-43:25:04.19,19.0,2000"
 #xephemlens = "HS0818+1227,f|Q,08:21:39.10,+12:17:29.00,19.0,2000"
 #xephemlens = "HE2149-274,f|Q,21:52:07.44,-27:31:50.19,19.0,2000"
+#xephemlens = "WFI2033-4723,f|Q,20:33:42.08,-47:23:43.00,20.0,2000"
 xephemlens = "Simulation,f|Q,00:00:00.00,+00:00:00.0,20.0,2000"
 
 # Now you can run all the scripts until the alignment !
@@ -168,7 +169,7 @@ renormcoeff = 'medcoeff'	# you can choose which coeff you want to use for the co
 # put "new" somewhere in the string if you want use the new psf, and "old" otherwise.
 # Suggestion for names : "newabcd1" for your first try using stars a, b, c and d...
 
-psfname = "defg1"	
+psfname = "abec1"	
 
 # The otherway round, do not put "new" in that string if you build your PSF with the old codes !
 # This is not used to switch the programs automatically, but to recognize which PSF was used afterwards.
@@ -190,7 +191,7 @@ maxcores = 0
 
 #------------------------ OBJECT EXTRACTION --------------------------------
 
-objname = "s"	# Give a name to the object you want to extract.
+objname = "lens"	# Give a name to the object you want to extract.
 			# Typically, "a" if you extract star "a", and
 			# "lens" if you extract the lens ...
 			# If you want to play with different cosmics or so, there
@@ -205,7 +206,7 @@ decname = "full"		# YES WE CAN !
 decobjname = "lens"		# here you choose which object you want to deconvolve : give an existing objname.
 				# You don't have to set the objname in the "OBJECT EXTRACTION" section.
 
-decnormfieldname = "abce1"	# Give the name of the normalization coefficient to apply to the image prior to deconv.
+decnormfieldname = "medcoeff"	# Give the name of the normalization coefficient to apply to the image prior to deconv.
 				# "None" is special, it means a coeff of 1.0 for every image.
 				# The name of the default sextractor photometry is "medcoeff"
 				# If you choose a renormalization, give an existing renormfieldname 
@@ -220,16 +221,15 @@ decpsfnames = ["abce1"]		# here you choose the PSF(s) you want to use : give one
 
 # a name for the new renormalization coefficient
 # (your could choose something that reflects the sources... like "renormabc")
-# Make it short ...
+# Make it short ... but always start it with the letters renorm
 
-renormname = "abce1"
+renormname = "renormabc1"
 
 # which sources do you want to use for the renormalization (give (deckey, sourcename) ):
 renormsources = [
 ('dec_full_a_medcoeff_abce1', 'a'),
 ('dec_full_b_medcoeff_abce1', 'b'),
-('dec_full_c_medcoeff_abce1', 'c'),
-('dec_full_e_medcoeff_abce1', 'e')
+('dec_full_c_medcoeff_abce1', 'c')
 ]
 
 #---------------------------------------------------------------------------
