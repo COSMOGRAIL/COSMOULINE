@@ -63,12 +63,16 @@ fieldtypes = db.getFieldTypes(imgdb)
 fielddesc = ["%s %s" % (fieldname, fieldtype) for (fieldname, fieldtype) in zip(fieldnames, fieldtypes)]
 
 
-deconvolutions = [fieldname for fieldname in fieldnames if fieldname.split("_")[0] == "decfilenum"]
+deconvolutions = [fieldname[11:] for fieldname in fieldnames if fieldname.split("_")[0] == "decfilenum"]
 
-print deconvolutions
+deconvolutionsreadout = [fieldname[4:] for fieldname in fieldnames if (fieldname.split("_")[0] == "out") and ( fieldname.split("_")[-1] == "flux" or fieldname.split("_")[-1] == "int")]
 
-#readme.append("\n\nThe full list of fields :")
-#readme.extend(fielddesc)
+readme.append("\nDeconvolutions :")
+readme.extend(deconvolutions)
+
+readme.append("\nDeconvolution sources with readout :")
+readme.extend(deconvolutionsreadout)
+
 
 
 """
@@ -107,14 +111,19 @@ print "Images with gogogo == True :", len(gogogotrue)
 """
 
 
-readme = "\n".join(readme)
-print "Here is the readme text : \n\n%s\n\n" % (readme)
+readmetxt = "\n".join(readme)
+print "Here is the readme text : \n\n%s\n\n" % (readmetxt)
 
 print "I will now write the files."
 variousfct.proquest(askquestions)
 
+readme.append("\nThe full list of fields :")
+readme.extend(fielddesc)
+readme.append("\n\n(end of automatic part)\n")
+readmetxt = "\n".join(readme)
+
 out_file = open(readmefilepath, "w")
-out_file.write(readme)
+out_file.write(readmetxt)
 out_file.close()
 print "Wrote %s" % readmefilepath
 
