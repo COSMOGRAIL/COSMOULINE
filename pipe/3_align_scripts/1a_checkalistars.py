@@ -42,7 +42,7 @@ proquest(askquestions)
 
 # Load the reference sextractor catalog
 refsexcat = os.path.join(alidir, refimage['imgname'] + ".cat")
-refautostars = star.readsexcat(refsexcat)
+refautostars = star.readsexcat(refsexcat, maxflag = 16, posflux = True)
 refautostars = star.sortstarlistbyflux(refautostars)
 refscalingfactor = refimage['scalingfactor']
 
