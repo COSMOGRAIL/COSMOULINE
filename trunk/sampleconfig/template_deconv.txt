@@ -36,7 +36,7 @@
 |----------------------------------------|-------------
 |Variation minimal entre 10 khi carre    |0.01
 |----------------------------------------|-------------
-|Number if iterations between backups    |100
+|Number if iterations between backups    |10000
 |----------------------------------------|-------------
 |do you want the positivity constraint   |n
 |----------------------------------------|-------------
