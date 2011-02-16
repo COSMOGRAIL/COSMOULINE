@@ -13,9 +13,10 @@ from variousfct import *
 ########## Configuration #########
 
 showhist = False
-maxseeing = 2.5
+maxseeing = 2.2
 maxell = 0.3
-maxmedcoeff = 4.0
+maxmedcoeff = 2.0
+maxsky = 3500.0
 
 ##################################
 
@@ -72,6 +73,12 @@ if showhist :
 	plt.axvline(maxmedcoeff, color="red")
 	plt.xlabel("Medcoeff")
 
+	plt.figure(4)
+	skylists = [np.array([image["skylevel"] for image in images if image["setname"] == setname]) for setname in setnames]
+	plt.hist(skylists, bins=30)
+	plt.axvline(maxsky, color="red")
+	plt.xlabel("Sky level")
+	
 	plt.show()
 
 
@@ -89,9 +96,12 @@ images = [image for image in images if image not in rejectimages] # The "remaini
 rejectimages = [image for image in images if image["medcoeff"] > maxmedcoeff]
 rejlines.extend(["%s\t\t%s" % (image["imgname"], "medcoeff = %.2f" % image["medcoeff"]) for image in rejectimages])
 images = [image for image in images if image not in rejectimages] # The "remaining" images
+rejectimages = [image for image in images if image["skylevel"] > maxsky]
+rejlines.extend(["%s\t\t%s" % (image["imgname"], "skylevel = %.2f" % image["skylevel"]) for image in rejectimages])
+images = [image for image in images if image not in rejectimages] # The "remaining" images
 
 
-print "# Autoskiplist made with maxseeing = %.3f, maxell = %.3f, maxmedcoeff = %.3f ." % (maxseeing, maxell, maxmedcoeff)
+print "# Autoskiplist made with maxseeing = %.3f, maxell = %.3f, maxmedcoeff = %.3f, maxsky = %.1f ." % (maxseeing, maxell, maxmedcoeff, maxsky)
 print "# It contains %i images." % len(rejlines)
 print "\n".join(rejlines)
 
