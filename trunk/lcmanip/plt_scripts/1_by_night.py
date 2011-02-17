@@ -50,36 +50,37 @@ colors = ["red", "blue", "purple", "green"]
 for i, sourcename in enumerate(sourcenames):
 
 	
-	fluxfieldname = "out_%s_%s_int" % (deconvname, sourcename)
+	fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
 	
-	mags = groupfct.mags(groupedimages, fluxfieldname)['median']
-	#mags = groupfct.mags(groupedimages, fluxfieldname, normkey="medcoeff")['median']
+	#mags = groupfct.mags(groupedimages, fluxfieldname)['median']
+	mags = groupfct.mags(groupedimages, fluxfieldname, normkey=normcoeffname)['median']
 	
-	magerrors = 0.00 + (np.array(medskylevels)/200.0)*0.005 + (np.array(medseeings)/1.0)*0.005
-	#errors = combibynight_fct.mags(groupedimages, fluxfieldname, normkey=deckeynormused)['median']
+	#magerrors = 0.00 + (np.array(medskylevels)/200.0)*0.005 + (np.array(medseeings)/1.0)*0.005
+	#errors = combibynight_fct.mags(groupedimages, fluxfieldname, normkey=normcoeffname)['median']
 	
 	#plt.plot(mhjds, mags, linestyle="None", marker=".", label = sourcename, color = colors[i])
-	plt.errorbar(mhjds, mags, yerr=magerrors, linestyle="None", marker=".", label = sourcename, color = colors[i])
+	#plt.errorbar(mhjds, mags, yerr=magerrors, linestyle="None", marker=".", label = sourcename, color = colors[i])
 	
 	
-	#randomerrorfieldname = "out_%s_%s_randerror" % (deconvname, sourcename)
-	
-	
-	#absfluxerrors = np.array(groupfct.values(groupedimages, randomerrorfieldname, normkey=normcoeffname)['median'])
-	#fluxvals = np.array(groupfct.values(groupedimages, fluxfieldname, normkey=normcoeffname)['median'])
-	#relfluxerrors = absfluxerrors / fluxvals
+	randomerrorfieldname = "out_%s_%s_randerror" % (deconvname, sourcename)
+
+	absfluxerrors = np.array(groupfct.values(groupedimages, randomerrorfieldname, normkey=normcoeffname)['median'])
+	fluxvals = np.array(groupfct.values(groupedimages, fluxfieldname, normkey=normcoeffname)['median'])
+	relfluxerrors = absfluxerrors / fluxvals
 	
 	##magerrorbars = -2.5*np.log10(relfluxerrors)
 	
 	##print magerrorbars
 	
-	#upmags = -2.5*np.log10(fluxvals + absfluxerrors)
-	#downmags = -2.5*np.log10(fluxvals - absfluxerrors)
-	#magerrorbars = (downmags - upmags) / 2.0
+	upmags = -2.5*np.log10(fluxvals + absfluxerrors)
+	downmags = -2.5*np.log10(fluxvals - absfluxerrors)
+	magerrorbars = (downmags - upmags) / 2.0
 	##print magerrorbars
 	
-	#plt.errorbar(mhjds, mags, yerr=2.0*magerrorbars, linestyle="None", marker=".", label = ptsrc.name)
-	exportcols.extend([{"name":"mag_%s" % sourcename, "data":mags}, {"name":"magerr_%s" % sourcename, "data":magerrors}])
+	magerrorbars = magerrorbars * 2.0
+	
+	plt.errorbar(mhjds, mags, yerr=magerrorbars, linestyle="None", marker=".", label = sourcename)
+	exportcols.extend([{"name":"mag_%s" % sourcename, "data":mags}, {"name":"magerr_%s" % sourcename, "data":magerrorbars}])
 	
 	#plt.plot(mhjds, mags, linestyle="None", marker=".", label = ptsrc.name)
 	
