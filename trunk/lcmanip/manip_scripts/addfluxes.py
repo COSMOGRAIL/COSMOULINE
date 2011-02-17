@@ -2,44 +2,42 @@ execfile("../config.py")
 
 ###########################################################################################
 
-
-deconvname = "dec_full3_lens_medcoeff_abgde1"
+#deconvname = "dec_full3_lens_medcoeff_abgde1"
 
 toaddsourcenames = ["A1", "A2"]
 
-sumsourcename = ["A"]
+sumsourcename = "A"
 
-
+# error is taken as the mean error of the toaddsources
 
 ###########################################################################################
 
-import matplotlib.pyplot as plt
-import matplotlib.dates
+toaddfluxfields = ["out_%s_%s_flux" % (deconvname, sourcename) for sourcename in toaddsourcenames]
+toadderrfields = ["out_%s_%s_randerror" % (deconvname, sourcename) for sourcename in toaddsourcenames]
 
+sumfluxfield = "out_%s_%s_flux" % (deconvname, sumsourcename)
+sumerrfield = "out_%s_%s_randerror" % (deconvname, sumsourcename)
 
-variousfct.backupfile(pkldbpath, "../pkldb_backups", "Adding%s" % ("".join(toaddsourcenames)))
-
-"""
-print "Deconvolution : %s" % (deconvname)
-print "Point sources : %s" % ", ".join(sourcenames)
+print "Adding \n%s" % ("\n".join(toaddfluxfields))
+print "= %s" % (sumfluxfield)
 
 images = variousfct.readpickle(pkldbpath, verbose=True)
 
-images = [image for image in images if image["decfilenum_" + deconvname] != None] 
-print "%i images" % len(images)
 
-groupedimages = groupfct.groupbynights(images)
-print "%i nights"% len(groupedimages)
+for image in images:
+	image[sumfluxfield] = None
+	image[sumerrfield] = None
+	
+	fluxestoadd = [image[fieldname] for fieldname in toaddfluxfields]
+	errorstomean = [image[fieldname] for fieldname in toadderrfields]
+	
+	if not (None in fluxestoadd) :
+		image[sumfluxfield] = sum(fluxestoadd)
+		image[sumerrfield] = sum(errorstomean)/float(len(toaddsourcenames))
 
-
-plt.figure(figsize=(12,8))
-
-mhjds = groupfct.values(groupedimages, 'mhjd', normkey=None)['mean']
-
-medairmasses = groupfct.values(groupedimages, 'airmass', normkey=None)['median']
-medseeings = groupfct.values(groupedimages, 'seeing', normkey=None)['median']
-medskylevels = groupfct.values(groupedimages, 'skylevel', normkey=None)['median']
-#meddeccoeffs = groupfct.values(groupedimages, normcoeffname, normkey=None)['median']
-
-
-"""
+	print image[sumfluxfield], "+/-", image[sumerrfield]
+	
+	
+	
+variousfct.backupfile(pkldbpath, "../pkldb_backups", "Adding%s" % ("".join(toaddsourcenames)))
+variousfct.writepickle(images, pkldbpath, verbose=True)
