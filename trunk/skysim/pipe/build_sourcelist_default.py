@@ -18,7 +18,7 @@ for i in range(6): # x = magnitudes
 
 
 # We want our PSF stars to lie on different sampling pixels, not always the same.
-skysim_sources.jitter_sourcelist(psfstars, allthesame=False)
+psfstars = skysim_sources.jitter_sourcelist(psfstars, allthesame=False)
 
 # Separation 0.85 arcsec
 lens1 = [skysim_sources.Star(1000, 750, 19, "L1A"), skysim_sources.Star(1003, 753, 19, "L1B")]
