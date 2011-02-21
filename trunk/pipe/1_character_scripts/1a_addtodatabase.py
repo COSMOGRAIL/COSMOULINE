@@ -19,7 +19,7 @@ minimaldbfields = ['imgname:str', 'treatme:bool', 'gogogo:bool', 'whynot:str', '
 'telescopename:str', 'setname:str', 'rawimg:str',
 'scalingfactor:float', 'pixsize:float','date:str','datet:str','jd:str','mjd:float',
 'telescopelongitude:str', 'telescopelatitude:str', 'telescopeelevation:float',
-'exptime:float','gain:float', 'readnoise:float', 'rotator:float', 'satur_level:float',
+'exptime:float','gain:float', 'readnoise:float', 'rotator:float', 'saturlevel:float',
 'preredcomment1:str', 'preredcomment2:str', 'preredfloat1:float', 'preredfloat2:float']
 
 
