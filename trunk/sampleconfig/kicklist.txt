@@ -1,56 +1,12 @@
 #
-#	kicklist for J1001
+#	The "kicklist"...
+#	Write imgnames here (that is without .fits), then a tab, then a comment
+#	Use extrascripts/set_gogogo.py to deactivate those images.
 #
 
-# Kicked after visual inspection of aligned images
+# Example : 
+#Mer1_017565_RG_J1001+5027	FUBAR
 
-Mer1_017565_RG_J1001+5027	lines		2005-04-17
-Mer1_048489_RG_J1001+5027	triangles	2006-02-18 
-Mer1_048490_RG_J1001+5027	triangles	2006-02-18 
-Mer1_048491_RG_J1001+5027	triangles	2006-02-18 
-Mer1_048492_RG_J1001+5027	triangles	2006-02-18 
-Mer1_048493_RG_J1001+5027	triangles	2006-02-18 
-Mer1_048662_RG_J1001+5027	triangles	2006-02-19 
-Mer1_048663_RG_J1001+5027	triangles	2006-02-19
-Mer1_048664_RG_J1001+5027	triangles	2006-02-19
-Mer1_048665_RG_J1001+5027	triangles	2006-02-19
-Mer1_048666_RG_J1001+5027	triangles	2006-02-19
-Mer1_048730_RG_J1001+5027	triangles	2006-02-20
-Mer1_048731_RG_J1001+5027	triangles	2006-02-20
-Mer1_048732_RG_J1001+5027	triangles	2006-02-20
-Mer1_048733_RG_J1001+5027	triangles	2006-02-20
-Mer1_048734_RG_J1001+5027	triangles	2006-02-20
-Mer1_048906_RG_J1001+5027	triangles	2006-02-21
-Mer1_048907_RG_J1001+5027	triangles	2006-02-21
-Mer1_048908_RG_J1001+5027	triangles	2006-02-21
-Mer1_048909_RG_J1001+5027	triangles	2006-02-21
-Mer1_048910_RG_J1001+5027	triangles	2006-02-21
-Mer1_092564_RG_J1001+5027	triangles	
-Mer1_092975_RG_J1001+5027	triangles
-Mer1_092976_RG_J1001+5027	triangles
-Mer1_092977_RG_J1001+5027	triangles
-Mer1_092978_RG_J1001+5027	triangles
-Mer1_092979_RG_J1001+5027	triangles
-Mer1_092568_RG_J1001+5027	triangles
-Mer1_092569_RG_J1001+5027	triangles
-Mer1_092570_RG_J1001+5027	triangles
-Mer1_092571_RG_J1001+5027	triangles
-Mer1_092572_RG_J1001+5027	triangles
-Mer1_130405_RG_J1001+5027	two lines
-Mer1_130923_RG_J1001+5027	reduction problem
-Mer1_131775_RG_J1001+5027	bacteries
-Mer1_133876_RG_J1001+5027	W
-Mer1_135916_RG_J1001+5027	two lines
-Mer1_136996_RG_J1001+5027	lines
-Mer1_139086_RG_J1001+5027	lines
-Mer1_153754_RG_J1001+5027	C
-Mer1_153755_RG_J1001+5027	C
-Mer1_153756_RG_J1001+5027	C
-Mer1_168550_RG_J1001+5027	cloud
-Mer1_168552_RG_J1001+5027	quadruple
-Mer1_171873_RG_J1001+5027	reduction problem
-Mer1_173017_RG_J1001+5027	quadruple
-Mer1_173214_RG_J1001+5027	quadruple
 
 
 
