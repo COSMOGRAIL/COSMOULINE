@@ -9,15 +9,10 @@
 
 
 execfile("../config.py")
-#import glob
-#import pyfits
-#import datetime
+
 from kirbybase import KirbyBase, KBError
 from variousfct import *
-from headerstuff import *
 
-
-# selection of all the images of the database
 db = KirbyBase()
 
 if thisisatest:
@@ -28,26 +23,22 @@ else:
 
 nbrofimages = len(images)
 
-print "I will convert %i images." % (nbrofimages)
+print "I will copy/convert %i images." % (nbrofimages)
 proquest(askquestions)
 
 
 for i, image in enumerate(images):
-	print i+1, "/", nbrofimages, " : ", image['imgname']
+	print i+1, "/", nbrofimages, " : ", image['imgname'], ", gain = %.3f" % (image['gain'])
 	
-
-	filename = image['rawimg']
-	pixelarray, header = fromfits(filename)
+	pixelarray, header = fromfits(image['rawimg'])
 	
-	pixelarray = pixelarray * origin_gain	# so that we have an image in electrons and not in ADU
+	pixelarray = pixelarray * image['gain']	# so that we have an image in electrons and not in ADU
 	
 	outfilename = os.path.join(alidir, image['imgname'] + ".fits")
 	tofits(outfilename, pixelarray)	# we clean the header to avoid dangerous behaviors from iraf or sextractor
 
-
-
 db.pack(imgdb)
 
-print "Done with conversion."
+print "Done with copy/conversion."
 
 

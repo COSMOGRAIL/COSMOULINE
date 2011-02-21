@@ -88,7 +88,7 @@ dbbudir = os.path.join(workdir, "backups")	# The database is automatically backu
 
 
 alidir = os.path.join(workdir, "ali/")		# Alignment etc is done here
-plotdir = os.path.join(workdir, "plots/")	# Some plots will go here
+plotdir = os.path.join(workdir, "plots/")	# Some plots will go here (not used anymore)
 
 # Image lists (line format : imgname comment (you can leave blank lines and use "#" to comment a line !)) :
 
@@ -188,10 +188,13 @@ deconv_template_filename = os.path.join(configdir, "template_deconv.txt")
 # check for some general dirs
 
 if not os.path.isdir(pipedir):
+	print pipedir
 	sys.exit("Your pipedir does not exist !")
 if not os.path.isdir(configdir):
+	print configdir
 	sys.exit("Your configdir does not exist !")
 if not os.path.isdir(workdir):
+	print workdir
 	sys.exit("Your workdir does not exist !")
 
 if not os.path.isdir(alidir): 
