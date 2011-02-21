@@ -8,14 +8,13 @@ from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
 
-import shutil
-
 db = KirbyBase()
 images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
 
 nbrimages = len(images)
 
 print "I will not change the images, just (link or) copy the files."
+print "uselinks : %s" % (uselinks)
 proquest(askquestions)
 
 print "Number of images to treat :", nbrimages
@@ -25,23 +24,19 @@ starttime = datetime.now()
 
 
 for i,image in enumerate(images):
-
-	recno = image['recno']
-	justname = image['imgname']
-	filename = image['rawimg']
-	print "+++++++++++++++++++++++++++++++++++++++++++++++"
 	print i+1, "/", nbrimages, ":", justname
 	
-	#sexout = os.system(sex +" "+ filename + " -c default_sky.sex")
-	#os.remove("sex.cat")
-	#os.system("mv check.fits " + alidir + justname + "_skysub.fits")
+	recno = image['recno']
+	justname = image['imgname']
+	withskyfilepath = os.path.join(alidir, image['imgname'] + ".fits")
 	
-	shutil.copy(filename, alidir + justname + "_skysub.fits")
+	noskyfilepath = os.path.join(alidir, image['imgname'] + "_skysub.fits")
+	
+	copyorlink(withskyfilepath, noskyfilepath, uselinks = uselinks)
 	
 
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
-
-notify(computer, withsound, "Files copied. It took %s" % timetaken)
+notify(computer, withsound, "Files copyorlinked. It took %s" % timetaken)
 
 
