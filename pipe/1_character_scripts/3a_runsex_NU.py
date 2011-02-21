@@ -7,12 +7,19 @@ execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
-from readandreplace_fct import *
+#from readandreplace_fct import *
 import shutil
 import os
 
+
+
 db = KirbyBase()
-images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
+if thisisatest:
+	print "This is a test run."
+	images = db.select(imgdb, ['gogogo','treatme','testlist'], [True, True, True], returnType='dict')
+else:
+	images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
+
 
 nbrofimages = len(images)
 print "Number of images to treat :", nbrofimages
@@ -27,20 +34,12 @@ for i,image in enumerate(images):
 	print i+1, "/", nbrofimages, ":", image['imgname']
 	
 	imagepath = os.path.join(alidir, image['imgname']+".fits")
-	
 	catfilename = os.path.join(alidir, image['imgname']+".cat")
 	
-	# We run sextractor on the images converted to electrons :
-	os.system("%s %s -c default_see_template.sex -GAIN %.3f -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CATALOG_NAME %s" % (sex, imagepath, image["gain"], image["pixsize"], image["satur_level"], catfilename))
+	saturlevel = image["gain"] * image["saturlevel"] # to convert to electrons
+	cmd = "%s %s -c default_see_template.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CATALOG_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, catfilename)
+	os.system(cmd)
 	
-	
-	#catfilename = os.path.join(alidir, image['imgname']+".cat")
-	#shutil.move("sex.cat", catfilename)
-	
-	
-	# remove check image in case it was created
-	#if os.path.isfile("check.fits"):
-	#	os.remove("check.fits")
 
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)

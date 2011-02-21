@@ -16,6 +16,8 @@
 
 # readnoise is in electrons ("per pixel"). At least this is how cosmic.py will use it...
 
+# saturlevel is in ADU (so usually 65000). All scripts that use it will convert it to electrons if required.
+
 import sys
 import datetime
 import pyfits
@@ -23,6 +25,7 @@ import math
 
 from variousfct import *
 
+print "Re-exec config :"
 execfile("../config.py") # yes, this line is required so that settings.py are available within the functions below.
 
 
@@ -162,7 +165,7 @@ def eulerc2header(rawimg):
 	pixsize = 0.344
 	readnoise = 9.5 # Taken from Christel
 	scalingfactor = 0.5612966 # measured scalingfactor (with respect to Mercator = 1.0)
-	satur_level = 65000.0 #arbitrary	
+	saturlevel = 65000.0 #arbitrary	
 
 	telescopelongitude = "-70:43:48.00"
 	telescopelatitude = "-29:15:24.00"
@@ -256,7 +259,7 @@ def eulerc2header(rawimg):
 	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
 	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
 	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
-	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'satur_level':satur_level,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
 	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
 	}
 	
@@ -272,7 +275,7 @@ def eulercamheader(rawimg):
 	gain = 2.7 # Rough mean of Monika's measure in Q1, might get updated.
 	readnoise = 5.0 # typical value for quadrant 1, i.e. also all LL frames.
 	scalingfactor = 1.0 # NOT YET measured scalingfactor (with respect to Mercator = 1.0)
-	satur_level = 65000.0 #arbitrary
+	saturlevel = 65000.0 # arbitrary
 	rotator = 0.0
 
 	telescopelongitude = "-70:43:48.00"
@@ -321,7 +324,7 @@ def eulercamheader(rawimg):
 	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
 	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
 	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
-	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'satur_level':satur_level,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
 	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
 	}
 	
@@ -339,7 +342,7 @@ def mercatorheader(rawimg):
 	gain = 0.93 # e- / ADU, as given by Saskia Prins
 	readnoise = 9.5 # ?
 	scalingfactor = 1.0 # By definition, others are relative to Mercator.
-	satur_level = 65000.0 #arbitrary	
+	saturlevel = 65000.0 # arbitrary	
 	
 	telescopelongitude = "-17:52:47.99"
 	telescopelatitude = "28:45:29.99"
@@ -400,7 +403,7 @@ def mercatorheader(rawimg):
 	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
 	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
 	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
-	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'satur_level':satur_level,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
 	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
 	}
 
@@ -425,7 +428,7 @@ def liverpoolheader(rawimg):
 	#gain = 0 # We will take it from the header, it's around 2.2, keyword GAIN
 	#readnoise = 0.0 # idem, keyword READNOIS, 7.0
 	scalingfactor = 1.0 # Not measured : to be done !
-	satur_level = 65000.0 #arbitrary
+	saturlevel = 65000.0 # arbitrary
 
 	telescopelongitude = "-17:52:47.99" # Same location as Mercator ...
 	telescopelatitude = "28:45:29.99"
@@ -480,7 +483,7 @@ def liverpoolheader(rawimg):
 	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
 	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
 	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
-	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'satur_level':satur_level,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
 	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
 	}
 
@@ -505,7 +508,7 @@ def maidanaksiteheader(rawimg):
 	gain = 1.16 # From Ildar, to be checked ?
 	readnoise = 5.3 # idem
 	scalingfactor = 0.723333 #
-	satur_level = 65000.0 #arbitrary
+	saturlevel = 65000.0 # arbitrary
 	
 	telescopelongitude = "66:53:47.07"
 	telescopelatitude = "38:40:23.95"
@@ -562,7 +565,7 @@ def maidanaksiteheader(rawimg):
 	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
 	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
 	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
-	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'satur_level':satur_level,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
 	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
 	}
 
@@ -585,7 +588,7 @@ def maidanaksiheader(rawimg):
 	gain = 1.45
 	readnoise = 4.7
 	scalingfactor = 0.721853 # measured scalingfactor (with respect to Mercator = 1.0)#
-	satur_level = 65000.0 #arbitrary
+	saturlevel = 65000.0 # arbitrary
 	
 	telescopelongitude = "66:53:47.07"
 	telescopelatitude = "38:40:23.95"
@@ -633,7 +636,7 @@ def maidanaksiheader(rawimg):
 	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
 	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
 	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
-	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'satur_level':satur_level,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
 	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
 	}
 
@@ -653,7 +656,7 @@ def hctheader(rawimg):
 	gain = 1.22
 	readnoise = 4.8
 	scalingfactor = 0.65189 # measured scalingfactor (with respect to Mercator = 1.0)#
-	satur_level = 65000.0 #arbitrary
+	saturlevel = 65000.0 #arbitrary
 	
 	telescopelongitude = "78:57:50.99"
 	telescopelatitude = "32:46:46.00"
@@ -706,7 +709,7 @@ def hctheader(rawimg):
 	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
 	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
 	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
-	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'satur_level':satur_level,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
 	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
 	}
 
@@ -726,7 +729,7 @@ def holiheader(rawimg): # HoLiCam header
 	gain = 2.5 # idem 
 	readnoise = 9.0 # idem
 	scalingfactor = 1.0 # not yet measured ! Do so if required !
-	satur_level = 65000.0 #arbitrary
+	saturlevel = 65000.0 #arbitrary
 
 	telescopelongitude = "6:51:00.00"
 	telescopelatitude = "50:09:48.00"
@@ -774,7 +777,7 @@ def holiheader(rawimg): # HoLiCam header
 	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
 	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
 	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
-	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'satur_level':satur_level,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
 	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
 	}
 
@@ -806,7 +809,7 @@ def smartsandicamheader(rawimg):
 	gain = 2.3
 	scalingfactor = 0.519995356
 	# Measured scalingfactor, done in comparision with Euler (Mercator = 1.0)
-	satur_level = 65000.0
+	saturlevel = 65000.0
 
 	telescopelongitude = "-70:48:54.00"
 	telescopelatitude = "-30:09:54.00"
@@ -849,7 +852,7 @@ def smartsandicamheader(rawimg):
 	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
 	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
 	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
-	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'satur_level':satur_level,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
 	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
 	}
 	
@@ -877,7 +880,7 @@ def skysimheader(rawimg):
     gain = float(header['GAIN'])
     readnoise = float(header['RON'])
     scalingfactor = 1.0
-    satur_level = 65000.0 #arbitrary
+    saturlevel = 65000.0 # arbitrary
 	
     telescopelongitude = "00:00:00.00"
     telescopelatitude = "00:00:00.00"
@@ -923,7 +926,7 @@ def skysimheader(rawimg):
     'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
     'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
     'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
-    'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'satur_level':satur_level,
+    'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
     'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
     }
 
@@ -948,7 +951,7 @@ def combiheader(rawimg):
 	gain = float(header["GAIN"])
 	readnoise = float(header["RDNOISE"])
 	scalingfactor = float(header["SCFACTOR"]) # measured scalingfactor (with respect to Mercator = 1.0)#
-	satur_level = float(header["SATURLVL"])
+	saturlevel = float(header["SATURLVL"])
 	
 	combinum = int(header["COMBINUM"])
 	combinumname = combidirname + '_num'
@@ -996,7 +999,7 @@ def combiheader(rawimg):
 	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
 	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
 	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
-	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'satur_level':satur_level,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
 	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
 	}
 
@@ -1015,7 +1018,7 @@ def noheader(rawimg):
 	gain = 1.0
 	readnoise = 5.0
 	scalingfactor = 1.0
-	satur_level = 65000.0 #arbitrary
+	saturlevel = 65000.0 #arbitrary
 	
 	telescopelongitude = "00:00:00.00"
 	telescopelatitude = "00:00:00.00"
@@ -1054,7 +1057,7 @@ def noheader(rawimg):
 	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg, 
 	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
 	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
-	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'satur_level':satur_level,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
 	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
 	}
 

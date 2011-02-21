@@ -365,6 +365,8 @@ def tofits(outfilename, pixelarray, hdr = None, verbose = True):
 		pixelarray = np.cast["uint8"](pixelarray)
 
 	if os.path.isfile(outfilename):
+		if verbose:
+			print "File exists, I remove it."
 		os.remove(outfilename)
 	
 	if hdr == None: # then a minimal header will be created 
