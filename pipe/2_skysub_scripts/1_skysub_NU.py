@@ -33,15 +33,15 @@ for i,image in enumerate(images):
 	print "%5i/%i : %s" % (i+1, nbrimages, image["imgname"])
 	
 	imagepath = os.path.join(alidir, image["imgname"] + ".fits")
-	
 	skyimagepath = os.path.join(alidir,  image["imgname"] + "_sky.fits")
 	if os.path.isfile(skyimagepath):
 		print "Removing existing sky image."
 		os.remove(skyimagepath)
 	
 	# We run sextractor  on the image in electrons :
-	os.system("%s %s -c default_sky_template.sex -GAIN %.3f -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CHECKIMAGE_NAME %s" % (sex, imagepath, image["gain"], image["pixsize"], image["satur_level"], skyimagepath))
-	
+	saturlevel = image["gain"] * image["satur_level"] # to convert to electrons
+	cmd = "%s %s -c default_sky_template.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CHECKIMAGE_NAME %s" % (sex, imagepath, image["pixsize"], image["satur_level"], skyimagepath)
+	os.system(cmd)
 	
 	(skya, skyh) = fromfits(skyimagepath, verbose = False)
 	(imagea, imageh) = fromfits(imagepath, verbose = False)
