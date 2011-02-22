@@ -379,7 +379,7 @@ class Star():
         width_y = sqrt(abs((arange(row.size)-c1)**2*row).sum()/row.sum())
         i0 = data.max()
         params =  0., (width_x+width_y)/2., 0.1, c1, c2, i0
-        errorfunction = lambda p: ravel(self._gaus(*p)(*indices(data.shape)) - data)
+        errorfunction = lambda p: ravel((self._gaus(*p)(*indices(data.shape)) - data)/self.image.noisemap)
         p, success = scipy.optimize.leastsq(errorfunction, params)
         #par: [theta, fwhm, e, beta]
         par = array([p[0]%(2*pi), 
