@@ -22,6 +22,11 @@ images = db.select(imgdb, ['gogogo','treatme'], [True, True], ['recno','imgname'
 
 nbrofimages = len(images)
 print "Number of images to treat :", nbrofimages
+
+print "I will not change the images, just (link or) copy the files."
+print "You won't have to run the other scripts of this directory."
+print "uselinks : %s" % (uselinks)
+
 proquest(askquestions)
 
 starttime = datetime.now()
@@ -50,8 +55,8 @@ for i,image in enumerate(images):
 	db.update(imgdb, ['recno'], [recno], {'flagali': 1, 'nbralistars': 0, 'maxalistars': 0, 'alicomment':'Pseudo alignenement', 'angle': 0.0, 'geomapangle': 0.0, 'geomaprms': 0.0, 'geomapscale': 0.0})
 	
 	# The normal way to go, saving the skysubtracted image :
-	shutil.copy(filepath + "_skysub.fits", filepath + "_ali.fits")
-	
+	#shutil.copy(filepath + "_skysub.fits", filepath + "_ali.fits")
+	copyorlink(filepath + "_skysub.fits", filepath + "_ali.fits", uselinks = uselinks)
 
 db.pack(imgdb)
 
