@@ -8,7 +8,6 @@
 
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
-from identcoord_fct import *
 from variousfct import *
 
 

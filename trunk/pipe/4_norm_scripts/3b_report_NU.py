@@ -4,7 +4,6 @@
 
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
-from identcoord_fct import *
 from variousfct import *
 
 fields = ['imgname', 'seeing', 'nbralistars', 'geomaprms', 'medcoeff', 'nbrcoeffstars', 'maxcoeffstars', 'sigcoeff', 'spancoeff']
