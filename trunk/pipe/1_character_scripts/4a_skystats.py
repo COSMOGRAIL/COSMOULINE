@@ -1,7 +1,8 @@
-#
-#	We measure level and stddev of the sky, with custom python.
-#	You can turn on the flag "checkplots" to check how I do this.
-#
+"""
+	We measure level and stddev of the sky, with custom python.
+	This is in electrons !!!
+	You can turn on the flag "checkplots" to check how I do this.
+"""
 
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError

@@ -7,15 +7,17 @@ This is a bit simplistic : here we *do* rely on the reference image as a referen
 This is well adapted to calculate such coefficients over different telescopes etc.
 Of course the reference image will have a coeff of 1.0
 
+We use FLUX_AUTO
+
 Later we will do something more sophisticated for the renormalization.
 
 """
 
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
-from calccoeff_fct import *
 from variousfct import *
 import star
+import numpy as np
 
 	# As we will tweak the database, do a backup first
 backupfile(imgdb, dbbudir, 'calccoeff')
@@ -34,11 +36,14 @@ if "nbrcoeffstars" not in db.getFieldNames(imgdb) :
 
 # we read the handwritten star catalog
 normstars = star.readmancat(normstarscat)
+for s in normstars:
+	print s.name
+
 
 print "Checking reference image ..."
 refsexcat = os.path.join(alidir, refimgname + ".alicat")
 refcatstars = star.readsexcat(refsexcat)
-id = listidentify(normstars, refcatstars, tolerance = identtolerance)
+id = star.listidentify(normstars, refcatstars, tolerance = identtolerance)
 refidentstars = id["match"]
 # now refidentstars contains the same stars as normstars, but with sex fluxes.
 
@@ -68,11 +73,10 @@ def simplemediancoeff(refidentstars, identstars):
 				continue
 			coeffs.append(refstar.flux/star.flux)
 			break
-			
+	
+	coeffs = np.array(coeffs)
 	if len(coeffs) > 0:
-		coeffarr = array(coeffs)
-		stddev = coeffarr.std()
-		return len(coeffs), float(median(coeffs)), float(stddev), float(max(coeffs) - min(coeffs))
+		return len(coeffs), float(np.median(coeffs)), float(np.std(coeffs)), float(np.max(coeffs) - np.min(coeffs))
 	else:	
 		return 0, 1.0, 99.0, 99.0
 	
