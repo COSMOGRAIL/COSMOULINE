@@ -159,7 +159,7 @@ def readmancat(mancatfilepath, verbose="True"):
 		sys.exit(1)
 		
 	
-	myfile = open(mancatfilepath, s"r")
+	myfile = open(mancatfilepath, "r")
 	lines = myfile.readlines()
 	myfile.close
 	
