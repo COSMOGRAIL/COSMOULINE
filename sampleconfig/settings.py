@@ -34,12 +34,17 @@ makejpgarchives = True
 silencemcs = True
 
 
+# Max number of CPU cores to use (0 = automatic, meaning that all available cores will be used) :
+maxcores = 0
+# Only some scripts run on multiple cores. It is noramlly fine to leave this on 0.
+# You might want to use the manual setting for instance if someone is already using some cores for other jobs etc. 
+
 #------------------------- import new images  ---------------------------------------------------------------
 
 # The "set name" of the images you want to add to the database
 # Could for example reflect the telescope ...
 
-setname = "Mer1"
+setname = "1"
 telescopename = "Mercator"
 # names : Mercator, EulerC2, EulerCAM, HCT, MaidanakSITE (2080x800), MaidanakSI, MaidanakPeltier, HoLi, NOTalfosc, Combi, skysim, NOHEADER
 # where NOHEADER is a special name to not read any header information from the FITS files.
@@ -89,7 +94,7 @@ xephemlens = "Simulation,f|Q,00:00:00.00,+00:00:00.0,20.0,2000"
 
 # reference image name (for alignement and deconvolution) :
 
-refimgname = "Mer1_093307_RG_J1001+5027"
+refimgname = "1_093307_RG_J1001+5027"
 
 # dimensions you want for the aligned images (you have to start at pixels (1,1), no choice)
 dimx = 2000
@@ -123,7 +128,7 @@ identfindmindist = 300
 
 #----------------------------- Sextractor photometry readout -----------------------------
 
-sexphotomname = "sexphotom1"
+sexphotomname = "sexphotom1"	# No need to touch this, same for the fields below.
 
 # Fields you want in the database. Not restricted to photometry, you could add any fields.
 # Note the convention : if you ask sextractor for 3 apertures, those fields will be named
@@ -169,7 +174,7 @@ renormcoeff = 'medcoeff'	# you can choose which coeff you want to use for the co
 # put "new" somewhere in the string if you want use the new psf, and "old" otherwise.
 # Suggestion for names : "newabcd1" for your first try using stars a, b, c and d...
 
-psfname = "abec1"	
+psfname = "pyMCSabcd1"	
 
 # The otherway round, do not put "new" in that string if you build your PSF with the old codes !
 # This is not used to switch the programs automatically, but to recognize which PSF was used afterwards.
@@ -178,16 +183,8 @@ psfname = "abec1"
 
 
 # Sensitivity of cosmic ray detection. Lower values = more sensitive = more detections
-# A good conservative default is 5.0 . So 4.0 is a bit more sensitive. Check that you do not mask noise ...
-cosmicssigclip = 4.0
-
-# Max number of CPU cores to use (0 = automatic, meaning that all available cores will be used)
-# It is fine to leave this on 0.
-# You might want to use the manual setting for instance if someone is already using some cores for other jobs etc. 
-maxcores = 0
-	# This is used by the multicpu PSF construction
-
-
+# A good conservative default is 5.0 . So 4.0 would be a bit more sensitive. Check that you do not mask noise ...
+cosmicssigclip = 6.0
 
 #------------------------ OBJECT EXTRACTION --------------------------------
 
