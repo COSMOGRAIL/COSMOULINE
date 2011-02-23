@@ -42,10 +42,6 @@ print "Total number of images :", len(usedsetnames)
 print "Images with gogogo == True :", len(gogogotrue)
 
 
-#test = db.select(imgdb, ['recno'], ['*'], returnType='dict')
-#print len(test)
-#test = db.select('/home/epfl/tewes/DECONV/J1001/work/backups/20081106_154506_identcoord_database.dat', ['recno'], ['*'], returnType='dict')
-#print len(test)
 
 print "- "*40
 sys.exit()
