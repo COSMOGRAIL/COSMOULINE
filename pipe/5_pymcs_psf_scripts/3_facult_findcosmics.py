@@ -77,9 +77,12 @@ def findcosmics(image):
 		# Creating the object :
 		c = cosmics.cosmicsimage(a, pssl=pssl, gain=gain, readnoise=readnoise, sigclip=sigclip, sigfrac=sigfrac, objlim=objlim, satlevel=-1.0, verbose=False)
 	
+		#print pssl, gain, readnoise, sigclip, sigfrac, objlim
+		
 		c.run(maxiter=3)
 	
 		ncosmics = np.sum(c.mask)
+		#print ncosmics
 		#if ncosmics != 0:
 		#	print "--- %i pixels ---" % ncosmics
 		
