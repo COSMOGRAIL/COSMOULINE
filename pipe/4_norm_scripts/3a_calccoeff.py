@@ -1,8 +1,15 @@
-#
-#	We read the "normstars.tab" file and identify the corresponding stars,
-#	write the good stars with their measured fluxes (various techniques and fluxerrors) into one textfile for
-#	each image.
-#
+"""
+Calculation of first guess normalization coefficients.
+You can relaunch this with other stars to test different combinations if you want.
+
+
+This is a bit simplistic : here we *do* rely on the reference image as a reference.
+This is well adapted to calculate such coefficients over different telescopes etc.
+Of course the reference image will have a coeff of 1.0
+
+Later we will do something more sophisticated for the renormalization.
+
+"""
 
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
@@ -46,6 +53,29 @@ print "Number of coefficient stars :", maxcoeffstars
 nbrofimages = len(images)
 print "I will treat", nbrofimages, "images."
 proquest(askquestions)
+
+def simplemediancoeff(refidentstars, identstars):
+	"""
+	calculates a simple (but try to get that better ... it's pretty good !) multiplicative coeff for each image
+	"calc one coef for each star and take the median of them"
+	coef = reference / image
+	"""
+	
+	coeffs = []
+	for refstar in refidentstars:
+		for star in identstars:
+			if refstar.name != star.name:
+				continue
+			coeffs.append(refstar.flux/star.flux)
+			break
+			
+	if len(coeffs) > 0:
+		coeffarr = array(coeffs)
+		stddev = coeffarr.std()
+		return len(coeffs), float(median(coeffs)), float(stddev), float(max(coeffs) - min(coeffs))
+	else:	
+		return 0, 1.0, 99.0, 99.0
+	
 
 
 for i, image in enumerate(images):
