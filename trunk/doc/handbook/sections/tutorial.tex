@@ -9,12 +9,10 @@ So don't worry and read on. Details and mechanisms are shown along the way, and 
 
 \subsection{Preparing the directories and data}
 
-Step number 0 is to get the images ready. Let's assume you have some images somewhere on your disk. All we need is a plain directory containing FITS files. If not, you can use the two Mercator sample images I've put on the web. This directory could also be your image database: cosmouline will not modify anything in there, but it will simply copy them as soon as a first copy is required (more precisely:for the sky subtraction).
+Step number 0 is to get the images ready. Let's assume you have some images somewhere on your disk. All we need is a plain directory containing FITS files. If not, you can use the two Mercator sample images I've put on the web. This directory could also be your image database: cosmouline will not modify anything in there, but it will simply copy them as soon as a first copy is required (quite soon, to convert from ADU to electrons).
 
-\tbrem{Warning : we have now changed the pipeline so that images will be converted into electrons just after the import. This is done using pyfits. The problem : in case your input images are for instance stored as integers but contain these two conversion factors in the header so that ds9 etc convert them on the fly to floats, you should make sure that this is handled well by pyfits ! 
-
-
-In other words, to be safe : use images that are directly written as floats, in ADU. For cosmouline, the gains is to be given in e-/ADU, and the readnoise is in electrons.
+\tbrem{Warning : we have now changed the pipeline so that images will be converted into electrons just after the import. This is done using pyfits. For cosmouline, the gains is to be given in e-/ADU, and the readnoise is in electrons.}
+\tbrem{In case your input images are for instance stored as integers but contain these two conversion factors BSCALE or BZERO in the header so that ds9 etc convert them on the fly to floats, you should make sure that this is handled well by pyfits (it should).
 }
 
 Two remarks on these images :
@@ -130,6 +128,8 @@ cd 1_character_scripts/
 python 1_addtodatabase.py
 \end{Verbatim}
 
+\tbrem{NU in the filenames stands for ``does not update the database''. Hence you want perhaps to run those in parallel if you know what you are doing.}
+
 Usually the scripts will give you some info about what they are going to do, and how many images will be affected, before starting the task. In this case you get informed about the \verb+setname+ you have chosen, and how many FITS files were found in the directory you indicated. Then the script asks you if you want to go on. This should help you to  avoid mistakes, but it's good to know that if you are sure about what you are doing, and you don't want the scripts to ask any questions, you can change the flag \verb+askquestions = True+ in \verb+settings.py+ to \verb+askquestions = False+. In fact all the scripts use only one same question (``go on or not?''), and the answers are always just yes or no. There are no questions about choices for parameters etc. Setting \verb+askquestions = False+ is thus fully equivalent to answering ``yes'' to any question.
 
 For now keep \verb+askquestions = True+; this way, in any script, if you made a mistake in your configuration, just answer ``no'' and the script will stop without having changed anything ! You could then correct the error and start that script again.
@@ -182,7 +182,7 @@ As a general rule with only few exceptions, the scripts will simply run their ta
 % 
 % \end{description}
 
-\tbrem{convert to electrons : makes the first hard copy of the images, keeps the original gain as origin\_gain, but changes gain to 1.0 (as the images are now in electrons), AND ALSO MULTIPLIES THE SATUR\_LEVEL, so that the satur\_level is also in electrons an can be directly used for sextractor etc.}
+\tbrem{convert to electrons : makes the first hard copy of the images, but does not change the gain and saturlevel in the database. so to get the saturlevel to apply to your images, do gain * saturlevel yourself !}
 
 \subsubsection{Astronomical calculations}
 
@@ -456,6 +456,13 @@ python 3a_calccoeff.py
 python 3b_report.py
 \end{Verbatim}
 These scripts finally compare fluxes from the images to fluxes from the reference frame and calculate a simple but quite good median-based multiplicative coefficient, which gets written into the database. The report is written to \verb+report_prenorm.txt+.
+
+\tbrem{You can relaunch this with other stars to test different combinations if you want.
+This is a bit simplistic : here we *do* rely on the reference image as a reference.
+This is well adapted to calculate such coefficients over different telescopes etc.
+Of course the reference image will have a coeff of 1.0. Later we will do something more sophisticated for the renormalization.
+We use FLUX\_AUTO, this is defined in the star class.
+}
 
 
 \paragraph{Stacking images}
