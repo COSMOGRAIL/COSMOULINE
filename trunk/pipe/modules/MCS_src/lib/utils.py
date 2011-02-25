@@ -48,6 +48,8 @@ out = Verbose()
 
 
 def ask(msg, default, assertion, errmsg='', level=1):
+    N = no = No = False
+    Y = yes = Yes = True
     while 1:
         out(level, msg, '['+str(default)+']:', '-r')
         resp = raw_input()
@@ -115,6 +117,30 @@ def switch_psf_shape(psf, center='NE'):
     s[ac1+dx:, :ac2+dy] = psf[:c1, c2:]
     return s
 
+def psf_gen(size, bak, mpar, gpar, gpos, gstrat, center):
+    import PSF
+    center = 'SW'
+    nx, ny = size
+    if center == 'O':
+        c1, c2 = nx/2.-0.5, ny/2.-0.5
+    elif center == 'NE':
+        c1, c2 = nx/2., ny/2.
+    elif center == 'SW':
+        c1, c2 = nx/2.-1., ny/2.-1.
+    psf = PSF.PSF((nx,ny), (c1,c2))
+    out(2, 'Building the PSF...')
+    psf.add_source(mpar, gpar, gpos, gstrat, (c1, c2, 1.), center=center)
+    if size != bak.shape:
+        out(2, 'Expanding the PSF...')
+        psf.array[psf.c1-bak.shape[0]//2 : psf.c1+bak.shape[0]//2,
+                  psf.c2-bak.shape[1]//2 : psf.c2+bak.shape[1]//2] += bak
+    else:
+        psf.array += bak
+    out(2, 'Done. Creating splitted PSF (old style shape)...')
+    s = switch_psf_shape(psf.array, 'SW')
+    norm = psf.array.sum()
+    psf.array /= norm
+    return psf, s/norm
 
 def conv(kernel, array):
     return scipy.signal.fftconvolve(kernel, array, mode='same')
