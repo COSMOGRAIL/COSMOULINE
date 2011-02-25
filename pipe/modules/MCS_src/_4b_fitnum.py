@@ -26,7 +26,8 @@ def fitnum(fit_id, data, params, savedir = 'results/'):
     gres, fitrad, psf_size, itnb =  params['G_RES'], params['FIT_RAD'], params['PSF_SIZE'], params['MAX_IT_N']
     nbruns, show, lamb, stepfact = params['NB_RUNS'], params['SHOW'], params['LAMBDA_NUM'], params['BKG_STEP_RATIO_NUM']
     cuda, radius, stddev, objsize = params['CUDA'], params['PSF_RAD'], params['SIGMA_SKY'], params['OBJ_SIZE']
-    
+    center = params['CENTER']
+
     PAR = Param(1, 0)
     STAR_COL = []
     TRACE = []
@@ -36,19 +37,29 @@ def fitnum(fit_id, data, params, savedir = 'results/'):
 #    nbruns=1
     radius = (radius is None or radius==0.) and psf_size*1.42 or radius
 
-    
+    r_len = sshape[0]
+#    c1, c2 =  r_len/2., r_len/2.
+    c1, c2 =  r_len/2.-1., r_len/2.-1.
+    center = 'SW'
     if cuda and fn.has_cuda():
         out(2, 'CUDA initializations')
+        center = 'SW'
         context, plan = fn.cuda_init(sshape)
-        r_len = sshape[0]
-        r = fn.gaussian((r_len, r_len), gres, r_len/2-1, r_len/2-1, 1.)
-        r = fn.switch_psf_shape(r, 'SW')
+        r = fn.gaussian((r_len, r_len), gres, c1, c2, 1.)
+        r = fn.switch_psf_shape(r, center)
         def conv(a, b):
             return fn.cuda_conv(plan, a, b)
     else:
+#        r_len = math.pow(2.0,math.ceil(math.log(gres*10)/math.log(2.0)))
+        nx = ny = r_len
+        if center == 'O':
+            c1, c2 = nx/2.-0.5, ny/2.-0.5
+        elif center == 'NE':
+            c1, c2 = nx/2., ny/2.
+        elif center == 'SW':
+            c1, c2 = nx/2.-1., ny/2.-1.
         conv = fn.conv
-        r_len = math.pow(2.0,math.ceil(math.log(gres*10)/math.log(2.0)))
-        r = fn.gaussian((r_len, r_len), gres, r_len/2-1, r_len/2-1, 1.)
+        r = fn.gaussian((r_len, r_len), gres, c1, c2, 1.)
         cuda = False
     r /= r.sum()
     
@@ -62,8 +73,8 @@ def fitnum(fit_id, data, params, savedir = 'results/'):
     mofpar.fromArray(array(mpar[fit_id]), i = -1)
     mof_err = 0.
     
-    c1, c2 = sshape[0]/2., sshape[1]/2.
-    c = lambda x,y: (x-c1)**2. + (y-c2)**2. > radius**2.
+    rc1, rc2 = sshape[0]/2., sshape[1]/2.
+    c = lambda x,y: (x-rc1)**2. + (y-rc2)**2. > radius**2.
     mask = fromfunction(c, sshape)
     lamb = mask*lamb/500. + (np.invert(mask))*lamb
     #fn.array2ds9(lamb)
@@ -134,20 +145,33 @@ def fitnum(fit_id, data, params, savedir = 'results/'):
     
     if psf_size is None:
         psf_size = objsize
-    psf = PSF((psf_size*sfactor, psf_size*sfactor))
-    psf.addMof_fnorm(mpar[fit_id][0:4]+[psf.c1, psf.c2, 1.])
-    psf.array[psf.c1-bak.shape[0]//2 : psf.c1+bak.shape[0]//2,
-              psf.c2-bak.shape[1]//2 : psf.c2+bak.shape[1]//2] += bak
+#    psf = PSF((psf_size*sfactor, psf_size*sfactor), 
+#              (c1+(psf_size*sfactor-sshape[0])/2., c2+(psf_size*sfactor-sshape[0])/2.))
+#    psf.addMof_fnorm(mpar[fit_id][0:4]+[psf.c1, psf.c2, 1.])
+    size = psf_size*sfactor, psf_size*sfactor
+    psf, s = fn.psf_gen(size, bak, mpar[fit_id][:4], [[]], [[]], 'mixed', center)
+    
+#    nx = ny = psf_size*sfactor
+#    psf = PSF((nx,ny), (c1,c2))
+#    mof = mpar[fit_id][:4]
+#    psf.set_finalPSF(mof, [[]], [[]], 'mixed', (c1, c2, 1.), center=center)
+#    if psf_size*sfactor != bak.shape[0]:
+#        out(2, 'Expanding the PSF...')
+#        psf.array[psf.c1-bak.shape[0]//2 : psf.c1+bak.shape[0]//2,
+#                  psf.c2-bak.shape[1]//2 : psf.c2+bak.shape[1]//2] += bak
 #    else:
-#        psf = PSF((psf_size*sfactor, psf_size*sfactor))
-#        psf.addMof_fnorm(mpar[fit_id][0:4]+[psf.c1, psf.c2, 1.])
-#    #    psf.set_finalPSF(mpar[fit_id][0:4], [], [], 'mixed')
 #        psf.array += bak
-    psf.normalize()
+##    else:
+##        psf = PSF((psf_size*sfactor, psf_size*sfactor))
+##        psf.addMof_fnorm(mpar[fit_id][0:4]+[psf.c1, psf.c2, 1.])
+##    #    psf.set_finalPSF(mpar[fit_id][0:4], [], [], 'mixed')
+##        psf.array += bak
+#    psf.normalize()
+#    fn.switch_psf_shape(psf.array), center
     
     if savedir is not None:
         out(2, 'Writing PSF to disk...')
-        Image(fn.switch_psf_shape(psf.array)).writetofits(savedir+"s_"+str(fit_id+1)+".fits")
+        Image(s).writetofits(savedir+"s_"+str(fit_id+1)+".fits")
         Image(psf.array).writetofits(savedir+"psf_"+str(fit_id+1)+".fits")
         fn.array2fits(bak, savedir+'psfnum.fits')
         for s in STAR_COL:
