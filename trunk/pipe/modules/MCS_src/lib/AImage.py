@@ -278,7 +278,7 @@ class Image:
             self.array = t
             try:
                 s = self.noiseMap.sum()
-                self.noiseMap = ndimage.map_coordinates(self.noiseMap, new_pos, order=interp_order, mode='wrap')
+                self.noiseMap = ndimage.map_coordinates(self.noiseMap, new_pos, order=1, mode='wrap')
                 self.noiseMap.shape = w,h
                 self.noiseMap *= s/self.noiseMap.sum()
             except: 
