@@ -3,15 +3,23 @@ from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
 import forkmap
+import star
 
 import MCS_src.lib.utils as fn
 from MCS_interface import MCS_interface
 
+####
+nofitnum = True
 
+####
 # Select images to treat
 db = KirbyBase()
-images = db.select(imgdb, ['gogogo','treatme',psfkeyflag], [True,True,True], returnType='dict', sortFields=['setname', 'mjd'])
 
+if thisisatest :
+	print "This is a test run."
+	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+else :
+	images = db.select(imgdb, ['gogogo', 'treatme',psfkeyflag], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 
 print "I will build the PSF of %i images." % len(images)
 
@@ -21,6 +29,12 @@ if maxcores > 0 and maxcores < ncorestouse:
 	print "maxcores = %i" % maxcores
 print "For this I will run on %i cores." % ncorestouse
 proquest(askquestions)
+
+
+psfstars = star.readmancat(psfstarcat)  # this is only used if nofitnum
+print "We have %i stars" % (len(psfstars))
+#for star in psfstars:
+#	print star.name
 
 errorimglist = []
 
@@ -39,7 +53,18 @@ def buildpsf(image):
 	try:	
 		print "I'll try this one."
 		mcs.fitmof()
-		mcs.fitnum()
+		if nofitnum:
+			mcs.psf_gen()
+			# Then we need to write some additional files, to avoid png crash
+			empty128 = np.zeros((128, 128))
+			tofits("results/psfnum.fits", empty128)
+			empty64 = np.zeros((64, 64))
+			for i in range(len(psfstars)):
+				tofits("results/difnum%02i.fits" % (i+1), empty64)
+			
+		else:
+			mcs.fitnum()
+		
 	except (IndexError):
 		print "WTF, an IndexError ! "
 		errorimglist.append(image)

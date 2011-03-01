@@ -35,13 +35,19 @@ for i, s in enumerate(psfstars):
 
 
 if os.path.isdir(pngdir):
-	print "I would delete existing pngs."
+	print "I would delete all existing pngs."
 	proquest(askquestions)
 	shutil.rmtree(pngdir)
 os.mkdir(pngdir)
 
 db = KirbyBase()
-images = db.select(imgdb, ['gogogo','treatme',psfkeyflag], [True,True,True], returnType='dict', sortFields=['mjd'])
+
+if thisisatest :
+	print "This is a test run."
+	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+else :
+	images = db.select(imgdb, ['gogogo', 'treatme',psfkeyflag], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+
 
 
 

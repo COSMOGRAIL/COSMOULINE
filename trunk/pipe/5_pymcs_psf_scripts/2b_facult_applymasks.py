@@ -32,7 +32,15 @@ for i, s in enumerate(psfstars):
 
 # Select images to treat
 db = KirbyBase()
-images = db.select(imgdb, ['gogogo','treatme',psfkeyflag], [True,True,True], returnType='dict', sortFields=['setname', 'mjd'])
+
+
+if thisisatest :
+	print "This is a test run."
+	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+else :
+	images = db.select(imgdb, ['gogogo', 'treatme',psfkeyflag], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+
+
 print "Number of images to treat :", len(images)
 proquest(askquestions)
 
