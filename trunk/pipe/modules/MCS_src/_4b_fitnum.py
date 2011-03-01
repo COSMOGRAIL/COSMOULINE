@@ -1,6 +1,116 @@
 #!/usr/bin/python
+##############
+import sys
+sys.path.append("/home/epfl/tewes/localpymodules/lib64/python")
+
+import os
+import numpy as np
+import pyfits
+import pywt
+
+def fromfits(filename):
+	return pyfits.getdata(filename).transpose()
+
+def extract(a, cx, cy, halfsize=32):
+	return a[cx-halfsize:cx+halfsize, cy-halfsize:cy+halfsize]
+
+def tofits(a, filename):
+	#if os.path.exists(filename):
+	#	os.remove(filename)
+	pyfits.writeto(filename, a.transpose(), clobber=1)
+
+class mywt():
+	"""
+	seen from the outside :
+	level 1 = fine
+	level n = coarse
+	inside we use the pywt convention
+	"""
+	def __init__(self, inputarray, wavelet = "haar", mode="sym", levels = None):
+		
+		self.inputarray = inputarray
+		self.wavelet = wavelet
+		self.mode = mode
+		
+		self.levels = levels # Will be updated by decompose ...
+		self.decompose()
+		
+
+	def __str__(self):
+		
+		infostrings = []
+		infostrings.append("%i x %i pixels, %s, %i levels" % (self.inputarray.shape[0], self.inputarray.shape[1], self.wavelet, self.levels))
+		infostrings.append("/".join(["%i" % (s) for s in self.levelsizes][::-1]))
+		return "\n".join(infostrings)
+
+	def decompose(self):
+		self.coeffs = pywt.wavedec2(self.inputarray, wavelet = self.wavelet, level = self.levels)
+		self.levels = len(self.coeffs)-1
+		self.levelsizes = []
+		for cg in self.coeffs[1:]: # the coeff groups, we skip the "last" averadge 
+			self.levelsizes.append(cg[0].shape[0])
+			
+	def mutacoeffs(self):
+		"""
+		We transform the coeffs into lists, so that you can change them.
+		"""
+		tmp = self.coeffs
+		self.coeffs = [tmp[0]]
+		self.coeffs.extend([list(cg) for cg in tmp[1:]])
+
+	def levelindex(self, level):
+		return self.levels - level + 1
+		
+	def details(self, level):
+		return self.coeffs[self.levelindex(level)]
+
+	def reconstruct(self):	
+		return pywt.waverec2(self.coeffs, self.wavelet, self.mode)
+		
+	def softshrink(self, level, t):
+		
+		for i in (0,1,2):
+			coeffs = self.details(level)[i]
+			zeroes = np.zeros(coeffs.shape)
+			shrinks = np.abs(coeffs)-t
+			self.details(level)[i] = np.sign(coeffs) * np.maximum(zeroes, shrinks)
+
+	def hardshrink(self, level, t):
+		
+		for i in (0,1,2):
+			#print "" % np.std(self.details(level)[i])
+			self.details(level)[i][np.abs(self.details(level)[i]) <= t] = 0.0
 
 
+	def mallat(self):
+		"""
+		only works for haar for now ...
+		"""
+		
+		mallat = np.zeros(self.inputarray.shape)
+		# The final avdge :
+		centerpoint = self.levelsizes[0]
+		xcp = centerpoint
+		ycp = self.inputarray.shape[1]-centerpoint
+		ls = self.levelsizes[0]
+		mallat[xcp-ls:xcp, ycp:ycp+ls] = self.coeffs[0]
+		
+		# The details :
+		for (i, ls) in enumerate(self.levelsizes):
+			centerpoint = self.levelsizes[0] + int(np.sum(self.levelsizes[:i]))
+			xcp = centerpoint
+			ycp = self.inputarray.shape[1]-centerpoint
+			#print i, ls, xcp, ycp
+			
+			mallat[xcp:xcp+ls, ycp-ls:ycp] = self.coeffs[i+1][2] # D
+			mallat[xcp:xcp+ls, ycp:ycp+ls] = self.coeffs[i+1][0] # H
+			mallat[xcp-ls:xcp, ycp-ls:ycp] = self.coeffs[i+1][1] # V
+			
+		return mallat
+
+
+
+#############
 from lib.AImage import *
 from lib.Star import *
 from lib.Param import *
@@ -74,9 +184,12 @@ def fitnum(fit_id, data, params, savedir = 'results/'):
     mof_err = 0.
     
     rc1, rc2 = sshape[0]/2., sshape[1]/2.
-    c = lambda x,y: (x-rc1)**2. + (y-rc2)**2. > radius**2.
-    mask = fromfunction(c, sshape)
-    lamb = mask*lamb/500. + (np.invert(mask))*lamb
+    #c = lambda x,y: (x-rc1)**2. + (y-rc2)**2. > radius**2.
+    #mask = fromfunction(c, sshape)
+    #lamb = mask*lamb/500. + (np.invert(mask))*lamb
+    lamb = 0.000001
+    lamb = np.ones(sshape) * lamb	# plain flat lambda
+    
     #fn.array2ds9(lamb)
     ini = array([])
     for i, s in enumerate(STAR_COL):
@@ -102,17 +215,37 @@ def fitnum(fit_id, data, params, savedir = 'results/'):
     
     def _errfun(bkg, null):
         global TRACE
-        param = bkg.reshape(sshape)
-        err = zeros(sshape, dtype=float64)
-        convo = conv(r, param)
-        convo_m = fn.mean(convo, bshape[0], bshape[1])
+        param = bkg.reshape(sshape) # le modele, petits pixels (sshape = small pixel shape)
+        err = zeros(sshape, dtype=float64) # erreur sur le modele, petit pixels
+        convo = conv(r, param) # param = le modele, convo = on convolue le modele avec une gaussienne, en petits pixels
+	#convosmooth = conv(r, convo) # we conv again, to make it smoother
+        convo_m = fn.mean(convo, bshape[0], bshape[1]) # we rebin this to the big pixels
+	
+	#khi_smooth = np.abs(param - convosmooth)			# in small pixels
+	#print np.mean(khi_smooth)
+	
+	"""
+	w = mywt(param, wavelet = "coif1", levels=None)
+	w.mutacoeffs()
+	w.hardshrink(1, 0.0003)
+	w.hardshrink(2, 0.0003)
+	w.hardshrink(3, 0.0003)
+	w.hardshrink(3, 0.0003)
+	highpass = (w.reconstruct() - param)**2.0			# in small pixels
+	#highpasspix = len(highpass > 0.0)
+	meanerrsmooth = np.mean(highpass)
+	#err += highpass
+	"""
         for s in STAR_COL:
-            resi = ((s.diffm.array - convo_m)/s.image.noiseMap)**2.
-#            resi = ((s.diffm.array - convo_m)**2.)#/s.image.noiseMap)**2.
-            khi_smooth = (param - convo)**2.
-            khi_fit = fn.rebin(resi, sshape)/sfactor**2.
-            err += lamb*khi_fit + khi_smooth#*khi_fit.sum()/khi_smooth.sum()
-#            err += lamb*fn.rebin(resi, sshape)/sfactor**2. + (param - convo)**2.
+	
+	    resi = np.abs((s.diffm.array - convo_m)/s.image.noiseMap)	# the residues, in large pixels
+	    khi_fit = lamb*fn.rebin(resi, sshape)			# the residues, rebinned to small pixels, scaled with lambda
+	    err += khi_fit
+	    
+	    #print np.mean(khi_fit)
+	meanerrtot = np.mean(err)
+	print "     Smoothing ratio : %.3f" % (meanerrsmooth/meanerrtot)
+
         TRACE += [err.sum()]
         return err.ravel()
     
