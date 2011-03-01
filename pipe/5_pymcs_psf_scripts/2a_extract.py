@@ -13,7 +13,12 @@ psfstars = star.readmancat(psfstarcat)
 
 # Select images to treat
 db = KirbyBase()
-images = db.select(imgdb, ['gogogo','treatme',psfkeyflag], [True,True,True], returnType='dict', sortFields=['setname', 'mjd'])
+
+if thisisatest :
+	print "This is a test run."
+	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+else :
+	images = db.select(imgdb, ['gogogo', 'treatme',psfkeyflag], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 
 print "I will extract the PSF of %i images." % len(images)
 

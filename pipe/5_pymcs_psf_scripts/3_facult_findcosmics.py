@@ -22,7 +22,13 @@ objlim = 1.0
 
 # Select images to treat
 db = KirbyBase()
-images = db.select(imgdb, ['gogogo','treatme',psfkeyflag], [True,True,True], returnType='dict', sortFields=['setname', 'mjd'])
+
+if thisisatest :
+	print "This is a test run."
+	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+else :
+	images = db.select(imgdb, ['gogogo', 'treatme',psfkeyflag], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+
 
 print "I will find cosmics of %i images." % len(images)
 
