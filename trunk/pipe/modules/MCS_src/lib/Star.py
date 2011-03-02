@@ -65,7 +65,7 @@ class Star():
         self._gaussian          *= 1./self._gaussian.sum()
         #set the initial moffat parameters:
         if use_mom is True:
-            self._preset_mom() #uses only the moments
+            self._preset()
         else:
             self._preset() #more elaborated, uses the moments and a gaussian fit
     ############################### Moffat fit ##############################
@@ -334,41 +334,17 @@ class Star():
 #                 ['/factor[%d]'%i for i in xrange(lenShape)]
         return eval(''.join(evList))
         
-    def _preset_mom(self):
-        """
-        Artisanal technique to find the best initial parameters of the moffat
-        """ 
-        import scipy.optimize
-        data = self.image.array        
-        #theta, fwhm, e, i0
-        g = lambda height, center_x, center_y, width_x, width_y: lambda x,y: height*exp(-(((center_x-x)/width_x)**2+((center_y-y)/width_y)**2.)/2.)
-        total = data.sum()
-        X, Y = indices(data.shape)
-        c1 = (X*data).sum()/total
-        c2 = (Y*data).sum()/total
-        col = data[:, int(c2)]
-        width_x = sqrt(abs((arange(col.size)-c2)**2.*col).sum()/col.sum())
-        row = data[int(c1), :]
-        width_y = sqrt(abs((arange(row.size)-c1)**2.*row).sum()/row.sum())
-        i0 = data.max()
-        params =  i0, c1, c2, width_x, width_y
-        errorfunction = lambda p: ravel(g(*p)(*indices(data.shape)) - data)
-        p, success = scipy.optimize.leastsq(errorfunction, params)
-#        width_x, width_y = p[3], p[4]
-        par = array([0., 
-                     self.sampling_factor*(width_x+width_y)/2., 
-                     1.-width_x/width_y, 
-                     0.5/(1./(self.sampling_factor*width_x)**2. + 1./(self.sampling_factor*width_y)**2.)])
-        self.par.propose(*par)
-        self.par.addLocpar(self.id, p[1]*self.sampling_factor, p[2]*self.sampling_factor, p[0])
-        
-    def _preset(self):
+
+
+
+
+def _preset(self):
         """
         Another technique to find the initial parameters of the moffat, using
         first the 2nd moments and then fitting a gaussian on the star 
         """ 
         import scipy.optimize
-        data = self.image.array        
+        data = self.image.array * (self.image.array>0.)
         total = data.sum()
         X, Y = indices(data.shape)
         c1 = (X*data).sum()/total
@@ -378,9 +354,11 @@ class Star():
         row = data[int(c1), :]
         width_y = sqrt(abs((arange(row.size)-c1)**2*row).sum()/row.sum())
         i0 = data.max()
-        params =  0., (width_x+width_y)/2., 0.1, c1, c2, i0
+        w = (width_x+width_y)/2.
+        params =  0., w, 0.1, c1, c2, i0
         errorfunction = lambda p: ravel((self._gaus(*p)(*indices(data.shape)) - data)/self.image.noiseMap)
         p, success = scipy.optimize.leastsq(errorfunction, params)
+        p[2] += 0.01*(p[2]==0.)
         #par: [theta, fwhm, e, beta]
         par = array([p[0]%(2*pi), 
                      self.sampling_factor*p[1], 
@@ -388,6 +366,8 @@ class Star():
                      self.sampling_factor*(p[1] / (2. * sqrt(2.*log(2.))))])
         self.par.propose(*par)
         self.par.addLocpar(self.id, p[3]*self.sampling_factor, p[4]*self.sampling_factor, i0)
+
+
 
     def _gaus(self, theta, fwhm, e, c1, c2, i0):
         """
