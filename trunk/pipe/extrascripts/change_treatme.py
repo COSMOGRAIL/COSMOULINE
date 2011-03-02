@@ -16,7 +16,7 @@ db = KirbyBase()
 
 # We do not have to select images first: directly update with a criteria !
 
-#n = db.update(imgdb, ['setname'], ['NOTalfosc1'], [False], ['treatme'])
+n = db.update(imgdb, ['setname'], ['1'], [False], ['treatme'])
 
 #n = db.update(imgdb, ['recno'], ['*'], [False], ['treatme']) #	there is a bug, this does not seem to work :-(
 
@@ -25,7 +25,7 @@ db = KirbyBase()
 
 #n = db.update(imgdb, ['seeingpixels'], ['>-100'], [True], ['treatme'])
 
-n = db.update(imgdb, ['imgname'], [refimgname], [True], ['treatme'])
+#n = db.update(imgdb, ['imgname'], [refimgname], [True], ['treatme'])
 
 
 print "Number of updates : %i" % n
