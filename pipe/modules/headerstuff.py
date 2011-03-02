@@ -796,7 +796,7 @@ def smartsandicamheader(rawimg):
 
 	0.369 arcsec pixel
 	1051x1028 pixels (binned 2x2 w/32 overscan columns):
-	BIASSEC  [2:16,2:1025]
+	BIASSEC  [2:16,2:1025]   ... but we have already cut them anyway, they come prereduced
 	DATASEC  [17:1039,1:1026]
 	TRIMSEC  [17:1039,2:1025]
 
@@ -824,7 +824,10 @@ def smartsandicamheader(rawimg):
 	testlist = False
 	testcomment = "na"
 	
-	
+	# Quick check of filter :
+	if header["CCDFLTID"].strip() != "R":
+		print "\n\n\n WARNING : Filter is not R\n\n\n"
+		
 	headerjd = float(header['JD']) # Should be UTC, beginning of exposure
 	exptime = float(header['EXPTIME']) # in seconds.
 	
@@ -842,10 +845,17 @@ def smartsandicamheader(rawimg):
 	mjd = myownmjdfloat
 		
 	rotator = 0.0
-	preredcomment1 = "Header TIME-OBS = %s" % header['TIME-OBS'] 
-	preredcomment2 = "Header HJD"
+	preredcomment1 = ""
+	preredcomment2 = ""
 	preredfloat1 = 0.0
-	preredfloat2 = float(header['HJD'])
+	preredfloat2 = 0.0
+	
+	if "CCDFILTID" in availablekeywords:
+		preredcomment2 = "Header CCDFILTID = %s" % header["CCDFILTID"]
+	if "TIME-OBS" in availablekeywords:
+		preredcomment1 = "Header TIME-OBS = %s" % header['TIME-OBS'] 
+	if "HJD" in availablekeywords:
+		preredfloat1 = float(header['HJD'])
 	
 	# We return a dictionnary containing all this info, that is ready to be inserted into the database.
 	returndict = {'imgname':imgname, 'treatme':treatme, 'gogogo':gogogo, 'whynot':whynot, 'testlist':testlist,'testcomment':testcomment ,
