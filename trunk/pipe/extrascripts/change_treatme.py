@@ -16,7 +16,7 @@ db = KirbyBase()
 
 # We do not have to select images first: directly update with a criteria !
 
-n = db.update(imgdb, ['setname'], ['1'], [False], ['treatme'])
+n = db.update(imgdb, ['setname'], ['2'], [False], ['treatme'])
 
 #n = db.update(imgdb, ['recno'], ['*'], [False], ['treatme']) #	there is a bug, this does not seem to work :-(
 
