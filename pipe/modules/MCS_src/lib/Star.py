@@ -338,7 +338,7 @@ class Star():
 
 
 
-def _preset(self):
+    def _preset(self):
         """
         Another technique to find the initial parameters of the moffat, using
         first the 2nd moments and then fitting a gaussian on the star 
@@ -366,7 +366,6 @@ def _preset(self):
                      self.sampling_factor*(p[1] / (2. * sqrt(2.*log(2.))))])
         self.par.propose(*par)
         self.par.addLocpar(self.id, p[3]*self.sampling_factor, p[4]*self.sampling_factor, i0)
-
 
 
     def _gaus(self, theta, fwhm, e, c1, c2, i0):
