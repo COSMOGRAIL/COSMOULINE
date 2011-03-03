@@ -20,6 +20,23 @@ import star
 import progressbar
 import numpy as np
 
+def rebin(a, newshape):
+	"""
+	Auxiliary function to rebin ndarray data. -> we put the *mean* of the orig pixels into the new ones.
+	Source : http://www.scipy.org/Cookbook/Rebinning
+        example usage:
+        >>> a=rand(6,4); b=rebin(a,(3,2))
+        """
+        shape = a.shape
+        lenShape = len(shape)
+        factor = np.asarray(shape)/np.asarray(newshape)
+
+        evList = ['a.reshape('] + \
+                 ['newshape[%d],factor[%d],'%(i,i) for i in xrange(lenShape)] + \
+                 [')'] + ['.sum(%d)'%(i+1) for i in xrange(lenShape)] + \
+                 ['/factor[%d]'%i for i in xrange(lenShape)]
+
+        return eval(''.join(evList))
 
 
 db = KirbyBase()
@@ -61,14 +78,16 @@ for src in ptsrcs:
 	newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_flux", "type": "float"}) # This will contain the flux (as would be measured by aperture  photometry on the original raw image)
 	newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_x", "type": "float"})
 	newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_y", "type": "float"})
-	newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_shotnoise", "type": "float"}) # this will contain the photonic shot noise of the flux including the sky level of course.
+	newfields.append({"fieldname": "out_" + deckey + "_" + src.name + "_shotnoise", "type": "float"}) # this will contain the shot noise of the flux (including sky level, psf shape)
 newfields.append({"fieldname": "out_" + deckey + "_z1", "type":"float"})
 newfields.append({"fieldname": "out_" + deckey + "_z2", "type":"float"})
 newfields.append({"fieldname": "out_" + deckey + "_delta1", "type":"float"})
 newfields.append({"fieldname": "out_" + deckey + "_delta2", "type":"float"})
 
 
-print "Negative fluxes :"
+#print "Negative fluxes :"
+negfluxes = []
+
 for image in images:
 	image["updatedict"] = {}
 	#print image[deckeyfilenum]
@@ -78,6 +97,30 @@ for image in images:
 	image["updatedict"]["out_" + deckey + "_z2"] = zdeltatable[outputindex][1]
 	image["updatedict"]["out_" + deckey + "_delta1"] = zdeltatable[outputindex][2]
 	image["updatedict"]["out_" + deckey + "_delta2"] = zdeltatable[outputindex][3]
+	
+	
+	# Reading the PSF, to calculate shotnoise:
+	psffilepath = os.path.join(decdir, "s%s.fits" % image[deckeyfilenum])
+	(mcspsf, h) = variousfct.fromfits(psffilepath, verbose=False)
+
+	# We rearrange the PSF quadrants so to have it in the center of the image.
+	ramcspsf = np.zeros((128, 128))
+	ramcspsf[0:64, 0:64] = mcspsf[64:128, 64:128]
+	ramcspsf[64:128, 64:128] = mcspsf[0:64, 0:64]
+	ramcspsf[64:128, 0:64] = mcspsf[0:64, 64:128]
+	ramcspsf[0:64, 64:128] = mcspsf[64:128, 0:64]
+	
+	print "Sum of mcsPSF : %.6f" % np.sum(ramcspsf)
+	# We convolve it with a gaussian of width = 2.0 "small pixels".
+	smallpixpsf = scipy.ndimage.filters.gaussian_filter(ramcspsf, 2.0)
+	print "Sum of PSF : %.6f" % np.sum(smallpixpsf)
+	# We rebin it, 2x2 :
+	psf = 4.0*f2n.rebin(smallpixpsf, (64, 64))
+	print "Sum of rebinned PSF : %.6f" % np.sum(psf)
+	# We calculate the sharpness :
+	sharpness = np.sum(psf * psf)
+	print "Equivalent pixels : %.2f" % float(1.0/sharpness)
+
 	
 	for i, src in enumerate(ptsrcs):
 
@@ -102,11 +145,18 @@ for image in images:
 		
 		# We check if the int is positive :
 		if mcsint < 0.0:
-			print "%s, %s, %s : %f " % (image["imgname"], image["datet"], src.name, flux)
+			negfluxes.append("%s\t%s, %s : flux = %f " % (image["imgname"], image["datet"], src.name, flux))
 
 		# now we can calculate the shot noise
-		skyflux = 64.0*64.0*image["skylevel"]	# this is the flux of the sky in a box of the size of the frame used to deconvole objects
-		shotnoise = np.sqrt(skyflux + flux)	# this is the shot noise of the not normalized flux (skyflux is anyway not normalized)
+		
+		# version 1.0 : gives to large errorbars. We are not doing aperture photometry here, but psf fitting.
+		#skyflux = 64.0*64.0*image["skylevel"]	# this is the flux of the sky in a box of the size of the frame used to deconvole objects
+		#shotnoise = np.sqrt(skyflux + flux)	# this is the shot noise of the not normalized flux (skyflux is anyway not normalized)
+		
+		shotnoise = float(np.sqrt(flux + ((image["skylevel"] + image["readnoise"]**2.0)/sharpness)))
+	
+		print "\t%s : \t%9.2f +/- %5.2f %%" % (s.name, flux, 100*shotnoise/flux)
+
 
 		image["updatedict"]["out_" + deckey + "_" + src.name + "_shotnoise"] = float(shotnoise)
 	

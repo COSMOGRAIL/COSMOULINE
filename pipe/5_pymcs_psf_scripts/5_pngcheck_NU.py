@@ -112,9 +112,9 @@ for i, image in enumerate(images):
 	
 	# we write long image names on two lines ...
 	if len(image['imgname']) >= 27:
-		infolist = [image['imgname'][0:20] + "...", "   " + image['imgname'][20:]]
+		infolist = [" ", image['imgname'][0:20] + "...", "   " + image['imgname'][20:]]
 	else:
-		infolist = [image['imgname']]
+		infolist = [" ", image['imgname']]
 	infolist.extend([date, telname, medcoeff, seeing, ell, nbralistars, stddev, skylevel, airmass, az])
 
 	if thisisatest:
