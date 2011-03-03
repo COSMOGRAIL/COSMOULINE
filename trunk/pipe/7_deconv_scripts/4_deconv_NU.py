@@ -3,17 +3,27 @@
 #
 
 execfile("../config.py")
-#from kirbybase import KirbyBase, KBError
+from kirbybase import KirbyBase, KBError
 from variousfct import *
-#from readandreplace_fct import *
-#import shutil
 from datetime import datetime
+from variousfct import *
 
-print "No time to loose, so starting right away ..."
+print "Starting deconvolution %s" % (deckey)
+
+db = KirbyBase()
+images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum])
+nbimg = len(images) + 1
+print "%i images (ref image is duplicated)" % nbimg
+
+proquest(askquestions)
+
 print "Of course I do not update the database here,"
 print "so you can go on with something else in the meantime."
 
+
 starttime = datetime.now()
+db = KirbyBase()
+images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum]) # WARNING the sorting is important !!!!!!!
 
 origdir = os.getcwd()
 

@@ -19,6 +19,8 @@ from readandreplace_fct import *
 import star
 import progressbar
 import numpy as np
+import variousfct
+import scipy
 
 def rebin(a, newshape):
 	"""
@@ -89,8 +91,10 @@ newfields.append({"fieldname": "out_" + deckey + "_delta2", "type":"float"})
 negfluxes = []
 
 for image in images:
+
+	print "%s : %s" % (image[deckeyfilenum], image["imgname"])
+	
 	image["updatedict"] = {}
-	#print image[deckeyfilenum]
 	outputindex = int(image[deckeyfilenum]) - 1 # So this guy is starting at 0, even if the first image is 0001.
 	
 	image["updatedict"]["out_" + deckey + "_z1"] = zdeltatable[outputindex][0]
@@ -110,13 +114,13 @@ for image in images:
 	ramcspsf[64:128, 0:64] = mcspsf[0:64, 64:128]
 	ramcspsf[0:64, 64:128] = mcspsf[64:128, 0:64]
 	
-	print "Sum of mcsPSF : %.6f" % np.sum(ramcspsf)
+	#print "Sum of mcsPSF : %.6f" % np.sum(ramcspsf)
 	# We convolve it with a gaussian of width = 2.0 "small pixels".
 	smallpixpsf = scipy.ndimage.filters.gaussian_filter(ramcspsf, 2.0)
-	print "Sum of PSF : %.6f" % np.sum(smallpixpsf)
+	#print "Sum of PSF : %.6f" % np.sum(smallpixpsf)
 	# We rebin it, 2x2 :
-	psf = 4.0*f2n.rebin(smallpixpsf, (64, 64))
-	print "Sum of rebinned PSF : %.6f" % np.sum(psf)
+	psf = 4.0*rebin(smallpixpsf, (64, 64))
+	#print "Sum of rebinned PSF : %.6f" % np.sum(psf)
 	# We calculate the sharpness :
 	sharpness = np.sum(psf * psf)
 	print "Equivalent pixels : %.2f" % float(1.0/sharpness)
@@ -155,7 +159,7 @@ for image in images:
 		
 		shotnoise = float(np.sqrt(flux + ((image["skylevel"] + image["readnoise"]**2.0)/sharpness)))
 	
-		print "\t%s : \t%9.2f +/- %5.2f %%" % (s.name, flux, 100*shotnoise/flux)
+		print "\t%s : \t%9.2f +/- %5.2f %%" % (src.name, flux, 100*shotnoise/flux)
 
 
 		image["updatedict"]["out_" + deckey + "_" + src.name + "_shotnoise"] = float(shotnoise)
