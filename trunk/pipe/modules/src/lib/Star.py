@@ -336,26 +336,29 @@ class Star():
         
     def _preset(self):
         """
-        Another technique to find the initial parameters of the moffat, using
-        first the 2nd moments and then fitting a gaussian on the star 
+        Finds the initial parameters of the moffat, via gaussian fit starting from a good guess...
         """ 
         import scipy.optimize
-        data = self.image.array * (self.image.array>0.)
-        total = data.sum()
-        X, Y = indices(data.shape)
-        c1 = (X*data).sum()/total
-        c2 = (Y*data).sum()/total
-        col = data[:, int(c2)]
-        width_x = sqrt(abs((arange(col.size)-c2)**2*col).sum()/col.sum())
-        row = data[int(c1), :]
-        width_y = sqrt(abs((arange(row.size)-c1)**2*row).sum()/row.sum())
-        i0 = data.max()
-        w = (width_x+width_y)/2.
-        params =  0., w, 0.1, c1, c2, i0
-        errorfunction = lambda p: ravel((self._gaus(*p)(*indices(data.shape)) - data)/self.image.noiseMap)
+	
+	c1 = self.image.array.shape[0]/2.
+	c2 = self.image.array.shape[1]/2.
+	w = 8.0
+	
+	cr = 2.0
+	centraldata = self.image.array[c1-cr:c1+cr,c2-cr:c2+cr]
+	i0 = median(centraldata)
+	
+        params =  0., w, 0.1, c1, c2, i0 # theta, fwhm, e, c1, c2, i0
+	#print "PREFIT :", params
+        
+	errorfunction = lambda p: ravel((self._gaus(*p)(*indices(self.image.array.shape)) - self.image.array)/self.image.noiseMap)
         p, success = scipy.optimize.leastsq(errorfunction, params)
-        p[2] += 0.01*(p[2]==0.)
-        #par: [theta, fwhm, e, beta]
+	
+	#print "POSTFIT = ", p
+        
+	p[2] = abs(p[2]) + 0.01*(abs(p[2])<=0.01) # We don't want e to be to close to 0.0
+	 
+	#par: [theta, fwhm, e, beta]
         par = array([p[0]%(2*pi), 
                      self.sampling_factor*p[1], 
                      p[2],

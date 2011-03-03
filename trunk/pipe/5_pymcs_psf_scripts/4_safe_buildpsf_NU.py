@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import forkmap
 import star
 
-import MCS_src.lib.utils as fn
+import src.lib.utils as fn
 from MCS_interface import MCS_interface
 
 ####
