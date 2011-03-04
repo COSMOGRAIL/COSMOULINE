@@ -48,12 +48,12 @@ def fitnum(fit_id, data, params, savedir = 'results/'):
             return fn.cuda_conv(plan, a, b)
     else:
         nx = ny = r_len
-        if center == 'O':
-            c1, c2 = nx/2.-0.5, ny/2.-0.5
-        elif center == 'NE':
-            c1, c2 = nx/2., ny/2.
-        elif center == 'SW':
-            c1, c2 = nx/2.-1., ny/2.-1.
+        #if center == 'O':
+        #    c1, c2 = nx/2.-0.5, ny/2.-0.5
+        #elif center == 'NE':
+        c1, c2 = nx/2., ny/2.
+        #elif center == 'SW':
+        #    c1, c2 = nx/2.-1., ny/2.-1.
         conv = fn.conv
         r = fn.gaussian((r_len, r_len), gres, c1, c2, 1.)
         cuda = False

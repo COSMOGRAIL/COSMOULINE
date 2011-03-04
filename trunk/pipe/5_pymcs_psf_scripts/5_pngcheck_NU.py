@@ -112,9 +112,9 @@ for i, image in enumerate(images):
 	
 	# we write long image names on two lines ...
 	if len(image['imgname']) >= 27:
-		infolist = [" ", image['imgname'][0:20] + "...", "   " + image['imgname'][20:]]
+		infolist = [image['imgname'][0:20] + "...", "   " + image['imgname'][20:]]
 	else:
-		infolist = [" ", image['imgname']]
+		infolist = [image['imgname']]
 	infolist.extend([date, telname, medcoeff, seeing, ell, nbralistars, stddev, skylevel, airmass, az])
 
 	if thisisatest:
@@ -154,7 +154,7 @@ for i, image in enumerate(images):
 	# We fill with blanks and cut at 4 images :
 	#psfstarimglist.extend([blank256, blank256, blank256])
 	#psfstarimglist = psfstarimglist[:4]
-	psfstarimglist.append(txtendpiece)
+	psfstarimglist.append(blank256)
 	
 	
 	# The sigmas
@@ -175,7 +175,7 @@ for i, image in enumerate(images):
 	#sigmaimglist.extend([blank256, blank256, blank256, blank256])
 	#sigmaimglist = sigmaimglist[:5]
 	#sigmaimglist.append(txtendpiece)
-	sigmaimglist.append(blank256)
+	sigmaimglist.append(txtendpiece)
 	
 	# The difcm
 	difmlist = []
