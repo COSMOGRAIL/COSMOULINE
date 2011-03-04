@@ -74,9 +74,11 @@ def fitnum(fit_id, data, params, savedir = 'results/'):
     mof_err = 0.
     
     rc1, rc2 = sshape[0]/2., sshape[1]/2.
-    c = lambda x,y: (x-rc1)**2. + (y-rc2)**2. > radius**2.
-    mask = fromfunction(c, sshape)
-    lamb = mask*lamb/500. + (np.invert(mask))*lamb
+    #c = lambda x,y: (x-rc1)**2. + (y-rc2)**2. > radius**2.
+    #mask = fromfunction(c, sshape)
+    #lamb = mask*lamb/500. + (np.invert(mask))*lamb
+    lamb = lamb * np.ones(sshape)
+    
     ini = array([])
     for i, s in enumerate(STAR_COL):
 #        c1, c2 = bshape[0]/2., bshape[1]/2.
