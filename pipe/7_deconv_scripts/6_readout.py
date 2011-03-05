@@ -138,20 +138,15 @@ for image in images:
 		pi = 3.141592653589793
 		ln2 = 0.693147180559945
 		
-		mcsint = intpostable[i][outputindex][0]
+		mcsint = intpostable[i][outputindex][0] # the mcs intensity
 		flux = mcsint * ( fwhm**2 / 4.0 ) * pi / (4.0 * ln2)
 		
-		# We denormalize :
-		flux = flux / image[deckeynormused]
 		
-		
-		image["updatedict"]["out_" + deckey + "_" + src.name + "_flux"] = flux
-		
-		# We check if the int is positive :
-		if mcsint < 0.0:
+		# We check if the flux is positive :
+		if flux < 0.0:
 			negfluxes.append("%s\t%s, %s : flux = %f " % (image["imgname"], image["datet"], src.name, flux))
 
-		# now we can calculate the shot noise
+		# the shot noise
 		
 		# version 1.0 : gives to large errorbars. We are not doing aperture photometry here, but psf fitting.
 		#skyflux = 64.0*64.0*image["skylevel"]	# this is the flux of the sky in a box of the size of the frame used to deconvole objects
@@ -161,7 +156,11 @@ for image in images:
 	
 		print "\t%s : \t%9.2f +/- %5.2f %%" % (src.name, flux, 100*shotnoise/flux)
 
-
+		# We denormalize :
+		flux = flux / image[deckeynormused]
+		shotnoise = shotnoise / image[deckeynormused]
+		
+		image["updatedict"]["out_" + deckey + "_" + src.name + "_flux"] = flux
 		image["updatedict"]["out_" + deckey + "_" + src.name + "_shotnoise"] = float(shotnoise)
 	
 print "\nI would now update the database."
