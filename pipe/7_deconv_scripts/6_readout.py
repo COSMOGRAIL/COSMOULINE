@@ -156,7 +156,7 @@ for image in images:
 	
 		print "\t%s : \t%9.2f +/- %5.2f %%" % (src.name, flux, 100*shotnoise/flux)
 
-		# We denormalize :
+		# We *** denormalize *** :
 		flux = flux / image[deckeynormused]
 		shotnoise = shotnoise / image[deckeynormused]
 		

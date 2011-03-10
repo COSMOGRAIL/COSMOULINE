@@ -33,9 +33,9 @@ mhjds = np.array([image["mhjd"] for image in images])
 for s in ptsources:
 
 	fluxfieldname = "out_%s_%s_flux" % (deckey, s.name)
-	mags = -2.5*np.log10(np.array([image[fluxfieldname]*image[deckeynormused] for image in images]))
-	
 	randomerrorfieldname = "out_%s_%s_shotnoise" % (deckey, s.name)
+	
+	mags = -2.5*np.log10(np.array([image[fluxfieldname]*image[deckeynormused] for image in images]))
 	
 	if randomerrorfieldname not in fieldnames :
 		plt.plot(mhjds, mags, linestyle="None", marker=".", label = s.name)
