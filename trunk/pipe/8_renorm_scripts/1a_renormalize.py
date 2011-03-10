@@ -24,7 +24,7 @@ from variousfct import *
 #from combibynight_fct import *
 #from star import *
 
-from numpy import *
+import numpy as np
 import matplotlib.pyplot as plt
 
 print "You want to calculate a renormalization coefficient called :"
@@ -52,32 +52,69 @@ for image in allimages:
 # A new list of dicts, to prepare the plots
 plotdb = []
 
+
+# We go through the sources, one by one, and see for which image each source is available.
+
 for renormsource in renormsources:
 	deckey = renormsource[0]
 	sourcename = renormsource[1]
 	deckeyfilenumfield = "decfilenum_" + deckey
 	fluxfieldname = "out_" + deckey + "_" + sourcename + "_flux"
+	decnormfieldname = "decnorm_" + deckey
 	
 	# we start by calculating some statistics for the available fluxes :
 	
 	images = [image for image in allimages if image[deckeyfilenumfield] != None]
 	print "%20s %5s : %4i deconvolutions available" % (deckey, sourcename, len(images))
 	
-	fluxes = asarray(map(lambda x: x[fluxfieldname], images))
-	medflux = median(fluxes) # so this median always refers to the "raw" fluxes, before any normalization
+	fluxes = np.array([image[fluxfieldname] for image in images]) # So these are raw fluxes in electrons, not normalized
+	decnormcoeffs = np.array([image[decnormfieldname] for image in images])
 	
-	mags = -2.5 * log10(fluxes)
+	# Now we want to find a very good "typical" flux (reference flux) for this particular star.
+	# OLD To find which flux is "typcial", we analyse the normalized fluxes.
+	# OLD But then, once we found the typical image of this star, we take the raw, non-normalized flux of this star on this image.
+	
+	
+	normfluxes = fluxes*decnormcoeffs
+	
+	# There are logic errors in what follows ...
+	"""
+	sortindices = np.argsort(normfluxes)
+	if len(images) <= 3:
+		print "Hey, not enough images, this is not good, I might produce crap."
+	medianindex = sortindices[int(sortindices.size / 2)]
+	print "Median index : %i / %i" % (medianindex, sortindices.size)
+	normmedflux = normfluxes[medianindex]
+	# And finally, our NOT NORMALIZED reference flux :
+	medflux = fluxes[medianindex]
+	"""
+	
+	# ... so keep it simple :
+	normmedflux = np.median(normfluxes) # This is not used for any calculation
+	medflux = np.median(fluxes) # This is the plain simple unnormalized ref flux that we will use for this star.
+	
+	plt.hist(fluxes, bins=100, color=(0.6, 0.6, 0.6))
+	plt.hist(normfluxes, bins=100, color=(0.3, 0.3, 0.3))
+	plt.axvline(normmedflux, color="black")
+	plt.axvline(medflux, color="red")
+	#plt.axvline(simplemedflux, color="blue")
+	plt.title("Histogram of normalized flux : %s" % (sourcename + " / " + deckey))
+	plt.xlabel("Normalized flux, electrons")
+	plt.show()
+	
+	
+	# Next step is just as information for the user to identify good and bad stars :
+	mags = -2.5 * np.log10(fluxes*decnormcoeffs)
 	# note that all this mag stuff is just for the plots.
-	# the coeff will be written as multiplicative in flux.
-	# again, we divide by the coeffs to come back to the raw fluxes before any normalization.
 	
-	meanmag = mean(mags)
-	medmag = median(mags)
-	stddevmag = std(mags)
+	meanmag = np.mean(mags)
+	medmag = np.median(mags)
+	stddevmag = np.std(mags)
 	
 	print "Mean mag :", meanmag
 	print "Median mag :", medmag
 	print "Stddev mag :", stddevmag
+	print "(in electrons, given the normalization used for deconvolution)"
 	
 	# and now we go through *all*images, and update the indivcoeff field :
 	
@@ -89,11 +126,11 @@ for renormsource in renormsources:
 		
 			thisflux = image[fluxfieldname] # the intensity in the "raw" image
 			
-			indivcoeff = (medflux / thisflux) 		# the "new" absolute coeff for that image and star
+			indivcoeff = (medflux / thisflux) 	# the "new" absolute coeff for that image and star
 			
 			
 			image["tmp_indivcoeffs"].append(indivcoeff)
-			image["tmp_coeffcomment"].append(sourcename + "/" + deckey)
+			image["tmp_coeffcomment"].append(sourcename + " / " + deckey)
 			
 			nums.append(i)	# for the plot
 			indivcoeffs.append(indivcoeff)
@@ -118,7 +155,7 @@ for i, image in enumerate(allimages):
 		renormcoeff = 1.0
 		image["tmp_coeffcomment"].append("No star available.")
 	else :
-		renormcoeff = median(array(image["tmp_indivcoeffs"])) # median of multiplicative factors
+		renormcoeff = np.median(np.array(image["tmp_indivcoeffs"])) # median of multiplicative factors
 		
 		nums.append(i) # this is only for the plot
 		coeffs.append(renormcoeff)
@@ -176,8 +213,8 @@ for i, image in enumerate(allimages):
 
 plt.figure(figsize=(12,8))	# sets figure size
 
-medcoeffs = array([image["medcoeff"] for image in allimages])
-renormcoeffs = array([image["renormcoeff"] for image in allimages])
+medcoeffs = np.array([image["medcoeff"] for image in allimages])
+renormcoeffs = np.array([image["renormcoeff"] for image in allimages])
 
 
 plt.plot(medcoeffs, linestyle="None", marker=".", label = "medcoeff", color="black")
