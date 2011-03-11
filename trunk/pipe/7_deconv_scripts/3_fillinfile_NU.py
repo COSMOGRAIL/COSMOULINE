@@ -88,5 +88,10 @@ print "Wrote fwhm-des-G.txt"
 
 
 print "I've prepared the input files for %s." % deckey
+
+print "Here they are, if you want to tweak them :"
+print os.path.join(decdir, "in.txt")
+print os.path.join(decdir, "deconv.txt")
+
 	
 	

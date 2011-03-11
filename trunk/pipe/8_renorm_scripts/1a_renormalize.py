@@ -60,6 +60,7 @@ for renormsource in renormsources:
 	sourcename = renormsource[1]
 	deckeyfilenumfield = "decfilenum_" + deckey
 	fluxfieldname = "out_" + deckey + "_" + sourcename + "_flux"
+	errorfieldname = "out_" + deckey + "_" + sourcename + "_shotnoise"
 	decnormfieldname = "decnorm_" + deckey
 	
 	# we start by calculating some statistics for the available fluxes :
@@ -93,6 +94,8 @@ for renormsource in renormsources:
 	normmedflux = np.median(normfluxes) # This is not used for any calculation
 	medflux = np.median(fluxes) # This is the plain simple unnormalized ref flux that we will use for this star.
 	
+	# showing these hists works fine, but we do this now directly after the deconvolution.
+	"""
 	plt.hist(fluxes, bins=100, color=(0.6, 0.6, 0.6))
 	plt.hist(normfluxes, bins=100, color=(0.3, 0.3, 0.3))
 	plt.axvline(normmedflux, color="black")
@@ -101,7 +104,7 @@ for renormsource in renormsources:
 	plt.title("Histogram of normalized flux : %s" % (sourcename + " / " + deckey))
 	plt.xlabel("Normalized flux, electrons")
 	plt.show()
-	
+	"""
 	
 	# Next step is just as information for the user to identify good and bad stars :
 	mags = -2.5 * np.log10(fluxes*decnormcoeffs)
@@ -120,6 +123,9 @@ for renormsource in renormsources:
 	
 	nums = [] # these are for the plots only
 	indivcoeffs = []
+	mhjds = []
+	fluxes = []
+	errors = []
 	
 	for i, image in enumerate(allimages):
 		if image[deckeyfilenumfield] != None: # then we have a deconvolution
@@ -133,10 +139,13 @@ for renormsource in renormsources:
 			image["tmp_coeffcomment"].append(sourcename + " / " + deckey)
 			
 			nums.append(i)	# for the plot
+			mhjds.append(image["mhjd"])
+			fluxes.append(thisflux)
+			errors.append(image[errorfieldname])
 			indivcoeffs.append(indivcoeff)
 	
 	
-	plotdb.append({"sourcename":sourcename, "deckey":deckey, "medmag":medmag, "nums":nums, "indivcoeffs":indivcoeffs})
+	plotdb.append({"sourcename":sourcename, "deckey":deckey, "medmag":medmag, "nums":nums, "mhjds":mhjds, "fluxes":fluxes, "errors":errors, "indivcoeffs":indivcoeffs})
 	
 	
 proquest(askquestions)
@@ -154,6 +163,7 @@ for i, image in enumerate(allimages):
 		# bummer. Then we will just write 1.0
 		renormcoeff = 1.0
 		image["tmp_coeffcomment"].append("No star available.")
+		# we add nothing to coeffs
 	else :
 		renormcoeff = np.median(np.array(image["tmp_indivcoeffs"])) # median of multiplicative factors
 		
@@ -184,6 +194,8 @@ plt.ylabel('Coefficient')
 plt.grid(True)
 plt.legend()
 plt.show()
+
+
 
 
 # Great. You can now close this plot. 
@@ -231,6 +243,39 @@ plt.show()
 
 
 
+# Next plot, we show the plain lightcurves of the renormalization stars, "renormalized"
+
+plt.figure(figsize=(12,8))	# sets figure size
+
+for renormsource in renormsources:
+	
+	deckey = renormsource[0]
+	sourcename = renormsource[1]
+	deckeyfilenumfield = "decfilenum_" + deckey
+	fluxfieldname = "out_" + deckey + "_" + sourcename + "_flux"
+	errorfieldname = "out_" + deckey + "_" + sourcename + "_shotnoise"
+	decnormfieldname = "decnorm_" + deckey
+	renormfieldname = "renormcoeff"
+	
+	images = [image for image in allimages if image[deckeyfilenumfield] != None]
+	
+	fluxes = np.array([image[fluxfieldname] for image in images])
+	decnormcoeffs = np.array([image[decnormfieldname] for image in images])
+	renormcoeffs = np.array([image[renormfieldname] for image in images])
+	
+	renormfluxes = fluxes*renormcoeffs
+	ref = np.median(renormfluxes)
+	
+	mhjds = np.array([image["mhjd"] for image in images])
+	label = sourcename + " / " + deckey
+	
+	plt.plot(mhjds, renormfluxes/ref, linestyle="None", marker=".", label = label)
+
+plt.title("Renormalized fluxes")
+plt.xlabel("MHJD")
+plt.ylabel("Flux in electrons")
+plt.legend()
+plt.show()
 
 
 # If you want, you can now write this into the database.
