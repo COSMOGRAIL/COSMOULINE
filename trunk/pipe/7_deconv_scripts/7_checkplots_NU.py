@@ -15,7 +15,7 @@ figbase = deckey
 
 
 db = KirbyBase()
-images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True) # The sorting is not important.
+images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=['setname', 'mhjd'])
 
 ptsrcs = star.readmancat(ptsrccat)
 nbptsrcs = len(ptsrcs)
@@ -60,32 +60,77 @@ print "Wrote %s" % (plotname)
 
 for src in ptsrcs:
 
+	# Flux histogram
+
 	xfieldname = "out_" + deckey + "_" + src.name + "_x"
 	yfieldname = "out_" + deckey + "_" + src.name + "_y"
 	fluxfieldname = "out_" + deckey + "_" + src.name + "_flux"
 	noisefieldname = "out_" + deckey + "_" + src.name + "_shotnoise"
 	decnormfieldname = "decnorm_" + deckey
 	
-	
-	
 	fluxes = np.array([image[fluxfieldname] for image in images])
 	decnormcoeffs = np.array([image[decnormfieldname] for image in images])
 	
 	normfluxes = fluxes*decnormcoeffs
 	
-	#plt.axvline(normmedflux, color="black")
-	#plt.axvline(medflux, color="red")
-	#plt.axvline(simplemedflux, color="blue")
-	
+	if len(normfluxes) > 15:
+		sortnormfluxes = np.sort(normfluxes)
+		diffs = sortnormfluxes[1:] - sortnormfluxes[:-1]
+		borderdiffs = diffs[[0, 1, 2, 3, 4, -5, -4, -3, -2, -1]]
+		percentborderdiffs = borderdiffs/np.median(normfluxes)*100.0
+		lowflux  = "Low  : + " + " / ".join(["%.3f" % (bd) for bd in percentborderdiffs[:5]]) + " %"
+		highflux = "High : + " + " / ".join(["%.3f" % (bd) for bd in percentborderdiffs[5:]]) + " %"
+		print lowflux
+		print highflux
 	
 	plt.figure(figsize=(12, 12))
 	
-	plt.hist(fluxes, bins=100, color=(0.6, 0.6, 0.6))
-	plt.hist(normfluxes, bins=100, color=(0.3, 0.3, 0.3))
-	plt.title("Histogram of normalized flux : %s" % (src.name + " / " + deckey))
-	plt.xlabel("Normalized flux, electrons")
+	(mi, ma) = (np.min(normfluxes), np.max(normfluxes))
+	plt.axvline(mi, ymin=0.1, color="red")
+	plt.axvline(ma, ymin=0.1,color="red")
+	plt.figtext(0.15, 0.85, highflux)
+	plt.figtext(0.15, 0.83, lowflux)
+	plt.hist(fluxes, bins=200, color=(0.6, 0.6, 0.6))
+	plt.hist(normfluxes, bins=200, color=(0.3, 0.3, 0.3))
+	plt.title("Flux histogram : %s" % (src.name + " / " + deckey))
+	plt.xlabel("Flux, in electrons")
 	
 	
 	plotname = figbase + "_" + src.name + "_fluxhist.png"
 	plt.savefig(os.path.join(plotdir, plotname))
 	print "Wrote %s" % (plotname)
+
+
+
+	# Lightcurve
+	
+	plt.figure(figsize=(15, 8))
+	
+	decfilenums = np.array(map(int, [image[deckeyfilenum] for image in images]))
+	
+	(xmi, xma) = (np.min(decfilenums), np.max(decfilenums))
+	(ymi, yma) = (np.min(normfluxes) - 0.5*np.std(normfluxes), np.max(normfluxes) + 0.5*np.std(normfluxes))
+	
+	#plt.axvline(mi, ymin=0.1, color="red")
+	#plt.axvline(ma, ymin=0.1,color="red")
+	#plt.figtext(0.15, 0.85, highflux)
+	#plt.figtext(0.15, 0.83, lowflux)
+	#plt.hist(fluxes, bins=200, color=(0.6, 0.6, 0.6))
+	#plt.hist(normfluxes, bins=200, color=(0.3, 0.3, 0.3))
+	plt.plot(decfilenums, normfluxes, marker=".", linestyle="none")
+	plt.title("Lightcurve : %s" % (src.name + " / " + deckey))
+	plt.xlabel("MCS files")
+	plt.ylabel("Normalized flux")
+	plt.xlim((xmi - 10.0, xma + 10.0))
+	plt.ylim((ymi, yma))
+	plotname = figbase + "_" + src.name + "_lightcurve.png"
+	plt.savefig(os.path.join(plotdir, plotname))
+	print "Wrote %s" % (plotname)
+
+	
+
+	
+
+
+
+
