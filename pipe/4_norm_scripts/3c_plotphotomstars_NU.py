@@ -77,7 +77,7 @@ for s in photomstars :
 	ax2.set_ylabel("medcoeff", color="gray")
 	
 	if savefigs:
-		plotfilepath = os.path.join(plotdir, "%s_%s_fluxes.pdf" % (sexphotomname, s.name))
+		plotfilepath = os.path.join(plotdir, "sexphotom_%s_%s_fluxes.pdf" % (sexphotomname, s.name))
 		plt.savefig(plotfilepath)
 		print "Wrote %s" % (plotfilepath)
 	else:
