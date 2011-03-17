@@ -19,10 +19,15 @@ uselinks = True
 # A switch to make all scripts skip any questions
 askquestions = True
 
-# A switch to display image by image plots that are normally not needed. If True, the database will not be updated !
+# A switch to display image by image plots that are normally not needed. For debugging etc.
+# If True, the database will not be updated !
 # You should typically use this in connection with thisisatest = True ...
 checkplots = False
 	# This is used by : 1_character_scripts/4_skystats.py, 3b_measureseeing.py
+
+# A switch to save figures that would otherwise be shown.
+# Good to keep this on True if you work over a slow connection. Saved into plotdir.
+savefigs = True
 
 # A switch to ring a bell if some (long) scripts have finished or want to talk to you.
 withsound = False
