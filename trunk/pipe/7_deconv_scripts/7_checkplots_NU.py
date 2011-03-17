@@ -40,9 +40,12 @@ plt.scatter(delta1s, delta2s, s=1, color="blue")
 plt.xlabel("Delta 1")
 plt.ylabel("Delta 2")
 
-plotname = figbase+"_delta.png"
-plt.savefig(os.path.join(plotdir, plotname))
-print "Wrote %s" % (plotname)
+if savefigs:
+	plotfilepath = os.path.join(plotdir, "%s_check_delta.pdf" % figbase)
+	plt.savefig(plotfilepath)
+	print "Wrote %s" % (plotfilepath)
+else:
+	plt.show()
 
 
 z1fieldname = "out_" + deckey + "_z1"
@@ -53,9 +56,14 @@ plt.figure(figsize=(12, 12))
 plt.scatter(z1s, z2s, s=1, color="blue")
 plt.xlabel("z1")
 plt.ylabel("z2")
-plotname = figbase+"_z.png"
-plt.savefig(os.path.join(plotdir, plotname))
-print "Wrote %s" % (plotname)
+
+if savefigs:
+	plotfilepath = os.path.join(plotdir, "%s_check_z.pdf" % figbase)
+	plt.savefig(plotfilepath)
+	print "Wrote %s" % (plotfilepath)
+else:
+	plt.show()
+
 
 
 for src in ptsrcs:
@@ -96,9 +104,13 @@ for src in ptsrcs:
 	plt.xlabel("Flux, in electrons")
 	
 	
-	plotname = figbase + "_" + src.name + "_fluxhist.png"
-	plt.savefig(os.path.join(plotdir, plotname))
-	print "Wrote %s" % (plotname)
+	if savefigs:
+		plotfilepath = os.path.join(plotdir, "%s_check_fluxhist_%s.pdf" % (figbase, src.name))
+		plt.savefig(plotfilepath)
+		print "Wrote %s" % (plotfilepath)
+	else:
+		plt.show()
+
 
 
 
@@ -123,9 +135,15 @@ for src in ptsrcs:
 	plt.ylabel("Normalized flux")
 	plt.xlim((xmi - 10.0, xma + 10.0))
 	plt.ylim((ymi, yma))
-	plotname = figbase + "_" + src.name + "_lightcurve.png"
-	plt.savefig(os.path.join(plotdir, plotname))
-	print "Wrote %s" % (plotname)
+	
+	
+	
+	if savefigs:
+		plotfilepath = os.path.join(plotdir, "%s_check_fluxlc_%s.pdf" % (figbase, src.name))
+		plt.savefig(plotfilepath)
+		print "Wrote %s" % (plotfilepath)
+	else:
+		plt.show()
 
 	
 
