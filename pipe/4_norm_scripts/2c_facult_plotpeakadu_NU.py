@@ -37,7 +37,14 @@ for s in photomstars:
 
 	plt.title("Star %s, median = %.2f" % (s.name, medianpeak))
 	plt.xlabel('Peak value including sky [ADU]', fontsize=18)
-	#plt.show()
-	plt.savefig(os.path.join(plotdir, "histo_%s_%s_peakadu.png" % (sexphotomname, s.name)))
 	
+	
+	
+	if savefigs:
+		plotfilepath = os.path.join(plotdir, "%s_%s_peakaduhist.pdf" % (sexphotomname, s.name))
+		plt.savefig(plotfilepath)
+		print "Wrote %s" % (plotfilepath)
+	else:
+		plt.show()
 
+	

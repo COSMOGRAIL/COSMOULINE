@@ -89,7 +89,7 @@ yearx.set_xlabel("Date")
 
 
 if savefigs:
-	plotfilepath = os.path.join(plotdir, "%s_lc_by_sets.pdf" % deckey)
+	plotfilepath = os.path.join(plotdir, "%s_lc_by_set.pdf" % deckey)
 	plt.savefig(plotfilepath)
 	print "Wrote %s" % (plotfilepath)
 else:
