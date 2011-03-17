@@ -28,7 +28,7 @@ print "%i images" % len(images)
 
 fieldnames = db.getFieldNames(imgdb)
 
-plt.figure(figsize=(15,8))
+plt.figure(figsize=(15,15))
 
 mhjds = np.array([image["mhjd"] for image in images])
 
@@ -39,14 +39,10 @@ for s in ptsources:
 	
 	mags = -2.5*np.log10(np.array([image[fluxfieldname]*image[deckeynormused] for image in images]))
 	
-	if randomerrorfieldname not in fieldnames :
-		plt.plot(mhjds, mags, linestyle="None", marker=".", label = s.name)
-	else :
-		upmags =   -2.5*np.log10(np.array([(image[fluxfieldname] - image[randomerrorfieldname])*image[deckeynormused] for image in images]))
-		downmags = -2.5*np.log10(np.array([(image[fluxfieldname] + image[randomerrorfieldname])*image[deckeynormused] for image in images]))
+	upmags =   -2.5*np.log10(np.array([(image[fluxfieldname] - image[randomerrorfieldname])*image[deckeynormused] for image in images]))
+	downmags = -2.5*np.log10(np.array([(image[fluxfieldname] + image[randomerrorfieldname])*image[deckeynormused] for image in images]))
 
-		plt.errorbar(mhjds, mags, yerr=[upmags-mags, mags-downmags], linestyle="None", marker=".", label = s.name)
-	plt.errorbar
+	plt.errorbar(mhjds, mags, yerr=[upmags-mags, mags-downmags], linestyle="None", marker=".", label = s.name)
 
 plt.grid(True)
 
@@ -64,7 +60,7 @@ titletext1 = "%s (%i points)" % (xephemlens.split(",")[0], len(images))
 titletext2 = deckey
 
 ax.text(0.02, 0.97, titletext1, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
-ax.text(0.02, 0.93, titletext2, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
+ax.text(0.02, 0.94, titletext2, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
 
 
 #plt.legend()
@@ -84,7 +80,9 @@ yearx.set_xlabel("Date")
 
 
 if savefigs:
-	plt.savefig(os.path.join(plotdir, "%s_mag_hdj.pdf" % deckey))
+	plotfilepath = os.path.join(plotdir, "%s_lc_by_img.pdf" % deckey)
+	plt.savefig(plotfilepath)
+	print "Wrote %s" % (plotfilepath)
 else:
 	plt.show()
 

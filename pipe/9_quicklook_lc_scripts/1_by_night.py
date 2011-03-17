@@ -1,5 +1,5 @@
 """
-Very similar to 0_mag_hjd.py, but we group the points per night.
+We group the points per night.
 """
 
 
@@ -32,7 +32,7 @@ print "%i nights"% len(groupedimages)
 
 fieldnames = db.getFieldNames(imgdb)
 
-plt.figure(figsize=(15,8))
+plt.figure(figsize=(15,15))
 
 mhjds = combibynight_fct.values(groupedimages, 'mhjd', normkey=None)['mean']
 
@@ -89,7 +89,8 @@ for j, s in enumerate(ptsources):
 	plt.errorbar(mhjds, mags, yerr=[upmags-mags, mags-downmags], linestyle="None", marker=".", label = s.name)
 	
 	#exportcols.extend([{"name":"mag_%s" % ptsrc.name, "data":mags}, {"name":"magerr_%s" % ptsrc.name, "data":2.0*magerrorbars}])
-	
+
+plt.grid(True)
 
 # reverse y axis for magnitudes :
 ax=plt.gca()
@@ -105,7 +106,7 @@ titletext1 = "%s (%i nights)" % (xephemlens.split(",")[0], len(groupedimages))
 titletext2 = deckey
 
 ax.text(0.02, 0.97, titletext1, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
-ax.text(0.02, 0.93, titletext2, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
+ax.text(0.02, 0.94, titletext2, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
 
 #plt.legend()
 leg = ax.legend(loc='upper right', fancybox=True)
@@ -123,8 +124,11 @@ yearx.xaxis.tick_top()
 yearx.set_xlabel("Date")
 
 
+
 if savefigs:
-	plt.savefig(os.path.join(plotdir, "%s_by_night.pdf" % deckey))
+	plotfilepath = os.path.join(plotdir, "%s_lc_by_night.pdf" % deckey)
+	plt.savefig(plotfilepath)
+	print "Wrote %s" % (plotfilepath)
 else:
 	plt.show()
 
