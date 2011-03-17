@@ -23,10 +23,12 @@ print "Number of point sources : %i" % len(ptsources)
 print "Names of sources : %s" % ", ".join([s.name for s in ptsources])
 
 db = KirbyBase()
-images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True)
+images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=['mjd'])
+print "%i images" % len(images)
+
 fieldnames = db.getFieldNames(imgdb)
 
-#plt.figure(figsize=(12,8))	# sets figure size
+plt.figure(figsize=(15,8))
 
 mhjds = np.array([image["mhjd"] for image in images])
 
@@ -58,10 +60,11 @@ ax.set_xlim(np.min(mhjds), np.max(mhjds)) # DO NOT REMOVE THIS !!!
 plt.xlabel('MHJD [days]')
 plt.ylabel('Magnitude (instrumental)')
 
-titletext = deckey
-titletext = "%s (%i points)" % (xephemlens.split(",")[0], len(images))
+titletext1 = "%s (%i points)" % (xephemlens.split(",")[0], len(images))
+titletext2 = deckey
 
-ax.text(0.02, 0.97, titletext, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
+ax.text(0.02, 0.97, titletext1, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
+ax.text(0.02, 0.93, titletext2, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
 
 
 #plt.legend()
@@ -80,6 +83,9 @@ yearx.xaxis.tick_top()
 yearx.set_xlabel("Date")
 
 
-plt.show()
+if savefigs:
+	plt.savefig(os.path.join(plotdir, "%s_mag_hdj.pdf" % deckey))
+else:
+	plt.show()
 
 	
