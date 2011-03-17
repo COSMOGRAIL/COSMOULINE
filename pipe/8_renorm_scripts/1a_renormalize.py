@@ -40,7 +40,7 @@ allimages = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='di
 
 print "I will try to calculate a coefficient for", len(allimages), "images."
 
-print "Before adding anything to the database, I will make a plot."
+print "Before adding anything to the database, I will make plots."
 proquest(askquestions)
 
 # Add a new temporary field to the dicts
@@ -148,7 +148,7 @@ for renormsource in renormsources:
 	plotdb.append({"sourcename":sourcename, "deckey":deckey, "medmag":medmag, "nums":nums, "mhjds":mhjds, "fluxes":fluxes, "errors":errors, "indivcoeffs":indivcoeffs})
 	
 	
-proquest(askquestions)
+#proquest(askquestions)
 
 
 # Now we go throug all the images, see which coefficients are available, and calculate our coeff :
@@ -175,7 +175,7 @@ for i, image in enumerate(allimages):
 
 
 # We are ready for a first plot, to compare the stars :
-plt.figure(figsize=(12,8))	# sets figure size
+plt.figure(figsize=(15,15))	# sets figure size
 
 for source in plotdb:
 	
@@ -193,7 +193,14 @@ plt.ylabel('Coefficient')
 
 plt.grid(True)
 plt.legend()
-plt.show()
+
+if savefigs:
+	plotfilepath = os.path.join(plotdir, "renorm_%s_indivcoeffs.pdf" % renormname)
+	plt.savefig(plotfilepath)
+	print "Wrote %s" % (plotfilepath)
+else:
+	plt.show()
+
 
 
 
@@ -214,7 +221,7 @@ refnewcoeff = refimage["tmp_coeff"]
 print "Renormalization coeff of the reference image with respect to the median level of all images :"
 print refnewcoeff
 print "(This should typically be around 1.0, but deviations are not a problem, they would mean that your reference image has atypical fluxes.)"
-proquest(askquestions)
+#proquest(askquestions)
 
 for i, image in enumerate(allimages):
 	
@@ -223,7 +230,7 @@ for i, image in enumerate(allimages):
 
 # Time for the second plot, to compare these to the medcoeffs.
 
-plt.figure(figsize=(12,8))	# sets figure size
+plt.figure(figsize=(15,15))	# sets figure size
 
 medcoeffs = np.array([image["medcoeff"] for image in allimages])
 renormcoeffs = np.array([image["renormcoeff"] for image in allimages])
@@ -239,15 +246,23 @@ plt.ylabel('Coefficient')
 
 plt.grid(True)
 plt.legend()
-plt.show()
+
+if savefigs:
+	plotfilepath = os.path.join(plotdir, "renorm_%s_medcoeffcompa.pdf" % renormname)
+	plt.savefig(plotfilepath)
+	print "Wrote %s" % (plotfilepath)
+else:
+	plt.show()
 
 
 
 # Next plot, we show the plain lightcurves of the renormalization stars, "renormalized"
 
-plt.figure(figsize=(12,8))	# sets figure size
 
 for renormsource in renormsources:
+	
+	plt.figure(figsize=(15,15))	# sets figure size
+
 	
 	deckey = renormsource[0]
 	sourcename = renormsource[1]
@@ -271,11 +286,19 @@ for renormsource in renormsources:
 	
 	plt.plot(mhjds, renormfluxes/ref, linestyle="None", marker=".", label = label)
 
-plt.title("Renormalized fluxes")
-plt.xlabel("MHJD")
-plt.ylabel("Flux in electrons")
-plt.legend()
-plt.show()
+	plt.title(label)
+	plt.xlabel("MHJD")
+	plt.ylabel("Flux in electrons / median")
+	plt.grid(True)
+	plt.ylim(0.9, 1.1)
+
+	if savefigs:
+		plotfilepath = os.path.join(plotdir, "renorm_%s_renormflux_%s.pdf" % (renormname, sourcename))
+		plt.savefig(plotfilepath)
+		print "Wrote %s" % (plotfilepath)
+	else:
+		plt.show()
+
 
 
 # If you want, you can now write this into the database.
