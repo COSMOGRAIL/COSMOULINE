@@ -324,7 +324,7 @@ if renormname in db.getFieldNames(imgdb):
 db.addFields(imgdb, ['%s:float' % renormname, '%s:str' % renormcommentfieldname])
 
 widgets = [progressbar.Bar('>'), ' ', progressbar.ETA(), ' ', progressbar.ReverseBar('<')]
-pbar = progressbar.ProgressBar(widgets=widgets, maxval=nbimg+2).start()
+pbar = progressbar.ProgressBar(widgets=widgets, maxval=len(allimages)+2).start()
 
 for i, image in enumerate(allimages):
 	#print i, image["imgname"], image["tmp_coeff"], image["tmp_coeffcomment"]
