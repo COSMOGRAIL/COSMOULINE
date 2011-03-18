@@ -16,7 +16,11 @@ import matplotlib.dates
 
 print "You want to analyze the deconvolution %s" %deckey
 print "Deconvolved object : %s" % decobjname
-print "I will use the normalization coeffs used for the deconvolution."
+if plotnormfieldname == None:
+	print "I will use the normalization coeffs used for the deconvolution."
+else:
+	print "Using %s for the normalization." % (plotnormfieldname)
+	deckeynormused = plotnormfieldname
 
 ptsources = star.readmancat(ptsrccat)
 print "Number of point sources : %i" % len(ptsources)
@@ -62,6 +66,10 @@ titletext2 = deckey
 ax.text(0.02, 0.97, titletext1, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
 ax.text(0.02, 0.94, titletext2, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
 
+if plotnormfieldname:
+	titletext3 = "Renormalized with %s" % (plotnormfieldname)
+	ax.text(0.02, 0.91, titletext3, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
+
 
 #plt.legend()
 leg = ax.legend(loc='upper right', fancybox=True)
@@ -80,7 +88,10 @@ yearx.set_xlabel("Date")
 
 
 if savefigs:
-	plotfilepath = os.path.join(plotdir, "%s_lc_by_img.pdf" % deckey)
+	if plotnormfieldname:
+		plotfilepath = os.path.join(plotdir, "%s_lc_%s_by_img.pdf" % (deckey, plotnormfieldname))
+	else :
+		plotfilepath = os.path.join(plotdir, "%s_lc_by_img.pdf" % (deckey))
 	plt.savefig(plotfilepath)
 	print "Wrote %s" % (plotfilepath)
 else:

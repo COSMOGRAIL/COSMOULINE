@@ -1,5 +1,5 @@
 """
-We color points according to seeing.
+We color points according to airmass.
 """
 
 execfile("../config.py")
@@ -33,7 +33,7 @@ fieldnames = db.getFieldNames(imgdb)
 plt.figure(figsize=(15,15))
 
 mhjds = np.array([image["mhjd"] for image in images])
-seeings = np.array([image["seeing"] for image in images])
+airmasses = np.array([image["airmass"] for image in images])
 
 for s in ptsources:
 
@@ -41,7 +41,7 @@ for s in ptsources:
 	
 	mags = -2.5*np.log10(np.array([image[fluxfieldname]*image[deckeynormused] for image in images]))
 	
-	plt.scatter(mhjds, mags, s=12, c=seeings, vmin=0.5,vmax=2.5, edgecolors='none')
+	plt.scatter(mhjds, mags, s=12, c=airmasses, vmin=1.0,vmax=2.5, edgecolors='none')
 
 plt.grid(True)
 
@@ -67,7 +67,7 @@ if plotnormfieldname:
 	ax.text(0.02, 0.91, titletext3, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
 
 cbar = plt.colorbar(orientation='horizontal')
-cbar.set_label('FWHM [arcsec]') 
+cbar.set_label('Airmass') 
 
 # Second x-axis with actual dates :
 yearx = ax.twiny()
@@ -82,9 +82,9 @@ yearx.set_xlabel("Date")
 
 if savefigs:
 	if plotnormfieldname:
-		plotfilepath = os.path.join(plotdir, "%s_lc_%s_by_seeing.pdf" % (deckey, plotnormfieldname))
+		plotfilepath = os.path.join(plotdir, "%s_lc_%s_by_airmass.pdf" % (deckey, plotnormfieldname))
 	else :
-		plotfilepath = os.path.join(plotdir, "%s_lc_by_seeing.pdf" % (deckey))
+		plotfilepath = os.path.join(plotdir, "%s_lc_by_airmass.pdf" % (deckey))
 	plt.savefig(plotfilepath)
 	print "Wrote %s" % (plotfilepath)
 else:
