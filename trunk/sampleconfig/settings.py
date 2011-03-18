@@ -1,4 +1,4 @@
-#------------------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------
 
 
 # The "working" dir where all the pipeline products will be *written*
@@ -6,7 +6,7 @@
 workdir = "/your/absolute/path/to/cosmouline_work/J1001"
 
 
-#------------------------ Switches -----------------------------------
+#------------------------ SWITCHES -----------------------------------------
 
 
 # A switch to tell if these testlist-flags should be used.
@@ -44,7 +44,7 @@ maxcores = 0
 # Only some scripts run on multiple cores. It is noramlly fine to leave this on 0.
 # You might want to use the manual setting for instance if someone is already using some cores for other jobs etc. 
 
-#------------------------- import new images  ---------------------------------------------------------------
+#------------------------ IMPORTATION --------------------------------------
 
 # The "set name" of the images you want to add to the database
 # Could for example reflect the telescope ...
@@ -64,7 +64,7 @@ rawdir = "/home/epfl/eulaers/unsaved/prered_Mercator/reduc/J1001+5027_RG_crop"
 # Remember that these images should be prereduced and have clean borders (cut pre/overscan) !
 # Also they should be in a coherent "orientation" (rotations are ok, but no mirror flips).
 
-#-------------------------------- astrocalc --------------------------------------------------------------------
+#------------------------ ASTROCALC ----------------------------------------
 
 # a string (format = "Xephem"-like catalog entry) specifing the target coordinates.
 # In this case, we have : name, f|Q = fixed quasar, RA (H:M:S), Dec (D:M:S), mag, epoch
@@ -98,9 +98,9 @@ xephemlens = "Simulation,f|Q,00:00:00.00,+00:00:00.0,20.0,2000"
 
 # Now you can run all the scripts until the alignment !
 
-#---------------------------- alignment and stats -----------------------------------------------------------------
+#------------------------ ALIGNMENT ----------------------------------------
 
-# reference image name (for alignement and deconvolution) :
+# reference image name (for alignment and deconvolution) :
 
 refimgname = "1_093307_RG_J1001+5027"
 
@@ -134,7 +134,7 @@ identfindmindist = 300
 
 
 
-#----------------------------- Sextractor photometry readout -----------------------------
+#------------------------ SEXTRACTOR PHOTOMETRY READOUT --------------------
 
 sexphotomname = "sexphotom1"	# No need to touch this, same for the fields below.
 
@@ -153,7 +153,7 @@ sexphotomfields = [
 {"sexname":"FLUX_APER4", "dbname":"ap120_flux", "type":"float"}
 ]
 
-#----------------------------- Combination of best images -----------------------------
+#------------------------ DEEP FIELD COMBINATION (FACULTATIVE) -------------
 
 # Choose a plain name for your combination (like for instance "1" for your first try...)
 combibestname = "best1"
@@ -163,15 +163,13 @@ combibestmaxell = 0.1 		# Maximum ellipticity (field "ell")
 combibestmaxmedcoeff = 1.2	# Maximum medcoeff (ref image has 1.0)
 combibestmaxstddev = 20.0 	# Maximum sky stddev, in ADU
 
-
-#----------------------------- Combination of images per night ------------------------------
+#------------------------ IMAGE STACKING (FACULTATIVE) ---------------------
 
 #Choose a name for your combination. It should reflect the normalization coeff that your using ('medcoeff' or 'renormabc1' if you computed some new one)
 # Suggestion for names : 'medcoeff1' for your first try using the medcoeff
 combiname = "medcoeff1"
 
 renormcoeff = 'medcoeff'	# you can choose which coeff you want to use for the combination
-
 
 
 #------------------------ PSF CONSTRUCTION ---------------------------------
@@ -237,10 +235,13 @@ renormsources = [
 ('dec_full_c_medcoeff_abce1', 'c')
 ]
 
-#---------------------------------------------------------------------------
 
+#------------------------ PLOTS ETC ----------------------------------------
 
-
+plotnormfieldname = None	# Used only for the quicklook plots, after the deconvolution :
+				# None -> we normalize with the coeffs used for the deconvolution.
+				# renormname -> we use these coeffs instead. Allows for a first check.
+				# Note that this does NOT affect the content of the database in any way !
 
 
 
