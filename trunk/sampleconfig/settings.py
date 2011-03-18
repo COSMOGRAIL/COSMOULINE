@@ -204,37 +204,35 @@ objname = "lens"	# Give a name to the object you want to extract.
 
 #------------------------ DECONVOLUTION ------------------------------------
 
-decname = "full"		# YES WE CAN !
+decname = "full"		# Choose a name for your deconvolution. No need to reflect the source. Examples : "full", "test"
 
-decobjname = "lens"		# here you choose which object you want to deconvolve : give an existing objname.
+decobjname = "lens"		# Select which object you want to deconvolve : give an existing objname.
 				# You don't have to set the objname in the "OBJECT EXTRACTION" section.
 
-decnormfieldname = "medcoeff"	# Give the name of the normalization coefficient to apply to the image prior to deconv.
+decnormfieldname = "medcoeff"	# The normalization coefficient to apply to the image prior to deconv.
 				# "None" is special, it means a coeff of 1.0 for every image.
 				# The name of the default sextractor photometry is "medcoeff"
-				# If you choose a renormalization, give an existing renormfieldname 
+				# If you choose a renormalization, give an existing renormname.
 
 
-decpsfnames = ["abce1"]		# here you choose the PSF(s) you want to use : give one or more psfnames in form of a list.
-				# The first psfname has the lowest priority
+decpsfnames = ["abce1"]		# The PSF(s) you want to use : give one or more psfnames in form of a list.
+				# The first psfname has the lowest priority.
 
 
-#------------------------ RENORMALIZATION -----------------------------------
+#------------------------ RENORMALIZATION ----------------------------------
 
+renormname = "renormabc1"	# Choose a name for the new renormalization coefficient
+				# (something that reflects the sources... like "renormabc")
+				# Make it short ... but start it with the letters renorm
 
-# a name for the new renormalization coefficient
-# (your could choose something that reflects the sources... like "renormabc")
-# Make it short ... but always start it with the letters renorm
-
-renormname = "renormabc1"
-
-# which sources do you want to use for the renormalization (give (deckey, sourcename) ):
+# Which sources do you want to use for the renormalization (give (deckey, sourcename) ):
 renormsources = [
 ('dec_full_a_medcoeff_abce1', 'a'),
 ('dec_full_b_medcoeff_abce1', 'b'),
 ('dec_full_c_medcoeff_abce1', 'c')
 ]
 
+# You can than change these before running 2_plot_star_curves_NU.py, to get curves for other stars.
 
 #------------------------ PLOTS ETC ----------------------------------------
 
@@ -244,5 +242,6 @@ plotnormfieldname = None	# Used only for the quicklook plots, after the deconvol
 				# Note that this does NOT affect the content of the database in any way !
 
 
+#---------------------------------------------------------------------------
 
 
