@@ -23,6 +23,7 @@ from kirbybase import KirbyBase, KBError
 from variousfct import *
 #from combibynight_fct import *
 #from star import *
+import progressbar
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -160,8 +161,9 @@ coeffs = []
 for i, image in enumerate(allimages):
 	
 	if len(image["tmp_indivcoeffs"]) == 0:
-		# bummer. Then we will just write 1.0
-		renormcoeff = 1.0
+		# bummer. Then we will just write 0.0, to be sure that this one will pop out.
+		renormcoeff = 0.0
+		print "Image %s : no star available." % (image[imgname])
 		image["tmp_coeffcomment"].append("No star available.")
 		# we add nothing to coeffs
 	else :
@@ -237,7 +239,7 @@ renormcoeffs = np.array([image["renormcoeff"] for image in allimages])
 
 
 plt.plot(medcoeffs, linestyle="None", marker=".", label = "medcoeff", color="black")
-plt.plot(renormcoeffs, linestyle="None", marker=".", label = "renormcoeff", color="red")
+plt.plot(renormcoeffs, linestyle="None", marker=".", label = renormname, color="red")
 
 # and show the plot
 
@@ -255,7 +257,8 @@ else:
 	plt.show()
 
 
-
+# This is done in a separate script, now, also for other stars if you want.
+"""
 # Next plot, we show the plain lightcurves of the renormalization stars, "renormalized"
 
 
@@ -275,22 +278,25 @@ for renormsource in renormsources:
 	images = [image for image in allimages if image[deckeyfilenumfield] != None]
 	
 	fluxes = np.array([image[fluxfieldname] for image in images])
+	errors = np.array([image[errorfieldname] for image in images])
 	decnormcoeffs = np.array([image[decnormfieldname] for image in images])
 	renormcoeffs = np.array([image[renormfieldname] for image in images])
 	
 	renormfluxes = fluxes*renormcoeffs
+	renormerrors = errors*renormcoeffs
 	ref = np.median(renormfluxes)
 	
 	mhjds = np.array([image["mhjd"] for image in images])
 	label = sourcename + " / " + deckey
 	
-	plt.plot(mhjds, renormfluxes/ref, linestyle="None", marker=".", label = label)
+	#plt.plot(mhjds, renormfluxes/ref, linestyle="None", marker=".", label = label)
+	plt.errorbar(mhjds, renormfluxes/ref, yerr=renormerrors/ref, ecolor=(0.8, 0.8, 0.8), linestyle="None", marker=".", label = label)
 
-	plt.title(label)
+	plt.title("%s, using %s" % (label, renormname))
 	plt.xlabel("MHJD")
 	plt.ylabel("Flux in electrons / median")
 	plt.grid(True)
-	plt.ylim(0.9, 1.1)
+	plt.ylim(0.95, 1.05)
 
 	if savefigs:
 		plotfilepath = os.path.join(plotdir, "renorm_%s_renormflux_%s.pdf" % (renormname, sourcename))
@@ -299,7 +305,7 @@ for renormsource in renormsources:
 	else:
 		plt.show()
 
-
+"""
 
 # If you want, you can now write this into the database.
 
@@ -317,11 +323,16 @@ if renormname in db.getFieldNames(imgdb):
 
 db.addFields(imgdb, ['%s:float' % renormname, '%s:str' % renormcommentfieldname])
 
+widgets = [progressbar.Bar('>'), ' ', progressbar.ETA(), ' ', progressbar.ReverseBar('<')]
+pbar = progressbar.ProgressBar(widgets=widgets, maxval=nbimg+2).start()
+
 for i, image in enumerate(allimages):
 	#print i, image["imgname"], image["tmp_coeff"], image["tmp_coeffcomment"]
+	pbar.update(i)
 	db.update(imgdb, ['recno'], [image['recno']], {renormname: float(image["renormcoeff"]), renormcommentfieldname: " ".join(image["tmp_coeffcomment"])})
-	
+
+pbar.finish()
+
 db.pack(imgdb) # to erase the blank lines
 
 print "Ok, here you are."
-	
