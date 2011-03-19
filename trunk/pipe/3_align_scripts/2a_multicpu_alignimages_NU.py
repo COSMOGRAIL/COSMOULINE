@@ -11,7 +11,9 @@ import math
 from pyraf import iraf
 from variousfct import *
 from datetime import datetime, timedelta
+#import multiprocessing NO, NOT AVAILABLE WITH SCISOFT IRAF ... 
 import forkmap
+import progressbar
 
 
 # We will tweak the db only at the end of this script.
@@ -19,11 +21,11 @@ import forkmap
 db = KirbyBase()
 images = db.select(imgdb, ['flagali','gogogo','treatme'], ['==1',True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
 
-
 print "I will run the actual alignment (on several cpus), and wait until this is done to update the database."
 nbrofimages = len(images)
 print "Number of images to treat :", nbrofimages
 
+#ncorestouse = multiprocessing.cpucount()
 ncorestouse = forkmap.nprocessors()
 if maxcores > 0 and maxcores < ncorestouse:
 	ncorestouse = maxcores
@@ -108,14 +110,18 @@ def aliimage(image):
 	print "%i Angle : %f" % (image["execi"], geomapangle)
 	print "%i RMS   : %f" % (image["execi"], geomaprms)
 	
-	image["geomapscale"] = geomapscale
-	image["geomapangle"] = geomapangle
-	image["geomaprms"] = geomaprms
+	retdict = {}
+	retdict["geomapscale"] = geomapscale
+	retdict["geomapangle"] = geomapangle
+	retdict["geomaprms"] = geomaprms
+	retdict["imgname"] = image["imgname"]
+	
+	#Does not work this way, you cannot modify external objects :
+	#image["geomapscale"] = geomapscale
+	#image["geomapangle"] = geomapangle
+	#image["geomaprms"] = geomaprms
 	
 	print "%i geomap done" % (image["execi"])
-
-
-
 
 	#input   =                       Input data
 	#output  =                       Output data
@@ -141,10 +147,6 @@ def aliimage(image):
 	#(verbose=                  yes) Print messages about the progress of the task ?
 	#(mode   =                   ql)
 
-
-
-	
-
 	iraf.unlearn(iraf.immatch.gregister)
 	iraf.immatch.gregister.geometry = "geometric"	# linear, distortion, geometric
 	iraf.immatch.gregister.interpo = "spline3"	# linear, spline3
@@ -158,10 +160,16 @@ def aliimage(image):
 		os.remove(databasename)
 
 	print "%i gregister done" % (image["execi"])
+	
+	return retdict
 
 
 starttime = datetime.now()
-forkmap.map(aliimage, images, n = ncorestouse)
+retdicts = forkmap.map(aliimage, images, n = ncorestouse)
+#pool = multiprocessing.Pool(processes=ncorestouse)
+#pool.map(aliimage, images)
+
+
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
 
@@ -175,13 +183,14 @@ if "geomapangle" not in db.getFieldNames(imgdb) :
 
 widgets = [progressbar.Bar('>'), ' ', progressbar.ETA(), ' ', progressbar.ReverseBar('<')]
 pbar = progressbar.ProgressBar(widgets=widgets, maxval=len(images)).start()
-for image in images:
-	db.update(imgdb, ['recno'], [image['recno']], {'geomapangle': image["geomapangle"], 'geomaprms': image["geomaprms"], 'geomapscale': image["geomapscale"]})
+for (retdict,image) in zip(retdicts,images):
+	#print image["geomapscale"]
+	db.update(imgdb, ['recno'], [image['recno']], {'geomapangle': retdict["geomapangle"], 'geomaprms': retdict["geomaprms"], 'geomapscale': retdict["geomapscale"]})
 	pbar.update(i)
 pbar.finish()	
 
 db.pack(imgdb)
 
 
-notify(computer, withsound, "Done." % timetaken)
+notify(computer, withsound, "Done in %s" % timetaken)
 
