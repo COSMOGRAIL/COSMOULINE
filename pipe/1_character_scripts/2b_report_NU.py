@@ -21,7 +21,7 @@ for setname in usedsetnames:
 	reporttxt += "\n\n" + 20*"=" +  "%10s "%setname + 20*"=" +"\n\n"
 		
 	nbr = len(db.select(imgdb, ['astrofishy','setname','gogogo'], [True, setname, 'True'], returnType='dict'))
-	setreport = db.select(imgdb, ['astrofishy','setname','gogogo'], [True, setname, 'True'], ['imgname', 'rawimg', 'mjd', 'astrocomment'], sortFields=['mjd'], returnType='report')
+	setreport = db.select(imgdb, ['astrofishy','setname','gogogo'], [True, setname, 'True'], fields + ['astrocomment'], sortFields=['mhjd'], returnType='report')
 	reporttxt += "\n  Something fishy with %i images :\n\n"% nbr
 	reporttxt += setreport
 	print "Setname %10s : %3i fishy images." %(setname, nbr)
