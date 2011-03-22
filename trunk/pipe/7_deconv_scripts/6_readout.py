@@ -163,8 +163,10 @@ for image in images:
 		image["updatedict"]["out_" + deckey + "_" + src.name + "_flux"] = flux
 		image["updatedict"]["out_" + deckey + "_" + src.name + "_shotnoise"] = float(shotnoise)
 	
-print "\nI would now update the database."
-proquest(askquestions)
+#print "\nI would now update the database."
+#proquest(askquestions)
+print "\nI will now update the database."
+
 backupfile(imgdb, dbbudir, "readout_"+deckey)
 
 

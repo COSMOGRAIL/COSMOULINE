@@ -39,6 +39,7 @@ ax.set_aspect('equal')
 plt.scatter(delta1s, delta2s, s=1, color="blue")
 plt.xlabel("Delta 1")
 plt.ylabel("Delta 2")
+plt.title("Delta scatter : %s" % (deckey))
 
 if savefigs:
 	plotfilepath = os.path.join(plotdir, "%s_check_delta.pdf" % figbase)
@@ -56,6 +57,7 @@ plt.figure(figsize=(12, 12))
 plt.scatter(z1s, z2s, s=1, color="blue")
 plt.xlabel("z1")
 plt.ylabel("z2")
+plt.title("Z scatter : %s" % (deckey))
 
 if savefigs:
 	plotfilepath = os.path.join(plotdir, "%s_check_z.pdf" % figbase)
