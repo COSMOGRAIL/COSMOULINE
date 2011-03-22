@@ -247,7 +247,7 @@ for i, image in enumerate(readyimages):
 
 	# For the duplicated ref image, we do not update the database !
 	# As in fact, there is no duplicated ref image in the database...
-	if i != 0 :
+	if i != 0 : # that is mcsname != 0001
 		db.update(imgdb, ['recno'], [image['recno']], {deckeyfilenum: decfilenum, deckeypsfused: image['choosenpsf'], deckeynormused: image["choosennormcoeff"]})
 
 	# numbers in the db start with 0002
