@@ -163,7 +163,7 @@ for i, image in enumerate(allimages):
 	if len(image["tmp_indivcoeffs"]) == 0:
 		# bummer. Then we will just write 0.0, to be sure that this one will pop out.
 		renormcoeff = 0.0
-		print "Image %s : no star available." % (image[imgname])
+		print "Image %s : no star available." % (image["imgname"])
 		image["tmp_coeffcomment"].append("No star available.")
 		# we add nothing to coeffs
 	else :

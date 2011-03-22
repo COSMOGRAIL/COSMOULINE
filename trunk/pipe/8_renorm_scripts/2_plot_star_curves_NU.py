@@ -63,7 +63,8 @@ for renormsource in renormsources:
 	plt.xlabel("MHJD")
 	plt.ylabel("Flux in electrons / median")
 	plt.grid(True)
-	plt.ylim(0.95, 1.05)
+	#plt.ylim(0.95, 1.05)
+	plt.ylim(0.90, 1.1)
 	plt.xlim(np.min(mhjds), np.max(mhjds))
 	
 	cbar = plt.colorbar(orientation='horizontal')
