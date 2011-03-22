@@ -28,7 +28,7 @@ origdir = os.getcwd()
 
 print "I will build the PSF of %i images." % len(images)
 
-ncorestouse = multiprocessing.cpucount()
+ncorestouse = multiprocessing.cpu_count()
 if maxcores > 0 and maxcores < ncorestouse:
 	ncorestouse = maxcores
 	print "maxcores = %i" % maxcores
