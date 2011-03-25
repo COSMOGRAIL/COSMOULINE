@@ -11,12 +11,18 @@ from variousfct import *
 
 
 ########## Configuration #########
-
+"""
 showhist = False
 maxseeing = 2.2
-maxell = 0.3
+maxell = 0.25
 maxmedcoeff = 2.0
 maxsky = 3500.0
+"""
+showhist = False
+maxseeing = 1.5
+maxell = 0.15
+maxmedcoeff = 2.5
+maxsky = 1200.0
 
 ##################################
 
@@ -105,5 +111,8 @@ print "# Autoskiplist made with maxseeing = %.3f, maxell = %.3f, maxmedcoeff = %
 print "# It contains %i images." % len(rejlines)
 print "\n".join(rejlines)
 
-print "\n\n\nCopy and paste this into your decskiplist, if you want to skip them."
+print "\n\n\nAutoskiplist made with maxseeing = %.3f, maxell = %.3f, maxmedcoeff = %.3f, maxsky = %.1f ." % (maxseeing, maxell, maxmedcoeff, maxsky)
+print "It contains %i images." % len(rejlines)
+print "Copy and paste this into your decskiplist, if you want to skip them."
+print decskiplist
 
