@@ -68,7 +68,7 @@ ax.set_xlim(np.min(mhjds), np.max(mhjds)) # DO NOT REMOVE THIS !!!
 plt.xlabel('MHJD [days]')
 plt.ylabel('Magnitude (instrumental)')
 
-titletext1 = "%s (%i points)" % (xephemlens.split(",")[0], len(images))
+titletext1 = "%s (%i points)" % (xephemlens.split(",")[0], len(allimages))
 titletext2 = deckey
 
 ax.text(0.02, 0.97, titletext1, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)

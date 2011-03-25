@@ -35,13 +35,15 @@ plt.figure(figsize=(15,15))
 mhjds = np.array([image["mhjd"] for image in images])
 skylevels = np.array([image["skylevel"] for image in images])
 
+relskylevels = skylevels * np.array([image[deckeynormused] for image in images])
+
 for s in ptsources:
 
 	fluxfieldname = "out_%s_%s_flux" % (deckey, s.name)
 	
 	mags = -2.5*np.log10(np.array([image[fluxfieldname]*image[deckeynormused] for image in images]))
 	
-	plt.scatter(mhjds, mags, s=12, c=skylevels, vmin=0.0,vmax=5000.0, edgecolors='none')
+	plt.scatter(mhjds, mags, s=12, c=skylevels, vmin=0.0,vmax=4000.0, edgecolors='none')
 
 plt.grid(True)
 
@@ -67,7 +69,7 @@ if plotnormfieldname:
 	ax.text(0.02, 0.91, titletext3, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
 
 cbar = plt.colorbar(orientation='horizontal')
-cbar.set_label('Raw Skylevel [electrons]') 
+cbar.set_label('Relative Skylevel [electrons]') 
 
 # Second x-axis with actual dates :
 yearx = ax.twiny()
