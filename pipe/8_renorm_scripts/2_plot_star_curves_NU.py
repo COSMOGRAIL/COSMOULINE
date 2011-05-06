@@ -55,8 +55,8 @@ for renormsource in renormsources:
 
 	#plt.errorbar(mhjds, renormfluxes/ref, yerr=renormerrors/ref, ecolor=(0.8, 0.8, 0.8), linestyle="None", marker=".")
 	plt.errorbar(mhjds, renormfluxes/ref, yerr=renormerrors/ref, ecolor=(0.8, 0.8, 0.8), linestyle="None", marker="None")
-	#plt.scatter(mhjds, renormfluxes/ref, s=12, c=airmasses, vmin=1.0,vmax=1.5, edgecolors='none', zorder=20)
-	plt.scatter(mhjds, renormfluxes/ref, s=12, c=skylevels, vmin=0.0,vmax=2000.0, edgecolors='none', zorder=20)
+	plt.scatter(mhjds, renormfluxes/ref, s=12, c=airmasses, vmin=1.0,vmax=1.5, edgecolors='none', zorder=20)
+	#plt.scatter(mhjds, renormfluxes/ref, s=12, c=skylevels, vmin=0.0,vmax=2000.0, edgecolors='none', zorder=20)
 	
 
 	plt.title("Source %s, %s, normalized with %s" % (sourcename, deckey, renormname))
@@ -68,8 +68,8 @@ for renormsource in renormsources:
 	plt.xlim(np.min(mhjds), np.max(mhjds))
 	
 	cbar = plt.colorbar(orientation='horizontal')
-	#cbar.set_label('Airmass') 
-	cbar.set_label('Raw skylevel [electrons]')
+	cbar.set_label('Airmass') 
+	#cbar.set_label('Raw skylevel [electrons]')
 	
 	if savefigs:
 		plotfilepath = os.path.join(plotdir, "renorm_%s_renormflux_%s.pdf" % (renormname, sourcename))
