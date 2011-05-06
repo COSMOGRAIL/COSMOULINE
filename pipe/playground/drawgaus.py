@@ -22,6 +22,9 @@ def gaus(shape, theta, fwhm, e, c1, c2, i0):
 a = np.zeros((128, 128))
 #a = fromfits("dec0001.fits")
 
-a += gaus(a.shape, 1.9, 2.5, 0.4, 67, 63.5, 5000.0)
+a += gaus(a.shape, 1.9, 2.5, 0.4, 67, 64.1, 100.0)
 
-tofits(a, "back.fits")
+a += gaus(a.shape, 1.9, 10.0, 0.4, 66.0, 65.0, 100.0)
+
+
+tofits(a, "backbi.fits")

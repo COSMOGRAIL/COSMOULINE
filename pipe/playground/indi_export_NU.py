@@ -1,4 +1,12 @@
-execfile("../config.py")
+#execfile("../config.py")
+
+import os
+import shutil
+import sys
+
+# to get access to all our modules without installing anything :
+sys.path.append("../modules")
+
 from kirbybase import KirbyBase, KBError
 import rdbexport
 import variousfct
@@ -11,8 +19,8 @@ print "You have to configure me..."
 
 
 
-configstr = "RXJ1131"
-databasepath = "/home/epfl/tewes/RXJ1131_database.dat" 
+configstr = "HS2209"
+databasepath = "/Users/mtewes/Desktop/HS2209_database.dat" 
 
 
 ############ Building the filenames ##############
@@ -82,7 +90,7 @@ readmetxt = "\n".join(readme)
 print "Here is the readme text : \n\n%s\n\n" % (readmetxt)
 
 print "I will now write the files."
-variousfct.proquest(askquestions)
+#variousfct.proquest(askquestions)
 
 readme.append("\nThe full list of fields :")
 readme.extend(fielddesc)
