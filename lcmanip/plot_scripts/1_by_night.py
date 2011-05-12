@@ -23,7 +23,9 @@ mhjds = groupfct.values(groupedimages, 'mhjd', normkey=None)['mean']
 medairmasses = groupfct.values(groupedimages, 'airmass', normkey=None)['median']
 medseeings = groupfct.values(groupedimages, 'seeing', normkey=None)['median']
 medskylevels = groupfct.values(groupedimages, 'skylevel', normkey=None)['median']
-#meddeccoeffs = groupfct.values(groupedimages, normcoeffname, normkey=None)['median']
+meddeccoeffs = groupfct.values(groupedimages, normcoeffname, normkey=None)['median']
+
+medrelskylevels = np.array(medskylevels)*np.array(meddeccoeffs)
 
 meddates = [variousfct.DateFromJulianDay(mhjd + 2400000.5).strftime("%Y-%m-%dT%H:%M:%S") for mhjd in mhjds]
 
@@ -38,7 +40,8 @@ exportcols = [
 {"name":"setname", "data":setnames},
 {"name":"fwhm", "data":medseeings},
 {"name":"airmass", "data":medairmasses},
-{"name":"skylevel", "data":medskylevels}
+{"name":"relskylevel", "data":medrelskylevels},
+{"name":"normcoeff", "data":meddeccoeffs}
 ]
 #{"name":"deccoeff", "data":meddeccoeffs}
 #]
@@ -62,9 +65,9 @@ for i, sourcename in enumerate(sourcenames):
 	#plt.errorbar(mhjds, mags, yerr=magerrors, linestyle="None", marker=".", label = sourcename, color = colors[i])
 	
 	
-	randomerrorfieldname = "out_%s_%s_randerror" % (deconvname, sourcename)
+	randomerrorfieldname = "out_%s_%s_shotnoise" % (deconvname, sourcename)
 
-	absfluxerrors = np.array(groupfct.values(groupedimages, randomerrorfieldname, normkey=normcoeffname)['median'])
+	absfluxerrors = np.array(groupfct.values(groupedimages, randomerrorfieldname, normkey=normcoeffname)['max'])
 	fluxvals = np.array(groupfct.values(groupedimages, fluxfieldname, normkey=normcoeffname)['median'])
 	relfluxerrors = absfluxerrors / fluxvals
 	
@@ -129,11 +132,50 @@ yearx.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%Y'))
 yearx.xaxis.tick_top()
 yearx.set_xlabel("Date")
 
+plt.show()
+
+
+
+
+
+# we kick some bad images
+
+#okflags = [True] * len(mhjds)
+
+seeingflags = np.asarray(medseeings) < 2.1
+skylevelflags = np.asarray(medrelskylevels) < 3500.0
+
+okflags = np.logical_and(seeingflags, skylevelflags)
+exportcols.append({"name":"flag", "data":okflags})
+
+
+"""
+for i, sourcename in enumerate(sourcenames):
+
+	fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
+	mags = groupfct.mags(groupedimages, fluxfieldname, normkey=normcoeffname)['median']
+	
+	plt.scatter(mhjds, mags, s=20, c=medrelskylevels, vmin=1000, vmax=5000, edgecolors=None)
+	#plt.scatter(mhjds, mags, s=12, c=seeings, vmin=0.5,vmax=2.5, edgecolors='none')
+
+
+cbar = plt.colorbar(orientation='horizontal')
+cbar.set_label('FWHM [arcsec]') 
 
 plt.show()
+"""
+
+
+#print seeingflags
+
+#print okflags
+#print len(okflags)
+print "%i nights are OK" % (np.sum(okflags))
+
+
 
 #for el in exportcols:
 #	print len(el["data"])
 
-rdbexport.writerdb(exportcols, "out.rdb", True)
+rdbexport.writerdb(exportcols, "all.rdb", True)
 
