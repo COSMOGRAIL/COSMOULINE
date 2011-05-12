@@ -4,14 +4,23 @@ from variousfct import *
 from datetime import datetime, timedelta
 import forkmap
 import star
+from readandreplace_fct import *
 
 import src.lib.utils as fn
 from MCS_interface import MCS_interface
 
 ####
+rewriteconfig = True
 nofitnum = False
 
 ####
+
+if rewriteconfig == True:
+	psfstars = star.readmancat(psfstarcat)
+	nbrpsf = len(psfstars)
+	starscouplelist = repr([(int(s.x), int(s.y)) for s in psfstars])
+	config_template = justread(os.path.join(configdir, "template_pyMCS_psf_config.py"))
+
 # Select images to treat
 db = KirbyBase()
 
@@ -48,6 +57,23 @@ def buildpsf(image):
 	
 	os.chdir(imgpsfdir)
 	
+	if rewriteconfig == True:
+	# We redo the copy of the config, in case something was changed in the template for testing different parameters:
+	
+		gain = "%f" % (image["gain"])
+		stddev = "%f" % (image["stddev"])
+		numpsfrad = "%f" % (6.0 * float(image["seeing"]))
+		lambdanum = "%f" % (0.001) # image["seeing"]
+	
+		repdict = {'$gain$':gain, '$sigmasky$':stddev, '$starscouplelist$':starscouplelist, '$numpsfrad$':numpsfrad, '$lambdanum$' : lambdanum}	
+	
+		pyMCS_config = justreplace(config_template, repdict)
+		extractfile = open(os.path.join(imgpsfdir, "pyMCS_psf_config.py"), "w")
+		extractfile.write(pyMCS_config)
+		extractfile.close()
+		
+		print "I rewrote the config file."
+		
 	mcs = MCS_interface("pyMCS_psf_config.py")
 	
 	try:	
@@ -73,7 +99,7 @@ def buildpsf(image):
 		print "It worked !"
 	
 	psffilepath = os.path.join(imgpsfdir, "s001.fits")
-	if os.path.exists(psffilepath):
+	if os.path.islink(psffilepath):
 		os.remove(psffilepath)
 	os.symlink(os.path.join(imgpsfdir, "results", "s_1.fits"), psffilepath)
 	
