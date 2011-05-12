@@ -94,6 +94,7 @@ for i,image in enumerate(images):
 	
 	
 	# we prepare the config :
+
 	gain = "%f" % (image["gain"])
 	stddev = "%f" % (image["stddev"])
 	numpsfrad = "%f" % (6.0 * float(image["seeing"]))

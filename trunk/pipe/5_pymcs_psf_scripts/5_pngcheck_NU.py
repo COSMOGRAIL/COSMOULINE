@@ -81,13 +81,14 @@ for i, image in enumerate(images):
 	blank256.makepilimage(scale = "lin", negative = False)
 	
 	
-	totpsfimg = f2n.fromfits(os.path.join(resultsdir, "psf_1.fits"), verbose=False)
+	totpsfimg = f2n.fromfits(os.path.join(resultsdir, "psf.fits"), verbose=False)
+	#totpsfimg.rebin(2)
 	totpsfimg.setzscale(1.0e-7, 1.0e-3)
 	totpsfimg.makepilimage(scale = "log", negative = False)
 	totpsfimg.upsample(2)
 	totpsfimg.writetitle("Total PSF")
 	
-	numpsfimg = f2n.fromfits(os.path.join(resultsdir, "psfnum.fits"), verbose=False)
+	numpsfimg = f2n.fromfits(os.path.join(resultsdir, "psf_num.fits"), verbose=False)
 	numpsfimg.setzscale(-0.02, 0.02)
 	numpsfimg.makepilimage(scale = "lin", negative = False)
 	numpsfimg.upsample(2)
@@ -206,7 +207,7 @@ for i, image in enumerate(images):
 	#difmlist = difmlist[:4]
 	difmlist.append(numpsfimg)
 	
-	# The difg
+	# The difnums
 	difnumlist = []
 	for j in range(nbrpsf):
 		
@@ -215,7 +216,7 @@ for i, image in enumerate(images):
 		f2nimg = f2n.fromfits(inputfitspath, verbose=False)
 		f2nimg.setzscale(- 3.0, 3.0)
 		f2nimg.makepilimage(scale = "lin", negative = False)
-		f2nimg.upsample(4)
+		f2nimg.upsample(2)
 		#f2nimg.writeinfo([image['imgname']], (255, 0, 0))
 		#f2nimg.writeinfo(["","g001.fits"])
 		f2nimg.writetitle("difnum%02i.fits" % (j+1))
@@ -225,6 +226,10 @@ for i, image in enumerate(images):
 	#difnumlist.extend([blank256, blank256, blank256])
 	#difnumlist = difnumlist[:4]
 	difnumlist.append(totpsfimg)
+
+	#for a in difnumlist:
+	#	print a
+		
 
 	f2n.compose([psfstarimglist, sigmaimglist, difmlist, difnumlist], pngpath)	
 	
