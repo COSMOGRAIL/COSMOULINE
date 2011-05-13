@@ -79,13 +79,12 @@ class MCS_interface():
         files, cat = ws.get_files(FILENAME, directory='images', as_exe=self.as_exe)
         self.params['filenb'] = len(files)
         self.params['img_names'] = files
+	
         self.params['starnb'] = len(self.params['STARS'])
-        self.data = ws.restore(*ws.getfilenames(self.params['filenb'], 
-                                                as_exe=self.as_exe), 
-                                                as_exe=self.as_exe)
-        #TODO: add consistency checks
-#        if len(self.params['stars']) != self.params['starnb']:
-#            return False
+	
+	
+        self.data = ws.restore(*ws.getfilenames(self.params['filenb'], as_exe=self.as_exe), as_exe=self.as_exe)
+        
         return True
     
     def set_up_workspace(self, extract=True, clear=False, backup=False):

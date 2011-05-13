@@ -40,9 +40,9 @@ class Dec:
         for i, im in enumerate(self.images):
             ali = fn.shift(im, self.shifts[i][0]/self._sfact - self._get_offset(self.shifts[i][0]), 
                            self.shifts[i][1]/self._sfact - self._get_offset(self.shifts[i][1]), 
-                           interp_order=1, mode='reflect')
+                           interp_order=3, mode='reflect')
             ini = append(ini, fn.rebin(ali, self._sshape)/self._sfact**2.)
-        self.ini = median(ini.reshape((len(self.images), self._sshape[0]*self._sshape[1])), 
+        self.ini = mean(ini.reshape((len(self.images), self._sshape[0]*self._sshape[1])), 
                           0).reshape(self._sshape)#/self._sfact**2.
         
     def get_im_resi(self, model_conv, im_nb):
