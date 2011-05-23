@@ -124,6 +124,10 @@ for image in images:
 	# We calculate the sharpness :
 	sharpness = np.sum(psf * psf)
 	print "Equivalent pixels : %.2f" % float(1.0/sharpness)
+	
+	# For info about this, see :
+	# Heyer, Biretta, et al. 2004, WFPC2 Instrument Handbook, Version 9.0m (Baltimore: STScI), Chapter 6
+	# http://www.stsci.edu/hst/observatory/etcs/etc_user_guide/1_3_optimal_snr.html
 
 	
 	for i, src in enumerate(ptsrcs):
