@@ -183,14 +183,14 @@ for i, image in enumerate(images):
 	for j in range(nbrpsf):
 	
 		starmaskfilepath =  os.path.join(resultsdir, "starmask_%03i.fits" % (j+1) )
-		inputfitspath = os.path.join(resultsdir, "difm01_%02i.fits" % (j+1) )
+		inputfitspath = os.path.join(resultsdir, "difmof01_%02i.fits" % (j+1) )
 		f2nimg = f2n.fromfits(inputfitspath, verbose=False)
 		
 		if os.path.exists(starmaskfilepath):
 			(mask, h) = fromfits(starmaskfilepath, verbose = False)
-			f2nimg.numpyarray[mask > 0.5] = -50.0
+			f2nimg.numpyarray[mask > 0.5] = 0.0
 		
-		f2nimg.setzscale(-200, 200)
+		f2nimg.setzscale(-0.1, 0.1)
 		f2nimg.makepilimage(scale = "lin", negative = False)
 		f2nimg.upsample(4)
 		#f2nimg.writeinfo([image['imgname']], (255, 0, 0))
@@ -199,7 +199,7 @@ for i, image in enumerate(images):
 			for circle in psfstars[j].reg.circles:
 				f2nimg.drawcircle(circle["x"], circle["y"], r = circle["r"], colour = (255))
 		
-		f2nimg.writetitle("difm01_%02i.fits" % (j+1))
+		f2nimg.writetitle("dif mof %02i" % (j+1))
 		difmlist.append(f2nimg)
 	
 	# We fill with blanks and cut at 4 images :
@@ -211,15 +211,15 @@ for i, image in enumerate(images):
 	difnumlist = []
 	for j in range(nbrpsf):
 		
-		inputfitspath = os.path.join(resultsdir, "difnum%02i.fits" % (j+1) )
+		inputfitspath = os.path.join(resultsdir, "difnum01_%02i.fits" % (j+1) )
 		
 		f2nimg = f2n.fromfits(inputfitspath, verbose=False)
-		f2nimg.setzscale(- 3.0, 3.0)
+		f2nimg.setzscale(- 1.0, 1.0)
 		f2nimg.makepilimage(scale = "lin", negative = False)
 		f2nimg.upsample(2)
 		#f2nimg.writeinfo([image['imgname']], (255, 0, 0))
 		#f2nimg.writeinfo(["","g001.fits"])
-		f2nimg.writetitle("difnum%02i.fits" % (j+1))
+		f2nimg.writetitle("dif num %02i" % (j+1))
 		difnumlist.append(f2nimg)
 	
 	# We fill with blanks and cut at 4 images :

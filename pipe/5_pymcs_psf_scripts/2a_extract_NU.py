@@ -5,7 +5,7 @@ import forkmap
 import glob
 import star
 
-import src.lib.utils as fn
+#import src.lib.utils as fn
 from MCS_interface import MCS_interface
 
 psfstars = star.readmancat(psfstarcat)
