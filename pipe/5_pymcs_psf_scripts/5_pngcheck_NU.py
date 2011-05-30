@@ -1,5 +1,5 @@
 #
-#	generates pngs related to the old psf construction
+#	generates overview pngs related to the pyMCS psf construction
 #
 
 execfile("../config.py")
@@ -81,14 +81,14 @@ for i, image in enumerate(images):
 	blank256.makepilimage(scale = "lin", negative = False)
 	
 	
-	totpsfimg = f2n.fromfits(os.path.join(resultsdir, "psf.fits"), verbose=False)
+	totpsfimg = f2n.fromfits(os.path.join(resultsdir, "psf_1.fits"), verbose=False)
 	#totpsfimg.rebin(2)
 	totpsfimg.setzscale(1.0e-7, 1.0e-3)
 	totpsfimg.makepilimage(scale = "log", negative = False)
 	totpsfimg.upsample(2)
 	totpsfimg.writetitle("Total PSF")
 	
-	numpsfimg = f2n.fromfits(os.path.join(resultsdir, "psf_num.fits"), verbose=False)
+	numpsfimg = f2n.fromfits(os.path.join(resultsdir, "psf_num_1.fits"), verbose=False)
 	numpsfimg.setzscale(-0.02, 0.02)
 	numpsfimg.makepilimage(scale = "lin", negative = False)
 	numpsfimg.upsample(2)
