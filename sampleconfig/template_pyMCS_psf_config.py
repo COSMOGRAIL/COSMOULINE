@@ -1,6 +1,5 @@
 #config.py - pyMCS configuration file
 
-
 ###################
 ### FITS FILE: ####
 ###################
@@ -91,18 +90,18 @@ G_POS = [[]]
 ##############################
 #### PSF (num) parameters ####
 ##############################
-#Number of iterations:
+# Number of iterations:
 MAX_IT_N = 100
-#Smoothing of the model (the lower the smoother)
-LAMBDA_NUM = 100000.
+# the higher the smoother 
+LAMBDA_NUM = 1.0E3
 #don't touch... will disapear soon
-BKG_STEP_RATIO_NUM = 100.0
+BKG_STEP_RATIO_NUM = 1.0
 #radius of the relevant part of the stars:
 PSF_RAD = 100.0
 #min step during background fit (default: None)
-MIN_STEP_NUM = None
+MIN_STEP_NUM = 0.00005
 #max step during background fit (default: None)
-MAX_STEP_NUM = None
+MAX_STEP_NUM = 0.005
 
 ##################################
 #### Deconvolution parameters ####
@@ -132,6 +131,10 @@ BKG_STEP_RATIO = 1.0
 BKG_START_RATIO = 1.0
 #smoothing of the background (the lower the smoother):
 LAMBDA = 100000.0
+#min step during background fit (default: None)
+MIN_STEP_D = 5e-06
+#max step during background fit (default: None)
+MAX_STEP_D = 0.0005
 
 ##### Sources params ##### 
 #number of sources in the image:
@@ -155,4 +158,9 @@ IMG_OFFSETS = []
 INI_PAR = []
 #final parameters of the sources:
 SRC_PARAMS = []
+
+
+
+
+
 
