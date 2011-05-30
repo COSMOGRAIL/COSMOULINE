@@ -1,6 +1,7 @@
 from PSF import *
 from Algorithms import *
 from src.lib.waveletdenoise import cyclespin
+import src.lib.waveletdenoise as wd
 import utils as fn
 import numpy as np
 import time
@@ -46,6 +47,7 @@ class Dec:
             ini = append(ini, fn.rebin(ali, self._sshape)/self._sfact**2.)
         self.ini = mean(ini.reshape((len(self.images), self._sshape[0]*self._sshape[1])), 
                           0).reshape(self._sshape)
+	self.ini = np.zeros(self._sshape) # we start from 0 ...  
         
     def get_im_resi(self, model_conv, im_nb):
         convo = fn.shift(model_conv, -self.shifts[im_nb][0], -self.shifts[im_nb][1], 
@@ -86,6 +88,9 @@ class Dec:
                                   itnb=it_nb, stepfact=stepfact)
         self.model, self.last_res = minipar[0].reshape(self._sshape), \
                                     lastpar[0].reshape(self._sshape)
+				    
+	out(2, "Starting cycle spinning ...")
+	self.model = wd.postpsfnumcs(self.model)	
         out(2, 'Done in', time.time()-t,'[s]')
         return self.model.copy()
         
@@ -94,8 +99,8 @@ class Dec:
         return (pos % self._sfact) - self._sfact/2.    
     
     def _get_sm_err(self, model):
-#        model_sm = self.conv_fun(self.psf_sm, model)
-        model_sm = cyclespin(model, 3, 0.002)
+        model_sm = self.conv_fun(self.psf_sm, model)
+#        model_sm = cyclespin(model, 3, 0.002)
         return model - model_sm
 
         

@@ -165,6 +165,24 @@ def cyclespinmap(img, denoisingfct, n, **kwargs):
 	return np.mean(denoised, axis = 0)
 		
 
+def postpsfnumcs(img):
+	"""
+	Quick and dirty, for hard coded experiements ...
+	"""
+	# We evaluate the model's noise by looking at the image borders ...
+	bs = 3
+	borderpixels = np.concatenate([img[:bs,:].ravel(), img[-bs:,:].ravel(), img[:,:bs].ravel(), img[:,-bs:].ravel()])
+	modelsigma = np.std(borderpixels.ravel())
+	
+	# We build some thresholds for the n first wavelet levels :
+	nlevels = 4 # number of levels to consider
+	t = 10.0 # threshold in units of sigma 
+	thresholds = [t * modelsigma * (0.7**i) for i in range(nlevels)]
+	
+	# And run a cyclespinning of hard thresholds
+	return cyclespinmap(img, htdenoise, n = nlevels, thresholds = thresholds)
+	
+
 import scipy.ndimage.interpolation
 
 def pixelbuster(img, csshift = (0,0)):
