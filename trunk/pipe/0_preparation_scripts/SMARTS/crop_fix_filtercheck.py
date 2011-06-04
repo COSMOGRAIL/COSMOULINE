@@ -9,10 +9,10 @@ import os, sys, glob, pyfits, numpy
 ################### CONFIGURATION ###################################################################
 
 # ABSOLUTE PATH to where the files are and how to select them :
-origpaths = sorted(glob.glob("/obs/lenses_EPFL/SMARTS/J0158/allsoftlinks/*.fits")) 
+origpaths = sorted(glob.glob("/obs/lenses_EPFL/SMARTS/RXJ1131/allsoftlinks/*.fits")) 
 
 # ABSOLUTE PATH to the directory where you want the croped images to be written :
-destdir="/obs/lenses_EPFL/SMARTS/J0158/allcrop" 
+destdir="/obs/lenses_EPFL/SMARTS/RXJ1131/allcrop" 
 
 
 #####################################################################################################
@@ -32,18 +32,25 @@ if not os.path.isdir(destdir):
 
 filterlist = []
 
-for fitsfilepath in origpaths:
+for fitsfilepath in origpaths[::-1]:
 	print os.path.split(fitsfilepath)[1]
 
 	newfitsfilepath = newpath(fitsfilepath, destdir)
 	
-	pixelarray, hdr = pyfits.getdata(fitsfilepath, header=True)
+	#hdulist = pyfits.open(fitsfilepath,ignore_missing_end=True)
+	#hdulist.info()
+	
+	#sys.exit()
+	
+	pixelarray, hdr = pyfits.getdata(fitsfilepath, header=True, ignore_missing_end=True)
+	#sys.exit()
 	
 	filterid = hdr["CCDFLTID"].strip()
 	filterlist.append(filterid)
 	
 	
 	if hdr["CCDFLTID"].strip() != "R":
+		print "Filter %s, skipping this one." % (hdr["CCDFLTID"].strip())
 		continue
 		#print "2_%s\tFilter %s" % (os.path.splitext(os.path.split(fitsfilepath)[1])[0], hdr["CCDFLTID"])
 		
@@ -53,7 +60,11 @@ for fitsfilepath in origpaths:
 	pixelarrayshape = pixelarray.shape
 	print "Input : (%i, %i), %s, %s" % (pixelarrayshape[0], pixelarrayshape[1], hdr["BITPIX"], pixelarray.dtype.name)
 	
-	pixelarray = pixelarray[96:1037, 118:1024]
+	#pixelarray = pixelarray[96:1037, 118:1024] # This was for J0158
+	
+	#Strange, the RXJ1131 images are smaller, they are all 1000 by 1000, probably already cropped somehow.
+	# The size of the ugly border seems to increase with time. nevertheless I'll cut the maximum here ,to make it simpler.
+	pixelarray = pixelarray[60:, 140:]
 	
 	pixelarrayshape = pixelarray.shape
 	print "Ouput : (%i, %i)" % (pixelarrayshape[0], pixelarrayshape[1])
@@ -69,7 +80,6 @@ for fitsfilepath in origpaths:
 	hdu = pyfits.PrimaryHDU(pixelarray.transpose(), hdr)
 	hdu.verify("fix")
 	hdu.writeto(newfitsfilepath)
-
 	
 
 print "Filter histo :"

@@ -64,7 +64,7 @@ if not os.path.isdir(rawdir):
 fitsfiles = glob.glob(os.path.join(rawdir, "*.fits"))
 print "Number of images :", len(fitsfiles)
 #fitslist = sorted(map((lambda x: x.split("/")[-1]), fitsfiles))
-fitslist = [os.path.basename(filepath) for filepath in fitsfiles]
+fitslist = sorted([os.path.basename(filepath) for filepath in fitsfiles])
 
 proquest(askquestions)
 
