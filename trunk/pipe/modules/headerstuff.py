@@ -274,7 +274,7 @@ def eulercamheader(rawimg):
 	pixsize = 0.2148 # Measured on an image, Malte
 	gain = 2.7 # Rough mean of Monika's measure in Q1, might get updated.
 	readnoise = 5.0 # typical value for quadrant 1, i.e. also all LL frames.
-	scalingfactor = 1.0 # NOT YET measured scalingfactor (with respect to Mercator = 1.0)
+	scalingfactor = 0.89767829371 # measured scalingfactor (with respect to Mercator = 1.0)
 	saturlevel = 65000.0 # arbitrary
 	rotator = 0.0
 
@@ -314,7 +314,7 @@ def eulercamheader(rawimg):
 	#preredfloat1 = 0.0
 	#preredfloat2 = 0.0
 	preredcomment1 = str(header["PR_NFLAT"])
-	preredcomment2 = str(header["PR_NIGHT"])
+	preredcomment2 = str(header["PR_FORMA"]) # There was the "NIGHT" before, but the format is more important.
 	preredfloat1 = float(header["PR_FSPAN"])
 	preredfloat2 = float(header["PR_FDISP"])
 	

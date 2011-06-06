@@ -130,7 +130,7 @@ db.pack(imgdb) # to erase the blank lines
 
 print "Ok, Done."
 print "If you work with several telescopes or sets you might want to change the treatme-flags at this point."
-
+print "Or, more likely : update the settings and run this script again, to add further images from another directory/telescope."
 
 
 
