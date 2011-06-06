@@ -167,9 +167,9 @@ combibestmaxstddev = 20.0 	# Maximum sky stddev, in ADU
 
 #Choose a name for your combination. It should reflect the normalization coeff that your using ('medcoeff' or 'renormabc1' if you computed some new one)
 # Suggestion for names : 'medcoeff1' for your first try using the medcoeff
-combiname = "medcoeff1"
+combinightname = "medcoeff1"
 
-renormcoeff = 'medcoeff'	# you can choose which coeff you want to use for the combination
+combinightrenormcoeff = 'medcoeff'	# you can choose which coeff you want to use for the combination
 
 
 #------------------------ PSF CONSTRUCTION ---------------------------------
