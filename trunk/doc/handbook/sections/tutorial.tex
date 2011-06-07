@@ -169,6 +169,8 @@ As a general rule with only few exceptions, the scripts will simply run their ta
 
 \end{description}
 
+\tbrem{If you already know that you want to do the simultaneous deconvolution together with other images, say from another telescope, the easiest is to repeat this first addtodatabase script now, after having adapted the settings.py.}
+
 % \subsubsection{Dates}
 % 
 % For now, 4 fields contain info about the date and time of the exposure. Everything is given in UT.
@@ -182,7 +184,7 @@ As a general rule with only few exceptions, the scripts will simply run their ta
 % 
 % \end{description}
 
-\tbrem{convert to electrons : makes the first hard copy of the images, but does not change the gain and saturlevel in the database. so to get the saturlevel to apply to your images, do gain * saturlevel yourself !}
+\tbrem{convert to electrons : makes the first hard copy of the images converting them from ADU to electrons. It does not change the gain and saturlevel in the database; they remain in the original units. So to get the saturlevel to apply to the actual images, from now one we do gain * saturlevel to obtain the saturation level in electrons.}
 
 \subsubsection{Astronomical calculations}
 
