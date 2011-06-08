@@ -115,9 +115,9 @@ combibestkey = "combi_" + combibestname
 
 #------------------------ COMBINATION BY NIGHT ------------------------------
 
-combidirname = 'combibynight_' +combiname
+combinightdirname = 'combinight_' +combinightname
 
-combidir = os.path.join(workdir, combidirname)
+combinightdirpath = os.path.join(workdir, combinightdirname)
 
 
 #------------------------ PSF CONSTRUCTION ---------------------------------
