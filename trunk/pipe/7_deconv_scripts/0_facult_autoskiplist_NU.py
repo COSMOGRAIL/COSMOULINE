@@ -19,10 +19,10 @@ maxmedcoeff = 2.0
 maxsky = 3500.0
 """
 showhist = False
-maxseeing = 1.5
-maxell = 0.15
-maxmedcoeff = 2.5
-maxsky = 1200.0
+maxseeing = 2.5
+maxell = 0.25
+maxmedcoeff = 10.0
+maxsky = 10000.0
 
 ##################################
 
