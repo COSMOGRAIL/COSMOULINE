@@ -150,6 +150,9 @@ readyimages = [image for image in havepsfimages if image["imgname"] not in decsk
 print "Images with valid PSF not on decskiplist :", len(readyimages)
 print "(i.e. I will prepare the deconvolution for this last category !)"
 
+if len(readyimages) >= 2500:
+	print "This is too much, MCS in fortran can only handle less than 2500 images."
+	sys.exit()
 
 # We don't do this check anymore. It can well be that images on the decskiplist have been already demoted for other reasons.
 #if len(readyimages) != len(havepsfimages) - len(decskipimages):
