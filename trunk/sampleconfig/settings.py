@@ -226,6 +226,7 @@ renormname = "renormabc1"	# Choose a name for the new renormalization coefficien
 				# Make it short ... but start it with the letters renorm
 
 # Which sources do you want to use for the renormalization (give (deckey, sourcename) ):
+# NEW : the FIRST one of the sources below will be used as a reference to scale the coeffs between different telescopes !
 renormsources = [
 ('dec_full_a_medcoeff_abce1', 'a'),
 ('dec_full_b_medcoeff_abce1', 'b'),
