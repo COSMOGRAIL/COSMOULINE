@@ -11,18 +11,23 @@ from variousfct import *
 
 
 ########## Configuration #########
-"""
 showhist = False
-maxseeing = 2.2
-maxell = 0.25
-maxmedcoeff = 2.0
-maxsky = 3500.0
+
+
 """
-showhist = False
+# To reject the worst stuff :
 maxseeing = 2.5
 maxell = 0.25
 maxmedcoeff = 10.0
 maxsky = 10000.0
+
+"""
+# The very best frames to get a good background :
+maxseeing = 1.0
+maxell = 0.10
+maxmedcoeff = 3.0
+maxsky = 1000.0
+
 
 ##################################
 
@@ -36,6 +41,8 @@ import matplotlib.pyplot as plt
 
 db = KirbyBase()
 images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname', 'mjd'])
+
+nbtot = len(images)
 
 if os.path.isfile(decskiplist):
 	print "You already have a decskiplist."
@@ -54,7 +61,7 @@ print "Looking at which object / PSFs are available for each image will be done 
 print "We have %i images with gogogo=True, treatme=True, and not yet on the decskiplist." % ( len(images) )
 
 
-proquest(askquestions)
+#proquest(askquestions)
 
 if showhist :
 	setnames = list(set([image["setname"] for image in images]))
@@ -112,7 +119,8 @@ print "# It contains %i images." % len(rejlines)
 print "\n".join(rejlines)
 
 print "\n\n\nAutoskiplist made with maxseeing = %.3f, maxell = %.3f, maxmedcoeff = %.3f, maxsky = %.1f ." % (maxseeing, maxell, maxmedcoeff, maxsky)
-print "It contains %i images." % len(rejlines)
+print "It contains %i images, out of %i" % (len(rejlines), nbtot)
+print "Number of images potentially left : %i" % (nbtot - len(rejlines))
 print "Copy and paste this into your decskiplist, if you want to skip them."
 print decskiplist
 
