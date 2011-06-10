@@ -104,12 +104,29 @@ for i, image in enumerate(images):
 	f2nback.writeinfo(["Background", "Ex : %g %g" % (f2nback.z1, f2nback.z2)])
 	
 	
+	"""
 	f2ns = f2n.fromfits(os.path.join(decdir, "s" +code+".fits"), verbose=False)
 	f2ns.setzscale(1e-8, "ex")
 	f2ns.makepilimage(scale = "log", negative = False)
 	f2ns.upsample(2)
 	f2ns.writeinfo(["PSF"])
+	"""
 	
+	# let's try to put the PSF in the right shape
+	badpsf, h = fromfits(os.path.join(decdir, "s" +code+".fits"), verbose=False)
+	goodpsf = np.zeros(badpsf.shape)
+	psfsize = 128
+	h = psfsize/2
+	goodpsf[:h,:h] = badpsf[h:,h:]
+	goodpsf[:h,h:] = badpsf[h:,:h]
+	goodpsf[h:,:h] = badpsf[:h,h:]
+	goodpsf[h:,h:] = badpsf[:h,:h]
+	
+	f2ns = f2n.f2nimage(numpyarray = goodpsf, verbose=False)
+	f2ns.setzscale(1e-9, "ex")
+	f2ns.makepilimage(scale = "log", negative = False)
+	f2ns.upsample(2)
+	f2ns.writeinfo(["PSF"])
 	
 	#legend = f2n.f2nimage(shape = (256,256), fill = 0.0, verbose=False)
 	#legend.setzscale(0.0, 1.0)
@@ -122,7 +139,7 @@ for i, image in enumerate(images):
 	for ptsrc in ptsrcs:
 		print ptsrc.name
 		#legend.drawcircle(ptsrc.x, ptsrc.y, r=0.5, colour=255, label=ptsrc.name)
-		legend.drawcircle(ptsrc.x, ptsrc.y, r=5, colour=255, label=str(ptsrc.name))
+		legend.drawcircle(ptsrc.x, ptsrc.y, r=0.5, colour=255, label=str(ptsrc.name))
 	legend.writeinfo(["Legend"])
 	
 	
@@ -132,12 +149,13 @@ for i, image in enumerate(images):
 	
 	
 	date = image['datet']
+	telname = "Instrument : %s" % image["telescopename"]
 	seeing = "Seeing : %4.2f [arcsec]" % image['seeing']
 	ell = "Ellipticity : %4.2f" % image['ell']
 	nbralistars = "Nb alistars : %i" % image['nbralistars']
 	airmass = "Airmass : %4.2f" % image['airmass']
 	az = "Azimuth : %6.2f [deg]" % image['az']
-	stddev = "Sky stddev : %4.2f [ADU]" % image['stddev']
+	stddev = "Sky stddev : %4.2f [e-]" % image['stddev']
 	dkfn = "Deconv file : %s" % code
 	ncosmics = "Cosmics : %i" % ncosmics
 	selectedpsf = "Selected PSF : %s" % image[deckeypsfused]
@@ -148,7 +166,7 @@ for i, image in enumerate(images):
 		infolist = [image['imgname'][0:25], image['imgname'][25:]]
 	else:
 		infolist = [image['imgname']]
-	infolist.extend([date, seeing, ell, nbralistars, stddev, airmass, az, dkfn, ncosmics, selectedpsf, normcoeff])
+	infolist.extend([telname, date, nbralistars, seeing, ell, stddev, airmass, dkfn, ncosmics, selectedpsf, normcoeff])
 	
 	if thisisatest:
 		testcomment = 'Testcomment: %s' %image['testcomment']

@@ -164,6 +164,7 @@ decdir = os.path.join(workdir, deckey)				# where the deconvolution will be done
 
 #------------------------ RENORMALZATION -----------------------------------
 
+renormerrfieldname = renormname + "_err"
 renormcommentfieldname = renormname + "_comment"
 
 
