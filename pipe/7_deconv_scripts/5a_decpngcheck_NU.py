@@ -123,7 +123,7 @@ for i, image in enumerate(images):
 	goodpsf[h:,h:] = badpsf[:h,:h]
 	
 	f2ns = f2n.f2nimage(numpyarray = goodpsf, verbose=False)
-	f2ns.setzscale(1e-9, "ex")
+	f2ns.setzscale(1.0e-8, "ex")
 	f2ns.makepilimage(scale = "log", negative = False)
 	f2ns.upsample(2)
 	f2ns.writeinfo(["PSF"])
