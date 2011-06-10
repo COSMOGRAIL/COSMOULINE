@@ -12,7 +12,7 @@ from variousfct import *
 
 
 
-fields = ['imgname', renormname, renormcommentfieldname]
+fields = ['imgname', renormname, renormerrfieldname, renormcommentfieldname]
 
 
 db = KirbyBase()
