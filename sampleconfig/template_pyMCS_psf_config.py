@@ -28,6 +28,7 @@ NBINS = 30
 ##############################
 ##### Star search params #####
 ##############################
+INTERACTIVE = False
 #nb of candidate to acquire:
 NOBJ = 100
 #range of the stars' peak values (e.g.: '(0,10000)'):  
@@ -94,6 +95,9 @@ G_POS = [[]]
 MAX_IT_N = 100
 # the higher the smoother 
 LAMBDA_NUM = 1.0E3
+#Wavelet threshold used during the regularization (default: None):
+WL_THRESHOLD_NUM = None
+WL_THRESHOLD_DEC = None
 #don't touch... will disapear soon
 BKG_STEP_RATIO_NUM = 1.0
 #radius of the relevant part of the stars:
@@ -102,6 +106,9 @@ PSF_RAD = 100.0
 MIN_STEP_NUM = 0.00005
 #max step during background fit (default: None)
 MAX_STEP_NUM = 0.005
+#size of the final PSF (using zero-pdding):
+#BIG PIXELS!!
+PSF_SIZE = 64
 
 ##################################
 #### Deconvolution parameters ####
