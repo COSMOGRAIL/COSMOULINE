@@ -170,7 +170,7 @@ class Dec:
         self.model, self.last_res = minipar[0].reshape(self._sshape), \
                                     lastpar[0].reshape(self._sshape)
         out(2, "Starting cycle spinning ...")
-        self.model = wd.postpsfnumcs(self.model)
+        self.model = wd.postpsfnumcs(self.model, t=15.0)
         out(2, 'Done in', time.time()-t,'[s]')
         return self.model.copy()
     
