@@ -5,6 +5,7 @@ import utils as fn
 import numpy as np
 import time
 import scipy.optimize
+import src.lib.waveletdenoise as wd
 
 out = fn.Verbose()
 
@@ -54,7 +55,9 @@ class Dec:
             ini = np.append(ini, ali_zoom)
         self.ini = np.median(ini.reshape((len(self.images), self._sshape[0]*self._sshape[1])), 
                           0).reshape(self._sshape)
-        
+        self.ini = np.zeros(self._sshape) # we start from 0 ...  
+        #self.ini = wd.postpsfnumcs(self.ini, t=30.0)
+	
     def get_im_resi(self, model_conv, im_nb, ret_all=False):
         convo = fn.shift(model_conv, -self.shifts[im_nb][0], -self.shifts[im_nb][1], 
                        interp_order=3, mode='wrap')
@@ -166,12 +169,14 @@ class Dec:
                                   itnb=it_nb, stepfact=stepfact)
         self.model, self.last_res = minipar[0].reshape(self._sshape), \
                                     lastpar[0].reshape(self._sshape)
+        out(2, "Starting cycle spinning ...")
+        self.model = wd.postpsfnumcs(self.model)
         out(2, 'Done in', time.time()-t,'[s]')
         return self.model.copy()
     
     def _get_sm_err(self, model):
-#        model_sm = self.conv_fun(self.psf_sm, model)
-        model_sm = cyclespin(model, 1, self._dn_threshold)
+        model_sm = self.conv_fun(self.psf_sm, model)
+#        model_sm = cyclespin(model, 1, self._dn_threshold)
         return model - model_sm
     
     def _set_dn_threshold(self, thresh):
