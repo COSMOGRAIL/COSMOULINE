@@ -79,6 +79,11 @@ print "Wrote in.txt"
 #for image in images:
 #	print "%s : %9.4f pixels = %9.4f arcsec (%s)" % (image[deckeyfilenum], image["seeingpixels"], image["seeing"], image["imgname"])
 
+# We test the seeingpixels : all values should be above 2, otherwise the dec code will crash :
+testseeings = np.array([image["seeingpixels"] for image in images])
+if not np.all(testseeings>2.0):
+	raise mterror("I have seeinpixels <= 2.0, deconv.exe cannot deal with those.")
+
 fwhmtxt = "\n".join(["%.4f" % image["seeingpixels"] for image in images]) + "\n"
 fwhmfile = open(os.path.join(decdir, "fwhm-des-G.txt"), "w")
 fwhmfile.write(fwhmtxt)
