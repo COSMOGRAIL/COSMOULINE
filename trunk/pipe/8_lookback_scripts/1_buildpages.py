@@ -37,7 +37,7 @@ lookbackdir = os.path.join(workdir, "lookback_" + deckey)
 print "So you want to build lookback pages for", deckey, "?"
 
 # We read in the point sources that should be available
-ptsrc = [src.name for src in readmancatasstars(ptsrccat)]
+ptsrc = [src.name for src in readmancat(ptsrccat)]
 print "Sources : ", ptsrc
 
 
