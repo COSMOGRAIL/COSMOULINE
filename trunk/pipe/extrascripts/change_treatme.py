@@ -1,6 +1,8 @@
 #
 #	sets treatme to True/False for the images you want
-#	
+#	Syntax: if column1=column2 then set column 4 to column 3
+#	Example: if setname = 1 then set treatme to false.
+#
 
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
@@ -16,7 +18,9 @@ db = KirbyBase()
 
 # We do not have to select images first: directly update with a criteria !
 
-n = db.update(imgdb, ['setname'], ['2'], [False], ['treatme'])
+n = db.update(imgdb, ['setname'], ['Maid2'], [False], ['treatme'])
+
+#n = db.update(imgdb, ['setname'], ['1'], [False], ['treatme'])
 
 #n = db.update(imgdb, ['recno'], ['*'], [False], ['treatme']) #	there is a bug, this does not seem to work :-(
 
