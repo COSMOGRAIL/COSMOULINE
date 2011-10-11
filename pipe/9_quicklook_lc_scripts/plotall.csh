@@ -6,3 +6,4 @@ python 3_by_airmass_NU.py
 python 4_by_skylevel_NU.py
 python 5_by_medcoeff_NU.py
 python 6_by_set_NU.py
+python 7_by_ellipticity_NU.py
