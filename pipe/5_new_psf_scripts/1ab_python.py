@@ -22,7 +22,7 @@ for star in psfstars:
 	print star['name']
 	
 if len(psfstars) > 4:
-	raise mterror("DON'T use more then 4 stars !")
+	raise mterror("DON'T use more than 4 stars !")
 	
 proquest(askquestions)
 

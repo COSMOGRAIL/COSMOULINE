@@ -14,11 +14,11 @@ from variousfct import *
 showhist = False
 
 
-"""
+
 # To reject the worst stuff :
-maxseeing = 2.5
+maxseeing = 2.3
 maxell = 0.25
-maxmedcoeff = 10.0
+maxmedcoeff = 1.5
 maxsky = 10000.0
 
 """
@@ -28,7 +28,7 @@ maxell = 0.10
 maxmedcoeff = 3.0
 maxsky = 1000.0
 
-
+"""
 ##################################
 
 
