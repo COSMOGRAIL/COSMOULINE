@@ -3,7 +3,7 @@ from kirbybase import KirbyBase, KBError
 from variousfct import *
 
 
-fields = ['datet', 'mjd', 'imgname', 'telescopename', 'gogogo']
+fields = ['datet', 'mjd', 'imgname', 'telescopename', 'gain', 'gogogo']
 db = KirbyBase()
 reporttxt = db.select(imgdb, ['recno'], ['*'], fields, sortFields=['mjd'], returnType='report')
 
