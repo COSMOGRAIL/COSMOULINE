@@ -40,8 +40,15 @@ for i,image in enumerate(images):
 	
 	# We run sextractor  on the image in electrons :
 	saturlevel = image["gain"] * image["saturlevel"] # to convert to electrons
-	cmd = "%s %s -c default_sky_template.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CHECKIMAGE_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, skyimagepath)
-	print cmd
+	
+	if image["telescopename"] in ["EulerCAM", "SMARTSandicam"]:
+		print "Detected fine pixel telescope, switching to smooth sky"
+		cmd = "%s %s -c default_sky_template_smooth.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CHECKIMAGE_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, skyimagepath)
+	
+	else:
+		cmd = "%s %s -c default_sky_template_fine.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CHECKIMAGE_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, skyimagepath)
+
+	#print cmd
 	os.system(cmd)
 	
 	(skya, skyh) = fromfits(skyimagepath, verbose = False)
