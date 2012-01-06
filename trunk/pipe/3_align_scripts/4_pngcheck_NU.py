@@ -25,7 +25,10 @@ pngkey = "full"
 
 crop = False
 cropregion = "[330:1680,108:682]"
-rebin = 2
+
+#rebin = 4
+rebin = "auto" # either 2 or 4, depending on size of image
+
 z1 = -40
 z2 =  2000
 #z1 = "auto"
@@ -94,7 +97,15 @@ for i, image in enumerate(images):
 	if crop :
 		f2nimg.irafcrop(cropregion)
 	f2nimg.setzscale(z1, z2)
-	f2nimg.rebin(rebin)
+	
+	if rebin == "auto":
+		if f2nimg.numpyarray.shape[0] > 3000:
+			f2nimg.rebin(4)
+		else:
+			f2nimg.rebin(2)
+	else:
+		f2nimg.rebin(rebin)
+		
 	f2nimg.makepilimage(scale = "log", negative = False)
 	f2nimg.writetitle(image['imgname'] + "_ali.fits")
 	
