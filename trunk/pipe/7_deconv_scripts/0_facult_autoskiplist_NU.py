@@ -14,21 +14,29 @@ from variousfct import *
 showhist = False
 
 
-
 # To reject the worst stuff :
-maxseeing = 2.3
-maxell = 0.25
-maxmedcoeff = 1.5
+maxseeing = 3.0
+maxell = 0.3
+maxmedcoeff = 10.0
 maxsky = 10000.0
 
-"""
-# The very best frames to get a good background :
-maxseeing = 1.0
-maxell = 0.10
-maxmedcoeff = 3.0
-maxsky = 1000.0
 
 """
+# Normal rejection stuff :
+maxseeing = 2.5
+maxell = 0.25
+maxmedcoeff = 5.0
+maxsky = 8000.0
+"""
+
+"""
+# The very best frames to draw a good background :
+maxseeing = 1.1
+maxell = 0.10
+maxmedcoeff = 1.2
+maxsky = 1000.0
+"""
+
 ##################################
 
 
