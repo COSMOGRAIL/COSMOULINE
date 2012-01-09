@@ -33,28 +33,27 @@ print "Selecting medcoeff   : %i" % (len(images))
 print "Selection output     : %i" % (len(images))
 
 # Grouping them by nights :
-groupedimages = groupfct.groupbynights(images)
-print "%i nights." % len(groupedimages)
+nights = groupfct.groupbynights(images)
+print "%i nights." % len(nights)
 
 
 
+# Calculating mean/median values common to all sources in nights :
 
-"""
-plt.figure(figsize=(12,8))
 
-mhjds = groupfct.values(groupedimages, 'mhjd', normkey=None)['mean']
+mhjds = groupfct.values(nights, 'mhjd', normkey=None)['mean']
 
-medairmasses = groupfct.values(groupedimages, 'airmass', normkey=None)['median']
-medseeings = groupfct.values(groupedimages, 'seeing', normkey=None)['median']
-medskylevels = groupfct.values(groupedimages, 'skylevel', normkey=None)['median']
-meddeccoeffs = groupfct.values(groupedimages, normcoeffname, normkey=None)['median']
+medairmasses = groupfct.values(nights, 'airmass', normkey=None)['median']
+medseeings = groupfct.values(nights, 'seeing', normkey=None)['median']
+medskylevels = groupfct.values(nights, 'skylevel', normkey=None)['median']
+meddeccoeffs = groupfct.values(nights, normcoeffname, normkey=None)['median']
 
 medrelskylevels = np.array(medskylevels)*np.array(meddeccoeffs)
 
 meddates = [variousfct.DateFromJulianDay(mhjd + 2400000.5).strftime("%Y-%m-%dT%H:%M:%S") for mhjd in mhjds]
 
-telescopenames = [night[0]["telescopename"] for night in groupedimages]
-setnames = [night[0]["setname"] for night in groupedimages]
+telescopenames = ["+".join(sorted(set([img["telescopename"] for img in night]))) for night in nights]
+setnames = ["+".join(sorted(set([img["setname"] for img in night]))) for night in nights]
 
 
 exportcols = [
@@ -67,10 +66,49 @@ exportcols = [
 {"name":"relskylevel", "data":medrelskylevels},
 {"name":"normcoeff", "data":meddeccoeffs}
 ]
-#{"name":"deccoeff", "data":meddeccoeffs}
-#]
 
-#deckeynormused = "medcoeff"
+
+
+# Calculating median mags and errors for the sources :
+
+
+for i, sourcename in enumerate(sourcenames):
+	
+	fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
+	mags = groupfct.mags(groupedimages, fluxfieldname, normkey=normcoeffname)['median']
+	
+	
+	randomerrorfieldname = "out_%s_%s_shotnoise" % (deconvname, sourcename)
+
+
+	absfluxerrors = np.array(groupfct.values(groupedimages, randomerrorfieldname, normkey=normcoeffname)['max'])
+	fluxvals = np.array(groupfct.values(groupedimages, fluxfieldname, normkey=normcoeffname)['median'])
+	relfluxerrors = absfluxerrors / fluxvals
+	
+	##magerrorbars = -2.5*np.log10(relfluxerrors)
+	
+	##print magerrorbars
+	
+	upmags = -2.5*np.log10(fluxvals + absfluxerrors)
+	downmags = -2.5*np.log10(fluxvals - absfluxerrors)
+	magerrorbars = (downmags - upmags) / 2.0
+	##print magerrorbars
+	
+	magerrorbars = magerrorbars * 2.0
+	
+	plt.errorbar(mhjds, mags, yerr=magerrorbars, linestyle="None", marker=".", label = sourcename)
+	exportcols.extend([{"name":"mag_%s" % sourcename, "data":mags}, {"name":"magerr_%s" % sourcename, "data":magerrorbars}])
+
+
+okflags = np.logical_and(seeingflags, skylevelflags)
+exportcols.append({"name":"flag", "data":okflags})
+
+rdbexport.writerdb(exportcols, "all.rdb", True)
+
+
+
+"""
+plt.figure(figsize=(12,8))
 
 
 colors = ["red", "blue", "purple", "green"]
