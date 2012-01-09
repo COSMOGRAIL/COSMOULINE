@@ -1,21 +1,45 @@
-execfile("../config.py")
+"""
+Joins images by night, automatically splitting according to different telescope names, 
+and exports the resulting lightcurves as plain rdb lists.
+"""
 
+execfile("config.py")
 import matplotlib.pyplot as plt
 import matplotlib.dates
 
 
-print "Deconvolution : %s" % (deconvname)
-print "Point sources : %s" % ", ".join(sourcenames)
+# Reading the db :
+images = variousfct.readpickle(dbfilepath, verbose=True)
+print "%i images in db." % (len(images))
 
-images = variousfct.readpickle(pkldbpath, verbose=True)
+# Selecting the right telescopes and setnames :
+images = [image for image in images if (image["telescopename"] in telescopenames) and (image["setname"] in setnames)]
+print "%i images have the choosen telescope- and set- names." % (len(images))
 
+# Selecting the right deconvolution :
 images = [image for image in images if image["decfilenum_" + deconvname] != None] 
-print "%i images" % len(images)
+print "%i images are deconvolved (among the latter)." % (len(images))
 
+# Rejecting bad images :
+print "Selection input      : %i" % (len(images))
+images = [image for image in images if image["seeing"] <= imgmaxseeing]
+print "Selecting seeing     : %i" % (len(images))
+images = [image for image in images if image["ell"] <= imgmaxell]
+print "Selecting ell        : %i" % (len(images))
+images = [image for image in images if image["skylevel"] <= imgmaxskylevel]
+print "Selecting skylevel   : %i" % (len(images))
+images = [image for image in images if image["medcoeff"] <= imgmaxmedcoeff]
+print "Selecting medcoeff   : %i" % (len(images))
+print "Selection output     : %i" % (len(images))
+
+# Grouping them by nights :
 groupedimages = groupfct.groupbynights(images)
-print "%i nights"% len(groupedimages)
+print "%i nights." % len(groupedimages)
 
 
+
+
+"""
 plt.figure(figsize=(12,8))
 
 mhjds = groupfct.values(groupedimages, 'mhjd', normkey=None)['mean']
@@ -147,7 +171,7 @@ skylevelflags = np.asarray(medrelskylevels) < 3500.0
 
 okflags = np.logical_and(seeingflags, skylevelflags)
 exportcols.append({"name":"flag", "data":okflags})
-
+"""
 
 """
 for i, sourcename in enumerate(sourcenames):
@@ -164,7 +188,7 @@ cbar.set_label('FWHM [arcsec]')
 
 plt.show()
 """
-
+"""
 
 #print seeingflags
 
@@ -178,4 +202,4 @@ print "%i nights are OK" % (np.sum(okflags))
 #	print len(el["data"])
 
 rdbexport.writerdb(exportcols, "all.rdb", True)
-
+"""
