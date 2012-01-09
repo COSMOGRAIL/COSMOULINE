@@ -10,7 +10,6 @@
 lcmanipdir = "/Users/mtewes/Desktop/f_Q1355_C2"
 
 
-
 # Normally you do not have to change anything below this line.
 ################################################################################################
 
@@ -31,5 +30,9 @@ execfile(os.path.join(lcmanipdir, "lcmanip.py"))
 
 print "    ### Working on %s ###" % dbfilename
 
+dbfilepath = os.path.join(lcmanipdir, dbfilename)
+
+print "    Deconvolution : %s" % (deconvname)
+print "    Point sources : %s" % ", ".join(sourcenames)
 
 

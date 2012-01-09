@@ -1,11 +1,11 @@
 """
 
-Functions to group images, for plots or exports.
+Functions to group images by nights, for plots or exports.
 
 """
 
 
-def groupbynights(imagelist, separatesetnames=True):
+def groupbynights(imagelist, separatesetnames=False):
 	"""
 	
 	image = one dict, as taken from the db.
@@ -19,6 +19,7 @@ def groupbynights(imagelist, separatesetnames=True):
 	import sys
 	import operator # for the sorting
 	
+	
 	imagesbysets = []	# intermediary storage : we will put images in group of setnames in there, or all images.
 	if separatesetnames:
 		setnames = sorted(list(set([image["setname"] for image in imagelist])))
@@ -28,7 +29,7 @@ def groupbynights(imagelist, separatesetnames=True):
 			
 	else:
 		imagesbysets.append(imagelist)	# we simply put all images into the first list item.
-		
+	
 
 	# And now we simply run our combination code individually on all the lists of imagesbysets.
 	nighttable = []	# this is the big list we will return.
