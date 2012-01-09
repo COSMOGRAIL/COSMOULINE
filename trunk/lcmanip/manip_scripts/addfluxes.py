@@ -1,3 +1,10 @@
+
+# This is a sample file, needs to be rewritten...
+sys.exit()
+
+
+
+
 execfile("../config.py")
 
 ###########################################################################################
