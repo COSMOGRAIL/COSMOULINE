@@ -30,31 +30,56 @@ images = [image for image in images if image["skylevel"] <= imgmaxskylevel]
 print "Selecting skylevel   : %i" % (len(images))
 images = [image for image in images if image["medcoeff"] <= imgmaxmedcoeff]
 print "Selecting medcoeff   : %i" % (len(images))
+
+# Rejecting according to an eventual skiplist :
+if imgskiplistfilename != None:
+	imgskiplist = variousfct.readimagelist(os.path.join(lcmanipdir, imgskiplistfilename))
+	# Getting the image names, disregarding the comments :
+	imgskiplist = [item[0] for item in imgskiplist]
+	images = [image for image in images if image["imgname"] not in imgskiplist]
+
 print "Selection output     : %i" % (len(images))
 
+
+# Ok, the selection is done, we are left with the good images.
+
 # Grouping them by nights :
-nights = groupfct.groupbynights(images)
-print "%i nights." % len(nights)
+nights = groupfct.groupbynights(images, separatesetnames=False)
+print "This gives me %i nights." % len(nights)
 
 
 
-# Calculating mean/median values common to all sources in nights :
+# Calculating mean/median values common to all sources in nights.
+# They are stored as lists, and will be written as columns into the rdb file.
 
 
 mhjds = groupfct.values(nights, 'mhjd', normkey=None)['mean']
 
 medairmasses = groupfct.values(nights, 'airmass', normkey=None)['median']
 medseeings = groupfct.values(nights, 'seeing', normkey=None)['median']
+medells = groupfct.values(nights, 'ell', normkey=None)['median']
 medskylevels = groupfct.values(nights, 'skylevel', normkey=None)['median']
-meddeccoeffs = groupfct.values(nights, normcoeffname, normkey=None)['median']
+mednormcoeffs = groupfct.values(nights, normcoeffname, normkey=None)['median']
 
-medrelskylevels = np.array(medskylevels)*np.array(meddeccoeffs)
+medrelskylevels = np.array(medskylevels)*np.array(mednormcoeffs)
 
 meddates = [variousfct.DateFromJulianDay(mhjd + 2400000.5).strftime("%Y-%m-%dT%H:%M:%S") for mhjd in mhjds]
 
 telescopenames = ["+".join(sorted(set([img["telescopename"] for img in night]))) for night in nights]
 setnames = ["+".join(sorted(set([img["setname"] for img in night]))) for night in nights]
 
+
+# The flags for nights (True if the night is OK) :
+nightseeingbad = np.array(medseeings) < nightmaxseeing
+nightellbad = np.array(medells) < nightmaxell
+nightskylevelbad = medrelskylevels < nightmaxskylevel
+nightnormcoeffbad = np.array(mednormcoeffs) < nightmaxnormcoeff
+
+flags = np.logical_and(np.logical_and(nightseeingbad, nightellbad), np.logical_and(nightskylevelbad, nightnormcoeffbad))
+print "%i nights are flagged as bad (i.e., they have flag = False)." % (np.sum(flags == False))
+
+
+# We prepare a structure for the rdb file. It is an ordered list of dicts, each dict has two keys : column name and the data.
 
 exportcols = [
 {"name":"mhjd", "data":mhjds},
@@ -64,107 +89,47 @@ exportcols = [
 {"name":"fwhm", "data":medseeings},
 {"name":"airmass", "data":medairmasses},
 {"name":"relskylevel", "data":medrelskylevels},
-{"name":"normcoeff", "data":meddeccoeffs}
+{"name":"normcoeff", "data":mednormcoeffs},
+{"name":"flag", "data":flags}
 ]
 
 
-
-# Calculating median mags and errors for the sources :
-
+# Calculating median mags and errors for the sources (same idea, once for every source) :
 
 for i, sourcename in enumerate(sourcenames):
 	
 	fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
-	mags = groupfct.mags(groupedimages, fluxfieldname, normkey=normcoeffname)['median']
+	shotnoisefieldname = "out_%s_%s_shotnoise" % (deconvname, sourcename)
+
+	mags = groupfct.mags(nights, fluxfieldname, normkey=normcoeffname)['median']
 	
+	magerrs = [0.02 for night in nights] # To be done ...
 	
-	randomerrorfieldname = "out_%s_%s_shotnoise" % (deconvname, sourcename)
+	# We add these to the above structure for the rdb file :
+	exportcols.extend([{"name":"mag_%s" % sourcename, "data":mags}, {"name":"magerr_%s" % sourcename, "data":magerrs}])
 
 
-	absfluxerrors = np.array(groupfct.values(groupedimages, randomerrorfieldname, normkey=normcoeffname)['max'])
-	fluxvals = np.array(groupfct.values(groupedimages, fluxfieldname, normkey=normcoeffname)['median'])
-	relfluxerrors = absfluxerrors / fluxvals
-	
-	##magerrorbars = -2.5*np.log10(relfluxerrors)
-	
-	##print magerrorbars
-	
-	upmags = -2.5*np.log10(fluxvals + absfluxerrors)
-	downmags = -2.5*np.log10(fluxvals - absfluxerrors)
-	magerrorbars = (downmags - upmags) / 2.0
-	##print magerrorbars
-	
-	magerrorbars = magerrorbars * 2.0
-	
-	plt.errorbar(mhjds, mags, yerr=magerrorbars, linestyle="None", marker=".", label = sourcename)
-	exportcols.extend([{"name":"mag_%s" % sourcename, "data":mags}, {"name":"magerr_%s" % sourcename, "data":magerrorbars}])
+# Done with all calculations, now we export this to an rdb file...
 
 
-okflags = np.logical_and(seeingflags, skylevelflags)
-exportcols.append({"name":"flag", "data":okflags})
-
-rdbexport.writerdb(exportcols, "all.rdb", True)
+rdbexport.writerdb(exportcols, os.path.join(lcmanipdir, outputname + ".rdb"), True)
 
 
+# And make a plot ...
 
-"""
+if showplots == False:
+	sys.exit()
+
 plt.figure(figsize=(12,8))
-
-
-colors = ["red", "blue", "purple", "green"]
 for i, sourcename in enumerate(sourcenames):
+	mags = [col for col in exportcols if col["name"] == "mag_%s" % sourcename][0]["data"]
+	magerrs = [col for col in exportcols if col["name"] == "magerr_%s" % sourcename][0]["data"]
+	
+	plt.errorbar(mhjds, mags, yerr=magerrs, linestyle="None", marker=".", label = sourcename)
+	# Circles around flagged points :
 
-	
-	fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
-	
-	#mags = groupfct.mags(groupedimages, fluxfieldname)['median']
-	mags = groupfct.mags(groupedimages, fluxfieldname, normkey=normcoeffname)['median']
-	
-	#magerrors = 0.00 + (np.array(medskylevels)/200.0)*0.005 + (np.array(medseeings)/1.0)*0.005
-	#errors = combibynight_fct.mags(groupedimages, fluxfieldname, normkey=normcoeffname)['median']
-	
-	#plt.plot(mhjds, mags, linestyle="None", marker=".", label = sourcename, color = colors[i])
-	#plt.errorbar(mhjds, mags, yerr=magerrors, linestyle="None", marker=".", label = sourcename, color = colors[i])
-	
-	
-	randomerrorfieldname = "out_%s_%s_shotnoise" % (deconvname, sourcename)
-
-	absfluxerrors = np.array(groupfct.values(groupedimages, randomerrorfieldname, normkey=normcoeffname)['max'])
-	fluxvals = np.array(groupfct.values(groupedimages, fluxfieldname, normkey=normcoeffname)['median'])
-	relfluxerrors = absfluxerrors / fluxvals
-	
-	##magerrorbars = -2.5*np.log10(relfluxerrors)
-	
-	##print magerrorbars
-	
-	upmags = -2.5*np.log10(fluxvals + absfluxerrors)
-	downmags = -2.5*np.log10(fluxvals - absfluxerrors)
-	magerrorbars = (downmags - upmags) / 2.0
-	##print magerrorbars
-	
-	magerrorbars = magerrorbars * 2.0
-	
-	plt.errorbar(mhjds, mags, yerr=magerrorbars, linestyle="None", marker=".", label = sourcename)
-	exportcols.extend([{"name":"mag_%s" % sourcename, "data":mags}, {"name":"magerr_%s" % sourcename, "data":magerrorbars}])
-	
-	#plt.plot(mhjds, mags, linestyle="None", marker=".", label = ptsrc.name)
-	
-	#mymagups = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_flux')['up'])
-	#mymagdowns = asarray(mags(groupedimages, 'out_'+deckey+'_'+ src.name +'_flux')['down'])
-	#mhjds = asarray(values(groupedimages, 'mhjd')['median'])
-	
-	#randomerrorfieldname = "out_%s_%s_randerror" % (deckey, ptsrc.name)
-	
-	#if randomerrorfieldname not in fieldnames :
-	#	plt.plot(mhjds, mags, linestyle="None", marker=".", label = ptsrc.name)
-	#else :
-	#	upmags =   -2.5*np.log10(np.array([(image[fluxfieldname] - image[randomerrorfieldname])*image[deckeynormused] for image in images]))
-	#	downmags = -2.5*np.log10(np.array([(image[fluxfieldname] + image[randomerrorfieldname])*image[deckeynormused] for image in images]))
-
-	#plt.errorbar(mhjds, mags, yerr=[upmags-mags, mags-downmags], linestyle="None", marker=".", label = s.name)
-	#plt.errorbar
-
-
+	plt.plot(np.asarray(mhjds)[flags == False], np.asarray(mags)[flags == False], linestyle="None", marker="o", markersize=8., markeredgecolor="black", markerfacecolor="None", color="black")
+		
 
 # reverse y axis for magnitudes :
 ax=plt.gca()
@@ -175,9 +140,6 @@ ax.set_xlim(np.min(mhjds), np.max(mhjds)) # DO NOT REMOVE THIS !!!
 #plt.title(deckey, fontsize=20)
 plt.xlabel('MHJD [days]')
 plt.ylabel('Magnitude (instrumental)')
-
-#titletext = deckey
-#titletext = "%s (%i points)" % (xephemlens.split(",")[0], len(images))
 
 plt.legend()
 leg = ax.legend(loc='upper right', fancybox=True)
@@ -198,46 +160,3 @@ plt.show()
 
 
 
-
-
-# we kick some bad images
-
-#okflags = [True] * len(mhjds)
-
-seeingflags = np.asarray(medseeings) < 2.1
-skylevelflags = np.asarray(medrelskylevels) < 3500.0
-
-okflags = np.logical_and(seeingflags, skylevelflags)
-exportcols.append({"name":"flag", "data":okflags})
-"""
-
-"""
-for i, sourcename in enumerate(sourcenames):
-
-	fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
-	mags = groupfct.mags(groupedimages, fluxfieldname, normkey=normcoeffname)['median']
-	
-	plt.scatter(mhjds, mags, s=20, c=medrelskylevels, vmin=1000, vmax=5000, edgecolors=None)
-	#plt.scatter(mhjds, mags, s=12, c=seeings, vmin=0.5,vmax=2.5, edgecolors='none')
-
-
-cbar = plt.colorbar(orientation='horizontal')
-cbar.set_label('FWHM [arcsec]') 
-
-plt.show()
-"""
-"""
-
-#print seeingflags
-
-#print okflags
-#print len(okflags)
-print "%i nights are OK" % (np.sum(okflags))
-
-
-
-#for el in exportcols:
-#	print len(el["data"])
-
-rdbexport.writerdb(exportcols, "all.rdb", True)
-"""

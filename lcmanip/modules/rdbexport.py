@@ -45,5 +45,6 @@ def writerdb(columns, filename, writeheader=True):
 	writer.writerows(data)
 	
 	outfile.close()
-
+	
+	print "Wrote %s !" % (filename) 
 
