@@ -7,7 +7,10 @@
 # 3) Copy samplelcmanip.py as lcmanip.py into the lcmanipdir. 
 # 4) All further settings are done in this lcmanip.py
 
+
+
 lcmanipdir = "/Users/mtewes/Desktop/f_Q1355_C2"
+
 
 
 # Normally you do not have to change anything below this line.

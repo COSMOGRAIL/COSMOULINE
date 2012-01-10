@@ -84,7 +84,7 @@ def readimagelist(txtfile):
 			comment = line.split(None, 1)[1:][0].rstrip('\n')
 		else:
 			imgname = line.split()[0]
-			comment = "na"
+			comment = ""
 		
 		#print "imgname :", imgname
 		#print "comment :", comment
