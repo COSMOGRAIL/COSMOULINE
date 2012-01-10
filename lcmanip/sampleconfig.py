@@ -1,10 +1,10 @@
 # This file configures lcmanip.
-# 1) copy this sampleconfig.py into config.py
+# 1) copy this sampleconfig.py into config.py (staying in the current directory).
 # 2) Set lcmanipdir below
 #    This is the path to the directory containing the exported cosmouline pkl database that
 #    you want to manipulate. By default, this would be cosmoulines configdir, as the pkl
 #    is saved there.
-# 3) Copy samplelcmanip.py as lcmanip.py into the lcmanipdir. 
+# 3) Copy samplelcmanip.py as lcmanip.py *into the lcmanipdir* (i.e., next to the database pkl) 
 # 4) All further settings are done in this lcmanip.py
 
 
