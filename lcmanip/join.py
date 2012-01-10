@@ -48,10 +48,8 @@ nights = groupfct.groupbynights(images, separatesetnames=False)
 print "This gives me %i nights." % len(nights)
 
 
-
-# Calculating mean/median values common to all sources in nights.
-# They are stored as lists, and will be written as columns into the rdb file.
-
+# Calculating mean/median of values common to all sources within the nights.
+# They are stored as lists or numpy arrays, and will be written as columns into the rdb file.
 
 mhjds = groupfct.values(nights, 'mhjd', normkey=None)['mean']
 
@@ -101,9 +99,16 @@ for i, sourcename in enumerate(sourcenames):
 	fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
 	shotnoisefieldname = "out_%s_%s_shotnoise" % (deconvname, sourcename)
 
-	mags = groupfct.mags(nights, fluxfieldname, normkey=normcoeffname)['median']
+	normfluxes = np.array(groupfct.values(nights, fluxfieldname, normkey=normcoeffname)['median'])
+	normshotnoises = np.fabs(np.array(groupfct.values(nights, shotnoisefieldname, normkey=normcoeffname)['median']))
 	
-	magerrs = [0.02 for night in nights] # To be done ...
+	if not np.all(normfluxes > 0.0):
+		raise RuntimeError("Negative Fluxes  !")
+	
+	normfluxerrorbars = normshotnoises
+	
+	mags = -2.5 * np.log10(normfluxes)
+	magerrs = 2.5 * np.log10(np.asarray(1.0 + normfluxerrorbars/normfluxes))
 	
 	# We add these to the above structure for the rdb file :
 	exportcols.extend([{"name":"mag_%s" % sourcename, "data":mags}, {"name":"magerr_%s" % sourcename, "data":magerrs}])
@@ -155,6 +160,7 @@ yearx.xaxis.set_major_locator(matplotlib.dates.YearLocator())
 yearx.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%Y'))
 yearx.xaxis.tick_top()
 yearx.set_xlabel("Date")
+
 
 plt.show()
 
