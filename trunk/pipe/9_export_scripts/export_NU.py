@@ -20,6 +20,7 @@ filename = "%s_%s" % (datestr, configstr)
 
 readmefilepath = os.path.join(configdir, filename + "_readme.txt")
 pklfilepath = os.path.join(configdir, filename + "_db.pkl")
+dbcopyfilepath = os.path.join(configdir, filename + "_db.dat")
 
 print "My basename : %s" % (filename)
 
@@ -121,13 +122,15 @@ readme.append("\n\n(end of automatic part)\n")
 readmetxt = "\n".join(readme)
 
 
-if os.path.exists(readmefilepath) or os.path.exists(pklfilepath):
+if os.path.exists(readmefilepath) or os.path.exists(pklfilepath) or os.path.exists(dbcopyfilepath):
 	print "The files exist. I will overwrite them."
 	variousfct.proquest(askquestions)
 	if os.path.exists(readmefilepath):
 		os.remove(readmefilepath)
 	if os.path.exists(pklfilepath):
 		os.remove(pklfilepath)
+	if os.path.exists(dbcopyfilepath):
+		os.remove(dbcopyfilepath)
 
 
 
@@ -138,7 +141,6 @@ print "Wrote %s" % readmefilepath
 
 variousfct.writepickle(images, pklfilepath, verbose=True)
 
+shutil.copy(imgdb, dbcopyfilepath)
 
-
-#rdbexport.writerdb(exportcols, "out.rdb", True)
-
+print "Done !"
