@@ -25,8 +25,6 @@ telescopenames = sorted(list(set([image["telescopename"] for image in allimages]
 
 for image in allimages:
 	image["tmp_indivcoeffs"] = []
-	image["tmp_coeffcomment"] = []
-
 
 
 for telescopename in telescopenames:
@@ -62,7 +60,6 @@ for telescopename in telescopenames:
 				indivcoeff = (medflux / image[fluxfieldname]) 	# the "new" absolute coeff for that image and star
 			
 				image["tmp_indivcoeffs"].append(indivcoeff)
-				image["tmp_coeffcomment"].append(sourcename + " / " + deckey)
 			
 
 	for i, image in enumerate(telimages):
@@ -70,18 +67,22 @@ for telescopename in telescopenames:
 		if len(image["tmp_indivcoeffs"]) == 0:
 			# bummer. Then we will just write 0.0, to be sure that this one will pop out.
 			renormcoeff = 0.0
-			#print "Image %s : no star available." % (image["imgname"])
-			image["tmp_coeffcomment"].append("No star available.")
-			# we add nothing to coeffs
+			renormcoefferr = 0.0
+			
 		else :
 			renormcoeff = np.median(np.array(image["tmp_indivcoeffs"])) # median of multiplicative factors
+			renormcoefferr = np.std(np.array(image["tmp_indivcoeffs"]))
 		
 		image["tmp_coeff"] = renormcoeff # the important value at this step.
+		image["tmp_coefferr"] = renormcoefferr
 		# now each image has such a tmp_coeff.
 
 
 		# Now, we want to apply a simple scaling to these coeffs between the telescopes, so that a choosen star gets the same median flux.
 		image["tmp_coeff"] /= colorrefmedflux # this number will be small, but we don't care
+		image["tmp_coefferr"] /= colorrefmedflux
+		
+		
 
 
 # Finally, we rescale the coeffs so that the ref image gets 1.0
@@ -99,7 +100,14 @@ else:
 	
 for image in allimages:
 	image["renormcoeff"] = image["tmp_coeff"] / refnewcoeff
+	image["renormcoefferr"] = image["tmp_coefferr"] / refnewcoeff
+	
+	# And we keep track of the number of stars used to calculate this particular coeff :
+	image["nbcoeffstars"] = len(image["tmp_indivcoeffs"])
+		
 
+#for image in allimages:
+#	print image["renormcoeff"], image["renormcoefferr"], image["nbcoeffstars"]
 
 # compare these to the medcoeffs.
 
@@ -107,6 +115,7 @@ plt.figure(figsize=(15,15))	# sets figure size
 
 medcoeffs = np.array([image["medcoeff"] for image in allimages])
 renormcoeffs = np.array([image["renormcoeff"] for image in allimages])
+#renormcoefferrs = np.array([image["renormcoefferr"] for image in allimages])
 
 plt.semilogy(medcoeffs, linestyle="None", marker=".", label = "medcoeff", color="black")
 plt.semilogy(renormcoeffs, linestyle="None", marker=".", label = renormname, color="red")
@@ -125,6 +134,8 @@ if savefigs:
 	print "Wrote %s" % (plotfilepath)
 else:
 	plt.show()
+
+
 
 
 # If you want, you can now write this into the database.
@@ -157,7 +168,7 @@ pbar = progressbar.ProgressBar(widgets=widgets, maxval=len(allimages)+2).start()
 for i, image in enumerate(allimages):
 	#print i, image["imgname"], image["tmp_coeff"], image["tmp_coeffcomment"]
 	pbar.update(i)
-	db.update(imgdb, ['recno'], [image['recno']], {renormname: float(image["renormcoeff"]), renormerrfieldname : 0.0, renormcommentfieldname: " ".join(image["tmp_coeffcomment"])})
+	db.update(imgdb, ['recno'], [image['recno']], {renormname: float(image["renormcoeff"]), renormerrfieldname : float(image["renormcoefferr"]), renormcommentfieldname: str(int(image["nbcoeffstars"]))})
 	#db.update(imgdb, ['recno'], [image['recno']], {renormname: float(image["renormcoeff"]),renormerrfieldname : 0.0})
 
 pbar.finish()
