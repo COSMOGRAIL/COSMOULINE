@@ -15,6 +15,9 @@ sourcenames = ["A", "B"]
 
 # Name of the normalization coeff to use :
 normcoeffname = "renormabcde"
+# In principle would be ok to put "medcoeff", as for the renorm itself it works in the same way, but
+# a calculation of the error on medcoeff is not implemented, so scripts may fail.
+
 
 # Telescope- and set- names that you want to process "together" :
 # Do not forget some image sets, check the README to see what you have in your db !

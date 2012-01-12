@@ -70,12 +70,17 @@ meannormcoefferrs = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_err
 #mednormcoefferrs = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_err", normkey=None)['median'])) # Absolute error on these coeffs
 # i.e., this is the mean of the stddev between the stars in each image.
 
+if min(meannormcoefferrs) <= 0.0001:
+	print "####### WARNING : some normcoefferrs seem to be zero ! #############"
+	print "Check/redo the normalization, otherwise my error bars might be too small."
+	print meannormcoefferrs
+
 meanrelcoefferrs = meannormcoefferrs / mednormcoeffs # relative errors on the norm coeffs
 #medrelcoefferrs = mednormcoefferrs / mednormcoeffs # relative errors on the norm coeffs
 
 
 meannormcoeffnbs = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_comment", normkey=None)['mean'])) # Number of stars for coeff (mean -> float !)
-print "Histogram of mean number of stars per coeff :"
+print "Histogram of mean number of normalization stars per night :"
 h = ["%2i stars : %4i nights" % (c, list(meannormcoeffnbs).count(c)) for c in sorted(list(set(list(meannormcoeffnbs))))]
 for l in h:
 	print l
@@ -146,9 +151,14 @@ for i, sourcename in enumerate(sourcenames):
 	# We add these to the above structure for the rdb file :
 	exportcols.extend([{"name":"mag_%s" % sourcename, "data":mags}, {"name":"magerr_%s" % sourcename, "data":magerrs}])
 
+	print "Source %s" % (sourcename)
+	print "Median flux [electrons]      : %.2f" % (np.median(normfluxes))
+	print "Median shotnoise [electrons] : %.2f" % (np.median(normshotnoises))
+	print "Median normerror [electrons] : %.2f" % (np.median(normnormcoefferrs))
+	print "Min normerror [electrons]    : %.2f" % (np.min(normnormcoefferrs))
+	print "Max normerror [electrons]    : %.2f" % (np.max(normnormcoefferrs))
 
 # Done with all calculations, now we export this to an rdb file...
-
 
 rdbexport.writerdb(exportcols, os.path.join(lcmanipdir, outputname + ".rdb"), True)
 
