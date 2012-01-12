@@ -45,7 +45,7 @@ print decskiplist
 decskipimages = [image[0] for image in readimagelist(decskiplist)] # image[1] would be the comment
 print "It contains %i images." % len(decskipimages)
 
-proquest(askquestions)
+#proquest(askquestions)
 
 
 # We have a look at the psfkicklists and the flags for each psf in the database:
@@ -86,7 +86,7 @@ for particularpsfname in decpsfnames:
 	psfimages[particularpsfname] = list(particularavailableimages) # here we add those to the dict.
 	
 print "- " * 30
-proquest(askquestions)
+#proquest(askquestions)
 		
 # Now we should be able to attribute one precise psf for every image to deconvolve.
 # we start by selecting the images we want to use (treatme and or testlist, as usual)
@@ -99,7 +99,7 @@ else :
 	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname', 'mjd'])
 
 print "Number of images selected from database (before psf attribution or decskiplist) :", len(images)
-proquest(askquestions)
+#proquest(askquestions)
 
 
 # images is now a list of dicts. We will write the psf to use into this dict.
@@ -121,7 +121,7 @@ if len(nopsfimages) > 0:
 
 havepsfimages = [image for image in images if image['choosenpsf'] != "No psf"]
 print "Number of images that have a valid PSF (again, before looking at decskiplist) :", len(havepsfimages)
-proquest(askquestions)
+#proquest(askquestions)
 
 # we do now a check for the object extraction
 # Missing objects are not tolerated. We would simply stop.
@@ -140,7 +140,7 @@ if len(noobjimages) > 0:
 objimages = [image['imgname'] for image in images if image[objkeyflag] == True] 
 print "I've found", len(objimages), "extracted objects."	# In fact this is trivial, will not be used later.
 
-proquest(askquestions)
+#proquest(askquestions)
 # havepsfimages are for now the ones to go.
 # It's time to look at the decskipimages.
 
@@ -169,7 +169,7 @@ if not decskipimagenameset.issubset(possibleimagenameset):
 		print error
 	raise mterror("Fix this (see above output).")
 
-proquest(askquestions)
+#proquest(askquestions)
 
 
 # a check about the reference image:
