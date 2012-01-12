@@ -5,7 +5,7 @@
 
 
 # Filename of the exported cosmouline db :
-dbfilename = "2012-01-09_f_Q1355_C2_db.pkl"
+dbfilename = "2012-01-11_f_Q1355_C2_db.pkl"
 
 # Name of the deconvolution (see the README file that comes with the db ...) :
 deconvname = "dec_wowfixback_lens_medcoeff_pyMCSabcdf1"
@@ -44,6 +44,7 @@ nightmaxseeing = 2.5
 nightmaxell = 0.2
 nightmaxskylevel = 5000.0
 nightmaxnormcoeff = 5.0
+nightminnbimg = 1 # The minimal number of images within a night. Night flagged if number is below.
 
 
 # Give a name for all your above settings. Will be used for the rdb file.
@@ -51,5 +52,5 @@ nightmaxnormcoeff = 5.0
 outputname = "Q1355_EulerC2"
 
 
-# Do you want to see interactive plots ?
-showplots = True
+# Do you want to see interactive plots (otherwise I save them to file) ?
+showplots = False

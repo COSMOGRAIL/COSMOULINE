@@ -85,6 +85,7 @@ def values(listofnights, key, normkey = None):	# stats of the values within the 
 	I return some stats of the values you specify by "key".
 	
 	key has to be a float field !
+	key has to exist, otherwise I crash. This is an important feature, as my return lists must have the same lengths as nights !
 	
 	If normkey is not None, i will multiply these values by the field normkey, before doing the stats.
 	Do this typically if key is a flux that you want to plot.
@@ -114,35 +115,37 @@ def values(listofnights, key, normkey = None):	# stats of the values within the 
 	
 
 
-def mags(listofnights, key, normkey = None):
-	"""
-	
-	some stats of the mags within the given nights
-
-	"""
-	
-	from numpy import array, asarray, log10, median, std, min, max, clip
-	medvals=[]
-	stddevvals=[]
-	minvals=[]
-	maxvals=[]
-	uperrors=[]
-	downerrors=[]
-	for night in listofnights:
-		#values = -2.5 * log10(asarray([float(image[key]) for image in night]))
-		
-		if normkey == None:
-			values = -2.5 * log10(clip(asarray([float(image[key]) for image in night]), 1.0, 1.0e18)) # We clip at 1.0, to avoid negative values
-		else:
-			values = -2.5 * log10(clip(asarray([float(image[key])*float(image[normkey]) for image in night]), 1.0, 1.0e18)) # We clip at 1.0, to avoid negative values
-	
-		
-		medvals.append(median(values))
-		stddevvals.append(std(values))
-		minvals.append(min(values))
-		maxvals.append(max(values))
-		uperrors.append(maxvals[-1]-medvals[-1])
-		downerrors.append(medvals[-1]-minvals[-1])
-	
-	return {'median': medvals, 'stddev': stddevvals, 'min': minvals, 'max': maxvals, 'up':uperrors, 'down':downerrors}
-
+# This would make the stats once the values are converted to mags. Not really needed.
+# 
+# def mags(listofnights, key, normkey = None):
+# 	"""
+# 	
+# 	some stats of the mags within the given nights
+# 
+# 	"""
+# 	
+# 	from numpy import array, asarray, log10, median, std, min, max, clip
+# 	medvals=[]
+# 	stddevvals=[]
+# 	minvals=[]
+# 	maxvals=[]
+# 	uperrors=[]
+# 	downerrors=[]
+# 	for night in listofnights:
+# 		#values = -2.5 * log10(asarray([float(image[key]) for image in night]))
+# 		
+# 		if normkey == None:
+# 			values = -2.5 * log10(clip(asarray([float(image[key]) for image in night]), 1.0, 1.0e18)) # We clip at 1.0, to avoid negative values
+# 		else:
+# 			values = -2.5 * log10(clip(asarray([float(image[key])*float(image[normkey]) for image in night]), 1.0, 1.0e18)) # We clip at 1.0, to avoid negative values
+# 	
+# 		
+# 		medvals.append(median(values))
+# 		stddevvals.append(std(values))
+# 		minvals.append(min(values))
+# 		maxvals.append(max(values))
+# 		uperrors.append(maxvals[-1]-medvals[-1])
+# 		downerrors.append(medvals[-1]-minvals[-1])
+# 	
+# 	return {'median': medvals, 'stddev': stddevvals, 'min': minvals, 'max': maxvals, 'up':uperrors, 'down':downerrors}
+# 
