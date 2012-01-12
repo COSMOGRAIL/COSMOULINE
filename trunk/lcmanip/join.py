@@ -47,6 +47,14 @@ print "Selection output     : %i" % (len(images))
 nights = groupfct.groupbynights(images, separatesetnames=False)
 print "This gives me %i nights." % len(nights)
 
+nbimgs = map(len, nights) # The number of images in each night
+
+print "Histogram of night lengths :"
+h = ["%2i images : %4i nights" % (c, nbimgs.count(c)) for c in sorted(list(set(nbimgs)))]
+for l in h:
+	print l
+
+
 
 # Calculating mean/median of values common to all sources within the nights.
 # They are stored as lists or numpy arrays, and will be written as columns into the rdb file.
@@ -57,9 +65,26 @@ medairmasses = groupfct.values(nights, 'airmass', normkey=None)['median']
 medseeings = groupfct.values(nights, 'seeing', normkey=None)['median']
 medells = groupfct.values(nights, 'ell', normkey=None)['median']
 medskylevels = groupfct.values(nights, 'skylevel', normkey=None)['median']
-mednormcoeffs = groupfct.values(nights, normcoeffname, normkey=None)['median']
+mednormcoeffs = groupfct.values(nights, normcoeffname, normkey=None)['median'] # Normalization coeff to apply to the fluxes
+meannormcoefferrs = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_err", normkey=None)['mean'])) # Absolute error on these coeffs
+#mednormcoefferrs = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_err", normkey=None)['median'])) # Absolute error on these coeffs
+# i.e., this is the mean of the stddev between the stars in each image.
 
-medrelskylevels = np.array(medskylevels)*np.array(mednormcoeffs)
+meanrelcoefferrs = meannormcoefferrs / mednormcoeffs # relative errors on the norm coeffs
+#medrelcoefferrs = mednormcoefferrs / mednormcoeffs # relative errors on the norm coeffs
+
+
+meannormcoeffnbs = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_comment", normkey=None)['mean'])) # Number of stars for coeff (mean -> float !)
+print "Histogram of mean number of stars per coeff :"
+h = ["%2i stars : %4i nights" % (c, list(meannormcoeffnbs).count(c)) for c in sorted(list(set(list(meannormcoeffnbs))))]
+for l in h:
+	print l
+
+
+
+
+
+medrelskylevels = np.asarray(medskylevels)*np.asarray(mednormcoeffs)
 
 meddates = [variousfct.DateFromJulianDay(mhjd + 2400000.5).strftime("%Y-%m-%dT%H:%M:%S") for mhjd in mhjds]
 
@@ -67,13 +92,16 @@ telescopenames = ["+".join(sorted(set([img["telescopename"] for img in night])))
 setnames = ["+".join(sorted(set([img["setname"] for img in night]))) for night in nights]
 
 
+
 # The flags for nights (True if the night is OK) :
-nightseeingbad = np.array(medseeings) < nightmaxseeing
-nightellbad = np.array(medells) < nightmaxell
+nightseeingbad = np.asarray(medseeings) < nightmaxseeing
+nightellbad = np.asarray(medells) < nightmaxell
 nightskylevelbad = medrelskylevels < nightmaxskylevel
-nightnormcoeffbad = np.array(mednormcoeffs) < nightmaxnormcoeff
+nightnormcoeffbad = np.asarray(mednormcoeffs) < nightmaxnormcoeff
+nightnbimgbad = np.asarray(nbimgs) >= nightminnbimg
 
 flags = np.logical_and(np.logical_and(nightseeingbad, nightellbad), np.logical_and(nightskylevelbad, nightnormcoeffbad))
+flags = np.logical_and(flags, nightnbimgbad)
 print "%i nights are flagged as bad (i.e., they have flag = False)." % (np.sum(flags == False))
 
 
@@ -84,6 +112,7 @@ exportcols = [
 {"name":"datetime", "data":meddates},
 {"name":"telescope", "data":telescopenames},
 {"name":"setname", "data":setnames},
+{"name":"nbimg", "data":nbimgs},
 {"name":"fwhm", "data":medseeings},
 {"name":"airmass", "data":medairmasses},
 {"name":"relskylevel", "data":medrelskylevels},
@@ -98,14 +127,18 @@ for i, sourcename in enumerate(sourcenames):
 	
 	fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
 	shotnoisefieldname = "out_%s_%s_shotnoise" % (deconvname, sourcename)
-
+	
 	normfluxes = np.array(groupfct.values(nights, fluxfieldname, normkey=normcoeffname)['median'])
 	normshotnoises = np.fabs(np.array(groupfct.values(nights, shotnoisefieldname, normkey=normcoeffname)['median']))
 	
+	# We have already calculated the relative coeff errors. Turning them into absolute ones :
+	normnormcoefferrs = normfluxes * meanrelcoefferrs
+	
+	# And combining the two error sources :
+	normfluxerrorbars = np.sqrt(normnormcoefferrs**2 + normshotnoises**2)
+	
 	if not np.all(normfluxes > 0.0):
 		raise RuntimeError("Negative Fluxes  !")
-	
-	normfluxerrorbars = normshotnoises
 	
 	mags = -2.5 * np.log10(normfluxes)
 	magerrs = 2.5 * np.log10(np.asarray(1.0 + normfluxerrorbars/normfluxes))
@@ -120,12 +153,9 @@ for i, sourcename in enumerate(sourcenames):
 rdbexport.writerdb(exportcols, os.path.join(lcmanipdir, outputname + ".rdb"), True)
 
 
-# And make a plot ...
+# And make a plot just for the fun of it.
 
-if showplots == False:
-	sys.exit()
-
-plt.figure(figsize=(12,8))
+plt.figure(figsize=(20,12))
 for i, sourcename in enumerate(sourcenames):
 	mags = [col for col in exportcols if col["name"] == "mag_%s" % sourcename][0]["data"]
 	magerrs = [col for col in exportcols if col["name"] == "magerr_%s" % sourcename][0]["data"]
@@ -162,7 +192,11 @@ yearx.xaxis.tick_top()
 yearx.set_xlabel("Date")
 
 
-plt.show()
-
+if showplots == True:
+	plt.show()
+	print "Done."
+else:
+	plt.savefig(os.path.join(lcmanipdir, outputname + "_plot.pdf"))
+	print "Wrote plot, done."
 
 
