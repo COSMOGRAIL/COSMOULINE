@@ -160,7 +160,7 @@ for j, image in enumerate(images):
 	usedobjkey = "obj_" + decobjname
 	cosmicslistpath = os.path.join(workdir, usedobjkey, image['imgname'], "cosmicslist.pkl")
 	if os.path.exists(cosmicslistpath):
-		objcosmicslist = readpickle(cosmicslistpath, verbose=False)
+		objcosmicslist = variousfct.readpickle(cosmicslistpath, verbose=False)
 	else:
 		objcosmicslist = []
 		
@@ -274,7 +274,7 @@ for j, image in enumerate(images):
 	f2nimg.writetitle("PSF")
 	f2nimg.tonet(os.path.join(destdir, "s.png"))
 	
-	f2npsfnum = f2n.fromfits(os.path.join(psfdir, "results/psfnum.fits"), verbose=False) # 128 128
+	f2npsfnum = f2n.fromfits(os.path.join(psfdir, "results/psf_num_1.fits"), verbose=False) # 128 128
 	f2npsfnum.setzscale(-0.02, 0.02)
 	f2npsfnum.makepilimage(scale = "lin", negative = False)
 	f2npsfnum.upsample(2) # Now 256 x 256
@@ -358,7 +358,7 @@ for j, image in enumerate(images):
 
 
 print "- "*40
-notify(computer, withsound, "Lookback page building done.")
+variousfct.notify(computer, withsound, "Lookback page building done.")
 print "You can visit the results here :"
 print os.path.join(lookbackdir, "index.html")
 
