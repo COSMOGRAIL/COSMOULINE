@@ -23,7 +23,7 @@ proquest(askquestions)
 
 
 
-backupfile(imgdb, dbbudir, "find_" + objcosmicskey)
+#backupfile(imgdb, dbbudir, "find_" + objcosmicskey)
 
 # Remember where we are
 origdir = os.getcwd()
