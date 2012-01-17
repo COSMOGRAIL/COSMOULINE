@@ -37,7 +37,7 @@ for i, image in enumerate(images):
 	outfilename = os.path.join(alidir, image['imgname'] + ".fits")
 	tofits(outfilename, pixelarray)	# we clean the header to avoid dangerous behaviors from iraf or sextractor
 
-db.pack(imgdb)
+#db.pack(imgdb)
 
 print "Done with copy/conversion."
 
