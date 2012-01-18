@@ -170,6 +170,9 @@ def postpsfnumcs(img, t = 10.0):
 	Quick and dirty, for hard coded experiements ...
 	t is a threshold in units of sigma, the higher the smoother
 	"""
+	
+	#return img * 0.0 # For tests, to "skip" the numerical part ...
+	
 	# We evaluate the model's noise by looking at the image borders ...
 	bs = 3
 	borderpixels = np.concatenate([img[:bs,:].ravel(), img[-bs:,:].ravel(), img[:,:bs].ravel(), img[:,-bs:].ravel()])
