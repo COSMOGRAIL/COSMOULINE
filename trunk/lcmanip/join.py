@@ -40,6 +40,12 @@ if imgskiplistfilename != None:
 
 print "Selection output     : %i" % (len(images))
 
+# Special tweak if you request medcoeff ...
+if normcoeffname == "medcoeff":
+	# We just want to avoid that it crashes...
+	for image in images:
+		image["medcoeff_err"] = 0.0
+		image["medcoeff_comment"] = "0"
 
 # Ok, the selection is done, we are left with the good images.
 
@@ -66,6 +72,7 @@ medseeings = groupfct.values(nights, 'seeing', normkey=None)['median']
 medells = groupfct.values(nights, 'ell', normkey=None)['median']
 medskylevels = groupfct.values(nights, 'skylevel', normkey=None)['median']
 mednormcoeffs = groupfct.values(nights, normcoeffname, normkey=None)['median'] # Normalization coeff to apply to the fluxes
+
 meannormcoefferrs = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_err", normkey=None)['mean'])) # Absolute error on these coeffs
 #mednormcoefferrs = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_err", normkey=None)['median'])) # Absolute error on these coeffs
 # i.e., this is the mean of the stddev between the stars in each image.
@@ -73,7 +80,7 @@ meannormcoefferrs = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_err
 if min(meannormcoefferrs) <= 0.0001:
 	print "####### WARNING : some normcoefferrs seem to be zero ! #############"
 	print "Check/redo the normalization, otherwise my error bars might be too small."
-	print meannormcoefferrs
+	#print meannormcoefferrs
 
 meanrelcoefferrs = meannormcoefferrs / mednormcoeffs # relative errors on the norm coeffs
 #medrelcoefferrs = mednormcoefferrs / mednormcoeffs # relative errors on the norm coeffs
@@ -119,6 +126,7 @@ exportcols = [
 {"name":"setname", "data":setnames},
 {"name":"nbimg", "data":nbimgs},
 {"name":"fwhm", "data":medseeings},
+{"name":"elongation", "data":medells},
 {"name":"airmass", "data":medairmasses},
 {"name":"relskylevel", "data":medrelskylevels},
 {"name":"normcoeff", "data":mednormcoeffs},
