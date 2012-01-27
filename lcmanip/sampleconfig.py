@@ -6,11 +6,13 @@
 #    is saved there.
 # 3) Copy samplelcmanip.py as lcmanip.py *into the lcmanipdir* (i.e., next to the database pkl) 
 # 4) All further settings are done in this lcmanip.py
+#    You can change the name of this lcmanip.py, for instance to extract several deconvolutions etc.
 
 
+lcmanipdir = "/Users/mtewes/Desktop/lensdecs/f_J1226_C2"
+lcmanipfile = "lcmanip.py"
 
-lcmanipdir = "/Users/mtewes/Desktop/f_Q1355_C2"
-
+# This last filename will be used also for output files.
 
 
 # Normally you do not have to change anything below this line.
@@ -30,6 +32,7 @@ import rdbexport
 
 
 execfile(os.path.join(lcmanipdir, "lcmanip.py"))
+outputname = os.path.splitext(lcmanipfile)[0]
 
 print "    ### Working on %s ###" % dbfilename
 

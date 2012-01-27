@@ -26,8 +26,8 @@ setnames = ["1", "2"]
 
 # Narrow the range of images you want to use (images beyond these limits are disregarded,
 # i.e., not included in the nights).
-imgmaxseeing = 2.5
-imgmaxell = 0.3
+imgmaxseeing = 3.0
+imgmaxell = 0.4
 imgmaxskylevel = 10000.0 # In electrons, not ADU !
 imgmaxmedcoeff = 8.0
 
@@ -43,16 +43,11 @@ imgskiplistfilename = None
 
 # Narrow the range of nights you want to use (values are the medians among the images in a night).
 # Nights beyond these limits are flagged, not removed !
-nightmaxseeing = 2.5
+nightmaxseeing = 2.2
 nightmaxell = 0.2
-nightmaxskylevel = 5000.0
-nightmaxnormcoeff = 5.0
-nightminnbimg = 1 # The minimal number of images within a night. Night flagged if number is below.
-
-
-# Give a name for all your above settings. Will be used for the rdb file.
-# You might want to use the telescopename, for instance.
-outputname = "Q1355_EulerC2"
+nightmaxskylevel = 3000.0
+nightmaxnormcoeff = 2.0
+nightminnbimg = 2 # The minimal number of images within a night. Night flagged if number is below.
 
 
 # Do you want to see interactive plots (otherwise I save them to file) ?
