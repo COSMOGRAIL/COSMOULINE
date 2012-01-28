@@ -149,11 +149,11 @@ sexphotomname = "sexphotom1"	# No need to touch this, same for the fields below.
 
 sexphotomfields = [
 {"sexname":"FLUX_AUTO", "dbname":"auto_flux", "type":"float"},
-{"sexname":"FLUX_APER", "dbname":"ap20_flux", "type":"float"},
+#{"sexname":"FLUX_APER", "dbname":"ap20_flux", "type":"float"},
 {"sexname":"FLUX_APER1", "dbname":"ap30_flux", "type":"float"},
-{"sexname":"FLUX_APER2", "dbname":"ap60_flux", "type":"float"},
-{"sexname":"FLUX_APER3", "dbname":"ap90_flux", "type":"float"},
-{"sexname":"FLUX_APER4", "dbname":"ap120_flux", "type":"float"}
+#{"sexname":"FLUX_APER2", "dbname":"ap60_flux", "type":"float"},
+{"sexname":"FLUX_APER3", "dbname":"ap90_flux", "type":"float"}
+#{"sexname":"FLUX_APER4", "dbname":"ap120_flux", "type":"float"}
 ]
 
 #------------------------ DEEP FIELD COMBINATION (FACULTATIVE) -------------
