@@ -87,7 +87,7 @@ for i,image in enumerate(images):
 	geomapin = os.path.join(alidir, image['imgname'] + ".geomap")
 	
 	
-	trans = star.findtrans(preciserefmanstars, autostars, scalingratio = scalingratio, tolerance = identtolerance, minnbrstars = identminnbrstars, mindist = identfindmindist, nref = 10, nauto = 30, verbose=True)
+	trans = star.findtrans(preciserefmanstars, autostars, scalingratio = scalingratio, tolerance = identtolerance, minnbrstars = identminnbrstars, mindist = identfindmindist, nref = 10, nauto = 50, verbose=True)
 	
 	if trans["nbrids"] < 0:
 		db.update(imgdb, ['recno'], [image['recno']], {'flagali': 0, 'nbralistars': 0})
