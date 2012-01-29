@@ -17,7 +17,7 @@ showhist = False
 # To reject the worst stuff :
 maxseeing = 3.0
 maxell = 0.3
-maxmedcoeff = 10.0
+maxmedcoeff = 3.0
 maxsky = 10000.0
 
 
@@ -31,8 +31,8 @@ maxsky = 8000.0
 
 """
 # The very best frames to draw a good background :
-maxseeing = 1.1
-maxell = 0.10
+maxseeing = 1.3
+maxell = 0.12
 maxmedcoeff = 1.2
 maxsky = 1000.0
 """
