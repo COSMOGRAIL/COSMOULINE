@@ -19,7 +19,12 @@ import progressbar
 # We will tweak the db only at the end of this script.
 
 db = KirbyBase()
-images = db.select(imgdb, ['flagali','gogogo','treatme'], ['==1',True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
+if thisisatest:
+	print "This is a test."
+	images = db.select(imgdb, ['flagali','gogogo','treatme', 'testlist'], ['==1',True, True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
+else:
+	images = db.select(imgdb, ['flagali','gogogo','treatme'], ['==1',True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
+
 
 print "I will run the actual alignment (on several cpus), and wait until this is done to update the database."
 nbrofimages = len(images)
