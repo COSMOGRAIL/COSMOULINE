@@ -1,6 +1,16 @@
 
 
-\section{Curveshifting}
 
-In cosmouline, we have 1 ``line" per image. The tool called \emph{lcmanip} will do the transformation from 1 line per image to one line per datapoint used in the curve shifting (i.e., one per night in most cases). This can imply kicking bad points, grouping them by nights, etc etc.
+\section{Manipulating lightcurves with lcmanip}
 
+cosmouline is "one line per image, measurements in fluxes"
+
+lcmanip is the tool to turn this into "one line per epoch, expressed as mags + error bars", i.e. combine per night.
+
+Why a separate project ? Because this implies a lot of plots (want to do this on my laptop, not on a server), and sometimes some tweaks (like adding the fluxes of two sources etc)
+
+Also this is the place to do some post-deconvolution rejections of bad images, and flagging bad nights etc.
+
+The output of \verb+lcmanip+ is a plain rdb file.
+
+This rdb file can be directly read in with pycs, while still keeping info like airmass, elongation, FWHM, skylevel etc.

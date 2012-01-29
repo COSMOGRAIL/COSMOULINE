@@ -3,6 +3,18 @@
 \section{Tutorial}
 
 
+\subsection{tricks (needs to be sorted)}
+
+making the first alicat :
+use iraf imexa "a" + ds9, call your stars a, b, c .... No need to write the fluxes, the checkalistars script will print them for you.
+
+Build a first PSF with plenty of stars. This allows to see how they agree, and which stars often fall on bad cols or have other problems.
+
+Maintain a README.txt in the configdir, in which you comment all your actions. Also serves to remember what you did last.
+At the end of this file, give a bottomline : which deconv and which renorm should be used to get the best curve ?
+
+
+
 This section will lead you through a first exemplary run of cosmouline. Explanations for the first steps are very detailed at the beginning, but as you will see, once you know how to measure the seeing of the images you can already guess how to construct a PSF.
 So don't worry and read on. Details and mechanisms are shown along the way, and it gets much faster after the first steps.
 
@@ -593,6 +605,8 @@ The big difference to the kicklist or the testlist is that we will \emph{not} tr
 
 \subsection{Extracting an object for deconvolution}
 
+\tbrem{There's a new combi script to do extraction + NaN replacement + cosmics, all at once. It writes to the db only at the very beginning, hence much easier to launch this script in parallel (just wait for the progressbar to be done).}
+
 While your computer is buzy calculating all the PSFs, which can take hours or even days depending on the number of images and the number of processors being used, you can already go on with the next part: extracting the small (typically 64 $\times$ 64) cutouts of the lens or some stars, for deconvolution. This process is now completely separated from the extraction of PSF stars, even if it still uses the \verb+extract.f+ program. The idea is that you can extract some objects, and then deconvolve them with different PSFs of your choice.
 
 This has to be done for the lens and for all the stars you want to use for normalization later on. But be careful: do not execute several extractions in parallel as these scripts write things into the database! You will have to do them one per one.
@@ -783,88 +797,98 @@ The images underneath correspond to this red point of the lightcurve. On the lef
 
 You can now navigate through the lightcurve by clicking on the bar on top: go forward or back by 1, 5, 50, or even 200 points and check whether deviating points are due to an image with a bad seeing, a badly fitted PSF or to any other of the parameters available. You can now decide to redo any part of this pipeline, or go on with plotting lightcurves. 
 
-\subsection{Plotting and exporting lightcurves}
+\subsection{First quick plot of your lightcurves}
 
-Finally. The open end.
 
-Once you have deconvolved some stars and the lens with a few PSF variants, all at once or in groups by setnames etc, the database gives lots of ideas for plots. There is not a real order in which you have to execute these scripts, they are just sorted by complexity but you can pick out the one that suits you best. Here is a description of the  possibilities.
+\tbrem{Lot of changes here : in the settings, set up the "deconvolution" part to the deconvolution you want to plot. For instance, specify decobjname = lens, etc. Also at the very bottom of the settings file you can specify a plotnormfieldname to be used for the plots. Usually you want to put a renormname here. Then run csh plotall.csh in 9 quicklook lc scripts.}
 
-\begin{Verbatim}
-cd 9_lightcurves_scripts
-python 0_mag_hjd.py
-\end{Verbatim}
+%Finally. The open end.
 
-This is a very first plot of the deconvolution results for which you indicate the name in \verb+settings.py+. For every source, it transforms the resulting flux into (relative) magnitudes and plots them as a function of time. A different colour is assigned per source. Images are not combined per night, and there are no error bars.
+%Once you have deconvolved some stars and the lens with a few PSF variants, all at once or in groups by setnames etc, the database gives lots of ideas for plots. There is not a real order in which you have to execute these scripts, they are just sorted by complexity but you can pick out the one that suits you best. Here is a description of the  possibilities.
 
-\begin{Verbatim}
-python 1a_nightstats.py
-\end{Verbatim}
+%\begin{Verbatim}
+%cd 9_lightcurves_scripts
+%python 0_mag_hjd.py
+%\end{Verbatim}
 
-Before combining the images per night for the deconvolution mentioned in \verb+settings.py+, this script just gives you some statistics on these combinations: for a given number of images per night, it tells you how many nights there are with this number of images.
+%This is a very first plot of the deconvolution results for which you indicate the name in \verb+settings.py+. For every source, it transforms the resulting flux into (relative) magnitudes and plots them as a function of time. A different colour is assigned per source. Images are not combined per night, and there are no error bars.
 
-\begin{Verbatim}
-python 1b_firstlc_byqsoimage.py
-\end{Verbatim}
+%\begin{Verbatim}
+%python 1a_nightstats.py
+%\end{Verbatim}
 
-Again for the same deconvolution, this plot shows the light curve of relative magnitudes against time for images grouped per night with error bars. The plotted magnitudes are the median value per night and the error bars are nothing more than the spread, the most extreme, of these values, so they are most probably asymmetric. If there is only one image per night, it does not have an error bar, which is of course not logical. Colours represent sources.
+%Before combining the images per night for the deconvolution mentioned in \verb+settings.py+, this script just gives you some statistics on these combinations: for a given number of images per night, it tells you how many nights there are with this number of images.
 
-\begin{Verbatim}
-python 1c_firstlc_bysetname.py
-\end{Verbatim}
+%\begin{Verbatim}
+%python 1b_firstlc_byqsoimage.py
+%\end{Verbatim}
 
-This is a very similar plot to the previous one, except that it uses a different colour for each set and not for every source. As you would typically use a new setname for another telescope, you can easily check systematics between telescopes.
+%Again for the same deconvolution, this plot shows the light curve of relative magnitudes against time for images grouped per night with error bars. The plotted magnitudes are the median value per night and the error bars are nothing more than the spread, the most extreme, of these values, so they are most probably asymmetric. If there is only one image per night, it does not have an error bar, which is of course not logical. Colours represent sources.
 
-\begin{Verbatim}
-python 2_compare_decs.py
-\end{Verbatim}
+%\begin{Verbatim}
+%python 1c_firstlc_bysetname.py
+%\end{Verbatim}
 
-Before using this script, you should edit it and specify which deconvolutions you want to plot and for which source. You can compare different deconvolutions of the lens for the same source or compare the deconvolutions of stars or combine both. Magnitudes are per image and not per night, and there are no error bars so that the difference between deconvolutions per image becomes visible. Every deconvolution has its own colour. You can specify an optional magnitude shift in case your curves overlap.
+%This is a very similar plot to the previous one, except that it uses a different colour for each set and not for every source. As you would typically use a new setname for another telescope, you can easily check systematics between telescopes.
 
-\begin{Verbatim}
-python 3_separate_by_telescope.py
-\end{Verbatim}
+%\begin{Verbatim}
+%python 2_compare_decs.py
+%\end{Verbatim}
 
-Again you have to edit this script and indicate which deconvolutions you want to compare. This should typically be used for a same source observed on different telescopes. Contrary to the previous script, images are grouped by night here. Of course, every telescope has its own colour.
+%Before using this script, you should edit it and specify which deconvolutions you want to plot and for which source. You can compare different deconvolutions of the lens for the same source or compare the deconvolutions of stars or combine both. Magnitudes are per image and not per night, and there are no error bars so that the difference between deconvolutions per image becomes visible. Every deconvolution has its own colour. You can specify an optional magnitude shift in case your curves overlap.
 
-\begin{Verbatim}
-python 4a_seeingscatter.py
-\end{Verbatim}
+%\begin{Verbatim}
+%python 3_separate_by_telescope.py
+%\end{Verbatim}
 
-Also here you have to tell the script which deconvolutions you want to plot. On top of plotting the lightcurve grouped per night, this script uses a colour scale to indicate the mean seeing per night for every point of the light curve, which allows you to check very quickly if deviating points are due to a bad seeing.
+%Again you have to edit this script and indicate which deconvolutions you want to compare. This should typically be used for a same source observed on different telescopes. Contrary to the previous script, images are grouped by night here. Of course, every telescope has its own colour.
 
-\begin{Verbatim}
-python 4b_otherscatter.py
-\end{Verbatim}
+%\begin{Verbatim}
+%python 4a_seeingscatter.py
+%\end{Verbatim}
 
-The previous script is in fact just an example how you can colour-code other parameters on top the lightcurve. The only difference with this one is line 54: instead of the mean of the seeing, we take the mean airmass, but why not try a median value or ellipticity or \ldots Do no forget to adapt the minimum and maximum value for your colour scale on line 64.
+%Also here you have to tell the script which deconvolutions you want to plot. On top of plotting the lightcurve grouped per night, this script uses a colour scale to indicate the mean seeing per night for every point of the light curve, which allows you to check very quickly if deviating points are due to a bad seeing.
 
-\begin{Verbatim}
-python 5a_calc_indiv_errors.py
-\end{Verbatim}
+%\begin{Verbatim}
+%python 4b_otherscatter.py
+%\end{Verbatim}
 
-The next two scripts are a first try to calculate error bars on the individual images and to use these in the lightcurve. You have to specify on which deconvolved stars you are going to calculate these error bars. The more deconvolved stars you have, the better. You list them at the beginning of the script, you choose a name for this type of error, using for example the names of the stars, and you fix an error for the improbable case that only one source would be available for that image. 
-For every star you want to use, the script calculates the median flux of that star over all your images, and makes a ratio of the star's flux on a given image to the median value for that star, exactly in the same way as for the renormalization coefficient. Again, you have a series of these flux ratios for every image. The standard deviation over these ratios for all stars in one image is the individual error for that image. As there is only a very limited number of stars available on a every image, the spread is multiplied by a corrective factor\footnote{This is a combination of Bessel's correction and a second correction based on Cochran's theorem. For more explanation, see \url{http://en.wikipedia.org/wiki/Unbiased_estimation_of_standard_deviation}}. 
+%The previous script is in fact just an example how you can colour-code other parameters on top the lightcurve. The only difference with this one is line 54: instead of the mean of the seeing, we take the mean airmass, but why not try a median value or ellipticity or \ldots Do no forget to adapt the minimum and maximum value for your colour scale on line 64.
 
-A plot will pop up and show you these new error bars in magnitude centered around 0 for all images, which are numbered on the X-axis. After having inspected the plot, you can write this new error bar into the database.
+%\begin{Verbatim}
+%python 5a_calc_indiv_errors.py
+%\end{Verbatim}
 
-\begin{Verbatim}
-python 5b_combierrors_by_telescope.py
-\end{Verbatim}
+%The next two scripts are a first try to calculate error bars on the individual images and to use these in the lightcurve. You have to specify on which deconvolved stars you are going to calculate these error bars. The more deconvolved stars you have, the better. You list them at the beginning of the script, you choose a name for this type of error, using for example the names of the stars, and you fix an error for the improbable case that only one source would be available for that image. 
+%For every star you want to use, the script calculates the median flux of that star over all your images, and makes a ratio of the star's flux on a given image to the median value for that star, exactly in the same way as for the renormalization coefficient. Again, you have a series of these flux ratios for every image. The standard deviation over these ratios for all stars in one image is the individual error for that image. As there is only a very limited number of stars available on a every image, the spread is multiplied by a corrective factor\footnote{This is a combination of Bessel's correction and a second correction based on Cochran's theorem. For more explanation, see \url{http://en.wikipedia.org/wiki/Unbiased_estimation_of_standard_deviation}}. 
 
-Again, specify the deconvolution you want to plot and the name of the error you just calculated in the previous script. This script groups the images by night by using the median magnitude per night. For the moment, the error bar attributed to this night is just the mean error of the images (so of the error you calculated in the previous script) in that given night. 
-%Theoretically, this should be divided by the square root of the number of stars used to obtain it, but experience tells us that error bars are becoming too small, so we omit this division.%
+%A plot will pop up and show you these new error bars in magnitude centered around 0 for all images, which are numbered on the X-axis. After having inspected the plot, you can write this new error bar into the database.
 
-Colour coding is done per telescope.
+%\begin{Verbatim}
+%python 5b_combierrors_by_telescope.py
+%\end{Verbatim}
 
-These ways of calculating error bars are of course things that need to be discussed in more detail. These plots are only a first example of how they could be calculated and give you a first impression of the errors on your lightcurve.
+%Again, specify the deconvolution you want to plot and the name of the error you just calculated in the previous script. This script groups the images by night by using the median magnitude per night. For the moment, the error bar attributed to this night is just the mean error of the images (so of the error you calculated in the previous script) in that given night. 
+%%Theoretically, this should be divided by the square root of the number of stars used to obtain it, but experience tells us that error bars are becoming too small, so we omit this division.%
 
-\begin{Verbatim}
-python 6_export_rdb.py
-\end{Verbatim}
+%Colour coding is done per telescope.
 
-This is really the open end of the pipeline. According to which program you use to calculate time delays from the lightcurves, you would like to create the input files you need for the program. This script creates one file per source per deconvolution, which you have to specify again at the beginning of the script, and puts into columns the telescope name, mHJD, magnitude and the error as it is calculated in \verb+5b_combierrors_by_telescope.py+. It can easily be adapted to any other format you need.
+%These ways of calculating error bars are of course things that need to be discussed in more detail. These plots are only a first example of how they could be calculated and give you a first impression of the errors on your lightcurve.
 
-\subsection{Adding a new season or another telescope}
+
+\subsection{Exporting}
+
+\tbrem{Once you are happy with the deconvolutions and quicklook lightcurves, and want to proceed with combining the measurements per nights (this is done with the lcmanip tool), run the final cosmouline script, in 9exportscripts. This will (1) write the current db with all its fields as a python pickle into your configdir (this will be used by lcmanip), (2) write a readme file for this pickle (this is for your, human, so that you know what is in the pickle), and (3) put a copy of the current ascii db into your configdir (just in case the pickle cannot be read in 50 years). You can run this export script at any time. Also you can run it again once you have added new deconvolutions or new images etc. Note that the data is used in the filenames, and anyway the script would warn you before overwriting previous output.} 
+
+
+
+%\begin{Verbatim}
+%python 6_export_rdb.py
+%\end{Verbatim}
+
+%This is really the open end of the pipeline. According to which program you use to calculate time delays from the lightcurves, you would like to create the input files you need for the program. This script creates one file per source per deconvolution, which you have to specify again at the beginning of the script, and puts into columns the telescope name, mHJD, magnitude and the error as it is calculated in \verb+5b_combierrors_by_telescope.py+. It can easily be adapted to any other format you need.
+
+\subsection{Bonus : adding a new season or another telescope}
 
 Now that you are familiar with the principles, we can go faster. To add a new season, or a more generally any new image set:
 
@@ -876,7 +900,7 @@ Now that you are familiar with the principles, we can go faster. To add a new se
 
 \item Update the \verb+treatme+-flags! For instance, you might want to process the newly added images only. To do so, adapt the extrascript \verb+change_treatme.py+. You can use it to set \verb+treatme+ to \verb+False+ for all the images of your previous setname. At any time, you can run \verb+inspect_treatme.py+ to get a neat summary of the number, sets, and status of all your images.
 
-\item Now go through the scripts until the end of PSF construction. All the ``report'' scripts will automatically split up their output by setnames, and you can simply complete testlists and kicklists. Test runs respect the \verb+treatme+-flag, and will only run on your new images.
+\item Now go through the scripts until the end of the extractions and PSF constructions. All the ``report'' scripts will automatically split up their output by setnames, and you can simply complete testlists and kicklists. Test runs respect the \verb+treatme+-flag, and will only run on your new images.
 
 You can reuse the same psfname, and the new PSFs will be added aside the existing ones. But be warned that if you now make pngs, these will not get added to the existing ones, but replace them ! You can of course also use a new PSF name, for instance if you plan to use specific parameters for the new images.
 
