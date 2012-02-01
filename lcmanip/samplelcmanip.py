@@ -28,7 +28,7 @@ setnames = ["1"]
 # i.e., not included in the nights).
 imgmaxseeing = 3.0
 imgmaxell = 0.4
-imgmaxskylevel = 10000.0 # In electrons, for a normalization of 1.0 (i.e. ref image)
+imgmaxrelskylevel = 10000.0 # In electrons, for a normalization of 1.0 (i.e. ref image)
 imgmaxmedcoeff = 8.0
 
 # Additionally, you can use a skiplist.
