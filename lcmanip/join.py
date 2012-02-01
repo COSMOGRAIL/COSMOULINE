@@ -115,7 +115,7 @@ print "Night seeing > %.2f : %i" % (nightmaxseeing, np.sum(nightseeingbad == Fal
 nightellbad = np.asarray(medells) < nightmaxell
 print "Night ell > %.2f : %i" % (nightmaxell, np.sum(nightellbad == False))
 nightskylevelbad = medrelskylevels < nightmaxrelskylevel
-print "Night skylevel > %.2f : %i" % (nightmaxrelskylevel, np.sum(nightskylevelbad == False))
+print "Night relskylevel > %.2f : %i" % (nightmaxrelskylevel, np.sum(nightskylevelbad == False))
 nightnormcoeffbad = np.asarray(mednormcoeffs) < nightmaxnormcoeff
 print "Night normcoeff > %.2f : %i" % (nightmaxnormcoeff, np.sum(nightnormcoeffbad == False))
 nightnbimgbad = np.asarray(nbimgs) >= nightminnbimg
