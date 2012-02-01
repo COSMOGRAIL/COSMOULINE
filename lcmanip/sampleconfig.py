@@ -10,7 +10,7 @@
 
 
 lcmanipdir = "/Users/mtewes/Desktop/lensdecs/f_J1226_C2"
-lcmanipfile = "lcmanip.py"
+lcmanipfile = "lcmanip_lens.py"
 
 # This last filename will be used also for output files.
 

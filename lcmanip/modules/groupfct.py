@@ -4,6 +4,8 @@ Functions to group images by nights, for plots or exports.
 
 """
 
+import numpy as np
+
 
 def groupbynights(imagelist, separatesetnames=False):
 	"""
@@ -79,6 +81,15 @@ def nightspan(night):	# returns the full span of time of the observations in tha
 		span = float(night[-1]['mjd']) - float(night[0]['mjd'])
 		return span*24.00 # thransform to hours
 
+def mad(a):
+	"""
+	Returns the "Median Absolute Deviation" of the numpy array a.
+	http://en.wikipedia.org/wiki/Median_absolute_deviation
+	"""
+	return np.median(np.fabs(a - np.median(a)))
+	
+	
+
 def values(listofnights, key, normkey = None):	# stats of the values within the given nights
 	"""
 	Give me a list of lists of image db dicts (as returned by groupbynights).
@@ -92,26 +103,28 @@ def values(listofnights, key, normkey = None):	# stats of the values within the 
 	
 	"""
 
-	from numpy import array, median, std, min, max, mean
 	medvals=[]
 	stddevvals=[]
+	madvals = []
 	minvals=[]
 	maxvals=[]
 	meanvals = []
+	
 	for night in listofnights:
 	
 		if normkey == None:
-			values = array([float(image[key]) for image in night])
+			values = np.array([float(image[key]) for image in night])
 		else:
-			values = array([float(image[key])*float(image[normkey]) for image in night])
+			values = np.array([float(image[key])*float(image[normkey]) for image in night])
 		
-		medvals.append(median(values))
-		stddevvals.append(std(values))
-		minvals.append(min(values))
-		maxvals.append(max(values))
-		meanvals.append(mean(values))
+		medvals.append(np.median(values))
+		stddevvals.append(np.std(values))
+		madvals.append(mad(values))
+		minvals.append(np.min(values))
+		maxvals.append(np.max(values))
+		meanvals.append(np.mean(values))
 	
-	return {'median': medvals, 'stddev': stddevvals, 'min': minvals, 'max': maxvals, 'mean':meanvals}
+	return {'median': medvals, 'stddev': stddevvals, 'mad': madvals, 'min': minvals, 'max': maxvals, 'mean':meanvals}
 	
 
 
