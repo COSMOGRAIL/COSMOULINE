@@ -3,8 +3,7 @@
 #	In fact, to make it more general, we will just go from a 
 #	collection of python lists of same lengths to columns of an rdb file.
 #
-#	Malte, 2008
-#
+
 
 from variousfct import *
 
@@ -57,9 +56,9 @@ def writerdb(columns, filename, writeheader=True, autoformat=True):
 	underline = ["="*n for n in map(len, colnames)]	
 	data = zip(*[column["data"] for column in columns])
 	
-	if os.path.isfile(filename):
-		print "File exists. If you go on I will overwrite it."
-		proquest(True)
+	#if os.path.isfile(filename):
+	#	print "File exists. If you go on I will overwrite it."
+	#	proquest(True)
 	
 	outfile = open(filename, "wb") # b needed for csv
 	writer = csv.writer(outfile, delimiter="\t")
@@ -72,5 +71,16 @@ def writerdb(columns, filename, writeheader=True, autoformat=True):
 	
 	outfile.close()
 	
-	print "Wrote %s !" % (filename) 
+	print "Wrote %s" % (filename) 
+	print "Column index - Label"
+	print "\n".join([ "%12i - %s" % (coli, column["name"]) for (coli, column) in enumerate(columns)])
+	
+	
+	
+	
+	
+	
+	
+	
+
 
