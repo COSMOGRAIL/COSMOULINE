@@ -4,16 +4,14 @@
 #    This is the path to the directory containing the exported cosmouline pkl database that
 #    you want to manipulate. By default, this would be cosmoulines configdir, as the pkl
 #    is saved there.
-# 3) Copy samplelcmanip.py as lcmanip.py *into the lcmanipdir* (i.e., next to the database pkl) 
-# 4) All further settings are done in this lcmanip.py
-#    You can change the name of this lcmanip.py, for instance to extract several deconvolutions etc.
+# 3) Copy samplelcmanip.py as some_name_of_your_choice_lcmanip.py *into the lcmanipdir* (i.e., next to the database pkl) 
+# 4) All further settings are done in some_name_of_your_choice_lcmanip.py
+#    To extract several deconvolutions etc, simply use several some_name_of_your_choice_lcmanip.py
 
 
-lcmanipdir = "/Users/mtewes/Desktop/lensdecs/f_J1226_C2"
-lcmanipfile = "lcmanip_lens.py"
-
+lcmanipdir = "/Users/mtewes/Desktop/lensdecs/f_J0246_ECAM"
+lcmanipfile = "2012-01-16_lens_lcmanip.py"
 # This last filename will be used also for output files.
-
 
 # Normally you do not have to change anything below this line.
 ################################################################################################
@@ -31,10 +29,10 @@ import rdbexport
 
 
 
-execfile(os.path.join(lcmanipdir, "lcmanip.py"))
-outputname = os.path.splitext(lcmanipfile)[0]
+execfile(os.path.join(lcmanipdir, lcmanipfile))
 
 print "    ### Working on %s ###" % dbfilename
+outputname = os.path.splitext(lcmanipfile)[0]
 
 dbfilepath = os.path.join(lcmanipdir, dbfilename)
 
