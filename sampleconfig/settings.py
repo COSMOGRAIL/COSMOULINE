@@ -97,6 +97,8 @@ rawdir = "/home/epfl/eulaers/unsaved/prered_Mercator/reduc/J1001+5027_RG_crop"
 #xephemlens = "HE2149-274,f|Q,21:52:07.44,-27:31:50.19,19.0,2000"
 #xephemlens = "WFI2033-4723,f|Q,20:33:42.08,-47:23:43.00,20.0,2000"
 #xephemlens =  "J1335+0118,f|Q,13:35:34.79,+01:18:05.50,20.0,2000"
+#xephemlens = "J0832+0404,f|Q,08:32:17.00,+04:04:05.20,20.0,2000"
+#xephemlens = "J1322+1052,f|Q,13:22:36.42,+10:52:39.43,20.0,2000"
 xephemlens = "Simulation,f|Q,00:00:00.00,+00:00:00.0,20.0,2000"
 
 # Now you can run all the scripts until the alignment !
