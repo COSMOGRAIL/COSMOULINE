@@ -32,9 +32,11 @@ for i, image in enumerate(images):
 
 	
 	fitsfile = os.path.join(alidir, image['imgname'] + ".fits")
+	if not os.path.exists(fitsfile):
+		continue
 	
 	f2nimg = f2n.fromfits(fitsfile)
-	f2nimg.setzscale("auto", "auto")
+	f2nimg.setzscale("auto", "auto", satlevel = 5000000)
 	f2nimg.rebin(2)
 	f2nimg.makepilimage(scale = "log", negative = False)
 	f2nimg.writetitle(image['imgname'])
