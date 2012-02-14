@@ -4,11 +4,24 @@
 # exported cosmouline database pkl into an rdb file ready for pycs.
 
 
+################### Settings common to all operations ##################
+
 # Filename of the exported cosmouline db :
 dbfilename = "2012-01-11_f_Q1355_C2_db.pkl"
 
 # Name of the deconvolution (see the README file that comes with the db ...) :
 deconvname = "dec_wow_lens_medcoeff_pyMCSabcdf1"
+
+
+################### Section for addfluxes.py ###########################
+
+toaddsourcenames = ["A1", "A2"] # Name of the sources whose fluxes you want to add
+
+sumsourcename = "A" # Name of the resulting source
+# This new source will get added to the db as if it would have come from a deconv.
+
+
+################### Section for join.py ################################
 
 # Name of the pointsources of this deconvolution :
 sourcenames = ["A", "B"]
