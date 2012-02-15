@@ -116,7 +116,7 @@ medrelcoefferrs = mednormcoefferrs / mednormcoeffs # relative errors on the norm
 
 meannormcoeffnbs = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_comment", normkey=None)['mean'])) # Number of stars for coeff (mean -> float !)
 print "Histogram of mean number of normalization stars per night :"
-h = ["%4i nights with %i stars" % (c, list(meannormcoeffnbs).count(c)) for c in sorted(list(set(list(meannormcoeffnbs))))]
+h = ["%4i nights with %i stars" % (list(meannormcoeffnbs).count(c), c) for c in sorted(list(set(list(meannormcoeffnbs))))]
 for l in h:
 	print l
 
