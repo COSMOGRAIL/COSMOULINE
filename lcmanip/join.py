@@ -60,6 +60,18 @@ print "We keep %i images among %i." % (len(images), ava)
 
 # Ok, the selection is done, we are left with the good images.
 
+# Checking for negative fluxes, before combining by nights.
+# We do not crash, just print out info to write on skiplist ...
+for image in images:
+	for sourcename in sourcenames:
+		fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
+		
+		try:
+			if float(image[fluxfieldname]) < 0.0:
+				print "%s ERROR, negative flux for source %s" % (image["imgname"], sourcename)
+		except:
+			print "%s ERROR, not a float : %s" % (image["imgname"], image[fluxfieldname])
+
 # Grouping them by nights :
 nights = groupfct.groupbynights(images, separatesetnames=False)
 print "This gives me %i nights." % len(nights)
