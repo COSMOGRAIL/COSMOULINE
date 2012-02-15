@@ -69,7 +69,7 @@ for image in images:
 		try:
 			if float(image[fluxfieldname]) < 0.0:
 				print "%s ERROR, negative flux for source %s" % (image["imgname"], sourcename)
-				print "Please, put this image on a skiplist."
+				#print "Please, put this image on a skiplist."
 		except:
 			print "%s ERROR, not a float : %s" % (image["imgname"], image[fluxfieldname])
 
@@ -80,7 +80,7 @@ for image in images:
 		try:
 			if float(image[normcoeffname]) < 0.0:
 				print "%s ERROR, negative normcoeff for source %s" % (image["imgname"], sourcename)
-				print "Please, put this image on a skiplist."
+				#print "Please, put this image on a skiplist."
 		except:
 			print "%s ERROR, not a float : %s" % (image["imgname"], image[normcoeffname])
 
