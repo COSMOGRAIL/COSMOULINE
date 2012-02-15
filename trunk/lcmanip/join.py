@@ -14,7 +14,7 @@ print "%i images in db." % (len(images))
 
 # Selecting the right telescopes and setnames :
 images = [image for image in images if (image["telescopename"] in telescopenames) and (image["setname"] in setnames)]
-print "%i images have the choosen telescope- and set- names." % (len(images))
+print "%i images have the chosen telescope- and set- names." % (len(images))
 
 # Selecting the right deconvolution :
 images = [image for image in images if image["decfilenum_" + deconvname] != None] 
@@ -69,8 +69,20 @@ for image in images:
 		try:
 			if float(image[fluxfieldname]) < 0.0:
 				print "%s ERROR, negative flux for source %s" % (image["imgname"], sourcename)
+				print "Please, put this image on a skiplist."
 		except:
 			print "%s ERROR, not a float : %s" % (image["imgname"], image[fluxfieldname])
+
+for image in images:
+	for sourcename in sourcenames:
+		#fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
+		
+		try:
+			if float(image[normcoeffname]) < 0.0:
+				print "%s ERROR, negative normcoeff for source %s" % (image["imgname"], sourcename)
+				print "Please, put this image on a skiplist."
+		except:
+			print "%s ERROR, not a float : %s" % (image["imgname"], image[normcoeffname])
 
 # Grouping them by nights :
 nights = groupfct.groupbynights(images, separatesetnames=False)
