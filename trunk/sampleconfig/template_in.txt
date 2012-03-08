@@ -12,7 +12,7 @@
 |----------------------------------------|-------------               
 |Step for z1  max et min                 |0.0                      
 |                                        |0.0                      
-|Step for z2  max et min                 |0.0                      
+|Step for z2  max et min                 |0.2                      
 |                                        |0.0                      
 |----------------------------------------|-------------               
 |Step for delta1 et delta2 max et min    |0.05                       
