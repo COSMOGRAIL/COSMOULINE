@@ -288,8 +288,8 @@ def makejpgtgz(pngdirpath, tgzdir, maxfilenamelength = 5, askquestions=True):
 	#print pngfiles
 	pngfiles = [os.path.basename(pngfile) for pngfile in pngfiles if len(os.path.basename(pngfile)) <= (maxfilenamelength + 4)]
 	
-	print "I would now make a jpg archive of %i pngs." % len(pngfiles)
-	proquest(askquestions)
+	print "I will now make a jpg archive of %i pngs." % len(pngfiles)
+	#proquest(askquestions)
 	
 	#origdir = os.getcwd()
 	#os.chdir(pngdirpath)
