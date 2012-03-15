@@ -44,7 +44,7 @@ def writerdb(columns, filename, writeheader=True, autoformat=True):
 			if column["name"] in ["mhjd"] or "mag_" in column["name"]:
 				column["data"] = map(lambda x: "%.6f" % (x), column["data"])
 			elif "magerr_" in column["name"]:
-				column["data"] = map(lambda x: "%.4f" % (x), column["data"])
+				column["data"] = map(lambda x: "%.6f" % (x), column["data"])
 			# Stuff with medium precision :
 			elif column["name"] in ["fwhm", "elongation", "airmass", "normcoeff"]:
 				column["data"] = map(lambda x: "%.3f" % (x), column["data"])

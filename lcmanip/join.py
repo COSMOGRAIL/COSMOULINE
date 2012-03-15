@@ -72,10 +72,6 @@ for image in images:
 				#print "Please, put this image on a skiplist."
 		except:
 			print "%s ERROR, not a float : %s" % (image["imgname"], image[fluxfieldname])
-
-for image in images:
-	for sourcename in sourcenames:
-		#fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
 		
 		try:
 			if float(image[normcoeffname]) < 0.0:
