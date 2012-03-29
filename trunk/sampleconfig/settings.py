@@ -53,7 +53,7 @@ setname = "1"
 telescopename = "Mercator"
 # Available telescopenames :
 # Mercator, EulerC2, EulerCAM, HCT, SMARTSandicam, Liverpool
-# MaidanakSITE, MaidanakSI
+# MaidanakSITE (for 2030x800), MaidanakSI (for 4096x4096), Maidanak2k2k (for 2084 x 2084)
 # HoLi, NOTalfosc, skysim, NOHEADER
 # where NOHEADER is a special name to not read any header information from the FITS files.
 # where Combi is a scecial name to read the header of the combined images.
