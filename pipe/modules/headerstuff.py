@@ -678,7 +678,7 @@ def maidanak2k2kheader(rawimg):
 	
 	# Now the date and time stuff :
 	
-	pythondt = datetime.datetime.strptime(header["PR_DATET"], "%Y-%m-%dT%H:%M:%S") # beginning of exposure in UTC
+	pythondt = datetime.datetime.strptime(header["DATE-OBS"][0:19], "%Y-%m-%dT%H:%M:%S") # beginning of exposure in UTC
 	exptime = float(header['EXPTIME'])
 	pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
 	
