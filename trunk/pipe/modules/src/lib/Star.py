@@ -313,9 +313,9 @@ class Star():
         slices = [ slice(0,old, float(old)/new) for old,new in zip(a.shape,newshape) ]
         coordinates = np.mgrid[slices]
         indices = coordinates.astype('i')   #choose the biggest smaller integer index
-        return a[tuple(indices)]
+        return a[tuple(indices)] / (float(newshape[0])/float(a.shape[0]))**2.
 
-        
+
     def _mean(self, a, *args):
         '''
         rebin ndarray data into a smaller ndarray of the same rank whose dimensions

@@ -214,7 +214,7 @@ for i, image in enumerate(images):
 		inputfitspath = os.path.join(resultsdir, "difnum01_%02i.fits" % (j+1) )
 		
 		f2nimg = f2n.fromfits(inputfitspath, verbose=False)
-		f2nimg.setzscale(- 0.01, 0.01)
+		f2nimg.setzscale(- 0.0025, 0.0025)
 		f2nimg.makepilimage(scale = "lin", negative = False)
 		f2nimg.upsample(2)
 		#f2nimg.writeinfo([image['imgname']], (255, 0, 0))
