@@ -80,6 +80,20 @@ for image in images:
 		except:
 			print "%s ERROR, not a float : %s" % (image["imgname"], image[normcoeffname])
 
+# Combining shotnoise and renormerror per image and adding this to the database (needed for Error3)
+# Error on f(x*y) = sqrt(x**2 * y_err**2 + y**2 * x_err**2)
+# Correcting the renormcoefferr by dividing it by the number of renormstars
+
+for image in images:
+	for sourcename in sourcenames:
+	
+		fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
+		shotnoisefieldname = "out_%s_%s_shotnoise" % (deconvname, sourcename)
+		
+		image[normcoeffname+"_err"] = image[normcoeffname+"_err"] / float(image[normcoeffname+"_comment"])
+		combierror = np.sqrt((image[normcoeffname]**2 * image[shotnoisefieldname]**2) + (image[fluxfieldname]**2 * image[normcoeffname+"_err"]**2))
+		image["out_" + deconvname + "_" + sourcename + "_combierr"] = combierror
+
 # Grouping them by nights :
 nights = groupfct.groupbynights(images, separatesetnames=False)
 print "This gives me %i nights." % len(nights)
@@ -171,6 +185,7 @@ for i, sourcename in enumerate(sourcenames):
 	
 	fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
 	shotnoisefieldname = "out_%s_%s_shotnoise" % (deconvname, sourcename)
+	combierrorfieldname = "out_%s_%s_combierr" % (deconvname, sourcename)
 	
 	# Getting the normalized median fluxes, and converting them to mags :
 	normfluxes = np.array(groupfct.values(nights, fluxfieldname, normkey=normcoeffname)['median'])
@@ -178,40 +193,64 @@ for i, sourcename in enumerate(sourcenames):
 		raise RuntimeError("Negative Fluxes  !")
 	mags = -2.5 * np.log10(normfluxes)
 	
-	##### Errorbar 1 : shotnoise error of a typicial individual image in this night.
+	##### Errorbar 0 : shotnoise error of a typicial individual image in this night divided by the sqrt of the number of images within the night
 	normshotnoises = np.fabs(np.array(groupfct.values(nights, shotnoisefieldname, normkey=normcoeffname)['median']))
-	magerrs1 = 2.5 * np.log10(1.0 + normshotnoises/normfluxes)
+	normshotnoises = normshotnoises / np.sqrt(nbimgs)
+	magerrs0 = 2.5 * np.log10(1.0 + normshotnoises/normfluxes)
 	
-	##### Errorbar 2 : shotnoise combined with renormalization error of a typical image in this night.
-	# We have already calculated the relative coeff errors. Turning them into absolute ones, and combining with shotnoise :
+	
+	##### Errorbar 1 : Old formula: shotnoise combined with renormalization error of a typical image in this night.
+	# We have already calculated the relative coeff errors. Turning them into absolute ones and combining with shotnoise :
 	normnormcoefferrs = normfluxes * medrelcoefferrs
 	normcombierrors = np.sqrt(normnormcoefferrs**2 + normshotnoises**2)
-	magerrs2 = 2.5 * np.log10(1.0 + normcombierrors/normfluxes)
+	magerrs1 = 2.5 * np.log10(1.0 + normcombierrors/normfluxes)
 	
-	##### Errorbar 3 : max-to-min spread of photometric measurements within this night (recentered = symmetric error bar)
-	# Nights with less than 3 images get 3 times the median error.
-	maxnormfluxes = np.array(groupfct.values(nights, fluxfieldname, normkey=normcoeffname)['max'])
-	minnormfluxes = np.array(groupfct.values(nights, fluxfieldname, normkey=normcoeffname)['min'])
-	normfluxspreads = maxnormfluxes - minnormfluxes
-	magerrs3 = 2.5 * np.log10(1.0 + normfluxspreads/normfluxes)
-	magerrs3[np.array(nbimgs) < 3] = 3.0 * np.median(magerrs3)
+	##### Errorbar 2 : New formula but still with median shotnoise combined with median renormalization error of a typical image in this night.
+	# combined error of flux*normcoeff = sqrt(normcoeff**2 * shotnoise**2 + flux**2 * normcoefferr**2):
+	medfluxes = np.array(groupfct.values(nights, fluxfieldname, normkey=None)['median'])
+	medshotnoises = np.fabs(np.array(groupfct.values(nights, shotnoisefieldname, normkey=None)['median']))
+	medshotnoises = medshotnoises / np.sqrt(nbimgs)
+	medcombierrors = np.sqrt((np.asarray(mednormcoeffs)**2 * medshotnoises**2) + (medfluxes**2 * mednormcoefferrs**2))
+	magerrs2 = 2.5 * np.log10(1.0 + medcombierrors/normfluxes)
+	
+	##### Errorbar 3 : New formula with median of combined error per image of shotnoise and renormerr, divided by the number of images per night
+	combinighterrors = np.fabs(np.array(groupfct.values(nights, combierrorfieldname, normkey=normcoeffname)['median']))
+	combinighterrors = combinighterrors / np.sqrt(nbimgs)
+	magerrs3 = 2.5 * np.log10(1.0 + combinighterrors/normfluxes)
 	
 	##### Errorbar 4 : MAD estimator of the spread of photometric measurements within this night,
 	# scaled by a factor assuming a gaussian distribution.
 	# http://en.wikipedia.org/wiki/Median_absolute_deviation
 	# Nights with less than 3 images get 3 times the median error.
 	normmads = np.array(groupfct.values(nights, fluxfieldname, normkey=normcoeffname)['mad'])
+	normmads = normmads / np.sqrt(nbimgs)
 	normmads *= 1.4826
 	magerrs4 = 2.5 * np.log10(1.0 + normmads/normfluxes)
 	magerrs4[np.array(nbimgs) < 3] = 3.0 * np.median(magerrs4)
 	
+	##### Errorbar 5 : maximum of theoretical and pragmatic errorbar
+	magerrs5 = np.maximum(magerrs3,magerrs4)
+	
+	"""
+	##### Errorbar 6 : max-to-min spread of photometric measurements within this night (recentered = symmetric error bar)
+	# Nights with less than 3 images get 3 times the median error.
+	maxnormfluxes = np.array(groupfct.values(nights, fluxfieldname, normkey=normcoeffname)['max'])
+	minnormfluxes = np.array(groupfct.values(nights, fluxfieldname, normkey=normcoeffname)['min'])
+	normfluxspreads = maxnormfluxes - minnormfluxes
+	magerrs6 = 2.5 * np.log10(1.0 + normfluxspreads/normfluxes)
+	magerrs6[np.array(nbimgs) < 3] = 3.0 * np.median(magerrs3)
+	"""
+
 	
 	# We add these to the above structure for the rdb file :
 	exportcols.append({"name":"mag_%s" % sourcename, "data":mags})
+	exportcols.append({"name":"magerr_%s_0" % sourcename, "data":magerrs0})
 	exportcols.append({"name":"magerr_%s_1" % sourcename, "data":magerrs1})
 	exportcols.append({"name":"magerr_%s_2" % sourcename, "data":magerrs2})
 	exportcols.append({"name":"magerr_%s_3" % sourcename, "data":magerrs3})
 	exportcols.append({"name":"magerr_%s_4" % sourcename, "data":magerrs4})
+	exportcols.append({"name":"magerr_%s_5" % sourcename, "data":magerrs5})
+	#exportcols.append({"name":"magerr_%s_6" % sourcename, "data":magerrs6})
 
 	#print "Source %s" % (sourcename)
 	#print "Median flux [electrons]      : %.2f" % (np.median(normfluxes))
