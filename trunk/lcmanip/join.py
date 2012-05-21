@@ -229,7 +229,8 @@ for i, sourcename in enumerate(sourcenames):
 	magerrs4[np.array(nbimgs) < 3] = 3.0 * np.median(magerrs4)
 	
 	##### Errorbar 5 : maximum of theoretical and pragmatic errorbar
-	magerrs5 = np.maximum(magerrs3,magerrs4)
+	magerrs_temp = np.maximum(magerrs1,magerrs2)
+	magerrs5 = np.maximum(magerrs_temp,magerrs4)
 	
 	"""
 	##### Errorbar 6 : max-to-min spread of photometric measurements within this night (recentered = symmetric error bar)
