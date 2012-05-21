@@ -90,7 +90,7 @@ for image in images:
 		fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
 		shotnoisefieldname = "out_%s_%s_shotnoise" % (deconvname, sourcename)
 		
-		image[normcoeffname+"_err"] = image[normcoeffname+"_err"] / float(image[normcoeffname+"_comment"])
+		image[normcoeffname+"_err"] = image[normcoeffname+"_err"] / np.sqrt(float(image[normcoeffname+"_comment"]))
 		combierror = np.sqrt((image[normcoeffname]**2 * image[shotnoisefieldname]**2) + (image[fluxfieldname]**2 * image[normcoeffname+"_err"]**2))
 		image["out_" + deconvname + "_" + sourcename + "_combierr"] = combierror
 
