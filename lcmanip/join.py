@@ -293,7 +293,7 @@ rdbexport.writerdb(exportcols, os.path.join(lcmanipdir, outputname + ".rdb"), wr
 plt.figure(figsize=(20,12))
 for i, sourcename in enumerate(sourcenames):
 	mags = [col for col in exportcols if col["name"] == "mag_%s" % sourcename][0]["data"]
-	magerrs = [col for col in exportcols if col["name"] == "magerr_%s_4" % sourcename][0]["data"]
+	magerrs = [col for col in exportcols if col["name"] == "magerr_%s_5" % sourcename][0]["data"]
 	
 	plt.errorbar(mhjds, mags, yerr=magerrs, linestyle="None", marker=".", label = sourcename)
 	# Circles around flagged points :
