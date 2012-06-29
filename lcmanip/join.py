@@ -290,7 +290,9 @@ rdbexport.writerdb(exportcols, os.path.join(lcmanipdir, outputname + ".rdb"), wr
 
 
 # And make a plot just for the fun of it.
-plt.figure(figsize=(20,12))
+fig = plt.figure(figsize=(20,12))
+fig.subplots_adjust(left=0.06, right=0.98, bottom=0.1, top=0.95, wspace=0.1, hspace=0.1)
+
 for i, sourcename in enumerate(sourcenames):
 	mags = [col for col in exportcols if col["name"] == "mag_%s" % sourcename][0]["data"]
 	magerrs = [col for col in exportcols if col["name"] == "magerr_%s_5" % sourcename][0]["data"]
