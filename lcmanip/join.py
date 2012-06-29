@@ -182,6 +182,21 @@ exportcols = [
 
 # Calculating median mags and errors for the sources (same idea, once for every source) :
 
+"""
+Summary of magerrs :
+
+0 : theoretical shotnoise error only, for the mean of a night's measurements
+1 : theoretical shotnoise + empirical normalization error, for a typical single image of this night
+2 : idem, but another way of combining them
+3 : idem, but now for the mean of a night's measurements
+4 : empirical : MAD of the measurements within a night
+5 : maximum of 1, 2, 4
+
+
+"""
+
+
+
 for i, sourcename in enumerate(sourcenames):
 	
 	fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
@@ -285,7 +300,7 @@ ax.set_xlim(np.min(mhjds)-100.0, np.max(mhjds)+100.0) # DO NOT REMOVE THIS !!!
 # IT IS IMPORTANT TO GET THE DATES RIGHT
 
 #plt.title(deckey, fontsize=20)
-plt.xlabel('MHJD [days]')
+plt.xlabel('MHJD [day]')
 plt.ylabel('Magnitude (instrumental)')
 
 plt.legend()
@@ -308,9 +323,34 @@ yearx.set_xlabel("Date")
 
 if showplots == True:
 	plt.show()
-	print "Done."
 else:
 	plt.savefig(os.path.join(lcmanipdir, outputname + "_plot.pdf"))
-	print "Wrote plot, done."
+	print "Wrote plot."
+
+plt.clf()
+
+# Visualization of all those different error bars...
+
+fig = plt.figure(figsize=(14,2.0*len(sourcenames)))
+fig.subplots_adjust(left=0.05, right=0.95, bottom=0.05, top=0.95, wspace=0.1, hspace=0.15)
+
+for i, sourcename in enumerate(sourcenames):
+	ax = plt.subplot(len(sourcenames), 1, i+1)
+	for errori in ["0", "1", "2", "3", "4", "5"]:
+	
+		magerrs = [col for col in exportcols if col["name"] == "magerr_%s_%s" % (sourcename, errori)][0]["data"]
+		ax.plot(np.array(mhjds) + 0.5*int(errori), magerrs, marker=".", label = "Error %s" % (errori))
+	
+	ax.annotate(sourcename, xy=(0.03, 0.8),  xycoords='axes fraction', color = "black", fontsize=20)
+				
+ax.legend()
+
+if showplots == True:
+	plt.show()
+else:
+	plt.savefig(os.path.join(lcmanipdir, outputname + "_plot_magerrs.pdf"))
+	print "Wrote plot."
+
+print "Done."
 
 
