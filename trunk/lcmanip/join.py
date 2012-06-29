@@ -60,7 +60,7 @@ print "We keep %i images among %i." % (len(images), ava)
 
 # Ok, the selection is done, we are left with the good images.
 
-# Checking for negative fluxes, before combining by nights.
+# Checking for negative fluxes and normalizations, before combining by nights.
 # We do not crash, just print out info to write on skiplist ...
 for image in images:
 	for sourcename in sourcenames:
@@ -71,42 +71,51 @@ for image in images:
 				print "%s ERROR, negative flux for source %s" % (image["imgname"], sourcename)
 				#print "Please, put this image on a skiplist."
 		except:
-			print "%s ERROR, not a float : %s" % (image["imgname"], image[fluxfieldname])
-		
-		try:
-			if float(image[normcoeffname]) < 0.0:
-				print "%s ERROR, negative normcoeff for source %s" % (image["imgname"], sourcename)
-				#print "Please, put this image on a skiplist."
-		except:
-			print "%s ERROR, not a float : %s" % (image["imgname"], image[normcoeffname])
+			print "%s ERROR, not a float : %s" % (image["imgname"], str(image[fluxfieldname]))
+	
+	# We also check the normalizations :
+	try:
+		if float(image[normcoeffname]) < 0.0:
+			print "%s ERROR, negative normcoeff %s" % (image["imgname"], normcoeffname)		
+	except:
+		print "%s ERROR, not a float : %s" % (image["imgname"], str(image[normcoeffname]))
 
-# Combining shotnoise and renormerror per image and adding this to the database (needed for Error3)
-# Error on f(x*y) = sqrt(x**2 * y_err**2 + y**2 * x_err**2)
-# Correcting the renormcoefferr by dividing it by the number of renormstars
+
+# We now add some new fields to each image, in preparation to the errorbar calculation.
 
 for image in images:
+	
+	# - the field normcoeffname+"_err" contains the dispersion of the coeffs from the different stars, not the error !
+	#	-> we divide this by sqrt(nstars) to get the actual error on each normcoeff.
+	image[normcoeffname+"_sigma"] = image[normcoeffname+"_err"] / np.sqrt(float(image[normcoeffname+"_comment"]))
+
+	# - Combining shotnoise and renormsigma *per image*, in preparation for later calculations
+	# Error on f(x*y) = sqrt(x**2 * y_err**2 + y**2 * x_err**2)
+	# where : y = fluxfieldname +/- shotnoisefieldname
+	#         x = normcoeffname +/- normcoeffname_sigma
+	
 	for sourcename in sourcenames:
 	
 		fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
 		shotnoisefieldname = "out_%s_%s_shotnoise" % (deconvname, sourcename)
 		
-		print "This is dangerous, refactor the entire script !"
-		image[normcoeffname+"_err"] = image[normcoeffname+"_err"] / np.sqrt(float(image[normcoeffname+"_comment"]))
-		combierror = np.sqrt((image[normcoeffname]**2 * image[shotnoisefieldname]**2) + (image[fluxfieldname]**2 * image[normcoeffname+"_err"]**2))
+		combierror = np.sqrt((image[normcoeffname]**2 * image[shotnoisefieldname]**2) + (image[fluxfieldname]**2 * image[normcoeffname+"_sigma"]**2))
+		
 		image["out_" + deconvname + "_" + sourcename + "_combierr"] = combierror
 
-# Grouping them by nights :
+# At this point we group the images by nights, all the individual computations are done.
+
 nights = groupfct.groupbynights(images, separatesetnames=False)
 print "This gives me %i nights." % len(nights)
 
-nbimgs = map(len, nights) # The number of images in each night
+nbimgs = map(len, nights) # The number of images in each night, as floats
 
 print "Histogram of number of images per night :"
 h = ["%4i nights with %i images" % (nbimgs.count(c), c) for c in sorted(list(set(nbimgs)))]
 for l in h:
 	print l
 
-
+sqrtnbimgs = np.sqrt(np.array(nbimgs) + 0.0) # This is the numpy array used for computations
 
 # Calculating mean/median of values common to all sources within the nights.
 # They are stored as lists or numpy arrays, and will be written as columns into the rdb file.
@@ -120,29 +129,23 @@ medairmasses = groupfct.values(nights, 'airmass', normkey=None)['median']
 medseeings = groupfct.values(nights, 'seeing', normkey=None)['median']
 medells = groupfct.values(nights, 'ell', normkey=None)['median']
 medskylevels = groupfct.values(nights, 'skylevel', normkey=None)['median']
+
 mednormcoeffs = groupfct.values(nights, normcoeffname, normkey=None)['median']
-medrelskylevels = np.asarray(medskylevels)*np.asarray(mednormcoeffs) # We rescale the sky level in the same way as for source fluxes.
+mednormcoeffsigmas = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_sigma", normkey=None)['median'])) # Absolute error on these coeffs
+medrelnormcoeffsigmas = mednormcoeffsigmas / mednormcoeffs # relative errors on the norm coeffs
 
-# Some calculations about the normalization and its errors
-
-#meannormcoefferrs = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_err", normkey=None)['mean'])) # Absolute error on these coeffs
-mednormcoefferrs = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_err", normkey=None)['median'])) # Absolute error on these coeffs
-# i.e., this is the med of the stddev between the stars in each image.
-
-if min(mednormcoefferrs) <= 0.0001:
+if min(mednormcoeffsigmas) <= 0.0001:
 	print "####### WARNING : some normcoefferrs seem to be zero ! #############"
-	print "Check/redo the normalization, otherwise some of my error bars might be too small."
+	print "Check/redo the normalization (with more stars ?), otherwise some of my error bars might be too small."
 	
-
-#meanrelcoefferrs = meannormcoefferrs / mednormcoeffs # relative errors on the norm coeffs
-medrelcoefferrs = mednormcoefferrs / mednormcoeffs # relative errors on the norm coeffs
-
 meannormcoeffnbs = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_comment", normkey=None)['mean'])) # Number of stars for coeff (mean -> float !)
 print "Histogram of mean number of normalization stars per night :"
 h = ["%4i nights with %i stars" % (list(meannormcoeffnbs).count(c), c) for c in sorted(list(set(list(meannormcoeffnbs))))]
 for l in h:
 	print l
 
+# We rescale the sky level in the same way as for source fluxes :
+medrelskylevels = np.asarray(medskylevels)*np.asarray(mednormcoeffs) 
 
 # The flags for nights (True if the night is OK) :
 nightseeingbad = np.asarray(medseeings) < nightmaxseeing
@@ -159,12 +162,9 @@ print "Night nbimg < %i : %i" % (nightminnbimg, np.sum(nightnbimgbad == False))
 flags = np.logical_and(np.logical_and(nightseeingbad, nightellbad), np.logical_and(nightskylevelbad, nightnormcoeffbad))
 flags = np.logical_and(flags, nightnbimgbad)
 
-
 print "%i nights are flagged as bad (i.e., they have flag = False)." % (np.sum(flags == False))
 
-
 # We prepare a structure for the rdb file. It is an ordered list of dicts, each dict has two keys : column name and the data.
-
 exportcols = [
 {"name":"mhjd", "data":mhjds},
 {"name":"datetime", "data":meddates},
@@ -180,22 +180,27 @@ exportcols = [
 ]
 
 
-# Calculating median mags and errors for the sources (same idea, once for every source) :
+# Finally, calculating the median mags and errors for the sources :
 
 """
-Summary of magerrs :
+Summary of magerrs
+------------------
 
-0 : theoretical shotnoise error only, for the mean of a night's measurements
-1 : theoretical shotnoise + empirical normalization error, for a typical single image of this night
-2 : idem, but another way of combining them
-3 : idem, but now for the mean of a night's measurements
-4 : empirical : MAD of the measurements within a night
-5 : maximum of 1, 2, 4
+All errors are computed for the *mean/median* of a night's measurements (i.e. "divided by sqrt(nbimgs)")
 
+0 : theoretical shotnoise error only, (i.e. we assume there is no normalization error)
 
+1 : combination of theoretical shotnoise and empirical normalization error. So this error is larger than error 0.
+	(Malte : medians taken "where they should")
+2 : like 1 (same ingredients), but the medians are taken before the normalisation
+	(Malte : finds this strange)
+3 : like 1 (same ingredients), but the medians are taken "later"
+	(Malte : potentially less robust if many outlier information).
+
+4 : empirical error based on the MAD of the measurements within a night
+
+5 : maximum of 1, 4
 """
-
-
 
 for i, sourcename in enumerate(sourcenames):
 	
@@ -211,42 +216,45 @@ for i, sourcename in enumerate(sourcenames):
 	
 	##### Errorbar 0 : shotnoise error of a typicial individual image in this night divided by the sqrt of the number of images within the night
 	normshotnoises = np.fabs(np.array(groupfct.values(nights, shotnoisefieldname, normkey=normcoeffname)['median']))
-	normshotnoises = normshotnoises / np.sqrt(nbimgs)
+	normshotnoises = normshotnoises / sqrtnbimgs
 	magerrs0 = 2.5 * np.log10(1.0 + normshotnoises/normfluxes)
 	
 	
-	##### Errorbar 1 : Old formula: shotnoise combined with renormalization error of a typical image in this night.
+	##### Errorbar 1 : shotnoise combined with renormalization error, also divided by sqrtnbimgs.
 	# We have already calculated the relative coeff errors. Turning them into absolute ones and combining with shotnoise :
-	normnormcoefferrs = normfluxes * medrelcoefferrs
+	normnormcoefferrs = normfluxes * medrelnormcoeffsigmas / sqrtnbimgs # We divide by sqrt n (normshotnoises is already divided, see error 0 !)
 	normcombierrors = np.sqrt(normnormcoefferrs**2 + normshotnoises**2)
 	magerrs1 = 2.5 * np.log10(1.0 + normcombierrors/normfluxes)
+
+	#assert np.all(magerrs1 > magerrs0)
 	
-	##### Errorbar 2 : New formula but still with median shotnoise combined with median renormalization error of a typical image in this night.
-	# combined error of flux*normcoeff = sqrt(normcoeff**2 * shotnoise**2 + flux**2 * normcoefferr**2):
+	##### Errorbar 2 : Also the median shotnoise combined with median renormalization error of a typical image in this night.
+	# The difference is that here (and only for the calculation of the error bar),
+	# the median of the fluxes is taken even before normalization (Why ?? Bad idea I think).
+	# As always, the genreral formula for the combined error of flux*normcoeff = sqrt(normcoeff**2 * shotnoise**2 + flux**2 * normcoefferr**2).
 	medfluxes = np.array(groupfct.values(nights, fluxfieldname, normkey=None)['median'])
 	medshotnoises = np.fabs(np.array(groupfct.values(nights, shotnoisefieldname, normkey=None)['median']))
-	medshotnoises = medshotnoises / np.sqrt(nbimgs)
-	medcombierrors = np.sqrt((np.asarray(mednormcoeffs)**2 * medshotnoises**2) + (medfluxes**2 * mednormcoefferrs**2))
+	medcombierrors = np.sqrt((np.asarray(mednormcoeffs)**2 * medshotnoises**2) + (medfluxes**2 * mednormcoeffsigmas**2)) / sqrtnbimgs
 	magerrs2 = 2.5 * np.log10(1.0 + medcombierrors/normfluxes)
 	
-	##### Errorbar 3 : New formula with median of combined error per image of shotnoise and renormerr, divided by the number of images per night
-	combinighterrors = np.fabs(np.array(groupfct.values(nights, combierrorfieldname, normkey=normcoeffname)['median']))
-	combinighterrors = combinighterrors / np.sqrt(nbimgs)
+	##### Errorbar 3 : Median of combined error per image (of shotnoise and renormerr), divided by the number of images per night
+	# The ingredients are the same as for errorbar 1, just the medians are taken "later".
+	combinighterrors = np.fabs(np.array(groupfct.values(nights, combierrorfieldname, normkey=None)['median']))
+	combinighterrors = combinighterrors / sqrtnbimgs
 	magerrs3 = 2.5 * np.log10(1.0 + combinighterrors/normfluxes)
 	
 	##### Errorbar 4 : MAD estimator of the spread of photometric measurements within this night,
-	# scaled by a factor assuming a gaussian distribution.
+	# scaled by a factor assuming a gaussian distribution, and divided by the sqrtnbimgs.
 	# http://en.wikipedia.org/wiki/Median_absolute_deviation
 	# Nights with less than 3 images get 3 times the median error.
 	normmads = np.array(groupfct.values(nights, fluxfieldname, normkey=normcoeffname)['mad'])
-	normmads = normmads / np.sqrt(nbimgs)
+	normmads = normmads / sqrtnbimgs
 	normmads *= 1.4826
 	magerrs4 = 2.5 * np.log10(1.0 + normmads/normfluxes)
 	magerrs4[np.array(nbimgs) < 3] = 3.0 * np.median(magerrs4)
 	
 	##### Errorbar 5 : maximum of theoretical and pragmatic errorbar
-	magerrs_temp = np.maximum(magerrs1,magerrs2)
-	magerrs5 = np.maximum(magerrs_temp,magerrs4)
+	magerrs5 = np.maximum(magerrs1,magerrs4)
 	
 	"""
 	##### Errorbar 6 : max-to-min spread of photometric measurements within this night (recentered = symmetric error bar)
