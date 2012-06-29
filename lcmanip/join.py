@@ -195,7 +195,7 @@ All errors are computed for the *mean/median* of a night's measurements (i.e. "d
 2 : like 1 (same ingredients), but the medians are taken before the normalisation
 	(Malte : finds this strange)
 3 : like 1 (same ingredients), but the medians are taken "later"
-	(Malte : potentially less robust if many outlier information).
+	(Malte : potentially less robust if many outliers).
 
 4 : empirical error based on the MAD of the measurements within a night
 
