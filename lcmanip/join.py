@@ -170,7 +170,7 @@ exportcols = [
 {"name":"setname", "data":setnames},
 {"name":"nbimg", "data":nbimgs},
 {"name":"fwhm", "data":medseeings},
-{"name":"elongation", "data":medells},
+{"name":"ellipticity", "data":medells},
 {"name":"airmass", "data":medairmasses},
 {"name":"relskylevel", "data":medrelskylevels},
 {"name":"normcoeff", "data":mednormcoeffs},
