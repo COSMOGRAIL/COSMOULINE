@@ -28,8 +28,6 @@ if normcoeffname == "medcoeff":
 		image["medcoeff_err"] = 0.0
 		image["medcoeff_comment"] = "0"
 
-
-
 # Rejecting bad images :
 
 before = len(images)
@@ -200,6 +198,12 @@ All errors are computed for the *mean/median* of a night's measurements (i.e. "d
 4 : empirical error based on the MAD of the measurements within a night
 
 5 : maximum of 1, 4
+
+To add : the same but for single images of that night, i.e., without dividing by sqrt(nbimgs)
+6 : theoretical shotnoise errror only
+7 : shotnoise + renorm
+8 : mad
+
 """
 
 for i, sourcename in enumerate(sourcenames):
