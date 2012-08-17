@@ -9,9 +9,10 @@
 #    To extract several deconvolutions etc, simply use several some_name_of_your_choice_lcmanip.py
 
 
-lcmanipdir = "/Users/mtewes/Desktop/lensdecs/f_J0246_ECAM"
-lcmanipfile = "2012-01-16_lens_lcmanip.py"
-# This last filename will be used also for output files.
+lcmanipdir = "/Users/mtewes/Desktop/lensdecs/Q1355_C2" # In there is the cosmouline output file !
+lcmanipfile = "2012-01-11_f_Q1355_C2_lcmanip.py" # This file contains all further settings.
+# This last filename will be used also for lcmanip output files.
+
 
 # Normally you do not have to change anything below this line.
 ################################################################################################
