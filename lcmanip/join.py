@@ -293,6 +293,12 @@ for i, sourcename in enumerate(sourcenames):
 rdbexport.writerdb(exportcols, os.path.join(lcmanipdir, outputname + ".rdb"), writeheader=writeheader)
 
 
+#plt.scatter(magerrs0, magerrs1)
+#plt.hist(magerrs5/magerrs1, 20)
+#plt.show()
+
+
+
 # And make a plot just for the fun of it.
 fig = plt.figure(figsize=(20,12))
 fig.subplots_adjust(left=0.06, right=0.98, bottom=0.1, top=0.95, wspace=0.1, hspace=0.1)
