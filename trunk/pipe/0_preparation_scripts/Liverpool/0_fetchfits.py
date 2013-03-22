@@ -13,15 +13,15 @@ import time
 ################   CONFIGURATION   #######################
 
 #	location of the "yyyy/yyyymmdd/yyyymmdd.*" files : has to end with "/" !
-datadir = "/home/epfl/tewes/COSMOGRAIL/DATA_Liverpool/"
+datadir = "/obs/lenses_EPFL/Liverpool/"
 
 decompdir = "/home/epfl/tewes/unsaved/liverdecomp/"
 
-outputlist = "fitslist_liverpool.txt"
+#outputlist = "fitslist_liverpool.txt"
 
-full_lens_names_file = "../logscripts/full_lens_names.txt"
+#full_lens_names_file = "../logscripts/full_lens_names.txt"
 
-lens_to_get = ""
+#lens_to_get = ""
 
 ##########################################################
 

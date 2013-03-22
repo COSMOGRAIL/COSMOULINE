@@ -1,8 +1,8 @@
 import os
 import glob
 
-fitsdir = "rassemblement/"
-dfitsout = os.popen("dfits rassemblement/c_e_*.fits | fitsort OBJECT")
+fitsdir = "fits/"
+dfitsout = os.popen("dfits fits/c_e_*.fits | fitsort OBJECT")
 liste = dfitsout.readlines()
 
 found_obj = set()
