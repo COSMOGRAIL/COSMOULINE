@@ -1,70 +1,5 @@
 #! /usr/bin/env python
 
-"""
-f2n.py, the successor of f2n !
-==============================
-
-Malte Tewes, December 2009
-
-U{http://obswww.unige.ch/~tewes/}
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 3
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-U{http://www.gnu.org/licenses/gpl.html}
-
-About
------
-
-f2n.py is a tiny python module to make a well-scaled PNG file out of a FITS image.
-It's mainly a wrapper around pyfits + PIL. Aside of these two, we use only numpy.
-
-PIL : U{http://www.pythonware.com/products/pil/}
-
-pyfits : U{http://www.stsci.edu/resources/software_hardware/pyfits}
-
-
-Usage
------
-You can use this python script both as a module or as an executable with command line options.
-See the website and the examples provided in the tarball ! To learn about the methods of the f2nimage class, click on 
-I{f2n.f2nimage} in the left menu.
-
-Features
---------
-
-f2n.py let's you crop the input image, rebin it, choose cutoffs and log or lin scales, draw masks, "upsample" the pixels without interpolation, circle and annotate objects, write titles or longer strings, and even compose several of such images side by side into one single png file.
-
-For the location of pixels for drawing + labels, we work in "image" pixels, like ds9 and sextractor. This is true even when you have choosen to crop/rebin/upsample the image : you still specify all coordinates as pixels of the original input image !
-
-By default we produce graylevel 8-bit pngs, for minimum file size. But you are free to use colours as well (thus writing 24 bit pngs).
-
-Order of operations that should be respected for maximum performance (and to avoid "features" ... ) :
-
-	- fromfits (or call to constructor)
-	- crop
-	- setzscale (auto, ex, flat, or your own choice)
-	- rebin
-	- makepilimage (lin, log, clin, or clog) (the c stands for colours... "rainbow")
-	- drawmask, showcutoffs
-	- upsample
-	- drawcircle, drawrectangle, writelabel, writeinfo, writetitle, drawstarsfile, drawstarslist
-	- tonet (or compose)
-
-Ideas for future versions
--------------------------
-
-	- variant of rebin() that rebins/upscales to approach a given size, like maxsize(500).
-
-"""
-
-
 import sys
 import os
 import types
@@ -83,9 +18,9 @@ import pyfits as ft
 # To learn about your python path :
 # >>> import sys
 # >>> print sys.path
-fontsdir = "f2n_fonts"
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-__version__ = "1.1"
+#fontsdir = "f2n_fonts"
+fontsdir = os.path.join(os.path.dirname(__file__), "f2n_fonts")
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 
@@ -126,7 +61,7 @@ class f2nimage:
 
 			self.numpyarray = np.ones(shape, dtype=np.float32)*fill
 
-        	else:
+		else:
 			if not isinstance(numpyarray, np.ndarray):
 
 				raise RuntimeError, "Please give me numpy arrays."
@@ -191,7 +126,7 @@ class f2nimage:
 		
 		For both z1 and z2, give either :
 		
-			- "auto" (default automatic, different between z1 and z2)
+			- "auto" (default automatic, separate computations done to estimate z1 and z2)
 			- "ex" (extrema)
 			- "flat" ("sigma-cuts" around median value, well-suited for flatfields)
 			- numeric value like 1230.34
@@ -335,7 +270,17 @@ class f2nimage:
 					print "Setting flat z2 : %f, nsig = %i" % (self.z2, nsig)
 				
 				
-				
+			if np.isnan(self.z1):
+				self.z1 = 0.0
+				if self.verbose :
+					print "Correcting NaN z1"
+			
+			
+			if np.isnan(self.z2):
+				self.z2 = 0.0
+				if self.verbose :
+					print "Correcting NaN z2"
+			
 
 
 	
@@ -441,21 +386,25 @@ class f2nimage:
 		If you choose scale = "clog" or "clin", you get hue values (aka rainbow colours).
 		"""
 		
+		calcarray = self.numpyarray.transpose()
+		
 		if scale == "log" or scale == "lin":
 			self.negative = negative
-			numpyarrayshape = self.numpyarray.shape
-			calcarray = self.numpyarray.copy()
+			#numpyarrayshape = self.numpyarray.shape
+			
 			#calcarray.ravel() # does not change in place in fact !
 			calcarray = calcarray.clip(min = self.z1, max = self.z2)
 			
 			if scale == "log":
-				calcarray = np.array(map(lambda x: loggray(x, self.z1, self.z2), calcarray))
+				#calcarray = np.array(map(lambda x: loggray(x, self.z1, self.z2), calcarray))
+				calcarray = loggray(calcarray, self.z1, self.z2)
 			else :
-				calcarray = np.array(map(lambda x: lingray(x, self.z1, self.z2), calcarray))
+				#calcarray = np.array(map(lambda x: lingray(x, self.z1, self.z2), calcarray))
+				calcarray = lingray(calcarray, self.z1, self.z2)
 			
 			
-			calcarray.shape = numpyarrayshape
-			bwarray = np.zeros(numpyarrayshape, dtype=np.uint8)
+			#calcarray.shape = numpyarrayshape
+			bwarray = np.zeros(calcarray.shape, dtype=np.uint8)
 			calcarray.round(out=bwarray)
 			if negative:
 				if self.verbose:
@@ -468,95 +417,21 @@ class f2nimage:
 			# We flip it so that (0, 0) is back in the bottom left corner as in ds9
 			# We do this here, so that you can write on the image from left to right :-)	
 
-			self.pilimage = imop.flip(im.fromarray(bwarray.transpose()))
+			self.pilimage = imop.flip(im.fromarray(bwarray))
 			if self.verbose:
 					print "PIL image made with scale : %s" % scale
 			return 0
 	
-		if scale == "clog" or scale == "clin":
+		if scale == "clog" or scale == "clin": # Rainbow !
 			
-			"""
-			rainbow !
-			Algorithm for HSV to RGB from http://www.cs.rit.edu/~ncs/color/t_convert.html, by Eugene Vishnevsky
-			Same stuff then for f2n in C
-			
-			h is from 0 to 360 (hue)
-			s from 0 to 1 (saturation)
-			v from 0 to 1 (brightness)	
-			"""
-		
 			self.negative = False
-			calcarray = self.numpyarray.transpose()
 			if scale == "clin":
 				calcarray = (calcarray.clip(min = self.z1, max = self.z2)-self.z1)/(self.z2 - self.z1) # 0 to 1
 			if scale == "clog":
 				calcarray = 10.0 + 990.0 * (calcarray.clip(min = self.z1, max = self.z2)-self.z1)/(self.z2 - self.z1) # 10 to 1000
 				calcarray = (np.log10(calcarray)-1.0)*0.5 # 0 to 1 
 
-			#calcarray = calcarray * 359.0 # This is now our "hue value", 0 to 360
-			calcarray = (1.0-calcarray) * 300.0 # I limit this to not go into red again
-			# The order of colours is Violet < Blue < Green < Yellow < Red
-			
-			# We prepare the output arrays
-			rcalcarray = np.ones(calcarray.shape)
-			gcalcarray = np.ones(calcarray.shape)
-			bcalcarray = np.ones(calcarray.shape)
-			
-			h = calcarray/60.0 # sector 0 to 5
-			i = np.floor(h).astype(np.int)
-			
-			v = 1.0 * np.ones(calcarray.shape)
-			s = 1.0 * np.ones(calcarray.shape)
-			
-			f = h - i # factorial part of h, this is an array
-			p = v * ( 1.0 - s )
-			q = v * ( 1.0 - s * f )
-			t = v * ( 1.0 - s * ( 1.0 - f ) )
-			
-			# sector 0:
-			indices = (i == 0)
-			rcalcarray[indices] = 255.0 * v[indices]
-			gcalcarray[indices] = 255.0 * t[indices]
-			bcalcarray[indices] = 255.0 * p[indices]
-			
-			# sector 1:
-			indices = (i == 1)
-			rcalcarray[indices] = 255.0 * q[indices]
-			gcalcarray[indices] = 255.0 * v[indices]
-			bcalcarray[indices] = 255.0 * p[indices]
-			
-			# sector 2:
-			indices = (i == 2)
-			rcalcarray[indices] = 255.0 * p[indices]
-			gcalcarray[indices] = 255.0 * v[indices]
-			bcalcarray[indices] = 255.0 * t[indices]
-			
-			# sector 3:
-			indices = (i == 3)
-			rcalcarray[indices] = 255.0 * p[indices]
-			gcalcarray[indices] = 255.0 * q[indices]
-			bcalcarray[indices] = 255.0 * v[indices]
-			
-			# sector 4:
-			indices = (i == 4)
-			rcalcarray[indices] = 255.0 * t[indices]
-			gcalcarray[indices] = 255.0 * p[indices]
-			bcalcarray[indices] = 255.0 * v[indices]
-			
-			# sector 5:
-			indices = (i == 5)
-			rcalcarray[indices] = 255.0 * v[indices]
-			gcalcarray[indices] = 255.0 * p[indices]
-			bcalcarray[indices] = 255.0 * q[indices]
-			
-			
-			rarray = np.zeros(calcarray.shape, dtype=np.uint8)
-			garray = np.zeros(calcarray.shape, dtype=np.uint8)
-			barray = np.zeros(calcarray.shape, dtype=np.uint8)
-			rcalcarray.round(out=rarray)
-			gcalcarray.round(out=garray)
-			bcalcarray.round(out=barray)
-			
+			(rarray, garray, barray) = rainbow(calcarray, autoscale=False)
 			carray = np.dstack((rarray,garray,barray))
 			
 			self.pilimage = imop.flip(im.fromarray(carray, "RGB"))
@@ -667,16 +542,19 @@ class f2nimage:
 		"""Auxiliary method to load font if not yet done."""
 		if self.titlefont == None:
 			self.titlefont = imft.load_path(os.path.join(fontsdir, "courR18.pil"))
+			#self.titlefont = imft.load_path("courR18.pil")
 	
 	def loadinfofont(self):
 		"""Auxiliary method to load font if not yet done."""
 		if self.infofont == None:
 			self.infofont = imft.load_path(os.path.join(fontsdir, "courR10.pil"))
+			#self.infofont = imft.load_path("courR10.pil")
 			
 	def loadlabelfont(self):
 		"""Auxiliary method to load font if not yet done."""
 		if self.labelfont == None:
 			self.labelfont = imft.load_path(os.path.join(fontsdir, "courR10.pil"))
+			#self.labelfont = imft.load_path("courR10.pil")
 
 	def changecolourmode(self, newcolour):
 		"""Auxiliary method to change the colour mode.
@@ -793,7 +671,67 @@ class f2nimage:
 			self.loadlabelfont()
 			textwidth = self.draw.textsize(label, font = self.labelfont)[0]
 			self.draw.text(((pilxa + pilxb)/2.0 - float(textwidth)/2.0 + 1, pilya + 2), label, fill = colour, font = self.labelfont)
+	
+	def drawline(self, x=None, y=None, l=10, t=0.0, width=None, colour=None, label = None):
+		"""
+		Draws a 1-pixel wide line, centered on x y with length l and angle t (in rad).
+		Can be used to represent ellipticities, for instance.
+		x y : center (if None, I'll draw it in the center of the image)
+		l : length
+		t : theta (positive geometric convention)
 		
+		label is not implemented.
+		"""
+		
+		if x == None:
+			x = self.origwidth/2.0
+		if y == None:
+			y = self.origheight/2.0
+	
+		self.checkforpilimage()
+		colour = self.defaultcolour(colour)
+		self.changecolourmode(colour)
+		self.makedraw()
+		
+		"""
+		xa = x - np.abs(0.5*l*np.cos(t))
+		ya = y - np.abs(0.5*l*np.sin(t))
+		xb = x + np.abs(0.5*l*np.cos(t))
+		yb = y + np.abs(0.5*l*np.sin(t))
+		"""
+		ax = x - 0.5*l*np.cos(t) +1
+		ay = y - 0.5*l*np.sin(t)
+		bx = x + 0.5*l*np.cos(t) +1
+		by = y + 0.5*l*np.sin(t)
+		
+		# Ensure right order, to get better drawing precision...
+		
+		"""
+		if bx < ax:
+			tmp = bx
+			bx = ax
+			ax = tmp
+		if by < ay:
+			tmp = by
+			by = ay
+			ay = tmp
+		"""	
+		
+		(pilax, pilay) = self.pilcoords((ax,ay))
+		(pilbx, pilby) = self.pilcoords((bx,by))
+		
+		#pilxb +=1
+		#pilyb +=1
+		
+		# Ugly trick to avoid documented bug of draw.line :
+		if width == None:
+			self.draw.line([(pilax, pilay), (pilbx, pilby)], fill = colour)
+		else:
+			self.draw.line([(pilax, pilay), (pilbx, pilby)], width=int(width), fill = colour)
+		
+		if label != None:
+			pass
+			
 	
 #	Replaced by the label options above :	
 #
@@ -868,28 +806,65 @@ class f2nimage:
 
 
 		
-	def drawstarslist(self, dictlist, r = 10, colour = None):
+	def drawstarlist(self, starlist, r = 10, colour = None, autocolour=None):
 		"""
-		Calls drawcircle and writelable for an list of stars.
-		Provide a list of dictionnaries, where each dictionnary contains "name", "x", and "y".
+		Calls drawcircle and writelabel for an list of stars.
+		starlist is a list of either:
+			- dictionnaries, with fields "name", "x", and "y"
+			- objects with attributes name, x, and y --> use this if you work with the star.py module.
+		In both cases, you can optinnally also provide "r" and "colour" for each star.
+		
+		:param autocolour: name of a key or attribute to use to determine colour (e.g., 'flux', 'fwhm') ... Individual colours are disregarded in this case.
+		:type autocolour: string
 		
 		"""
+		
+		if len(starlist) == 0:
+			if self.verbose :
+				print "No stars to draw !"
+			return
+		
+		if autocolour != None and len(starlist) >= 2:
+			colours = []
+			for star in starlist:
+				if type(star) is dict:
+					colours.append(star.get(autocolour,0.0))
+				else:
+					colours.append(getattr(star, autocolour, 0.0))
+			colours = np.array(colours)
+			colours = loggray(colours)
+			
+			(rarray, garray, barray) = rainbow(colours, autoscale=True)
+			colours = np.dstack((rarray, garray, barray))[0]
+			
+		else:
+			colours = []
+			for star in starlist:
+				if type(star) is dict:
+					colours.append(star.get("colour",colour))
+				else:
+					colours.append(getattr(star, "colour", colour))
 		
 		self.checkforpilimage()
-		colour = self.defaultcolour(colour)
+		colour = self.defaultcolour(colours[0])
 		self.changecolourmode(colour)
 		self.makedraw()
 		
-		
-		for star in dictlist:
-			self.drawcircle(star["x"], star["y"], r = r, colour = colour, label = star["name"])
+		for (star, c) in zip(starlist, colours):
+			if c != None:
+				c = tuple(c)
+			if type(star) is dict:
+				self.drawcircle(star["x"], star["y"], r = star.get("r",r), colour = c, label = star["name"])
+			else:
+				self.drawcircle(star.x, star.y, getattr(star, "r", r), colour =  c, label = star.name)
+
 			#self.writelabel(star["x"], star["y"], star["name"], r = r, colour = colour)
 		
 		if self.verbose :
-			print "I've drawn %i stars." % len(dictlist)
+			print "I've drawn %i stars." % len(starlist)
 
 		
-	def drawstarsfile(self, filename, r = 10, colour = None):
+	def drawstarfile(self, filename, r = 10, colour = None):
 		"""
 		Same as drawstarlist but we read the stars from a file.
 		Here we read a text file of hand picked stars. Same format as for cosmouline, that is :
@@ -928,7 +903,7 @@ class f2nimage:
 			print os.path.split(filename)[1]
 		
 		
-		self.drawstarslist(dictlist, r = r, colour = colour)
+		self.drawstarlist(dictlist, r = r, colour = colour)
 
 		
 	def tonet(self, outfile):
@@ -943,18 +918,123 @@ class f2nimage:
 		self.pilimage.save(outfile, "PNG")
 		
 	
-def lingray(x, a, b):
-	"""Auxiliary function that specifies the linear gray scale.
-	a and b are the cutoffs."""
-	return 255 * (x-float(a))/(b-a)
+def lingray(x, a=None, b=None):
+	"""
+	Auxiliary function that specifies the linear gray scale.
+	a and b are the cutoffs : if not specified, min and max are used
+	"""
+	if a == None:
+		a = np.min(x)
+	if b == None:
+		b = np.max(x)
 	
-def loggray(x, a, b):
-	"""Auxiliary function that specifies the logarithmic gray scale.
-	a and b are the cutoffs."""
+	return 255.0 * (x-float(a))/(b-a)
+	
+def loggray(x, a=None, b=None):
+	"""
+	Auxiliary function that specifies the logarithmic gray scale.
+	a and b are the cutoffs : if not specified, min and max are used
+	"""
+	if a == None:
+		a = np.min(x)
+	if b == None:
+		b = np.max(x)
+		
 	linval = 10.0 + 990.0 * (x-float(a))/(b-a)
 	return (np.log10(linval)-1.0)*0.5 * 255.0
 
 
+
+def rainbow(data, autoscale=False):
+	"""
+	Give me array-like intensities/fluxes/whatever, I return uint8 arrays of red, green, blue.
+	
+	:param data: the data. Should be between 0.0 and 1.0, otherwise, use autoscale
+	:type data: array
+	
+	:param autoscale: I rescale the data to be between 0.0 and 1.0
+	:type autoscale: boolean
+	
+	Algorithm for HSV to RGB from http://www.cs.rit.edu/~ncs/color/t_convert.html, by Eugene Vishnevsky
+	Same stuff then for f2n in C
+			
+	h is from 0 to 360 (hue)
+	s from 0 to 1 (saturation)
+	v from 0 to 1 (brightness)
+	"""
+	
+	if autoscale:
+		calcarray = (data - np.min(data)) / (np.max(data) - np.min(data))
+	else:
+		calcarray = data.copy()
+		
+	#calcarray = calcarray * 359.0 # This is now our "hue value", 0 to 360
+	calcarray = (1.0-calcarray) * 300.0 # I limit this to not go into red again
+	# The order of colours is Violet < Blue < Green < Yellow < Red
+	
+	# We prepare the output arrays
+	rcalcarray = np.ones(calcarray.shape)
+	gcalcarray = np.ones(calcarray.shape)
+	bcalcarray = np.ones(calcarray.shape)
+	
+	h = calcarray/60.0 # sector 0 to 5
+	i = np.floor(h).astype(np.int)
+	
+	v = 1.0 * np.ones(calcarray.shape)
+	s = 1.0 * np.ones(calcarray.shape)
+	
+	f = h - i # factorial part of h, this is an array
+	p = v * ( 1.0 - s )
+	q = v * ( 1.0 - s * f )
+	t = v * ( 1.0 - s * ( 1.0 - f ) )
+	
+	# sector 0:
+	indices = (i == 0)
+	rcalcarray[indices] = 255.0 * v[indices]
+	gcalcarray[indices] = 255.0 * t[indices]
+	bcalcarray[indices] = 255.0 * p[indices]
+	
+	# sector 1:
+	indices = (i == 1)
+	rcalcarray[indices] = 255.0 * q[indices]
+	gcalcarray[indices] = 255.0 * v[indices]
+	bcalcarray[indices] = 255.0 * p[indices]
+	
+	# sector 2:
+	indices = (i == 2)
+	rcalcarray[indices] = 255.0 * p[indices]
+	gcalcarray[indices] = 255.0 * v[indices]
+	bcalcarray[indices] = 255.0 * t[indices]
+	
+	# sector 3:
+	indices = (i == 3)
+	rcalcarray[indices] = 255.0 * p[indices]
+	gcalcarray[indices] = 255.0 * q[indices]
+	bcalcarray[indices] = 255.0 * v[indices]
+	
+	# sector 4:
+	indices = (i == 4)
+	rcalcarray[indices] = 255.0 * t[indices]
+	gcalcarray[indices] = 255.0 * p[indices]
+	bcalcarray[indices] = 255.0 * v[indices]
+	
+	# sector 5:
+	indices = (i == 5)
+	rcalcarray[indices] = 255.0 * v[indices]
+	gcalcarray[indices] = 255.0 * p[indices]
+	bcalcarray[indices] = 255.0 * q[indices]
+	
+	
+	rarray = np.zeros(calcarray.shape, dtype=np.uint8)
+	garray = np.zeros(calcarray.shape, dtype=np.uint8)
+	barray = np.zeros(calcarray.shape, dtype=np.uint8)
+	rcalcarray.round(out=rarray)
+	gcalcarray.round(out=garray)
+	bcalcarray.round(out=barray)
+	
+	return (rarray, garray, barray)
+
+	
 
 
 def fromfits(infile, hdu = 0, verbose = True):
