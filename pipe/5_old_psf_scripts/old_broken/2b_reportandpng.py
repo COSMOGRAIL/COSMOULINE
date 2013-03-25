@@ -89,7 +89,7 @@ for i, image in enumerate(images):
 		f2nimg.setzscale(0, 1)
 		f2nimg.makepilimage(scale = "log", negative = False)
 		f2nimg.upsample(4)
-		f2nimg.drawstarslist(cosmicsdict, r=7.0)
+		f2nimg.drawstarlist(cosmicsdict, r=7.0)
 		f2nimg.writeinfo(["psf%02i.fits (%s)" % (j+1, psfstars[j]["name"])])
 			
 		psfimglist.append(f2nimg)	

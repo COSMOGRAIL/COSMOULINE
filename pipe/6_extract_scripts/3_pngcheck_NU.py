@@ -67,7 +67,7 @@ for i, image in enumerate(images):
 	g.setzscale(z1, z2)
 	g.makepilimage(scale = "log", negative = False)
 	g.upsample(4)
-	g.drawstarslist(cosmicslist)
+	g.drawstarlist(cosmicslist)
 	g.writetitle("g.fits")
 	
 	

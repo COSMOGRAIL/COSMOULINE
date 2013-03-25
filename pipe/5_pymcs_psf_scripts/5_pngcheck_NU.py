@@ -145,7 +145,7 @@ for i, image in enumerate(images):
 		f2nimg.setzscale("auto", "auto")
 		f2nimg.makepilimage(scale = "log", negative = False)
 		f2nimg.upsample(4)
-		f2nimg.drawstarslist(cosmicslist, r=3)
+		f2nimg.drawstarlist(cosmicslist, r=3)
 		if hasattr(psfstars[j], "reg"):
 			for circle in psfstars[j].reg.circles:
 				f2nimg.drawcircle(circle["x"], circle["y"], r = circle["r"], colour = (170))
@@ -168,7 +168,7 @@ for i, image in enumerate(images):
 		f2nimg.setzscale(0, 1.0e3)
 		f2nimg.makepilimage(scale = "log", negative = False)
 		f2nimg.upsample(4)
-		#f2nimg.drawstarslist(cosmicslist, r=10)
+		#f2nimg.drawstarlist(cosmicslist, r=10)
 		#f2nimg.writetitle("%s" % (psfstars[j].name))
 		sigmaimglist.append(f2nimg)
 	

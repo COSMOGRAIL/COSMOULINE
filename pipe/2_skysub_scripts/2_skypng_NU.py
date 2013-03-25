@@ -64,8 +64,8 @@ for i,image in enumerate(images):
 	sexcat = star.sortstarlistbyflux(sexcat)
 	sexcatasdicts = [{"name":s.name, "x":s.x, "y":s.y} for s in sexcat[:20]]
 	
-	skysubimage.drawstarslist(sexcatasdicts, r = 30, colour = (255, 255, 255))
-	skyimage.drawstarslist(sexcatasdicts, r = 30, colour = (255, 0, 0))
+	skysubimage.drawstarlist(sexcatasdicts, r = 30, colour = (255, 255, 255))
+	skyimage.drawstarlist(sexcatasdicts, r = 30, colour = (255, 0, 0))
 
 	skysubinfo = [
 	"%s" % image["imgname"],
