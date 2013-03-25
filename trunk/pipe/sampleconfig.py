@@ -11,7 +11,7 @@
 #---------------------------------------------------------------------------
 
 # Choose a computer :
-computer = "obssr1"
+computer = "regor2"
 
 # The pipeline dir that contains all the scripts (and this "config.py" ) :
 pipedir = "/my/absolute/path/to/cosmouline/pipe_svn"
@@ -56,6 +56,9 @@ if computer=="rathna":
 #---------------------------------------------------------------------------
 if computer=="topaze":
 	sex = "/usr/local/bin/sex"
+#---------------------------------------------------------------------------
+if computer=="regor2":
+	sex = "nice -n 19 /scisoft/bin/sex"
 #---------------------------------------------------------------------------
 
 # Path to compiled programs :
