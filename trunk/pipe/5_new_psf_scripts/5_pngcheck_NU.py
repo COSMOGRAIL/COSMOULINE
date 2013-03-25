@@ -117,7 +117,7 @@ for i, image in enumerate(images):
 	f2ng001.upsample(2) # Now 256 x 256
 	for circle in reg.circles:
 		f2ng001.drawcircle(circle["x"], circle["y"], r = circle["r"], colour = (120))
-	f2ng001.drawstarslist(cosmicslist)
+	f2ng001.drawstarlist(cosmicslist)
 	#f2ng001.writeinfo([image['imgname']], (255, 0, 0))
 	f2ng001.writeinfo(["g001.fits"])
 	

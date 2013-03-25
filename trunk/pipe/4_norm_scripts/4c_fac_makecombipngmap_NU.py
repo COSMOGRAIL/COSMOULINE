@@ -49,8 +49,8 @@ f2nimg.setzscale(z1=-5, z2=1000)
 f2nimg.makepilimage(scale = "log", negative = False)
 
 
-#f2nimg.drawstarslist(refautostarsasdicts, r = 30, colour = (150, 150, 150))
-f2nimg.drawstarslist(preciserefmanstarsasdicts, r = 7, colour = (255, 0, 0))
+#f2nimg.drawstarlist(refautostarsasdicts, r = 30, colour = (150, 150, 150))
+f2nimg.drawstarlist(preciserefmanstarsasdicts, r = 7, colour = (255, 0, 0))
 
 
 #f2nimg.writeinfo(["Sextractor stars (flag-filtered) : %i" % len(refautostarsasdicts)], colour = (150, 150, 150))

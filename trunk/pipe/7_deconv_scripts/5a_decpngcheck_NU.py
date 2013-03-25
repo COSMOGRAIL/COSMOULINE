@@ -74,7 +74,7 @@ for i, image in enumerate(images):
 	f2ng.setzscale(-20, "auto")
 	f2ng.makepilimage(scale = "log", negative = False)
 	f2ng.upsample(4)
-	f2ng.drawstarslist(cosmicslist, r=5)
+	f2ng.drawstarlist(cosmicslist, r=5)
 	f2ng.writeinfo(["Input"])
 	
 	#f2ng.writeinfo(["","g001.fits"])

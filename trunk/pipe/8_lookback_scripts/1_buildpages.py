@@ -251,7 +251,7 @@ for j, image in enumerate(images):
 	f2ng.setzscale(-50, "ex")
 	f2ng.makepilimage(scale = "log", negative = False)
 	f2ng.upsample(4)
-	f2ng.drawstarslist(objcosmicslist)
+	f2ng.drawstarlist(objcosmicslist)
 	f2ng.writetitle("Object")
 	f2ng.tonet(os.path.join(destdir, "g.png"))
 	
@@ -282,7 +282,7 @@ for j, image in enumerate(images):
 	f2ng001.upsample(2) # Now 256 x 256
 	for circle in psfmaskreg.circles:
 		f2ng001.drawcircle(circle["x"], circle["y"], r = circle["r"], colour = (120))
-	f2ng001.drawstarslist(psfcosmicslist)
+	f2ng001.drawstarlist(psfcosmicslist)
 	#f2ng001.writeinfo([image['imgname']], (255, 0, 0))
 	f2ng001.writeinfo(["PSF stars"])
 	f2ng001.tonet(os.path.join(destdir, "psfstars.png"))

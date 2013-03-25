@@ -125,7 +125,7 @@ for i, image in enumerate(images):
 	"Alignment info : %s" % image['alicomment']
 	]
 	
-	f2nimg.drawstarslist(preciserefmanstarsasdicts, r = 20, colour = None)
+	f2nimg.drawstarlist(preciserefmanstarsasdicts, r = 20, colour = None)
 
 	
 	f2nimg.writeinfo(infotextlist)
