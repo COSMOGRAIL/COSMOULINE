@@ -9,10 +9,10 @@ import os, sys, glob, pyfits, numpy
 ################### CONFIGURATION ###################################################################
 
 # ABSOLUTE PATH to where the files are and how to select them :
-origpaths = sorted(glob.glob("/obs/lenses_EPFL/SMARTS/RXJ1131/allsoftlinks/*.fits")) 
+origpaths = sorted(glob.glob("/obs/lenses_EPFL/SMARTS/J0924/raw/extracted/*.fits")) 
 
 # ABSOLUTE PATH to the directory where you want the croped images to be written :
-destdir="/obs/lenses_EPFL/SMARTS/RXJ1131/allcrop" 
+destdir="/obs/lenses_EPFL/SMARTS/J0924/raw/extracted_crop_R" 
 
 
 #####################################################################################################
@@ -64,6 +64,9 @@ for fitsfilepath in origpaths[::-1]:
 	
 	#Strange, the RXJ1131 images are smaller, they are all 1000 by 1000, probably already cropped somehow.
 	# The size of the ugly border seems to increase with time. nevertheless I'll cut the maximum here ,to make it simpler.
+	#pixelarray = pixelarray[60:, 140:]
+	
+	#For J0924 this is again different, size of borders evolve a lot. Ah no, maybe it's the same, let's try this again :
 	pixelarray = pixelarray[60:, 140:]
 	
 	pixelarrayshape = pixelarray.shape
