@@ -1,49 +1,11 @@
-
 #
-#	psf stars
+# psf stars, same format as for all the catalogs...
 #
-
-
-# J1001, ref image is Mer1_093307_RG_J1001+5027
-
 
 d	 932.19  858.72  17878.
 e	 562.84  912.14 100525.
 f	1324.28  920.34 395013.
 g	1573.30  797.49 707646.
-
-# Flux mesure par imexa:
-# 19114.
-# 103908.
-# 402920.
-# 718941.
-#A5% pas Moffat b 0.0004
-#tourne 11min
-
-#2 run avec valeurs sorties:
-# 17878.
-#100525.
-#395013.
-#707646.
-#A1% pas Moffat b 0.0004
-#tourne 10min
-
-# 3 run avec valeurs de sortie:
-# 17956.0645
-# 100893.539
-# 396372.375
-# 709927.75
-#A1% pas Moffat b 0.0001, b3 0.0001
-#tourne 17min, moins bien
-
-#4 run avec valeurs du 2:
-# 17878.
-#100525.
-#395013.
-#707646.
-#A2% pas Moffat b 0.0004, b3 0.0001
-#tourne 10min
-
 
 
 
