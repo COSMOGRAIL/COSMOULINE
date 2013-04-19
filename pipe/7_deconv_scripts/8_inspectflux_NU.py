@@ -55,15 +55,15 @@ for src in ptsrcs:
 	
 	rejlines = []	
 	rejectimages = [image for image in images if image[fluxfieldname] < 0.0]
-	rejlines.extend("%s\t\t%s" % (image["imgname"], "flux = %.3f" % image[fluxfieldname]) for image in rejectimages)
+	rejlines.extend("%s\t\t%s" % (image["imgname"], "flux %s = %.3f" % (src.name, image[fluxfieldname])) for image in rejectimages)
 	rejectimages = [image for image in images if image[decnormfieldname] < 0.0]
 	rejlines.extend("%s\t\t%s" % (image["imgname"], "normcoeff = %.3f" % image[decnormfieldname]) for image in rejectimages)
 	
 	if len(rejlines) == 0:
-		print "All images have positive fluxes and normcoefficients."
+		print "# All images have positive %s fluxes and normcoefficients." % (src.name)
 	
 	else:
-		print "These images have negative fluxes and / or a negative normcoefficient:"
+		print "# These images have negative %s fluxes and/or a negative normcoefficient :" % (src.name)
 		print "\n".join(rejlines)
-		print "Please put them on your kicklist!"
+		print "# Please put them on your kicklist!"
 	
