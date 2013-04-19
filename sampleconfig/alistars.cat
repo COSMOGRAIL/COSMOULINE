@@ -8,7 +8,10 @@
 #	to the positions in the sextractor catalog.
 #	Also, the flux is not required in this file, but we suggest, while
 #	you are at it, to write it down as well.
-#
+#	To do so, write only approximative x and y
+#	then run the identalistars script and copy and paste its output
+#	back into this file...
+
 
 a	844.23	1112.05	844.23
 b	981.98	1025.95	981.98
