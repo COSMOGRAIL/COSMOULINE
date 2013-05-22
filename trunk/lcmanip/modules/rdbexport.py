@@ -46,7 +46,7 @@ def writerdb(columns, filename, writeheader=True, autoformat=True):
 			elif "magerr_" in column["name"]:
 				column["data"] = map(lambda x: "%.6f" % (x), column["data"])
 			# Stuff with medium precision :
-			elif column["name"] in ["fwhm", "elongation", "airmass", "normcoeff"]:
+			elif column["name"] in ["fwhm", "elongation", "ellipticity", "airmass", "normcoeff"]:
 				column["data"] = map(lambda x: "%.3f" % (x), column["data"])
 			# Stuff with low precision :
 			elif column["name"] in ["relskylevel"]:
