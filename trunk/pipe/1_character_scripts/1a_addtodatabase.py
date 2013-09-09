@@ -98,12 +98,23 @@ if os.path.isfile(imgdb):
 	if setname in usedsetnames:
 		raise mterror("Your new setname is already used !")
 	
+	# We get a list of the rawimg we have already in the db :
+	knownrawimgs = map(lambda x : x[0], db.select(imgdb, ['recno'], ['*'], ['rawimg']))
+	
 	# Ok, if we are here then we can insert our new images into the database.
 	for i, fitsfile in enumerate(fitslist):
 		print i+1, fitsfile
 		rawimg = os.path.join(rawdir, fitsfile)
 		
 		dbdict = readheader(telescopename, rawimg)
+		
+		# We check if this image already exists in the db. If yes, we just skip it.
+		# For this we compare the "rawimg", that is the path of the image file. You might want to adapt this to use e.g. the imgname ?
+		# But keep in mind that the imgname contains the setname !
+				
+		if dbdict["rawimg"] in knownrawimgs:
+			print "I already have this one ! (-> I skip it without updating anything)"
+			continue
 
 		# We have to insert image by image into our database.
 		db.insert(imgdb, dbdict)
