@@ -34,11 +34,10 @@ for i, image in enumerate(images):
 	# We run sextractor on the sky subtracted and aligned image :
 	saturlevel = image["gain"] * image["saturlevel"] # to convert to electrons
 	cmd = "%s %s -c default_norm_template.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CATALOG_NAME %s" % (sex, imgpath, image["pixsize"], saturlevel, sexcatpath)
-	os.system(cmd)
+
 	print cmd
 
 	os.system(cmd)
-	
 	
 
 endtime = datetime.now()
