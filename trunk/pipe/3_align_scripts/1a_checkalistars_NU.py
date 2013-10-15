@@ -28,7 +28,7 @@ refimage = refimage[0]
 
 refimgpath = os.path.join(alidir, refimage["imgname"] + ".fits")
 linkpath = os.path.join(workdir, "ref.fits")
-if os.path.exists(linkpath):
+if os.path.exists(linkpath) or os.path.islink(linkpath):
 	print "Removing link..."
 	os.remove(linkpath)
 os.symlink(refimgpath, linkpath)
