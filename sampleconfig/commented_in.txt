@@ -4,10 +4,10 @@
 |Step for the intensity max et min (%)   |5.0         		#keep this step high as we want the intensity to differ from image to image                
 |                                        |0.00001                        
 |----------------------------------------|-------------               
-|Step for coordinates  max et min        |0.01			#unity: small pixels
+|Step for coordinates  max et min        |0.01			#unit: small pixels
 |                                        |0.00001
 |----------------------------------------|-------------               
-|Step for the background  max et min     |0.5			#unity: ADU of pixels
+|Step for the background  max et min     |0.5			#unit: something obscure... 0.0 means "does not move", 3.0 is maximum. Step is related to input image flux.
 |                                        |0.0001
 |----------------------------------------|-------------               
 |Step for z1  max et min                 |0.0                	#if you want to allow a slight difference in the background: z1*background_refimage+z2      
