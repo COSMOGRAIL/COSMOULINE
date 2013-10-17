@@ -70,6 +70,7 @@ rawdir = "/home/epfl/eulaers/unsaved/prered_Mercator/reduc/J1001+5027_RG_crop"
 # In this case, we have : name, f|Q = fixed quasar, RA (H:M:S), Dec (D:M:S), mag, epoch
 # This is used for the astronomical calculations (mainly HJD).
 
+#xephemlens = "J1349+1227,f|Q,13:49:29.84,+12:27:06.88,20.0,2000" #that one is new, not sure about the mag...(/summon Malte)
 #xephemlens = "J0246-0825,f|Q,02:46:34.11,-08:25:36.20,20.0,2000"
 #xephemlens = "J1001+5027,f|Q,10:01:28.61,50:27:56.90,19.0,2000"
 #xephemlens = "HS2209+1914,f|Q,22:11:30.30,19:29:12.00,19.0,2000"
