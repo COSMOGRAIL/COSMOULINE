@@ -8,7 +8,7 @@ import star
 
 db = KirbyBase()
 
-print "Hehe."
+print "Hehe. HEHEHEHEHEHEHEHEHEHEHEHEHEheheheeeeeeee..."
 
 print "psfkey =", psfkey
 

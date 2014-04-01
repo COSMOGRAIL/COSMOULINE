@@ -25,7 +25,7 @@ print "Number of images to treat :", nbrimages
 proquest(askquestions)
 
 
-pngdirpath = os.path.join(workdir, "sky_png")
+pngdirpath = os.path.join(workdir, "sky_png")  # this is where you will put the png images (maybe move the whole name architecture into a single parameterfile ?)
 if os.path.isdir(pngdirpath):
 	print "I will delete existing stuff."
 	proquest(askquestions)

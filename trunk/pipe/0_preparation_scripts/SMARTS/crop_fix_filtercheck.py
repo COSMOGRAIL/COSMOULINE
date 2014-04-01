@@ -9,10 +9,10 @@ import os, sys, glob, pyfits, numpy
 ################### CONFIGURATION ###################################################################
 
 # ABSOLUTE PATH to where the files are and how to select them :
-origpaths = sorted(glob.glob("/obs/lenses_EPFL/SMARTS/J0924/raw/extracted/*.fits")) 
+origpaths = sorted(glob.glob("/obs/lenses_EPFL/PRERED/SMARTS/HE0435/raw/*.fits")) 
 
 # ABSOLUTE PATH to the directory where you want the croped images to be written :
-destdir="/obs/lenses_EPFL/SMARTS/J0924/raw/extracted_crop_R" 
+destdir="/obs/lenses_EPFL/PRERED/SMARTS/HE0435/prep/" 
 
 
 #####################################################################################################
@@ -45,6 +45,7 @@ for fitsfilepath in origpaths[::-1]:
 	pixelarray, hdr = pyfits.getdata(fitsfilepath, header=True, ignore_missing_end=True)
 	#sys.exit()
 	
+	# I commented this for the HE0435 SMARTS data...as the header is not the same...	
 	filterid = hdr["CCDFLTID"].strip()
 	filterlist.append(filterid)
 	
@@ -67,7 +68,12 @@ for fitsfilepath in origpaths[::-1]:
 	#pixelarray = pixelarray[60:, 140:]
 	
 	#For J0924 this is again different, size of borders evolve a lot. Ah no, maybe it's the same, let's try this again :
-	pixelarray = pixelarray[60:, 140:]
+	#pixelarray = pixelarray[60:, 140:]
+	
+	#For HE0435 some images are really ugly..., with enormous borders...
+	pixelarray = pixelarray[100:1037,160:1023]
+	
+	
 	
 	pixelarrayshape = pixelarray.shape
 	print "Ouput : (%i, %i)" % (pixelarrayshape[0], pixelarrayshape[1])

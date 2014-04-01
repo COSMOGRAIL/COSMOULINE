@@ -31,7 +31,7 @@ if not checkplots : # Then we will update the database.
 	# We make a backup copy of our database :
 	backupfile(imgdb, dbbudir, "skystats")
 
-	# We add some new fields into the holy moly database :
+	# We add some new fields into the holy moly database : (holy sainte grenade, this database is awesome)
 	if "skylevel" not in db.getFieldNames(imgdb) :
 		db.addFields(imgdb, ['skylevel:float', 'prealistddev:float'])
 
@@ -51,7 +51,7 @@ for i,image in enumerate(images):
 	pixelarrayshape = pixelarray.shape
 	print "(%i, %i), %s, %s" % (pixelarrayshape[0], pixelarrayshape[1], header["BITPIX"], pixelarray.dtype.name)
 	
-	# Ready to rock.
+	# Ready to rock. (Hell yeah!)
 	# So we want to get the sky level, and the std dev of the pixels around this level (noise in sky).
 	medianlevel = np.median(pixelarray.ravel())
 	
