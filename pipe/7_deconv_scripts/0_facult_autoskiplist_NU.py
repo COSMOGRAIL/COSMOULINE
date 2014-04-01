@@ -13,21 +13,21 @@ from variousfct import *
 ########## Configuration #########
 showhist = False
 
-
+'''
 # To reject the worst stuff :
-maxseeing = 3.0
-maxell = 0.3
+maxseeing = 1.15
+maxell = 0.15
 maxmedcoeff = 3.0
 maxsky = 10000.0
+'''
 
 
-"""
 # Normal rejection stuff :
 maxseeing = 2.5
 maxell = 0.25
 maxmedcoeff = 5.0
 maxsky = 8000.0
-"""
+
 
 """
 # The very best frames to draw a good background :

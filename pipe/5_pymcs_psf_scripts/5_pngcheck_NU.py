@@ -1,5 +1,6 @@
 #
 #	generates overview pngs related to the pyMCS psf construction
+#	NEW : add a imgname to jpgnumber report, to help the construction of the skiplist
 #
 
 execfile("../config.py")
@@ -65,10 +66,16 @@ print "Number of images :", len(images)
 proquest(askquestions)
 
 
+reportpath = os.path.join(workdir, "report_" + psfkey)
+report = open(reportpath,'w')
+
 for i, image in enumerate(images):
 	
 	print "- " * 30
 	print i+1, image['imgname']
+	toreport = str(image['imgname'])+'\t' + str(i+1)
+	report.write(toreport)
+	
 	
 	imgpsfdir = os.path.join(psfdir, image['imgname'])
 	resultsdir = os.path.join(imgpsfdir, "results")

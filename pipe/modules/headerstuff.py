@@ -894,12 +894,33 @@ def smartsandicamheader(rawimg):
 	testlist = False
 	testcomment = "na"
 	
-	# Quick check of filter :
-	if header["CCDFLTID"].strip() != "R":
-		print "\n\n\n WARNING : Filter is not R\n\n\n"
+	# CAREFUL with these: we fill the header with NA to go on with the deconv...
+	
+	if "CCDFILTID" not in availablekeywords:
+		print "WARNING !!! No CCDFILTID in the headers !!"
+		proquest(askquestions)
+		print "You can disable me in /pipe/module/headerstuff line 900"
 		
-	headerjd = float(header['JD']) # Should be UTC, beginning of exposure
-	exptime = float(header['EXPTIME']) # in seconds.
+	if "CCDFILTID" in availablekeywords:			
+		# Quick check of filter :
+		if header["CCDFLTID"].strip() != "R":
+			print "\n\n\n WARNING : Filter is not R\n\n\n"
+	
+	if  "JD" in availablekeywords:	
+		headerjd = float(header['JD']) # Should be UTC, beginning of exposure
+	else:
+		print "WARNING !!! No JD in the headers. Going for HJD instead !!"
+		proquest(askquestions)
+		headerjd = float(header['HJD'])
+		print "You can disable me in /pipe/module/headerstuff line 913"
+		
+	if "EXPTIME" in availablekeywords:			
+		exptime = float(header['EXPTIME']) # in seconds
+	else:
+		print "WARNING !!! No EXPTIME in the headers. Adding 300[s] as default !!"
+		proquest(askquestions)
+		exptime = float(300.0) # in seconds		
+		print "You can disable me in /pipe/module/headerstuff line 921"			
 	
 	pythondt = DateFromJulianDay(headerjd)	
 	pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
@@ -910,7 +931,7 @@ def smartsandicamheader(rawimg):
 	datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
 
 	myownjdfloat = juliandate(pythondt) # The function from headerstuff.py
-	myownmjdfloat = myownjdfloat - 2400000.5
+	myownmjdfloat = myownjdfloat - 2400000.5 # modified Julian days
 	jd = "%.6f" % myownjdfloat 
 	mjd = myownmjdfloat
 		
@@ -937,6 +958,10 @@ def smartsandicamheader(rawimg):
 	}
 	
 	return returndict
+
+
+
+
 
 ###############################################################################################
 
