@@ -2,18 +2,24 @@
 #	Crop FITS files to remove ugly borders (prescan and overscan etc).
 #	BZERO and BSCALE get applied by pyfits (we could improve this).
 #	While we are at it, you can also change the filenames.
+#	New : create png images of the cropped fits
 #
-
+#
+execfile("../../config.py")
 import os, sys, glob, pyfits, numpy
-
+from variousfct import *
+import f2n
 ################### CONFIGURATION ###################################################################
 
 # ABSOLUTE PATH to where the files are and how to select them :
 origpaths = sorted(glob.glob("/obs/lenses_EPFL/PRERED/SMARTS/HE0435/raw/*.fits")) 
 
+
 # ABSOLUTE PATH to the directory where you want the croped images to be written :
 destdir="/obs/lenses_EPFL/PRERED/SMARTS/HE0435/prep/" 
 
+# croped images png path :
+pngdir="/obs/lenses_EPFL/PRERED/SMARTS/HE0435/pngs/"
 
 #####################################################################################################
 
@@ -45,7 +51,8 @@ for fitsfilepath in origpaths[::-1]:
 	pixelarray, hdr = pyfits.getdata(fitsfilepath, header=True, ignore_missing_end=True)
 	#sys.exit()
 	
-	# I commented this for the HE0435 SMARTS data...as the header is not the same...	
+	# I commented this for the HE0435 SMARTS data...as the header is not the same...
+		
 	filterid = hdr["CCDFLTID"].strip()
 	filterlist.append(filterid)
 	
@@ -71,7 +78,7 @@ for fitsfilepath in origpaths[::-1]:
 	#pixelarray = pixelarray[60:, 140:]
 	
 	#For HE0435 some images are really ugly..., with enormous borders...
-	pixelarray = pixelarray[100:1037,160:1023]
+	pixelarray = pixelarray[170:910,170:870]
 	
 	
 	
@@ -95,4 +102,24 @@ print "Filter histo :"
 filterhisto = [(f, filterlist.count(f)) for f in sorted(list(set(filterlist)))]
 print "\n".join(["%s : %i" % h for h in filterhisto])
 
+########
+print "\n Now I make pngs of these croped images vs raw images"
+proquest(askquestions)
+
+if not os.path.isdir(pngdir):
+	os.mkdir(pngdir)
+
+croppaths = os.popen('ls '+destdir)
+croppaths = [os.path.join(destdir,croppath).split('\n')[0] for croppath in croppaths]
+
+
+for origpath, croppath in zip(origpaths,croppaths):
+
+	
+	cropimage = f2n.fromfits(croppath)
+	cropimage.setzscale("auto", "auto")
+	cropimage.makepilimage(scale = 'log', negative = False)
+	
+	pngpath   = os.path.join(pngdir,os.path.basename(croppath)).split('.fits')[0]+'.png'
+	cropimage.tonet(pngpath)
 
