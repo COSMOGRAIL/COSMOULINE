@@ -898,8 +898,8 @@ def smartsandicamheader(rawimg):
 	
 	if "CCDFILTID" not in availablekeywords:
 		print "WARNING !!! No CCDFILTID in the headers !!"
-		proquest(askquestions)
-		print "You can disable me in /pipe/module/headerstuff line 900"
+		#proquest(askquestions)
+		print "You can disable me in /pipe/module/headerstuff line 901"
 		
 	if "CCDFILTID" in availablekeywords:			
 		# Quick check of filter :
@@ -910,7 +910,7 @@ def smartsandicamheader(rawimg):
 		headerjd = float(header['JD']) # Should be UTC, beginning of exposure
 	else:
 		print "WARNING !!! No JD in the headers. Going for HJD instead !!"
-		proquest(askquestions)
+		#proquest(askquestions)
 		headerjd = float(header['HJD'])
 		print "You can disable me in /pipe/module/headerstuff line 913"
 		
@@ -918,7 +918,7 @@ def smartsandicamheader(rawimg):
 		exptime = float(header['EXPTIME']) # in seconds
 	else:
 		print "WARNING !!! No EXPTIME in the headers. Adding 300[s] as default !!"
-		proquest(askquestions)
+		#proquest(askquestions)
 		exptime = float(300.0) # in seconds		
 		print "You can disable me in /pipe/module/headerstuff line 921"			
 	
