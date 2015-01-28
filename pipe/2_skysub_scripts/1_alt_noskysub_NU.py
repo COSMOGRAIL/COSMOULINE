@@ -24,10 +24,10 @@ starttime = datetime.now()
 
 
 for i,image in enumerate(images):
+	justname = image['imgname']
 	print i+1, "/", nbrimages, ":", justname
 	
 	recno = image['recno']
-	justname = image['imgname']
 	withskyfilepath = os.path.join(alidir, image['imgname'] + ".fits")
 	
 	noskyfilepath = os.path.join(alidir, image['imgname'] + "_skysub.fits")

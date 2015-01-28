@@ -28,13 +28,20 @@ maxell = 0.25
 maxmedcoeff = 5.0
 maxsky = 8000.0
 
+"""
+# VLT rejection stuff (WIP) :
+maxseeing = 1.7
+maxell = 0.25
+maxmedcoeff = 1.2
+maxsky = 5000.0
+"""
 
 """
 # The very best frames to draw a good background :
-maxseeing = 1.3
-maxell = 0.12
-maxmedcoeff = 1.2
-maxsky = 1000.0
+maxseeing = 1.2
+maxell = 0.10
+maxmedcoeff = 1.1
+maxsky = 800.0
 """
 
 ##################################

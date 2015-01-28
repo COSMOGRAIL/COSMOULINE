@@ -5,10 +5,10 @@ import os
 import types
 import copy as pythoncopy
 import numpy as np
-import Image as im
-import ImageOps as imop
-import ImageDraw as imdw
-import ImageFont as imft
+from PIL import Image as im
+from PIL import ImageOps as imop
+from PIL import ImageDraw as imdw
+from PIL import ImageFont as imft
 import pyfits as ft
 
 # - - - - - - - - -  Where are my fonts ? - - - - - - - - - - - - 

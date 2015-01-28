@@ -81,7 +81,7 @@ for i,image in enumerate(images):
 		
 		# We build a first histogram :
 		
-		(hist, edges) = np.histogram(fwhms, bins=10, range=(minfwhm, maxfwhm), new=True)
+		(hist, edges) = np.histogram(fwhms, bins=10, range=(minfwhm, maxfwhm)) # I removed new=True, depreciated since python 1.4
 		# Note that points outside the range are not taken into account at all, they don't fill the side bins !
 		
 		# We find the peak, and build a narrower hist around it
@@ -105,7 +105,7 @@ for i,image in enumerate(images):
 			peakpos = 0.5 * (edges[maxpos] + edges[maxpos+1])
 		
 			# We build a second histogram around this position, with a narrower range :
-			(hist, edges) = np.histogram(fwhms, bins=10, range=(peakpos-2.0, peakpos+2.0), new=True)
+			(hist, edges) = np.histogram(fwhms, bins=10, range=(peakpos-2.0, peakpos+2.0)) # I removed new=True, depreciated since python 1.4
 			maxpos = np.argmax(hist)
 			peakpos = 0.5 * (edges[maxpos] + edges[maxpos+1])
 		
