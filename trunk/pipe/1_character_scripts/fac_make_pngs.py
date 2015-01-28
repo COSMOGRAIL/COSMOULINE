@@ -103,6 +103,17 @@ for i, image in enumerate(images):
 	infolist = ["", date, seeing, ell, skylevel, stddev, airmass, az]
 	f2nimg.writeinfo(infolist)
 
+
+	# try to add new stuff: plot sextracted objects.
+	print "WARNING: if you want to display these images, you need to change your default.param output parameters to: NUMBER / X_IMAGE / Y_IMAGE only you can use the imgplot.param as the PARAMETERS_NAME of your default_see_template.sex file"
+
+	starcat = os.path.join(alidir,image["imgname"]+'.cat')
+	import star
+	extstars = star.readmancat(starcat)
+	for star in extstars:
+		f2nimg.drawcircle(star.x, star.y, r = 10, colour = 'white', label = None)
+
+
 	#pngname = "%04d.png" % (i+1)
 	pngname = image['imgname'] + ".png"
 	pngpath = os.path.join(pngdir, pngname)
@@ -111,6 +122,10 @@ for i, image in enumerate(images):
 	orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
 	os.symlink(pngpath, orderlink)
 
+	if i==0:
+		print "Here is the first image:"
+		print pngpath
+		proquest(askquestion)
 
 
 	

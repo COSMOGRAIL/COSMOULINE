@@ -283,7 +283,7 @@ def eulercamheader(rawimg):
 	telescopeelevation = 2347.0
 		
 	header = pyfits.getheader(rawimg)
-	availablekeywords = header.ascardlist().keys()
+	#availablekeywords = header.ascardlist().keys() # depreciated, not needed anyway
 	
 	treatme = True
 	gogogo = True
@@ -331,6 +331,7 @@ def eulercamheader(rawimg):
 	return returndict
 
 ###############################################################################################
+
 
 
 def mercatorheader(rawimg):
@@ -1114,6 +1115,79 @@ def combiheader(rawimg):
 
 ##############################################################################################################
 
+def fors2header(rawimg):
+	"""
+	Version for VLT images
+	Experimental
+	Written by Vivien, 01.2015
+	"""
+	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
+
+	# From FORS2 User Manual
+
+	pixsize = 0.126 # from header. 0.25 indicated in fors2 manual
+	gain = 0.806 # http://www.eso.org/observing/dfo/quality/FORS2/reports/HEALTH/trend_report_CONAD_HC.html. INVERSE OF CONV. FACTOR
+		# possible values
+		# 0.8 # from headers of CHIP1 / CHIP2
+	readnoise = 2.62 # taken from http://www.eso.org/observing/dfo/quality/FORS2/reports/HEALTH/trend_report_BIAS_ron_raw_HC.html
+		# possible values:
+		# 2.7 # from header of CHIP1
+		# 2.62 # taken from http://www.eso.org/observing/dfo/quality/FORS2/reports/HEALTH/trend_report_BIAS_ron_raw_HC.html
+		# 3.6 # from header of CHIP2
+	scalingfactor = 1.0 # no need for it right now...
+	saturlevel = 65000.0 # still arbitrary
+	rotator = 0.0 # ??
+
+	telescopelongitude = "-70:24:11.642"
+	telescopelatitude = "-24:37:33.117"
+	telescopeelevation = 2635.43
+
+	header = pyfits.getheader(rawimg)
+	# availablekeywords = header.ascardlist().keys()  # not used anyway
+
+	treatme = True
+	gogogo = True
+	whynot = "na"
+	testlist = False
+	testcomment = "na"
+
+	pythondt = datetime.datetime.strptime(header["DATE-OBS"][0:19], "%Y-%m-%dT%H:%M:%S") # This is the start of the exposure.
+	exptime = float(header['EXPTIME']) # in seconds.
+
+	pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
+
+	# Now we produce the date and datet fields, middle of exposure :
+
+	date = pythondt.strftime("%Y-%m-%d")
+	datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+	myownjdfloat = juliandate(pythondt) # The function from headerstuff.py
+	myownmjdfloat = myownjdfloat - 2400000.5
+	jd = "%.6f" % myownjdfloat
+	mjd = myownmjdfloat
+
+
+	# The pre-reduction info :
+	# May be useful one day...can be used.
+	preredcomment1 = "None"
+	preredcomment2 = "None"
+	preredfloat1 = 0.0
+	preredfloat2 = 0.0
+
+
+	# We return a dictionnary containing all this info, that is ready to be inserted into the database.
+	returndict = {'imgname':imgname, 'treatme':treatme, 'gogogo':gogogo, 'whynot':whynot, 'testlist':testlist,'testcomment':testcomment ,
+	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg,
+	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
+	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
+	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
+	}
+
+	return returndict
+###############################################################################################
+
+
 def noheader(rawimg):
 	
 	print rawimg
@@ -1135,7 +1209,7 @@ def noheader(rawimg):
 	testlist = False
 	testcomment = "na"
 	
-	pythondt = datetime.datetime.strptime("2000-00-00T00:00:00", "%Y-%m-%dT%H:%M:%S")
+	pythondt = datetime.datetime.strptime("2002-10-10T13:37:00", "%Y-%m-%dT%H:%M:%S") # 2000-00-00 was not working...
 	exptime = 300.0
 	pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
 	

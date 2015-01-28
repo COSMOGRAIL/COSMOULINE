@@ -45,17 +45,18 @@ for i,image in enumerate(images):
 	skysubimagepath = os.path.join(alidir, image["imgname"] + "_skysub.fits")
 	
 	
-	
 	skyimage = f2n.fromfits(skyimagepath)
 	skyimage.setzscale("ex", "ex")
 	skyimage.rebin(3)
 	skyimage.makepilimage(scale = "lin", negative = False)
+	skyimage.upsample(2)
 	skyimage.writetitle("Sky", colour=(255, 0, 0))
 	
 	skysubimage = f2n.fromfits(skysubimagepath)
 	skysubimage.setzscale("auto", "auto")
 	skysubimage.rebin(3)
 	skysubimage.makepilimage(scale = "log", negative = False)
+	skysubimage.upsample(2)
 	skysubimage.writetitle("Skysubtracted image")
 	
 	# We read the 20 strongest stars from sextractor :

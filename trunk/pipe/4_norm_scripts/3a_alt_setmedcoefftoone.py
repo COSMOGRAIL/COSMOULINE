@@ -5,7 +5,7 @@
 
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
-from calccoeff_fct import *
+#from calccoeff_fct import *
 from variousfct import *
 import star
 

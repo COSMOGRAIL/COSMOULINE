@@ -49,6 +49,8 @@ def readheader(telescopename, rawimg):
 		dbdict = smartsandicamheader(rawimg)
 	elif telescopename == 'skysim':
 		dbdict = skysimheader(rawimg)
+	elif telescopename == 'FORS2':
+		dbdict = fors2header(rawimg)
 	elif telescopename == "NOHEADER":
 		dbdict = noheader(rawimg)	
 	else:

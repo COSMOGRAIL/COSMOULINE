@@ -28,13 +28,18 @@ proquest(askquestions)
 
 
 for i, image in enumerate(images):
-	print i+1, "/", nbrofimages, " : ", image['imgname'], ", gain = %.3f" % (image['gain'])
+	
+	# check if file exists
+	outfilename = os.path.join(alidir, image['imgname'] + ".fits")
+	print i+1, "/", nbrofimages, " : ", image['imgname'], ", gain = %.3f" % (image['gain'])	
+	if os.path.isfile(outfilename):
+		print "Image already exists. I skip..."
+		continue
 	
 	pixelarray, header = fromfits(image['rawimg'])
 	
 	pixelarray = pixelarray * image['gain']	# so that we have an image in electrons and not in ADU
-	
-	outfilename = os.path.join(alidir, image['imgname'] + ".fits")
+		
 	tofits(outfilename, pixelarray)	# we clean the header to avoid dangerous behaviors from iraf or sextractor
 
 #db.pack(imgdb)

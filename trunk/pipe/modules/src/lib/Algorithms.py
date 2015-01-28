@@ -378,8 +378,10 @@ class MinAlg():
         """
         Uses the Levenberg-Marquandt algorithm.
         """
-        params, s = optimize.leastsq(f, x, maxfev = it_nb, warning=False)#, factor=0.1, diag=(1.,0.2,0.1,0.2,1.,1.,0.1,1.,1.,0.1,1.,1.,0.1))#, Dfun = dfun, col_deriv=1)
-        return params
+        #params, s = optimize.leastsq(f, x, maxfev = it_nb, warning=False)#, factor=0.1, diag=(1.,0.2,0.1,0.2,1.,1.,0.1,1.,1.,0.1,1.,1.,0.1))#, Dfun = dfun, col_deriv=1) # remove warning + False from leastsq !!
+        params, s = optimize.leastsq(f, x, maxfev = it_nb)#, factor=0.1, diag=(1.,0.2,0.1,0.2,1.,1.,0.1,1.,1.,0.1,1.,1.,0.1))#, Dfun = dfun, col_deriv=1) # remove warning + False from leastsq !!
+        
+	return params
         
     def _bfgs(self, f, x, it_nb = 0, dfun=None):
         """
