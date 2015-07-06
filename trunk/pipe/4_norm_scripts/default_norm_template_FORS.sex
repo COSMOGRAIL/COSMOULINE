@@ -5,7 +5,7 @@
 #-------------------------------- Catalog ------------------------------------
 
 CATALOG_NAME	sex.cat		# name of the output catalog
-CATALOG_TYPE	NONE		# "NONE","ASCII_HEAD","ASCII","FITS_1.0"
+CATALOG_TYPE	ASCII_HEAD	# "NONE","ASCII_HEAD","ASCII","FITS_1.0"
 				# or "FITS_LDAC"
 
 PARAMETERS_NAME	default.param	# name of the file containing catalog contents
@@ -14,7 +14,7 @@ PARAMETERS_NAME	default.param	# name of the file containing catalog contents
 
 DETECT_TYPE	CCD		# "CCD" or "PHOTO" (*)
 FLAG_IMAGE	flag.fits	# filename for an input FLAG-image
-DETECT_MINAREA	30		# minimum number of pixels above threshold
+DETECT_MINAREA	20		# minimum number of pixels above threshold
 DETECT_THRESH	5		# <sigmas> or <threshold>,<ZP> in mag.arcsec-2
 ANALYSIS_THRESH	5		# <sigmas> or <threshold>,<ZP> in mag.arcsec-2
 
@@ -32,8 +32,8 @@ MASK_TYPE	CORRECT		# type of detection MASKing: can be one of
 
 #------------------------------ Photometry -----------------------------------
 
-PHOT_APERTURES	20, 30, 60, 90, 120	# MAG_APER aperture diameter(s) in pixels
-PHOT_AUTOPARAMS	2.5, 3.5	# MAG_AUTO parameters: <Kron_fact>,<min_radius>
+PHOT_APERTURES	20, 30, 60, 90, 120 	# MAG_APER aperture diameter(s) in pixels
+PHOT_AUTOPARAMS	3.5, 10		# MAG_AUTO parameters: <Kron_fact>,<min_radius>
 
 SATUR_LEVEL	0.0		# level (in ADUs) at which arises saturation
 
@@ -41,30 +41,30 @@ MAG_ZEROPOINT	0.0		# magnitude zero-point
 MAG_GAMMA	4.0		# gamma of emulsion (for photographic scans)
 
 GAIN		1.0		# detector gain in e-/ADU.				
-PIXEL_SCALE	0.0 	# size of pixel in arcsec (0=use FITS WCS info).	
+PIXEL_SCALE	0.0	 	# size of pixel in arcsec (0=use FITS WCS info).
 
-
-
+	
 #------------------------- Star/Galaxy Separation ----------------------------
 
-SEEING_FWHM	1.4		# stellar FWHM in arcsec
+SEEING_FWHM	1.6		# stellar FWHM in arcsec
 STARNNW_NAME	default.nnw	# Neural-Network_Weight table filename
 
 #------------------------------ Background -----------------------------------
 
-BACK_SIZE	128		# Background mesh: <size> or <width>,<height>
+BACK_SIZE	512		# Background mesh: <size> or <width>,<height> NOT USED HERE ANYWAY
 BACK_FILTERSIZE	3		# Background filter: <size> or <width>,<height>
 
-BACKPHOTO_TYPE	GLOBAL		# can be "GLOBAL" or "LOCAL" (*)
+BACK_TYPE	MANUAL		# can be "GLOBAL" or "LOCAL" (*) ou encore MANUAL
+BACK_VALUE	0.0
 BACKPHOTO_THICK	24		# thickness of the background LOCAL annulus (*)
 
 #------------------------------ Check Image ----------------------------------
 
-CHECKIMAGE_TYPE	BACKGROUND	# can be one of "NONE", "BACKGROUND",
+CHECKIMAGE_TYPE	NONE	# can be one of "NONE", "BACKGROUND",
 				# "MINIBACKGROUND", "-BACKGROUND", "OBJECTS",
 				# "-OBJECTS", "SEGMENTATION", "APERTURES",
 				# or "FILTERED" (*)
-CHECKIMAGE_NAME	background.fits	# Filename for the check-image (*)
+CHECKIMAGE_NAME	check.fits	# Filename for the check-image (*)
 
 #--------------------- Memory (change with caution!) -------------------------
 

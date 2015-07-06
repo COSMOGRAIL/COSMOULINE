@@ -23,7 +23,7 @@ for i, s in enumerate(psfstars):
 	print 'mask file path is: ',possiblemaskfilepath
 	if os.path.exists(possiblemaskfilepath):
 		
-		s.reg = ds9reg.regions(128, 128) # hardcoded for now # Warning, can cause a lot of trouble when dealing with images other than ECAM 
+		s.reg = ds9reg.regions(64, 64) # hardcoded for now # Warning, can cause a lot of trouble when dealing with images other than ECAM
 		s.reg.readds9(possiblemaskfilepath, verbose=False)
 		s.reg.buildmask(verbose = False)
 		

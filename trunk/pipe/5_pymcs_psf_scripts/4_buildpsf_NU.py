@@ -53,55 +53,62 @@ for i, img in enumerate(images):
 def buildpsf(image):
 
 	imgpsfdir = os.path.join(psfdir, image['imgname'])
-	print "Image %i : %s" % (image["execi"], imgpsfdir)
-	
-	os.chdir(imgpsfdir)
-	
-	if rewriteconfig == True:
-	# We redo the copy of the config, in case something was changed in the template for testing different parameters:
-	
-		gain = "%f" % (image["gain"])
-		stddev = "%f" % (image["stddev"])
-		numpsfrad = "%f" % (6.0 * float(image["seeing"]))
-		lambdanum = "%f" % (0.001) # image["seeing"]
-	
-		repdict = {'$gain$':gain, '$sigmasky$':stddev, '$starscouplelist$':starscouplelist, '$numpsfrad$':numpsfrad, '$lambdanum$' : lambdanum}	
-	
-		pyMCS_config = justreplace(config_template, repdict)
-		extractfile = open(os.path.join(imgpsfdir, "pyMCS_psf_config.py"), "w")
-		extractfile.write(pyMCS_config)
-		extractfile.close()
-		
-		print "I rewrote the config file."
-		
-	mcs = MCS_interface("pyMCS_psf_config.py")
-	
-	try:	
-		print "I'll try this one."
-		mcs.fitmof()
-		if nofitnum:
-			mcs.psf_gen()
-			# Then we need to write some additional files, to avoid png crash
-			empty128 = np.zeros((128, 128))
-			tofits("results/psfnum.fits", empty128)
-			empty64 = np.zeros((64, 64))
-			for i in range(len(psfstars)):
-				tofits("results/difnum%02i.fits" % (i+1), empty64)
-			
-		else:
-			mcs.fitnum()
-		
-	except (IndexError):
-		print "WTF, an IndexError ! "
-		errorimglist.append(image)
-		
+	if os.path.isfile(os.path.join(imgpsfdir, "results", "psf_1.fits")):
+		print "Image %i : %s" % (image["execi"], imgpsfdir)
+		print "Already done ! I skip this one"
+		return
 	else:
-		print "It worked !"
-	
-	psffilepath = os.path.join(imgpsfdir, "s001.fits")
-	if os.path.islink(psffilepath):
-		os.remove(psffilepath)
-	os.symlink(os.path.join(imgpsfdir, "results", "s_1.fits"), psffilepath)
+
+
+		print "Image %i : %s" % (image["execi"], imgpsfdir)
+
+		os.chdir(imgpsfdir)
+
+		if rewriteconfig == True:
+		# We redo the copy of the config, in case something was changed in the template for testing different parameters:
+
+			gain = "%f" % (image["gain"])
+			stddev = "%f" % (image["stddev"])
+			numpsfrad = "%f" % (6.0 * float(image["seeing"]))
+			lambdanum = "%f" % (0.001) # image["seeing"]
+
+			repdict = {'$gain$':gain, '$sigmasky$':stddev, '$starscouplelist$':starscouplelist, '$numpsfrad$':numpsfrad, '$lambdanum$' : lambdanum}
+
+			pyMCS_config = justreplace(config_template, repdict)
+			extractfile = open(os.path.join(imgpsfdir, "pyMCS_psf_config.py"), "w")
+			extractfile.write(pyMCS_config)
+			extractfile.close()
+
+			print "I rewrote the config file."
+
+		mcs = MCS_interface("pyMCS_psf_config.py")
+
+		try:
+			print "I'll try this one."
+			mcs.fitmof()
+			if nofitnum:
+				mcs.psf_gen()
+				# Then we need to write some additional files, to avoid png crash
+				empty128 = np.zeros((128, 128))
+				tofits("results/psfnum.fits", empty128)
+				empty64 = np.zeros((64, 64))
+				for i in range(len(psfstars)):
+					tofits("results/difnum%02i.fits" % (i+1), empty64)
+
+			else:
+				mcs.fitnum()
+
+		except (IndexError):
+			print "WTF, an IndexError ! "
+			errorimglist.append(image)
+
+		else:
+			print "It worked !"
+
+		psffilepath = os.path.join(imgpsfdir, "s001.fits")
+		if os.path.islink(psffilepath):
+			os.remove(psffilepath)
+		os.symlink(os.path.join(imgpsfdir, "results", "s_1.fits"), psffilepath)
 	
 	
 starttime = datetime.now()

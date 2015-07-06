@@ -29,7 +29,7 @@ class regions:
 		self.boxes = []
 	
 		self.mask = np.cast['bool'](np.zeros((dimx, dimy))) # All False
-		
+		self.nomask = np.cast['bool'](np.ones((dimx, dimy))) # All True
 		
 	def readds9(self, ds9regfilepath, verbose=True):
 		"""
@@ -83,7 +83,23 @@ class regions:
 						self.mask[i,j] = True
 			
 		
-		
+	def buildinvertedmask(self, verbose = True):
+		"""
+		Puts the interiors of self.circles to False, the rest to True
+		"""
+
+		if verbose:
+			print "Building inverted region mask ..."
+
+
+
+		for i in range(self.nomask.shape[0]):
+			for j in range(self.nomask.shape[1]):
+				for circle in self.circles:
+					squaredist = (i+1 - circle["x"])**2.0 + (j+1 - circle["y"])**2.0
+					if (squaredist < circle["r"]**2.0):
+						self.nomask[i,j] = False
+
 		
 		
 		

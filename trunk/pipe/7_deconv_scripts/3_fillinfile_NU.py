@@ -9,7 +9,7 @@ from readandreplace_fct import *
 import star
 import shutil
 from variousfct import *
-
+import os
 
 	# count nbr of images
 	
@@ -29,9 +29,28 @@ print "We have %i images (ref image is duplicated)." % nbimg
 
 
 	# read params of point sources
-ptsrc = star.readmancat(ptsrccat)
-nbptsrc = len(ptsrc)
-print "Number of point sources :", nbptsrc
+try:
+	ptsrc = star.readmancat(ptsrccat)
+	nbptsrc = len(ptsrc)
+	print "Number of point sources :", nbptsrc
+
+
+except:
+	print "I haven't seen any point source catalogue in your configdir..."
+	print "I can create it with the following input:"
+	print "%s\t33\t33\t100000" % decobjname
+	proquest(askquestions)
+	os.system("touch %s" %ptsrccat)
+	cat = open(ptsrccat, 'w')
+	cat.write("%s\t33\t33\t100000" % decobjname)
+	cat.close()
+	print "OK, done !"
+
+	ptsrc = star.readmancat(ptsrccat)
+	nbptsrc = len(ptsrc)
+	print "Number of point sources :", nbptsrc
+
+
 
 proquest(askquestions)
 

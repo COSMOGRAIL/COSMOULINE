@@ -13,36 +13,40 @@ from variousfct import *
 ########## Configuration #########
 showhist = False
 
-'''
-# To reject the worst stuff :
-maxseeing = 1.15
-maxell = 0.15
-maxmedcoeff = 3.0
-maxsky = 10000.0
-'''
-
 
 # Normal rejection stuff :
-maxseeing = 2.5
-maxell = 0.25
-maxmedcoeff = 5.0
-maxsky = 8000.0
 
-"""
+
+maxseeing = 2.0
+maxell = 0.25
+maxmedcoeff = 2
+maxsky = 5000.0
+
+
+'''
 # VLT rejection stuff (WIP) :
-maxseeing = 1.7
+maxseeing = 1.2
 maxell = 0.25
 maxmedcoeff = 1.2
 maxsky = 5000.0
-"""
+'''
 
-"""
+'''
+# VLT best (WIP) :
+maxseeing = 0.43
+maxell = 0.06
+maxmedcoeff = 1.0
+maxsky = 1000
+'''
+
+
+'''
 # The very best frames to draw a good background :
-maxseeing = 1.2
-maxell = 0.10
-maxmedcoeff = 1.1
-maxsky = 800.0
-"""
+maxseeing = 1.22
+maxell = 0.15
+maxmedcoeff = 1.15
+maxsky = 1000.0
+'''
 
 ##################################
 
@@ -136,6 +140,11 @@ print "\n".join(rejlines)
 print "\n\n\nAutoskiplist made with maxseeing = %.3f, maxell = %.3f, maxmedcoeff = %.3f, maxsky = %.1f ." % (maxseeing, maxell, maxmedcoeff, maxsky)
 print "It contains %i images, out of %i" % (len(rejlines), nbtot)
 print "Number of images potentially left : %i" % (nbtot - len(rejlines))
-print "Copy and paste this into your decskiplist, if you want to skip them."
-print decskiplist
+
+print "I can copy and paste this into your decskiplist, if you want to skip them."
+proquest(askquestions)
+skiplist = open(decskiplist, 'w')
+skiplist.write("\n".join(rejlines))
+skiplist.close()
+print "OK, done"
 

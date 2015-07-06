@@ -18,7 +18,6 @@ import cosmics
 
 
 db = KirbyBase()
-
 print "objkey =", objkey
 	
 # read the position of the object to extract
