@@ -35,9 +35,14 @@ for i,image in enumerate(images):
 	
 	imagepath = os.path.join(alidir, image['imgname']+".fits")
 	catfilename = os.path.join(alidir, image['imgname']+".cat")
-	
+
 	saturlevel = image["gain"] * image["saturlevel"] # to convert to electrons
-	cmd = "%s %s -c default_see_template.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CATALOG_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, catfilename)
+	if image["telescopename"] in ["FORS2"]:
+		print "FORS2 detected, switch to fors2 extraction parameters:"
+		cmd = "%s %s -c default_see_template_FORS.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CATALOG_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, catfilename)
+
+	else:
+		cmd = "%s %s -c default_see_template.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CATALOG_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, catfilename)
 	os.system(cmd)
 	
 

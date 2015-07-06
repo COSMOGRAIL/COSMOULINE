@@ -44,7 +44,11 @@ for i,image in enumerate(images):
 	if image["telescopename"] in ["EulerCAM", "SMARTSandicam"]:
 		print "Detected fine pixel telescope, switching to smooth sky"
 		cmd = "%s %s -c default_sky_template_smooth.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CHECKIMAGE_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, skyimagepath)
-	
+
+
+	elif image["telescopename"] in ["FORS2"]:
+		print "FORS2 detected, switching to FORS sky"
+		cmd = "%s %s -c default_sky_template_FORS.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CHECKIMAGE_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, skyimagepath)
 	else:
 		cmd = "%s %s -c default_sky_template_fine.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CHECKIMAGE_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, skyimagepath)
 

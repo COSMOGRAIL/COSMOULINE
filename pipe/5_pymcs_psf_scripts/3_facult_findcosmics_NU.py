@@ -16,7 +16,7 @@ import star
 
 sigclip = cosmicssigclip
 sigfrac = 0.3
-objlim = 1.0
+objlim = 1.0 # 5.0 seems good for VLT. 1.0 works fine with Euler. Change with caution
 
 ###########
 
@@ -55,6 +55,8 @@ def findcosmics(image):
 	
 	pssl = image['skylevel']
 	gain = image['gain']
+	#satlevel = image['saturlevel']*gain*maxpixelvaluecoeff
+	satlevel = -1.0
 	readnoise = image['readnoise']
 	print "Gain %.2f, PSSL %.2f, Readnoise %.2f" % (gain, pssl, readnoise)
 
@@ -81,12 +83,12 @@ def findcosmics(image):
 		(a, h) = cosmics.fromfits(starfilename, verbose=False)
 	
 		# Creating the object :
-		c = cosmics.cosmicsimage(a, pssl=pssl, gain=gain, readnoise=readnoise, sigclip=sigclip, sigfrac=sigfrac, objlim=objlim, satlevel=-1.0, verbose=False)
+		c = cosmics.cosmicsimage(a, pssl=pssl, gain=gain, readnoise=readnoise, sigclip=sigclip, sigfrac=sigfrac, objlim=objlim, satlevel=satlevel, verbose=False) # I put a correct satlevel instead of -1, to treat VLT images.
 	
 		#print pssl, gain, readnoise, sigclip, sigfrac, objlim
 		
 		c.run(maxiter=3)
-	
+
 		ncosmics = np.sum(c.mask)
 		#print ncosmics
 		#if ncosmics != 0:

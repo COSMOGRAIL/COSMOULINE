@@ -28,11 +28,11 @@ images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], ['recno','imgname
 print "OK, we have", len(images), "images to treat."
 proquest(askquestions)
 
-if "stddev" not in db.getFieldNames(imgdb) :
+if "stddev" not in db.getFieldNames(imgdb) or "emptymean" not in db.getFieldNames(imgdb):
 	print "I will add some fields to the database."
 	proquest(askquestions)
 	#db.addFields(imgdb, ['stddev:float', 'maxlens:float', 'sumlens:float'])
-	db.addFields(imgdb, ['stddev:float'])
+	db.addFields(imgdb, ['stddev:float', 'emptymean:float'])
 
 iraf.imutil()
 
@@ -76,8 +76,8 @@ for i, image in enumerate(images):
 	maxval = float(elements[6])
 	
 	#print image['imgname'], npix, mean, midpt, stddev, minval, maxval
-	print "Empty region stddev : %8.2f, median %8.2f" % (stddev, midpt)
-	db.update(imgdb, ['recno'], [image['recno']], {'stddev': stddev})
+	print "Empty region stddev : %8.2f, median %8.2f, mean %8.2f" % (stddev, midpt, mean)
+	db.update(imgdb, ['recno'], [image['recno']], {'stddev': stddev, 'emptymean': mean})
 
 ##################### qso region ########################
 

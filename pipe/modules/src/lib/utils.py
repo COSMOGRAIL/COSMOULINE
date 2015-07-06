@@ -1,12 +1,17 @@
 import string, os, time
 #from numpy import *
 import numpy as np
-import scipy.signal, numdisplay, sys
+import scipy.signal, sys
 try:
     import pycuda.gpuarray as gpuarray
 except:
     pass
 
+try:
+    import numdisplay
+except:
+    import stsci.numdisplay # for usage with ureka
+ 
 INF = float("infinity")
 
 write = sys.stdout.write

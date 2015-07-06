@@ -51,3 +51,15 @@ print "\nOutput astrometry and median output photometry :"
 print "\n".join(["%s\t%f\t%f\t%f" % (ptsrc["name"], ptsrc["xpos"], ptsrc["ypos"], ptsrc["in2flux"]) for ptsrc in ptsrcdb])
 
 
+print "\nI can write the last version into your point star catalogue if you want"
+proquest(askquestions)
+cat = open(ptsrccat,'w')
+for ptsrc in ptsrcdb:
+	cat.write("\n%s\t%f\t%f\t%f" % (ptsrc["name"], ptsrc["xpos"], ptsrc["ypos"], ptsrc["in2flux"]))
+cat.close()
+print "OK, your point star catalogue is edited !"
+"""
+print "\nCopy this into your dec catalog:"
+print "%s" % ptsrccat
+print ""
+"""

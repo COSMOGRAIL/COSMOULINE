@@ -14,7 +14,7 @@ PARAMETERS_NAME	default.param	# name of the file containing catalog contents
 
 DETECT_TYPE	CCD		# "CCD" or "PHOTO" (*)
 FLAG_IMAGE	flag.fits	# filename for an input FLAG-image
-DETECT_MINAREA	30		# minimum number of pixels above threshold
+DETECT_MINAREA	20		# minimum number of pixels above threshold
 DETECT_THRESH	5		# <sigmas> or <threshold>,<ZP> in mag.arcsec-2
 ANALYSIS_THRESH	5		# <sigmas> or <threshold>,<ZP> in mag.arcsec-2
 
@@ -52,8 +52,8 @@ STARNNW_NAME	default.nnw	# Neural-Network_Weight table filename
 
 #------------------------------ Background -----------------------------------
 
-BACK_SIZE	128		# Background mesh: <size> or <width>,<height>
-BACK_FILTERSIZE	3		# Background filter: <size> or <width>,<height>
+BACK_SIZE	256		# Background mesh: <size> or <width>,<height>
+BACK_FILTERSIZE	5		# Background filter: <size> or <width>,<height>
 
 BACKPHOTO_TYPE	GLOBAL		# can be "GLOBAL" or "LOCAL" (*)
 BACKPHOTO_THICK	24		# thickness of the background LOCAL annulus (*)
