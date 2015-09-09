@@ -42,10 +42,10 @@ maxsky = 1000
 
 '''
 # The very best frames to draw a good background :
-maxseeing = 1.22
-maxell = 0.15
-maxmedcoeff = 1.15
-maxsky = 1000.0
+maxseeing = 1.1
+maxell = 0.13
+maxmedcoeff = 1.05
+maxsky = 600.0
 '''
 
 ##################################
@@ -143,7 +143,7 @@ print "Number of images potentially left : %i" % (nbtot - len(rejlines))
 
 print "I can copy and paste this into your decskiplist, if you want to skip them."
 proquest(askquestions)
-skiplist = open(decskiplist, 'w')
+skiplist = open(decskiplist, 'a')
 skiplist.write("\n".join(rejlines))
 skiplist.close()
 print "OK, done"
