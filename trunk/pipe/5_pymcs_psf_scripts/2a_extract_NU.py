@@ -17,6 +17,10 @@ db = KirbyBase()
 if thisisatest :
 	print "This is a test run."
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+elif update:
+	print "This is an update"
+	images = db.select(imgdb, ['gogogo', 'treatme', 'updating',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+	askquestions = False
 else :
 	images = db.select(imgdb, ['gogogo', 'treatme',psfkeyflag], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 
@@ -67,6 +71,7 @@ if refimgname in [img["imgname"] for img in images]:
 	
 	print "If asked, use physical coordinates and DS9 (or REG) file format."
 else:
-	print "By the way, the reference image was not among these images !"
-	print "You should always have the reference image in your selection."
+	if not update:
+		print "By the way, the reference image was not among these images !"
+		print "You should always have the reference image in your selection."
 

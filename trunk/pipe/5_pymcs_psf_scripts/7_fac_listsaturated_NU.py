@@ -27,6 +27,10 @@ for i, s in enumerate(psfstars):
 if thisisatest :
 	print "This is a test run."
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+if update:
+	print "This is an update."
+	images = db.select(imgdb, ['gogogo', 'treatme', 'updating',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+	askquestions=False
 else :
 	images = db.select(imgdb, ['gogogo', 'treatme',psfkeyflag], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 
@@ -62,3 +66,10 @@ for imgname in kicklist:
 	print imgname
 
 print "Copy the names above to your psf skiplist!"
+print "I can do it for you if you want"
+proquest(askquestions)
+skiplist = open(psfkicklist, "a")
+for imgname in kicklist:
+	skiplist.write("\n" + imgname)
+skiplist.close()
+print 'Ok, done.'

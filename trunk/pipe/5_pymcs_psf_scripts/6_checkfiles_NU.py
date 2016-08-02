@@ -9,12 +9,15 @@ from variousfct import *
 
 
 db = KirbyBase()
-images = db.select(imgdb, ['gogogo','treatme',psfkeyflag], [True,True,True], returnType='dict', sortFields=['mjd'])
+if update:
+	images = db.select(imgdb, ['gogogo','treatme', 'updating',psfkeyflag], [True,True,True, True], returnType='dict', sortFields=['mjd'])
+
+else:
+	images = db.select(imgdb, ['gogogo','treatme',psfkeyflag], [True,True,True], returnType='dict', sortFields=['mjd'])
 
 
-
-print "Images that you should put on the psfskiplist now :"
-
+print "Images that I on the psfskiplist now :"
+skiplist = open(psfkicklist, "a")
 for i, image in enumerate(images):
 
 	imgpsfdir = os.path.join(psfdir, image['imgname'])
@@ -22,4 +25,5 @@ for i, image in enumerate(images):
 	
 	if not os.path.exists(os.path.join(resultsdir, "psf_1.fits")):
 		print image['imgname']
-	
+		skiplist.write("\n" + image["imgname"])
+skiplist.close()

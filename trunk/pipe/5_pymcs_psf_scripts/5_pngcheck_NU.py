@@ -35,19 +35,32 @@ for i, s in enumerate(psfstars):
 		pass
 
 
-if os.path.isdir(pngdir):
-	print "I would delete all existing pngs."
-	proquest(askquestions)
-	shutil.rmtree(pngdir)
-os.mkdir(pngdir)
 
 db = KirbyBase()
 
 if thisisatest :
 	print "This is a test run."
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+if update:
+	print "This is an update."
+	images = db.select(imgdb, ['gogogo', 'treatme', 'updating',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+	askquestions=False
 else :
 	images = db.select(imgdb, ['gogogo', 'treatme',psfkeyflag], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+
+
+if update:
+	print "I will complete the existing sky folder. Or recreate it if you deleted it to save space"
+	if not os.path.isdir(pngdir):
+		os.mkdir(pngdir)
+
+else:
+	if os.path.isdir(pngdir):
+		print "I will delete existing stuff."
+		proquest(askquestions)
+		shutil.rmtree(pngdir)
+	os.mkdir(pngdir)
+
 
 
 
@@ -239,15 +252,25 @@ for i, image in enumerate(images):
 		
 
 	f2n.compose([psfstarimglist, sigmaimglist, difmlist, difnumlist], pngpath)	
+
+	if not update:
+		orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
+		os.symlink(pngpath, orderlink)
 	
-	orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
-	os.symlink(pngpath, orderlink)
-	
+
+
+if update:  # remove all the symlink and redo it again with the new images
+	allimages = db.select(imgdb, ['gogogo', 'treatme',psfkeyflag], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+	for i, image in enumerate(allimages):
+		pngpath = os.path.join(pngdir, image['imgname'] + ".png")
+		orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
+		try:
+			os.unlink(orderlink)
+		except:
+			pass
+		os.symlink(pngpath, orderlink)
+
 print "- " * 30
-
-
-
-
 if os.path.isfile(psfkicklist):
 	print "The psfkicklist already exists :"
 else:

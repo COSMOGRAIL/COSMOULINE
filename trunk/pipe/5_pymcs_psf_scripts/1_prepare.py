@@ -18,6 +18,10 @@ print "You want to use stars :"
 for star in psfstars:
 	print star.name
 
+
+if update:
+	askquestions = False
+
 proquest(askquestions)
 
 backupfile(imgdb, dbbudir, "prepare_" + psfkey)
@@ -56,6 +60,9 @@ else :
 if thisisatest :
 	print "This is a test run."
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict')
+elif update:
+	print "This is an update."
+	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict')
 else :
 	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 
