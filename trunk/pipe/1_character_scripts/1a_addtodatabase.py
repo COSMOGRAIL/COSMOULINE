@@ -6,6 +6,8 @@
 
 
 execfile("../config.py")
+
+
 import glob
 import pyfits
 import datetime
@@ -51,17 +53,24 @@ def readheader(telescopename, rawimg):
 		dbdict = skysimheader(rawimg)
 	elif telescopename == 'FORS2':
 		dbdict = fors2header(rawimg)
+	elif telescopename == 'EFOSC2':
+		dbdict = efosc2header(rawimg)
+	elif telescopename == "WFI":
+		dbdict = wfiheader(rawimg)
+	elif telescopename == "GROND":
+		dbdict = grondheader(rawimg)
+	elif telescopename == "SDSS":
+		dbdict = sdssheader(rawimg)
 	elif telescopename == "NOHEADER":
 		dbdict = noheader(rawimg)	
 	else:
 		raise mterror("Unknown telescope.")	
 
 	return dbdict
-	
 
 
 print "Here we go !"
-print "You want to add the set " + setname + " to the database."
+print "You want to add/update the set " + setname + " to the database."
 print rawdir
 if not os.path.isdir(rawdir):
 	raise mterror("This directory does not exist!")
@@ -82,7 +91,16 @@ if os.path.isfile(imgdb):
 	print "Database exists ! I will ADD these new images."
 	proquest(askquestions)
 	backupfile(imgdb, dbbudir, "adding"+setname)
-	
+
+	# Add the updating field and set it to False, if not existing yet in the actual db
+	currentfields = db.getFieldNames(imgdb)
+	if not 'updating' in currentfields:
+		db.addFields(imgdb, ['updating:bool'])
+		images = images = db.select(imgdb, ['recno'], ['*'], returnType='dict') # selects all images
+		for image in images:
+			db.update(imgdb, ['recno'], [image['recno']], [False], ['updating'])
+		db.pack(imgdb) # always a good idea !
+
 	# We check if all the fields are there
 	presentfields = db.getFieldNames(imgdb)
 	mandatoryfields = [field.split(':')[0] for field in minimaldbfields]
@@ -98,10 +116,13 @@ if os.path.isfile(imgdb):
 	print usedsetnameshisto
 	proquest(askquestions)
 	if setname in usedsetnames:
-		raise mterror("Your new setname is already used !")
+		#raise mterror("Your new setname is already used !")  # let's add the option to update a given setname, will we ?
+		print "Your setname is already used. Would you like to update it ?"
+		proquest(askquestions)
 	
 	# We get a list of the rawimg we have already in the db :
 	knownrawimgs = map(lambda x : x[0], db.select(imgdb, ['recno'], ['*'], ['rawimg']))
+	knownimgnames = map(lambda x : x[0], db.select(imgdb, ['recno'], ['*'], ['imgname']))
 	
 	# Ok, if we are here then we can insert our new images into the database.
 	for i, fitsfile in enumerate(fitslist):
@@ -111,12 +132,16 @@ if os.path.isfile(imgdb):
 		dbdict = readheader(telescopename, rawimg)
 		
 		# We check if this image already exists in the db. If yes, we just skip it.
-		# For this we compare the "rawimg", that is the path of the image file. You might want to adapt this to use e.g. the imgname ?
-		# But keep in mind that the imgname contains the setname !
+		# For this we compare the "rawimg", that is the path of the image file and the "imgname", that contains the setname
 				
-		if dbdict["rawimg"] in knownrawimgs:
+		if dbdict["rawimg"] in knownrawimgs or dbdict["imgname"] in knownimgnames:
 			print "I already have this one ! (-> I skip it without updating anything)"
 			continue
+
+		if update:
+			dbdict["updating"] = True  # specially for updating databases
+		else:
+			dbdict["updating"] = False
 
 		# We have to insert image by image into our database.
 		db.insert(imgdb, dbdict)
@@ -135,6 +160,7 @@ else :
 		rawimg = os.path.join(rawdir, fitsfile)	
 		
 		dbdict = readheader(telescopename, rawimg)
+		dbdict["updating"] = False  # always False when the database does not exists yet...
 		
 		table.append(dbdict) # In this case we build a big list for batch insertion.
 

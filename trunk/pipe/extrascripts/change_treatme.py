@@ -18,14 +18,14 @@ db = KirbyBase()
 
 # We do not have to select images first: directly update with a criteria !
 
-n = db.update(imgdb, ['imgname'], ['3_ECAM.2013-06-12T08:28:25.000'], [False], ['treatme'])
+n = db.update(imgdb, ['imgname'], ['3_ECAM.2012-04-16T09:26:06.000'], [True], ['gogogo'])
 
-#n = db.update(imgdb, ['setname'], ['1'], [False], ['treatme'])
+#n = db.update(imgdb, ['setname'], ['3'], [True], ['treatme'])
 
 #n = db.update(imgdb, ['recno'], ['*'], [False], ['treatme']) #	there is a bug, this does not seem to work :-(
 
 
-#n = db.update(imgdb, ['treatme'], [True], [False], ['treatme'])
+#n = db.update(imgdb, ['treatme'], [False], [True], ['treatme'])
 
 #n = db.update(imgdb, ['seeingpixels'], ['>-100'], [True], ['treatme'])
 

@@ -20,7 +20,9 @@ filename = "%s_%s" % (datestr, configstr)
 
 readmefilepath = os.path.join(configdir, filename + "_readme.txt")
 pklfilepath = os.path.join(configdir, filename + "_db.pkl")
+pklgenericfilepath = os.path.join(configdir, "%s_db.pkl" % configstr)
 dbcopyfilepath = os.path.join(configdir, filename + "_db.dat")
+
 
 print "My basename : %s" % (filename)
 
@@ -129,6 +131,8 @@ if os.path.exists(readmefilepath) or os.path.exists(pklfilepath) or os.path.exis
 		os.remove(readmefilepath)
 	if os.path.exists(pklfilepath):
 		os.remove(pklfilepath)
+	if os.path.exists(pklgenericfilepath):
+		os.remove(pklgenericfilepath)		
 	if os.path.exists(dbcopyfilepath):
 		os.remove(dbcopyfilepath)
 
@@ -139,8 +143,10 @@ out_file.write(readmetxt)
 out_file.close()
 print "Wrote %s" % readmefilepath
 
-variousfct.writepickle(images, pklfilepath, verbose=True)
+variousfct.writepickle(images, pklfilepath, verbose=True) # copy once the file with the date on its name...
+variousfct.writepickle(images, pklgenericfilepath, verbose=True) # and redoit using a generic name, for the automated reduction procedure...
 
 shutil.copy(imgdb, dbcopyfilepath)
+
 
 print "Done !"

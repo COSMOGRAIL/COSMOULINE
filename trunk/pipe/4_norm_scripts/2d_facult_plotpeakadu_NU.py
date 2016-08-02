@@ -9,9 +9,11 @@ import matplotlib.pyplot as plt
 
 
 db = KirbyBase()
-images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 
+images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 nbrofimages = len(images)
+
+
 print "I respect treatme, and selected only %i images" % (nbrofimages)
 
 
@@ -44,6 +46,7 @@ for s in photomstars:
 		plotfilepath = os.path.join(plotdir, "%s_%s_peakaduhist.pdf" % (sexphotomname, s.name))
 		plt.savefig(plotfilepath)
 		print "Wrote %s" % (plotfilepath)
+		plt.close()
 	else:
 		plt.show()
 

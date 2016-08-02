@@ -10,7 +10,7 @@ except:
 try:
     import numdisplay
 except:
-    import stsci.numdisplay # for usage with ureka
+    import stsci.numdisplay # for usage with anaconda
  
 INF = float("infinity")
 
@@ -512,8 +512,12 @@ def get_data(filename, directory=None, pos=None, transpose=True, sky = 0., retal
     data = hdulist[0].data       # assumes the first extension is an image
     header = hdulist[0].header
     if transpose is True:
-        data = data.transpose()            # get values from the subsection 
-    data[:] += np.zeros(data.shape, dtype=np.float64)    # switch to 8 byte   
+        data = data.transpose()            # get values from the subsection
+
+    # WARNING ! The following line caused an issue with numpy 1.10. Fixed it using astype
+    #data[:] += np.zeros(data.shape, dtype=np.float64)    # switch to 8 byte
+    data = data.astype(np.float64)
+
     hdulist.close()
     if pos is not None:
         x,y,size = pos

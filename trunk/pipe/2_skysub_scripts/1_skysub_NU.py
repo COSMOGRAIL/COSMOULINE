@@ -17,6 +17,10 @@ db = KirbyBase()
 if thisisatest:
 	print "This is a test run."
 	images = db.select(imgdb, ['gogogo','treatme','testlist'], [True, True, True], returnType='dict')
+elif update:
+	print "This is an update."
+	images = db.select(imgdb, ['gogogo','treatme','updating'], [True, True, True], returnType='dict')
+	askquestions = False
 else:
 	images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
 	

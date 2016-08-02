@@ -56,6 +56,7 @@ for (fieldname, plotrange) in [("medcoeff", [0.5, 3.0]), ("skylevel", [0.0, 1000
 			plotfilepath = os.path.join(plotdir, "histo_%s_%s.pdf" % (fieldname, usedsetname))
 			plt.savefig(plotfilepath)
 			print "Wrote %s" % (plotfilepath)
+			plt.close()
 		else:
 			plt.show()
 

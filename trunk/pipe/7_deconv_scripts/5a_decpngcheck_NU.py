@@ -9,6 +9,16 @@ from kirbybase import KirbyBase, KBError
 from variousfct import *
 from readandreplace_fct import *
 import star
+import sys
+
+
+if update:
+	# override config settings...
+	execfile(os.path.join(configdir, 'deconv_config_update.py'))
+	askquestions=False
+	#print "It takes too long, I skip this step..."
+	#sys.exit()
+	# nothing more. Let's run on the whole set of images now.
 
 pngkey = deckey + "_png"
 pngdir = os.path.join(workdir, pngkey)

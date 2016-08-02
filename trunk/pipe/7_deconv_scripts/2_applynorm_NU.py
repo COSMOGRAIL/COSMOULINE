@@ -7,6 +7,13 @@ from kirbybase import KirbyBase, KBError
 from variousfct import *
 import pyfits
 
+
+if update:
+	# override config settings...
+	execfile(os.path.join(configdir, 'deconv_config_update.py'))
+	askquestions=False
+	# nothing more. Let's run on the whole set of images now.
+
 print "deckey : %s" % deckey # this is a code that idendtifies this particular deconvolution.
 db = KirbyBase()
 

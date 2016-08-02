@@ -8,6 +8,12 @@ from variousfct import *
 from datetime import datetime
 from variousfct import *
 
+if update:
+	# override config settings...
+	execfile(os.path.join(configdir, 'deconv_config_update.py'))
+	askquestions=False
+	# nothing more. Let's run on the whole set of images now.
+
 print "Starting deconvolution %s" % (deckey)
 
 db = KirbyBase()

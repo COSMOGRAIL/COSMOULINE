@@ -42,7 +42,7 @@ refautostarsasdicts = [{"name":s.name, "x":s.x, "y":s.y} for s in refautostars]
 #print refmanstarsasdicts
 
 combifitsfile = os.path.join(workdir, "%s.fits" % combibestkey)
-
+#combifitsfile = os.path.join(workdir, "ali", "%s_ali.fits" % refimgname)
 f2nimg = f2n.fromfits(combifitsfile)
 f2nimg.setzscale(z1=-5, z2=1000)
 #f2nimg.rebin(2)
@@ -50,7 +50,7 @@ f2nimg.makepilimage(scale = "log", negative = False)
 
 
 #f2nimg.drawstarlist(refautostarsasdicts, r = 30, colour = (150, 150, 150))
-f2nimg.drawstarlist(preciserefmanstarsasdicts, r = 7, colour = (255, 0, 0))
+#f2nimg.drawstarlist(preciserefmanstarsasdicts, r = 7, colour = (255, 0, 0))
 
 
 #f2nimg.writeinfo(["Sextractor stars (flag-filtered) : %i" % len(refautostarsasdicts)], colour = (150, 150, 150))
@@ -60,10 +60,10 @@ f2nimg.drawstarlist(preciserefmanstarsasdicts, r = 7, colour = (255, 0, 0))
 # We draw the rectangles around qso and empty region :
 
 lims = [map(int,x.split(':')) for x in lensregion[1:-1].split(',')]
-f2nimg.drawrectangle(lims[0][0], lims[0][1], lims[1][0], lims[1][1], colour=(0,255,0), label = "Lens")
+#f2nimg.drawrectangle(lims[0][0], lims[0][1], lims[1][0], lims[1][1], colour=(0,255,0), label = "Lens")
 
 lims = [map(int,x.split(':')) for x in emptyregion[1:-1].split(',')]
-f2nimg.drawrectangle(lims[0][0], lims[0][1], lims[1][0], lims[1][1], colour=(0,255,0), label = "Empty")
+#f2nimg.drawrectangle(lims[0][0], lims[0][1], lims[1][0], lims[1][1], colour=(0,255,0), label = "Empty")
 
 
 f2nimg.writetitle("%s / %s" % (xephemlens.split(",")[0], combibestkey))

@@ -19,6 +19,11 @@ from kirbybase import KirbyBase, KBError
 import shutil
 from variousfct import *
 
+if update:
+	# override config settings...
+	execfile(os.path.join(configdir, 'deconv_config_update.py'))
+	askquestions=False
+	# nothing more. Let's run on the whole set of images now.
 
 # Some first output for the user to check :
 print "Name for this deconvolution : %s." % decname
@@ -30,6 +35,7 @@ print "You want to deconvolve the object '%s' with the PSFs from :" % decobjname
 for psfname in decpsfnames:
 	print psfname
 print "And you want to normalize using :", decnormfieldname
+
 proquest(askquestions)
 
 # And a check of the status of the decskiplist :
@@ -84,7 +90,7 @@ for particularpsfname in decpsfnames:
 	print "Number of available psfs :", len(particularavailableimages)
 	
 	psfimages[particularpsfname] = list(particularavailableimages) # here we add those to the dict.
-	
+
 print "- " * 30
 #proquest(askquestions)
 		
@@ -95,8 +101,11 @@ print "- " * 30
 if thisisatest :
 	print "This is a test run."
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+	refimage = [image for image in images if image['imgname'] == refimgname][0]
 else :
 	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname', 'mjd'])
+	refimage = [image for image in images if image['imgname'] == refimgname][0]
+
 
 print "Number of images selected from database (before psf attribution or decskiplist) :", len(images)
 #proquest(askquestions)
@@ -173,8 +182,10 @@ if not decskipimagenameset.issubset(possibleimagenameset):
 
 
 # a check about the reference image:
-if refimgname not in [image['imgname'] for image in images] :
-	raise mterror("The reference image is not in your initial selection !")
+if refimgname not in [image['imgname'] for image in readyimages] :
+	print "The reference image is not in your initial selection ! \n Do you want me to add it ? Or do you prefer for me to crash ?"
+	proquest(askquestions)
+	readyimages.append(refimage)
 if refimgname in nopsfimages :
 	raise mterror("No PSF available for reference image !")
 
@@ -242,7 +253,6 @@ for i, image in enumerate(readyimages):
 	imgpsfdir = os.path.join(psfdir, image['imgname'])	# we take the psf from here
 	imgobjdir = os.path.join(objdir, image['imgname'])	# and the g.fits + sig.fits here
 
-	
 	os.symlink(os.path.join(imgpsfdir, "s001.fits") , os.path.join(decdir, "s%s.fits" % decfilenum))
 	os.symlink(os.path.join(imgobjdir, "g.fits") , os.path.join(decdir, "g%s_notnorm.fits" % decfilenum))
 	os.symlink(os.path.join(imgobjdir, "sig.fits") , os.path.join(decdir, "sig%s_notnorm.fits" % decfilenum))

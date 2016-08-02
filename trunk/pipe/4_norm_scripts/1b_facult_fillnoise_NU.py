@@ -15,7 +15,12 @@ import cosmics # used to read and write the fits files
 
 
 db = KirbyBase()
-images = db.select(imgdb, ['flagali','gogogo','treatme'], ['==1',True, True], ['recno','imgname', 'stddev'], sortFields=['imgname'], returnType='dict')
+if update:
+	print "This is an update."
+	images = db.select(imgdb, ['flagali','gogogo','treatme', 'updating'], ['==1',True, True, True], ['recno','imgname', 'stddev'], sortFields=['imgname'], returnType='dict')
+	askquestions=False
+else:
+	images = db.select(imgdb, ['flagali','gogogo','treatme'], ['==1',True, True], ['recno','imgname', 'stddev'], sortFields=['imgname'], returnType='dict')
 
 print "I will treat %i images." % len(images)
 proquest(askquestions)

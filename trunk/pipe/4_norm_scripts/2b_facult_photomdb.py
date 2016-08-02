@@ -13,7 +13,12 @@ import star
 
 # Selecting the images
 db = KirbyBase()
-images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
+if update:
+	print "This is an update."
+	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict')
+	askquestions = False
+else:
+	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 nbrofimages = len(images)
 
 # Read the manual star catalog :

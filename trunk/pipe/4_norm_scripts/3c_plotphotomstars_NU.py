@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 db = KirbyBase()
 images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields = ["mhjd"])
 
+if update:
+	askquestions = False
 nbrofimages = len(images)
 print "I respect treatme, and selected only %i images" % (nbrofimages)
 

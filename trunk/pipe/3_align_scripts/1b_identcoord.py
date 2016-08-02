@@ -20,10 +20,13 @@ import star
 
 # Select images to treat
 db = KirbyBase()
-images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
+if update:
+	print "This is an update."
+	images = db.select(imgdb, ['gogogo','treatme', 'updating'], [True, True, True], returnType='dict')
+	askquestions = False
+else:
+	images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
 
-# you can tweak this if you want to rerun the script on not-yet aligned images only ...
-#images = db.select(imgdb, ['gogogo','treatme','flagali'], [True, True,'!=1'], returnType='dict')
 
 nbrofimages = len(images)
 print "Number of images to treat :", nbrofimages

@@ -1,8 +1,8 @@
 execfile("../config.py")
 from Tkinter import *
 from tkMessageBox import * 
-import ImageTk
-import Image
+from PIL import ImageTk
+from PIL import Image
 import os
 import pyfits
 import f2n
@@ -27,11 +27,11 @@ nolensregion=True
 noemptyregion=True
 
 
-firststarsincelaunch=True#this flag is used 
+firststarsincelaunch=True
 
 #Variables to handle the different steps of the selection of the lens and empty regions
-compteur_lens=0
-compteur_empty=0
+compteur_lens = 0
+compteur_empty = 0
 
 #Some variables to store the lens and empty regions
 coinlens1x=0
@@ -44,8 +44,14 @@ coinempty1y=0
 coinempty2y=0
 
 #this is the size of the stars image, this is what you need to set depending on the screen you are using
-haut=1000.0
-larg=1000.0
+
+refimagepath = os.path.join(alidir, refimgname + "_skysub.fits")
+(imagea, imageh) = fromfits(refimagepath, verbose = False)
+
+
+haut = float(imageh["NAXIS1"])
+larg = float(imageh["NAXIS2"])
+
 
 #some parameters that will be necessary for the conversion from .fits to .png
 z1 = -40
@@ -66,12 +72,12 @@ nameslist=list()
 listcoordx=list()
 listcoordy=list()
 
-fitsfile=workdir+"/ali/"+refrefimgname+".fits"#IL FAUT METTRE L'IMAGE DE REFERENCE ICI
-pngpath=workdir+"/ali/"+refrefimgname+".png"#ICI NOM DU PNG PROVISOIRE
+
+fitsfile=workdir+"/ali/"+refimgname+"_skysub.fits"#IL FAUT METTRE L'IMAGE DE REFERENCE ICI
+pngpath=workdir+"/ali/"+refimgname+".png"#ICI NOM DU PNG PROVISOIRE
 
 #Here is the conversion from .fits to .png------------------
 f2nimg = f2n.fromfits(fitsfile)
-
 
 f2nimg.setzscale(z1, z2)
 wi,he=f2nimg.numpyarray.shape
@@ -85,14 +91,16 @@ f2nimg.makepilimage(scale = "log", negative = False)
 f2nimg.tonet(pngpath)
 #---------------------------------------------------------
 
-zoomfactor=5.0#This variable makes it possible to chose how much bigger the image in the zoom window is
+zoomfactor=1.0#This variable makes it possible to chose how much bigger the image in the zoom window is
 
 #Here the image is resized twice : once for the main windows and once for the zoom window------
-im1=Image.open(pngpath)
-imzoom=im1.resize((zoomfactor*haut,zoomfactor*larg),Image.ANTIALIAS)
-im1=im1.resize((haut,larg),Image.ANTIALIAS)
+im1 = Image.open(pngpath)
+imzoom = im1.resize((int(zoomfactor * haut), int(zoomfactor * larg)), Image.ANTIALIAS)
+im1 = im1.resize((int(haut), int(larg)), Image.ANTIALIAS)
 im1.save(pngpath)
 imzoom.save("zoom.png")
+
+
 #------------------
 image=pngpath
 
@@ -103,6 +111,7 @@ factWiZ=wi/(larg*zoomfactor)
 factHeZ=he/(haut*zoomfactor)
 
 #Initialization of graphic stuffs---------------------------------------------------------
+
 fenetre=Tk()#main window
 fenetre.title(image.split(".")[0])
 frame = Frame(fenetre)
@@ -110,7 +119,7 @@ frame.pack()
 photoimage = ImageTk.PhotoImage(file=image)
 photoimagezoom = ImageTk.PhotoImage(file="zoom.png")
 canvas = Canvas(fenetre, bg="black", width=larg, height=haut)
-w = canvas.create_image(larg/2,haut/2,image=photoimage)
+w = canvas.create_image(larg/8,haut/8,image=photoimage)
 carreE=canvas.create_polygon(0,0,outline="",fill="")
 textelens=canvas.create_text(0,0,text="")
 texteempty=canvas.create_text(0,0,text="")

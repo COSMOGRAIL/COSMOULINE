@@ -340,7 +340,7 @@ def fromfits(infilename, hdu = 0, verbose = True):
 	Use hdu to specify which HDU you want (default = primary = 0)
 	"""
 	
-	pixelarray, hdr = pyfits.getdata(infilename, hdu, header=True)
+	pixelarray, hdr = pyfits.getdata(infilename, hdu, header=True,)
 	pixelarray = np.asarray(pixelarray).transpose()
 	
 	pixelarrayshape = pixelarray.shape

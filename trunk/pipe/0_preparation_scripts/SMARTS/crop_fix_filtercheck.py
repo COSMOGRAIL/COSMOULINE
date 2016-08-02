@@ -12,14 +12,14 @@ import f2n
 ################### CONFIGURATION ###################################################################
 
 # ABSOLUTE PATH to where the files are and how to select them :
-origpaths = sorted(glob.glob("/obs/lenses_EPFL/PRERED/SMARTS/HE0435/raw/*.fits")) 
+origpaths = sorted(glob.glob("/run/media/vivien/LENSES/PRERED/SMARTS/WFI2033/raw/*.fits"))
 
 
 # ABSOLUTE PATH to the directory where you want the croped images to be written :
-destdir="/obs/lenses_EPFL/PRERED/SMARTS/HE0435/prep/" 
+destdir="/run/media/vivien/LENSES/PRERED/SMARTS/WFI2033/prep/"
 
 # croped images png path :
-pngdir="/obs/lenses_EPFL/PRERED/SMARTS/HE0435/pngs/"
+pngdir="/run/media/vivien/LENSES/PRERED/SMARTS/WFI2033/diffpngs/"
 
 #####################################################################################################
 
@@ -28,7 +28,7 @@ def newpath(origpath, destdir): 	# specifies how to change the name :
 					# origpath is the full path to a present file, and you have to
 					# return a full path to the destination file you want.
 	(dirname, filename) = os.path.split(origpath)
-	#newfilename = filename.replace(":", "-")
+	#newfilename = filename.replace(":", "-") # bwahaha, mac, bwahahahaha. Noob.
 	destpath = os.path.join(destdir, filename)
 	return destpath
 
@@ -64,7 +64,6 @@ for fitsfilepath in origpaths[::-1]:
 		
 	
 	pixelarray = numpy.asarray(pixelarray).transpose() # To put it in the usual ds9 orientation
-	
 	pixelarrayshape = pixelarray.shape
 	print "Input : (%i, %i), %s, %s" % (pixelarrayshape[0], pixelarrayshape[1], hdr["BITPIX"], pixelarray.dtype.name)
 	
@@ -78,7 +77,7 @@ for fitsfilepath in origpaths[::-1]:
 	#pixelarray = pixelarray[60:, 140:]
 	
 	#For HE0435 some images are really ugly..., with enormous borders...
-	pixelarray = pixelarray[170:910,170:870]
+	pixelarray = pixelarray[170:950, 404:950]
 	
 	
 	

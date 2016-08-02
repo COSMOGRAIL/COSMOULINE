@@ -16,6 +16,10 @@ db = KirbyBase()
 if thisisatest:
 	print "This is a test run."
 	images = db.select(imgdb, ['gogogo','treatme','testlist'], [True, True, True], returnType='dict', sortFields=['setname','mjd'])
+elif update:
+	print "This is an update."
+	images = db.select(imgdb, ['gogogo','treatme','updating'], [True, True, True], returnType='dict', sortFields=['setname','mjd'])
+	askquestions=False
 else:
 	images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict', sortFields=['setname','mjd'])
 	
@@ -26,11 +30,18 @@ proquest(askquestions)
 
 
 pngdirpath = os.path.join(workdir, "sky_png")  # this is where you will put the png images (maybe move the whole name architecture into a single parameterfile ?)
-if os.path.isdir(pngdirpath):
-	print "I will delete existing stuff."
-	proquest(askquestions)
-	shutil.rmtree(pngdirpath)
-os.mkdir(pngdirpath)
+
+if update:
+	print "I will complete the existing sky folder. Or create it if you deleted it to save space"
+	if not os.path.isdir(pngdirpath):
+		os.mkdir(pngdirpath)
+
+else:
+	if os.path.isdir(pngdirpath):
+		print "I will delete existing stuff."
+		proquest(askquestions)
+		shutil.rmtree(pngdirpath)
+	os.mkdir(pngdirpath)
 
 
 starttime = datetime.now()
@@ -84,17 +95,25 @@ for i,image in enumerate(images):
 	"%s : %i -> %i (span = %i) [ADU]" % ("Cuts", skyimage.z1, skyimage.z2, skyimage.z2 - skyimage.z1)
 	]
 	skyimage.writeinfo(skyinfo, colour = (255, 0, 0))
-	
-	
 
-	
 	pngpath = os.path.join(pngdirpath, "%s_sky.png" % image['imgname'])
 	f2n.compose([[skysubimage, skyimage]], pngpath)
 
-	orderlink = os.path.join(pngdirpath, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
-	os.symlink(pngpath, orderlink)
-	
+	if not update:
+		orderlink = os.path.join(pngdirpath, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
+		os.symlink(pngpath, orderlink)
 
+
+if update:  # remove all the symlink and redo it again with the new images
+	allimages = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict', sortFields=['setname','mjd'])
+	for i, image in enumerate(allimages):
+		pngpath = os.path.join(pngdirpath, "%s_sky.png" % image['imgname'])
+		orderlink = os.path.join(pngdirpath, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
+		try:
+			os.unlink(orderlink)
+		except:
+			pass
+		os.symlink(pngpath, orderlink)
 
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
