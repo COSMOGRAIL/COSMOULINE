@@ -3,7 +3,7 @@
 
 # The "working" dir where all the pipeline products will be *written*
 # ("big-old-never-backuped-disk")
-workdir = "/run/media/vivien/LENSES/COSMOULINE/data/HE2149_ECAM"
+workdir = "/run/media/vivien/LENSES/COSMOULINE/data/HE0435_ECAM"
 
 
 #------------------------ SWITCHES -----------------------------------------
@@ -37,6 +37,9 @@ makejpgarchives = False
 # A switch to reduce the verbosity of the fortran MCS programs :
 silencemcs = True
 
+# A switch that allows you to update the previous configuration with new images
+update = False
+
 
 # Max number of CPU cores to use (0 = automatic, meaning that all available cores will be used) :
 maxcores = 0
@@ -59,7 +62,7 @@ telescopename = "EulerCAM"
 # where skysim is a scecial name to read the header of the simulated images.
 
 # Where are these images ?
-rawdir = "/run/media/vivien/LENSES/PRERED/HE2149-274_RG_UL_RGUL4"
+rawdir = "/run/media/vivien/LENSES/PRERED/HE0435-1223_RG_UL_RGUL4"
 # Remember that these images should be prereduced and have clean borders (cut pre/overscan) !
 # Also they should be in a coherent "orientation" (rotations are ok, but no mirror flips).
 
@@ -95,13 +98,12 @@ rawdir = "/run/media/vivien/LENSES/PRERED/HE2149-274_RG_UL_RGUL4"
 #xephemlens = "SDSS1400+3134,f|Q,14:00:12.77,+31:34:54.1,19.4,2000"
 #xephemlens = "J0158-4325,f|Q,01:58:41.44,-43:25:04.19,19.0,2000"
 #xephemlens = "HS0818+1227,f|Q,08:21:39.10,+12:17:29.00,19.0,2000"
-xephemlens = "HE2149-274,f|Q,21:52:07.44,-27:31:50.19,19.0,2000"
+#xephemlens = "HE2149-274,f|Q,21:52:07.44,-27:31:50.19,19.0,2000"
 #xephemlens = "WFI2033-4723,f|Q,20:33:42.08,-47:23:43.00,20.0,2000"
 #xephemlens =  "J1335+0118,f|Q,13:35:34.79,+01:18:05.50,20.0,2000"
 #xephemlens = "J0832+0404,f|Q,08:32:17.00,+04:04:05.20,20.0,2000"
 #xephemlens = "J1322+1052,f|Q,13:22:36.42,+10:52:39.43,20.0,2000"
-#xephemlens = "HE0435-1223,f|Q,04:38:14.90,-12:17:14.40,19.0,2000"
-#xephemlens = "HE1104-1805,f|Q,11:06:33.39,-18:21:23.80,19.0,2000"
+xephemlens = "HE0435-1223,f|Q,04:38:14.90,-12:17:14.40,19.0,2000"
 #xephemlens = "Simulation,f|Q,00:00:00.00,+00:00:00.0,20.0,2000"
 
 # Now you can run all the scripts until the alignment !
@@ -110,18 +112,18 @@ xephemlens = "HE2149-274,f|Q,21:52:07.44,-27:31:50.19,19.0,2000"
 
 # reference image name (for alignment and deconvolution) :
 
-refimgname = "3_ECAM.2012-09-11T04:43:16.000"
+refimgname = "3_ECAM.2011-08-31T09:35:49.000"
 
 # dimensions you want for the aligned images (you have to start at pixels (1,1), no choice)
-dimx = 4000
-dimy = 4000
+dimx = 3600
+dimy = 3600
 # currently this is used only in the stupid geomap, to make the transform valid
 # for the full frame.
 
 # Where is the lens ?
-lensregion = "[1633:1687,1569:1624]"
+lensregion = "[1459:1497,1809:1844]"
 # Region of empty sky (to estimate stddev), 100 x 100 pixel is more then enough.
-emptyregion = "[1126:1377,1864:2015]"
+emptyregion = "[1383:1513,1676:1745]"
 # These regions apply to the aligned images.
 
 # And now some alignment parameters that you should actually not have to change at all.
@@ -158,7 +160,13 @@ sexphotomfields = [
 {"sexname":"FLUX_APER1", "dbname":"ap30_flux", "type":"float"},
 {"sexname":"FLUX_APER2", "dbname":"ap60_flux", "type":"float"},
 {"sexname":"FLUX_APER3", "dbname":"ap90_flux", "type":"float"},
-{"sexname":"FLUX_APER4", "dbname":"ap120_flux", "type":"float"}
+{"sexname":"FLUX_APER4", "dbname":"ap120_flux", "type":"float"},
+{"sexname":"FLUXERR_AUTO", "dbname":"auto_flux_err", "type":"float"},
+{"sexname":"FLUXERR_APER", "dbname":"ap20_flux_err", "type":"float"},
+{"sexname":"FLUXERR_APER1", "dbname":"ap30_flux_err", "type":"float"},
+{"sexname":"FLUXERR_APER2", "dbname":"ap60_flux_err", "type":"float"},
+{"sexname":"FLUXERR_APER3", "dbname":"ap90_flux_err", "type":"float"},
+{"sexname":"FLUXERR_APER4", "dbname":"ap120_flux_err", "type":"float"}
 ]
 
 #------------------------ DEEP FIELD COMBINATION (FACULTATIVE) -------------
@@ -188,7 +196,7 @@ combinightrenormcoeff = 'medcoeff'	# you can choose which coeff you want to use 
 # put "new" somewhere in the string if you want use the new psf, and "old" otherwise.
 # Suggestion for names : "newabcd1" for your first try using stars a, b, c and d...
 
-psfname = "pyMCSabcd"
+psfname = "pyMCSabcdfgh1"
 
 # The otherway round, do not put "new" in that string if you build your PSF with the old codes !
 # This is not used to switch the programs automatically, but to recognize which PSF was used afterwards.
@@ -198,7 +206,7 @@ psfname = "pyMCSabcd"
 
 # Sensitivity of cosmic ray detection. Lower values = more sensitive = more detections
 # A good conservative default is 5.0 . So 4.0 would be a bit more sensitive. Check that you do not mask noise ...
-cosmicssigclip = 7.0
+cosmicssigclip = 6.0
 
 
 # Remove saturated images. A maxpixelvaluecoeff of X means that the images where the psf stars have a pixel with a value higher than saturlevel*gain*X are indicated and can be disregarded after the PSF construction. Typically, for a cut at 50k (with saturation at 64k), use maxpixelvaluecoeff = 0.78
@@ -214,43 +222,45 @@ objname = "a"	# Give a name to the object you want to extract.
 			# is no problem to extract the same object under different
 			# names !
 
-objnames = ["b", "c", "e", "f", "g", "i", "j", "m", "n", "o", "p", "s"]
+objnames = ["lens", "a", "b", "c", "d", "e", "f", "g", "h", "t", "m1", "m2", "m4", "m5"]
 			# As above, but all extractions are performed in a single scrip
 			# 12_all_extrnancosm.py
 			# More efficient on some configurations (like if IO flow is limited)
 
 #------------------------ DECONVOLUTION ------------------------------------
 
-decname = "back"		# Choose a name for your deconvolution. No need to reflect the source. Examples : "full", "test"
+decname = "back-astrofix-5"		# Choose a name for your deconvolution. No need to reflect the source. Examples : "full", "test"
 
 decobjname = "lens"		# Select which object you want to deconvolve : give an existing objname.
 				# You don't have to set the objname in the "OBJECT EXTRACTION" section.
 
-decnormfieldname = "renormabefij"	# The normalization coefficient to apply to the image prior to deconv.
+decnormfieldname = "renormabcdfhm1m2"	# The normalization coefficient to apply to the image prior to deconv.
 				# "None" is special, it means a coeff of 1.0 for every image.
 				# The name of the default sextractor photometry is "medcoeff"
 				# If you choose a renormalization, give an existing renormname.
 
 
-decpsfnames = ["pyMCSabcd"]		# The PSF(s) you want to use : give one or more psfnames in form of a list.
+decpsfnames = ["pyMCSabcdfgh1"]		# The PSF(s) you want to use : give one or more psfnames in form of a list.
 				# The first psfname has the lowest priority.
 
 
 #------------------------ RENORMALIZATION ----------------------------------
 
-renormname = "renormabefij"	# Choose a name for the new renormalization coefficient
+renormname = "renormabcdfhm1m2"	# Choose a name for the new renormalization coefficient
 				# (something that reflects the sources... like "renormabc")
 				# Make it short ... but start it with the letters renorm
 
 # Which sources do you want to use for the renormalization (give (deckey, sourcename) ):
 # NEW : the FIRST one of the sources below will be used as a reference to scale the coeffs between different telescopes !
 renormsources = [
-('dec_full_a_medcoeff_pyMCSabcd', 'a'),
-('dec_full_b_medcoeff_pyMCSabcd', 'b'),
-('dec_full_e_medcoeff_pyMCSabcd', 'e'),
-('dec_full_f_medcoeff_pyMCSabcd', 'f'),
-('dec_full_i_medcoeff_pyMCSabcd', 'i'),
-('dec_full_j_medcoeff_pyMCSabcd', 'j'),
+('dec_noback_a_medcoeff_pyMCSabcdfgh1', 'a'),
+('dec_noback_b_medcoeff_pyMCSabcdfgh1', 'b'),
+('dec_noback_c_medcoeff_pyMCSabcdfgh1', 'c'),
+('dec_noback_d_medcoeff_pyMCSabcdfgh1', 'd'),
+('dec_noback_f_medcoeff_pyMCSabcdfgh1', 'f'),
+('dec_noback_h_medcoeff_pyMCSabcdfgh1', 'h'),
+('dec_noback_m1_medcoeff_pyMCSabcdfgh1', 'm1'),
+('dec_noback_m2_medcoeff_pyMCSabcdfgh1', 'm2')
 ]
 
 # You can than change these before running 2_plot_star_curves_NU.py, to get curves for other stars.
