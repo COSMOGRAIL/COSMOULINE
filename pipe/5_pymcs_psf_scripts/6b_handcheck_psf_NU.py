@@ -1,11 +1,16 @@
 from Tkinter import *            
-from tkMessageBox import *        
-import ImageTk
-import Image
-execfile("config.py") 
+from tkMessageBox import *
+try:
+	import ImageTk
+	import Image
+except:
+	from PIL import ImageTk
+	from PIL import Image
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError 
 from variousfct import * 
-from readandreplace_fct import * 
+from readandreplace_fct import *
+import matplotlib.pyplot as plt
 import star
 import os
 import shutil
@@ -35,6 +40,18 @@ db = KirbyBase()
 if thisisatest:
 	print "This is a test run."
 	imagesdict = db.select(imgdb, ['gogogo','treatme','testlist'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+if update:
+	print "This is an update."
+	imagesdict = db.select(imgdb, ['gogogo','treatme','updating'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+	plt.figure(figsize=(8,5))
+	plt.scatter(0,0, label='COUCOU')
+	plt.xlabel('COUCOU !', fontsize=15)
+	plt.ylabel('COUCOU !', fontsize=15)
+	plt.legend(loc=6, fontsize=50)
+	plt.suptitle('COUCOU !!')
+	plt.show()
+	notify(computer, withsound, "Hey Ho ! I need your input here. Look at the PSF of your new images and add the ones you don't like to your skiplist !")
+
 else:
 	imagesdict = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict', sortFields=['setname', 'mjd'])
 
@@ -110,12 +127,12 @@ def skip():
 		
 		incri()	
 		if resize == "yes":
-			im4= Image.open("/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+str(images[i])+".png")
+			im4= Image.open(workdir+'/'+psfkey+"_png/"+str(images[i])+".png")
 			im4=im4.resize((width,height), Image.ANTIALIAS)
-			im4.save("/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+str(images[i])+".png")
-			myimg = "/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+images[i]+".png"		
+			im4.save(workdir+'/'+psfkey+"_png/"+str(images[i])+".png")
+			myimg = workdir+'/'+psfkey+"_png/"+images[i]+".png"
 		else:
-			myimg = "/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+images[i]+".png"
+			myimg = workdir+'/'+psfkey+"_png/"+images[i]+".png"
 		new_photoimage = ImageTk.PhotoImage(file=myimg)
 		image = myimg
 		w.config(image = new_photoimage)
@@ -132,12 +149,12 @@ def keep():
 	incri()
 	
 	if resize == "yes":
-		im3= Image.open("/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+str(images[i])+".png")
+		im3= Image.open(workdir+'/'+psfkey+"_png/"+str(images[i])+".png")
 		im3=im3.resize((width,height), Image.ANTIALIAS)
-		im3.save("/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+str(images[i])+".png")
-		myimg = "/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+images[i]+".png"		
+		im3.save(workdir+'/'+psfkey+"_png/"+str(images[i])+".png")
+		myimg = workdir+'/'+psfkey+"_png/"+images[i]+".png"
 	else:
-		myimg = "/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+images[i]+".png"
+		myimg = workdir+'/'+psfkey+"_png/"+images[i]+".png"
 			
 	
 	new_photoimage = ImageTk.PhotoImage(file=myimg)
@@ -159,7 +176,7 @@ def previous():
 	#	im2.save("/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+str(images[i])+".png")
 	#	myimg = "/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+images[i]+".png"		
 	#else:
-	myimg = "/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+images[i]+".png"
+	myimg = workdir+'/'+psfkey+"_png/"+images[i]+".png"
 	
 		
 	new_photoimage = ImageTk.PhotoImage(file=myimg)
@@ -180,7 +197,7 @@ def quit():
 	skiplist.close()
 	
 	for i,elem in enumerate(images):
-		im=Image.open('/home/epfl/paic/Desktop/cosmouline/data/'+psfkey+'_png/'+str(images[i])+'.png')
+		im=Image.open(workdir+'/'+psfkey+'_png/'+str(images[i])+'.png')
 		liste2.append(im.size)
 	for i in range(1,783):
 		if liste2[i]!=liste2[0]:
@@ -197,12 +214,12 @@ def quit():
 	
 	
 if resize == "yes":
-	im1= Image.open("/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+str(images[i])+".png")
+	im1= Image.open(workdir+'/'+psfkey+"_png/"+str(images[i])+".png")
 	im1=im1.resize((width,height), Image.ANTIALIAS)
-	im1.save("/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+str(images[i])+".png")
-	image = "/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+str(images[i])+".png"		
+	im1.save(workdir+'/'+psfkey+"_png/"+str(images[i])+".png")
+	image = workdir+'/'+psfkey+"_png/"+str(images[i])+".png"
 else:
-	image = "/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+str(images[i])+".png"
+	image = workdir+'/'+psfkey+"_png/"+str(images[i])+".png"
 
 
 
@@ -211,7 +228,6 @@ frame.pack()
 
 
 photoimage = ImageTk.PhotoImage(file=image)
-
 
 w = Label(t, image = photoimage)
 w.pack()

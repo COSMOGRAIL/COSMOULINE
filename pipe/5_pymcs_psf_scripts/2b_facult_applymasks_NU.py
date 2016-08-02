@@ -31,7 +31,8 @@ for i, s in enumerate(psfstars):
 	else:
 		print "No mask file for star %s." % (s.name)
 
-proquest(askquestions)
+if not update:
+	proquest(askquestions)
 		
 
 # Select images to treat
@@ -41,6 +42,10 @@ db = KirbyBase()
 if thisisatest :
 	print "This is a test run."
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+elif update:
+	print "This is an update."
+	images = db.select(imgdb, ['gogogo', 'treatme', 'updating',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+	askquestions = False
 else :
 	images = db.select(imgdb, ['gogogo', 'treatme',psfkeyflag], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 
