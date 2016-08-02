@@ -4,6 +4,7 @@
 #	In this case I will not update the database.
 #
 
+forceseeingpixels = True
 
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
@@ -18,6 +19,10 @@ db = KirbyBase()
 if thisisatest:
 	print "This is a test !"
 	images = db.select(imgdb, ['gogogo','treatme','testlist'], [True, True,True], returnType='dict')
+elif update:
+	print "This is an update !"
+	images = db.select(imgdb, ['gogogo','treatme','updating'], [True, True,True], returnType='dict')
+	askquestions = False
 else:
 	images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
 
@@ -92,12 +97,18 @@ for i,image in enumerate(images):
 			#raise mterror("This FWHM distribution is anormal (many cosmics). Something is wrong with sextractor... Problematic img: " + image['imgname'])
 			print "This image has many low-FWHM objects (cosmics ?)"
 			seeingpixels = np.median(fwhms)
+			if forceseeingpixels:
+				if seeingpixels < 2:
+					seeingpixels = 2.01  # HAAAAAAX
 			seeing = seeingpixels * image['pixsize']
 
 		elif maxpos == len(hist) -1:
 			print "This image if funny, it seems to have many high-FWHM objects."
 			print "I can only make a crude guess ..."
 			seeingpixels = np.median(fwhms)
+			if forceseeingpixels:
+				if seeingpixels < 2:
+					seeingpixels = 2.01  # HAAAAAAX
 			seeing = seeingpixels * image['pixsize']
 			
 			
@@ -113,14 +124,23 @@ for i,image in enumerate(images):
 			starfwhms = fwhms[np.logical_and(fwhms > peakpos-1.0, fwhms < peakpos+1.0)]
 			if len(starfwhms) > 0:
 				seeingpixels = np.median(starfwhms)
+				if forceseeingpixels:
+					if seeingpixels < 2:
+						seeingpixels = 2.01  # HAAAAAAX
 			else:
-				seeingpixels = peakpos	
+				seeingpixels = peakpos
+				if forceseeingpixels:
+					if seeingpixels < 2:
+						seeingpixels = 2.01  # HAAAAAAX
 			seeing = seeingpixels * image['pixsize']
 
 	elif len(fwhms) > 0:
 		
 		print "Only %i stars, using the median ..." % (len(fwhms))
 		seeingpixels = np.median(fwhms)
+		if forceseeingpixels:
+			if seeingpixels < 2:
+				seeingpixels = 2.01  # HAAAAAAX
 		seeing = seeingpixels * image['pixsize']
 		
 	else:
@@ -171,7 +191,7 @@ for i,image in enumerate(images):
 		plt.grid(True)
 		plt.show()
 
-	
+
 	if not checkplots:	
 		db.update(imgdb, ['recno'], [image['recno']], {'seeing': float(seeing), 'ell': float(ell), 'goodstars': nbrstars, 'seeingpixels': float(seeingpixels)})
 	

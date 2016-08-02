@@ -14,7 +14,7 @@ import star
 import shutil
 import f2n
 from datetime import datetime, timedelta
-
+import os, sys
 
 # - - - CONFIGURATION - - -
 
@@ -41,23 +41,31 @@ print "You can configure some lines of this script."
 print "(e.g. to produce full frame pngs, or zoom on the lens, etc)"
 print "I respect thisisatest, so you can use this to try your settings..."
 
-proquest(askquestions)
+#proquest(askquestions)
 
 pngdir = os.path.join(workdir, "ali_" + pngkey + "_png")
 
-# We check for potential existing stuff :
-if os.path.isdir(pngdir):
-	print "I will delete existing stuff."
-	proquest(askquestions)
-	shutil.rmtree(pngdir)
-os.mkdir(pngdir)
+if update:
+	print "I will complete the existing sky folder. Or create it if you deleted it to save space"
+	if not os.path.isdir(pngdir):
+		os.mkdir(pngdir)
+
+else:
+	if os.path.isdir(pngdir):
+		print "I will delete existing stuff."
+		proquest(askquestions)
+		shutil.rmtree(pngdir)
+	os.mkdir(pngdir)
 
 # We select the images to treat :
 db = KirbyBase()
 if thisisatest :
 	print "This is a test run."
-	#images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict', sortFields=['mjd'])
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict', sortFields=['setname','mjd'])
+elif update:
+	print "This is an update."
+	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict', sortFields=['setname','mjd'])
+	askquestions=False
 else :
 	#images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['mjd'])
 	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname','mjd'])
@@ -134,11 +142,21 @@ for i, image in enumerate(images):
 	pngname = image['imgname'] + ".png"
 	pngpath = os.path.join(pngdir, pngname)
 	f2nimg.tonet(pngpath)
-	
-	orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
-	os.symlink(pngpath, orderlink)
 
+	if not update:
+		orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
+		os.symlink(pngpath, orderlink)
 
+if update:  # remove all the symlink and redo it again with the new images
+	allimages = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname','mjd'])
+	for i, image in enumerate(allimages):
+		pngpath = os.path.join(pngdir, image['imgname'] + ".png")
+		orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
+		try:
+			os.unlink(orderlink)
+		except:
+			pass
+		os.symlink(pngpath, orderlink)
 
 	
 #origdir = os.getcwd()

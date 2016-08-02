@@ -11,6 +11,7 @@ import shutil
 from variousfct import *
 import os
 
+
 	# count nbr of images
 	
 db = KirbyBase()
@@ -100,6 +101,9 @@ print "Wrote in.txt"
 
 # We test the seeingpixels : all values should be above 2, otherwise the dec code will crash :
 testseeings = np.array([image["seeingpixels"] for image in images])
+for image in images:
+	print image["imgname"], image["seeingpixels"]
+
 if not np.all(testseeings>2.0):
 	raise mterror("I have seeinpixels <= 2.0, deconv.exe cannot deal with those.")
 

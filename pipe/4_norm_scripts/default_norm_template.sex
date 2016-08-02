@@ -69,7 +69,7 @@ CHECKIMAGE_NAME	check.fits	# Filename for the check-image (*)
 #--------------------- Memory (change with caution!) -------------------------
 
 MEMORY_OBJSTACK	2000		# number of objects in stack
-MEMORY_PIXSTACK	100000		# number of pixels in stack
+MEMORY_PIXSTACK	1000000		# number of pixels in stack
 MEMORY_BUFSIZE	1024		# number of lines in buffer
 
 #----------------------------- Miscellaneous ---------------------------------

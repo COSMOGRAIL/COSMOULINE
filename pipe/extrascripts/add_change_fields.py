@@ -12,18 +12,36 @@ backupfile(imgdb, dbbudir, "addchangefield")
 
 db = KirbyBase()
 
-db.addFields(imgdb, ['geomapscale:float'])
+#db.addFields(imgdb, ['geomapscale:float'])
 
 db.pack(imgdb) # always a good idea !
 
 
-sys.exit()
+#sys.exit()
 
 # int, str, bool
 
 #images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict') # selects according to treatme
-images = db.select(imgdb, ['recno'], ['*'], returnType='dict') # selects all images
-#images = db.select(imgdb, ['setname'], ['Mer1'], returnType='dict') # selects all Mer1 images
+#images = db.select(imgdb, ['recno'], ['*'], returnType='dict') # selects all images
+images = db.select(imgdb, ['updating'], [True], returnType='dict') # selects all 3 images
+
+for image in images:
+	print image["rawimg"]
+	seq = image["rawimg"].split('/')
+	print seq
+	newseq = []
+	for elt in seq:
+		if elt == "LENSES":
+			newseq.append("LENSES-2")
+		else:
+			newseq.append(elt)
+	print '/'.join(newseq)
+	db.update(imgdb, ['recno'], [image['recno']], ['/'.join(newseq)], ['rawimg'])
+
+db.pack(imgdb)
+
+sys.exit()
+
 
 nbrofimages = len(images)
 for i,image in enumerate(images):

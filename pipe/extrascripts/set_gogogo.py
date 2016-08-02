@@ -21,12 +21,12 @@ proquest(askquestions)
 backupfile(imgdb, dbbudir, "imgkickgogogoFalse")
 
 db = KirbyBase()
-#images = db.select(imgdb, ['recno'], ['*'], returnType='dict')
+images = db.select(imgdb, ['recno'], ['*'], returnType='dict')
 
 
 for image in imagestokick:
 	print image[0]
-	if image[0] == refimgname:
+	if image == refimgname:
 		print "1) Do not be rude."
 		print "2) Eat your soup."
 		print "3) Do not try to remove the reference image !!!!!"

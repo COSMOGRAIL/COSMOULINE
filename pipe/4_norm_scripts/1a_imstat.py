@@ -17,13 +17,18 @@ from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
 
-
-	# As we will tweak the database, do a backup first
+# As we will tweak the database, do a backup first
 backupfile(imgdb, dbbudir, "imstat")
 
 db = KirbyBase()
-images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
-#images = db.select(imgdb, ['imgname'], ['MaiSITE1_pb250078'], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
+
+if update:
+	print "This is an update."
+	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
+	askquestions=False
+else:
+	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
+
 
 print "OK, we have", len(images), "images to treat."
 proquest(askquestions)

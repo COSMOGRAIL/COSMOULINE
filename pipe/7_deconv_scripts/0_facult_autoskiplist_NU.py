@@ -13,15 +13,29 @@ from variousfct import *
 ########## Configuration #########
 showhist = False
 
+if 1:
+	# Normal rejection stuff :
+	maxseeing = 2.2
+	maxell = 0.30
+	maxmedcoeff = 2.5
+	maxsky = 8000.0
 
-# Normal rejection stuff :
+
+if 0:
+	# The very best frames to draw a good background :
+	maxseeing = 1.35
+	maxell = 0.12
+	maxmedcoeff = 1.28
+	maxsky = 550.0
 
 
-maxseeing = 2.0
-maxell = 0.25
-maxmedcoeff = 2
-maxsky = 5000.0
-
+'''
+# NTT rejection :
+maxseeing = 1.2
+maxell = 0.12
+maxmedcoeff = 2.0
+maxsky = 6000.0
+'''
 
 '''
 # VLT rejection stuff (WIP) :
@@ -40,13 +54,6 @@ maxsky = 1000
 '''
 
 
-'''
-# The very best frames to draw a good background :
-maxseeing = 1.1
-maxell = 0.13
-maxmedcoeff = 1.05
-maxsky = 600.0
-'''
 
 ##################################
 
@@ -59,15 +66,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 db = KirbyBase()
+if update:
+	#images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+	askquestions=False
+	# override config settings...
+	execfile(os.path.join(configdir, 'deconv_config_update.py'))
+else:
+	pass
 images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname', 'mjd'])
 
 nbtot = len(images)
 
 if os.path.isfile(decskiplist):
 	print "You already have a decskiplist."
-	print "In this script I will only consider images that are not yet rejected by this decskiplist."
-	decskipimgnames = [image[0] for image in readimagelist(decskiplist)] # image[1] would be the comment
-	images = [image for image in images if image["imgname"] not in decskipimgnames]
+	print "Good for you. But I don't care (change me in the script itself if needed)"
+	if 0:
+		print "In this script I will only consider images that are not yet rejected by this decskiplist."
+		decskipimgnames = [image[0] for image in readimagelist(decskiplist)] # image[1] would be the comment
+		images = [image for image in images if image["imgname"] not in decskipimgnames]
 	print "Full path to decskiplist :"
 else:
 	cmd = "touch " + decskiplist
@@ -143,7 +159,8 @@ print "Number of images potentially left : %i" % (nbtot - len(rejlines))
 
 print "I can copy and paste this into your decskiplist, if you want to skip them."
 proquest(askquestions)
-skiplist = open(decskiplist, 'a')
+skiplist = open(decskiplist, 'w')
+skiplist.write('\n')
 skiplist.write("\n".join(rejlines))
 skiplist.close()
 print "OK, done"

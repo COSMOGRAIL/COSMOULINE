@@ -21,6 +21,11 @@ import progressbar
 import pyfits
 import cosmics
 
+# I could try to be smarter, and extract only the stars needed for the renormalisation...
+# Nah, it weights barely nothing (less than 100Mb for 1000 images).
+if update:
+	askquestions=False
+
 print "I will extract, replace NaN, and mask cosmics for the following sources:"
 for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdirs, objkeyflags, objcosmicskeys, objcoordcats):
 
@@ -67,6 +72,9 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 	if thisisatest :
 		print "This is a test run."
 		images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+	elif update:
+		print "This is an update."
+		images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 	else :
 		images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname', 'mjd'])
 
@@ -173,7 +181,8 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 		print "I have linked the extraction from the reference image here :"
 		print destpath
 	else:
-		print "Warning : the reference image was not in your selection !"
+		if not update:
+			print "Warning : the reference image was not in your selection !"
 
 
 

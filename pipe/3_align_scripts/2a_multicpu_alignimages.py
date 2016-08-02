@@ -2,10 +2,9 @@
 #	here we do the actual geomap and gregister (pyraf)
 #	we apply this inprinciple to all images gogogo, treatme, and flagali
 #
-
+import os, sys
 
 execfile("../config.py")
-
 from kirbybase import KirbyBase, KBError
 import math
 from pyraf import iraf
@@ -15,6 +14,9 @@ from datetime import datetime, timedelta
 import forkmap
 import progressbar
 
+redofromscratch = False
+updatedbonly = False # and this should stay False unless you really know what you do.
+print "WARNING !! I broke something and don't know what yet. Run this script once with updatedbonly set to False, the once again with set to True..."
 
 # We will tweak the db only at the end of this script.
 
@@ -22,9 +24,15 @@ db = KirbyBase()
 if thisisatest:
 	print "This is a test."
 	images = db.select(imgdb, ['flagali','gogogo','treatme', 'testlist'], ['==1',True, True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
+elif update:
+	print "This is an update."
+	images = db.select(imgdb, ['flagali','gogogo','treatme', 'updating'], ['==1',True, True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
+	askquestions = False
 else:
 	images = db.select(imgdb, ['flagali','gogogo','treatme'], ['==1',True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
 
+print "redofromscratch = %s \n updatedbonly = %s" % (str(redofromscratch), str(updatedbonly))
+proquest(askquestions)
 
 print "I will run the actual alignment (on several cpus), and wait until this is done to update the database."
 nbrofimages = len(images)
@@ -50,9 +58,16 @@ def aliimage(image):
 	geomapin = os.path.join(alidir, image['imgname'] + ".geomap")
 	
 	aliimg = os.path.join(alidir, image['imgname'] + "_ali.fits")
-	
-	if os.path.isfile(aliimg):
-		os.remove(aliimg)
+
+	if not updatedbonly:
+		if redofromscratch:
+			if os.path.isfile(aliimg):
+				os.remove(aliimg)
+
+		else:
+			if os.path.isfile(aliimg):
+				print "Image already aligned - redofromscratch set to False - I skip"
+				return None
 	
 	databasename = os.path.join(alidir, image["imgname"] + ".geodatabase")
 	if os.path.isfile(databasename):
@@ -120,7 +135,12 @@ def aliimage(image):
 	retdict["geomapangle"] = geomapangle
 	retdict["geomaprms"] = geomaprms
 	retdict["imgname"] = image["imgname"]
-	
+
+
+	if updatedbonly:
+		return retdict
+
+
 	#Does not work this way, you cannot modify external objects :
 	#image["geomapscale"] = geomapscale
 	#image["geomapangle"] = geomapangle
@@ -169,6 +189,7 @@ def aliimage(image):
 	return retdict
 
 
+
 starttime = datetime.now()
 retdicts = forkmap.map(aliimage, images, n = ncorestouse)
 #pool = multiprocessing.Pool(processes=ncorestouse)
@@ -190,7 +211,8 @@ widgets = [progressbar.Bar('>'), ' ', progressbar.ETA(), ' ', progressbar.Revers
 pbar = progressbar.ProgressBar(widgets=widgets, maxval=len(images)).start()
 for (retdict,image) in zip(retdicts,images):
 	#print image["geomapscale"]
-	db.update(imgdb, ['recno'], [image['recno']], {'geomapangle': retdict["geomapangle"], 'geomaprms': retdict["geomaprms"], 'geomapscale': retdict["geomapscale"]})
+	if not retdict == None:
+		db.update(imgdb, ['recno'], [image['recno']], {'geomapangle': retdict["geomapangle"], 'geomaprms': retdict["geomaprms"], 'geomapscale': retdict["geomapscale"]})
 	pbar.update(i)
 pbar.finish()	
 

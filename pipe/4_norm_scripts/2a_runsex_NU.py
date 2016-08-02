@@ -15,7 +15,12 @@ import os
 # We select the images to treat
 
 db = KirbyBase()
-images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
+if update:
+	print "This is an update"
+	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict')
+	askquestions=False
+else:
+	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 
 nbrofimages = len(images)
 print "I have", nbrofimages, "images to treat."

@@ -404,13 +404,14 @@ class f2nimage:
 			
 			
 			#calcarray.shape = numpyarrayshape
-			bwarray = np.zeros(calcarray.shape, dtype=np.uint8)
+			bwarray = np.zeros(calcarray.shape)
 			calcarray.round(out=bwarray)
+			bwarray = bwarray.astype(np.uint8) # and you get the dtype you want in the end
 			if negative:
 				if self.verbose:
 					print "Using negative scale"
 				bwarray = 255 - bwarray
-			
+
 			if self.verbose:
 				print "PIL range : [%i, %i]" % (np.min(bwarray), np.max(bwarray))
 			

@@ -22,6 +22,13 @@ import numpy as np
 import variousfct
 import scipy
 
+if update:
+	# override config settings...
+	execfile(os.path.join(configdir, 'deconv_config_update.py'))
+	askquestions=False
+	# nothing more. Let's run on the whole set of images now.
+
+
 def rebin(a, newshape):
 	"""
 	Auxiliary function to rebin ndarray data. -> we put the *mean* of the orig pixels into the new ones.

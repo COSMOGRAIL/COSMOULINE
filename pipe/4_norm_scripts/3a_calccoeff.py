@@ -24,8 +24,15 @@ backupfile(imgdb, dbbudir, 'calccoeff')
 
 	# select images to treat
 db = KirbyBase()
-images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
-#images = db.select(imgdb, ['imgname'], ['MaiSITE1_oa100163'], returnType='dict')
+
+if update:
+	print "This is an update."
+	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict')
+	askquestions = False
+else:
+	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
+nbrofimages = len(images)
+
 
 # we prepare the database
 if "nbrcoeffstars" not in db.getFieldNames(imgdb) :
