@@ -12,11 +12,10 @@
 #	then run the identalistars script and copy and paste its output
 #	back into this file...
 
+#example:
+#a	844.23	1112.05	844.23
+#b	981.98	1025.95	981.98
 
-a	844.23	1112.05	844.23
-b	981.98	1025.95	981.98
-c	972.03	862.46	972.03
-d	932.19	858.72	932.19
 
 
 

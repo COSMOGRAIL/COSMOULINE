@@ -9,8 +9,8 @@ import numpy as np
 import star
 import shutil
 
-if not update:
-	raise mterror("update keyword not set to True !")
+#if not update:
+#	raise mterror("update keyword not set to True !")
 
 # This one is going to be tricky. And long
 
@@ -79,7 +79,7 @@ if 1:
 
 
 		# I could save some time running 1 and 2 only on the updating images but the gain is 1-2 min. per star -- don't care
-		os.system('python 0_facult_autoskiplist_NU.py')
+		# Note that we don't run 0 on stars - we want to compute the coeff for all the images !
 		os.system('python 1_prepfiles.py')
 		os.system('python 2_applynorm_NU.py')
 
@@ -237,7 +237,8 @@ if 1:
 		shutil.copy(back_name, os.path.join(workdir, 'updating_back.fits'))
 
 		# I could save some time running 1 and 2 only on the updating images but the gain is 1-2 min. per star -- don't care
-		os.system('python 0_facult_autoskiplist_NU.py')
+		if makeautoskiplist:
+			os.system('python 0_facult_autoskiplist_NU.py')
 		os.system('python 1_prepfiles.py')
 		os.system('python 2_applynorm_NU.py')
 

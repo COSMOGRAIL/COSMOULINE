@@ -61,6 +61,8 @@ def readheader(telescopename, rawimg):
 		dbdict = grondheader(rawimg)
 	elif telescopename == "SDSS":
 		dbdict = sdssheader(rawimg)
+	elif telescopename == "GMOS":
+		dbdict = gmosheader(rawimg)
 	elif telescopename == "NOHEADER":
 		dbdict = noheader(rawimg)	
 	else:

@@ -57,7 +57,7 @@ for i,image in enumerate(images):
 	
 	# Ready to rock. (Hell yeah!)
 	# So we want to get the sky level, and the std dev of the pixels around this level (noise in sky).
-	medianlevel = np.median(pixelarray.ravel())
+	medianlevel = np.nanmedian(pixelarray.ravel())
 	
 	# We cut between 0 and twice the medianlevel :
 	nearskypixvals = pixelarray[np.logical_and(pixelarray > 0, pixelarray < 2*medianlevel)]
@@ -68,15 +68,15 @@ for i,image in enumerate(images):
 	# But we will keep it simple :
 	
 	# First approximation :
-	skylevel = np.median(nearskypixvals.ravel())
-	skystddev = np.std(nearskypixvals.ravel())
+	skylevel = np.nanmedian(nearskypixvals.ravel())
+	skystddev = np.nanstd(nearskypixvals.ravel())
 	
 	# we iterate once more, cutting at 4 sigma :
 	nearskypixvals = nearskypixvals[np.logical_and(nearskypixvals > skylevel - 4.0 * skystddev, nearskypixvals < skylevel + 4.0 * skystddev)]
 	
 	# Final approximation :
-	skylevel = np.median(nearskypixvals.ravel())
-	skystddev = np.std(nearskypixvals.ravel())
+	skylevel = np.nanmedian(nearskypixvals.ravel())
+	skystddev = np.nanstd(nearskypixvals.ravel())
 	
 	print "Sky level at %f, noise of %f" % (skylevel, skystddev)
 		

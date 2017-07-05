@@ -8,6 +8,7 @@ execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import forkmap
+#import multiprocessing  # if forkmap doesn't work...
 import cosmics
 import star
 #import numpy as np
@@ -37,6 +38,7 @@ else :
 print "I will find cosmics of %i images." % len(images)
 
 ncorestouse = forkmap.nprocessors()
+#ncorestouse = multiprocessing.cpu_count()
 if maxcores > 0 and maxcores < ncorestouse:
 	ncorestouse = maxcores
 	print "maxcores = %i" % maxcores

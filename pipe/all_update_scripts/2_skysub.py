@@ -23,6 +23,10 @@ try:
 except:
 	print "Problem with script 1"
 	sys.exit()
+
+if defringed:
+	os.system('python 1b_compute_fringes.py')
+
 try:
 	os.system('python 2_skypng_NU.py')
 except:

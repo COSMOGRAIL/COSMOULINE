@@ -9,6 +9,7 @@
 
 
 execfile("../config.py")
+redofromscratch = False
 
 from kirbybase import KirbyBase, KBError
 from variousfct import *
@@ -35,10 +36,12 @@ for i, image in enumerate(images):
 	
 	# check if file exists
 	outfilename = os.path.join(alidir, image['imgname'] + ".fits")
-	print i+1, "/", nbrofimages, " : ", image['imgname'], ", gain = %.3f" % (image['gain'])	
-	if os.path.isfile(outfilename):
-		print "Image already exists. I skip..."
-		continue
+	print i+1, "/", nbrofimages, " : ", image['imgname'], ", gain = %.3f" % (image['gain'])
+	if not redofromscratch:
+		if os.path.isfile(outfilename):
+			print "Image already exists. I skip..."
+			#pass
+			continue
 	
 	pixelarray, header = fromfits(image['rawimg'])
 	

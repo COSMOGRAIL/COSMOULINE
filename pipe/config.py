@@ -14,12 +14,12 @@
 computer = "vivien"
 
 # The pipeline dir that contains all the scripts (and this "config.Spy" ) :
-pipedir = "/run/media/vivien/LENSES/COSMOULINE/pipe_svn"
+pipedir = "/run/media/vivien/LENSES-2/COSMOULINE/pipe_svn"
 
 # The configuration directory that contains the configuration files :
 # ("small-precious-frequently-backuped-disk")
 # The scripts do only read, but never write, from here !
-configdir = "/run/media/vivien/LENSES/COSMOULINE/config/J1138_SITE"
+configdir = "/run/media/vivien/LENSES-2/COSMOULINE/config/D2346"
 
 #---------------------------------------------------------------------------
 # All further settings are made into the configdir.

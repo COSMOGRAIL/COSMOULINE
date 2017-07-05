@@ -49,19 +49,19 @@ photomstars = star.readmancat(photomstarscatpath)
 # Select only the desired stars and aperture
 #starslist = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "l", "m", "o", "q", "r", "s", "t", "v", "w"]
 #starslist = ["a", "b", "c", "d", "g", "o", "q", "n", "s"]
-starslist = ["a", "b", "d", "e", "f", "g", "h", "r", "w"]
-starstoplot = ["a", "b", "d", "g"]
+starslist = ["f", "k", "l", "m", "n"]
+starstoplot = ["f", "k", "l", "m", "n"]
 #starstoplot = ["a"]
-amstarslist = ["a", "w"]
+amstarslist = ["a", "b"]
 photomstars = [s for s in photomstars if s.name in starslist]
-normcoeffstars = ["a", "b", "d", "g"]
+normcoeffstars = ["f", "k", "l", "m", "n"]
 
-xkeyword = 'moondists'  # default : mjds. Can also be moondists or hourangles
+xkeyword = 'mjds'  # default : mjds. Can also be moondists or hourangles
 
 aperture = 'auto'  # for 30, put ap30
-mydates = ["2015-12-30"]
+mydates = ["2016-10-01"]
 
-specialkw = 'NTT'  # keyword for the first plot
+specialkw = 'WFI'  # keyword for the first plot
 
 
 ######## blah blah blah blah ########
@@ -86,6 +86,7 @@ print dates
 print mjds
 print mymjds
 
+
 ############################################################################################################
 ########
 ######## LIGHT CURVE PER EXPOSURE, NORMALISED BY A REFERENCE STAR
@@ -94,7 +95,7 @@ print mymjds
 
 # Compute the mag and magerr, and normalise them with respect to a reference star.
 # Plot per exposure, for a given date.
-if 1:
+if 0:
 
 	nightimages = [image for image in images if round(image["mjd"]) in mymjds]
 
@@ -175,8 +176,8 @@ if 1:
 
 		writepickle(lcs, "results/lcs_renorm%s_%s.pkl" % (normalstar.name, specialkw))
 
-	#plt.show()
-	#sys.exit()
+	plt.show()
+	sys.exit()
 
 ############################################################################################################
 ########
@@ -270,7 +271,7 @@ if 0:
 		plt.legend()
 		plt.savefig("results/plot_renorm%s_%s.png" % (''.join(normcoeffstars), specialkw))
 		#writepickle(lcs, "results/lcs_renorm%s_%s.pkl" % (''.join(normcoeffstars), specialkw))
-		#plt.show()
+		plt.show()
 	sys.exit()
 
 ############################################################################################################
@@ -405,11 +406,11 @@ if 0:
 
 				lensmeanmjds.append(np.mean([float(image["mjd"]) for image in photomimages if image["date"] == date]))
 				lensmeanmoondists.append(np.mean([float(image["moondist"]) for image in photomimages if image["date"] == date]))
-				lensmeanhourangles.append(np.mean([float(image["hourangle"]) for image in photomimages if image["date"] == date]))
+				#lensmeanhourangles.append(np.mean([float(image["hourangle"]) for image in photomimages if image["date"] == date]))
 
 		lens["mjds"] = lensmeanmjds
 		lens["moondists"] = lensmeanmoondists
-		lens["hourangles"] = lensmeanhourangles
+		#lens["hourangles"] = lensmeanhourangles
 
 
 		# renormalise
@@ -457,7 +458,7 @@ if 0:
 
 						meanmjds.append(np.mean([float(image["mjd"]) for image in photomimages if image["date"] == date]))
 						meanmoondists.append(np.mean([float(image["moondist"]) for image in photomimages if image["date"] == date]))
-						meanhourangles.append(np.mean([float(image["hourangle"]) for image in photomimages if image["date"] == date]))
+						#meanhourangles.append(np.mean([float(image["hourangle"]) for image in photomimages if image["date"] == date]))
 
 				# renormalise
 				renormcoeffs = [coeff / np.mean(normcoeffs) for coeff in normcoeffs]
@@ -471,7 +472,7 @@ if 0:
 
 				lc["mjds"] = meanmjds
 				lc["moondists"] = meanmoondists
-				lc["hourangles"] = meanhourangles
+				#lc["hourangles"] = meanhourangles
 				lc["flux"] = renormfluxes
 				lc["fluxerr"] = fluxerrs
 				lc["magnitude"] = mags

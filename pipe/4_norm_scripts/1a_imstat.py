@@ -42,7 +42,7 @@ if "stddev" not in db.getFieldNames(imgdb) or "emptymean" not in db.getFieldName
 iraf.imutil()
 
 starttime = datetime.now()
-
+tokicklist = []
 for i, image in enumerate(images):
 	
 	print i+1, "/", len(images), ":", image['imgname']
@@ -71,14 +71,16 @@ for i, image in enumerate(images):
 	
 	#for line in imstatblabla:
 	#	print line
-	
-	elements = imstatblabla[-1].split()
-	npix = int(elements[1])
-	mean = float(elements[2])
-	midpt = float(elements[3])
-	stddev = float(elements[4])
-	minval = float(elements[5])
-	maxval = float(elements[6])
+	try:
+		elements = imstatblabla[-1].split()
+		npix = int(elements[1])
+		mean = float(elements[2])
+		midpt = float(elements[3])
+		stddev = float(elements[4])
+		minval = float(elements[5])
+		maxval = float(elements[6])
+	except:
+		tokicklist.append(image['imgname'])
 	
 	#print image['imgname'], npix, mean, midpt, stddev, minval, maxval
 	print "Empty region stddev : %8.2f, median %8.2f, mean %8.2f" % (stddev, midpt, mean)
@@ -121,6 +123,19 @@ timetaken = nicetimediff(endtime - starttime)
 
 notify(computer, withsound, "I computed some statistics for %i images. It took %s" %(len(images), timetaken))
 
+print len(tokicklist), 'IRAF crashed on these guys:'
+for imgname in tokicklist:
+	print imgname
+
+print "Copy the names above to your kicklist! (or investigate the problems if half of the images are rejected...)"
+print "I can do it for you if you want"
+proquest(askquestions)
+kicklist = open(imgkicklist, "a")
+for imgname in tokicklist:
+	kicklist.write("\n" + imgname)
+kicklist.close()
+print 'Ok, done.'
+print "Do not forget to update your kicklist manually !"
 
 
 

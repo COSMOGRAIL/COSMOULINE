@@ -16,7 +16,15 @@ from datetime import datetime, timedelta
 backupfile(imgdb, dbbudir, "alignimages")
 
 db = KirbyBase()
-images = db.select(imgdb, ['flagali','gogogo','treatme'], ['==1',True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
+if thisisatest:
+	print "This is a test."
+	images = db.select(imgdb, ['flagali','gogogo','treatme', 'testlist'], ['==1',True, True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
+elif update:
+	print "This is an update."
+	images = db.select(imgdb, ['flagali','gogogo','treatme', 'updating'], ['==1',True, True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
+	askquestions = False
+else:
+	images = db.select(imgdb, ['flagali','gogogo','treatme'], ['==1',True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
 
 # perhaps you want to tweak this to run the alignment only on a few images :
 
