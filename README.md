@@ -76,7 +76,7 @@ COSMOULINE pipeline map (pardon my drawing skills). Also have a look at cosmouli
 	 | 
 	 \  			  __ samplelcmanip.py / sampleconfig.py
 	  \			 /				
-           \			/
+	   \			/
 	    \____lcmanip_svn-------- scripts and stuff
 	    
 	     		       				
