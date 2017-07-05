@@ -62,7 +62,7 @@ COSMOULINE pipeline map (pardon my drawing skills). Also have a look at cosmouli
 	    /
 	   /			    __ali (aligned images)	
 	  /			   /
-  COSMOULINE---data--(one per lens)---- plots (all kind of pdf images)
+     | COSMOULINE--data--(one per lens)-- plots (all kind of pdf images)
 	 |\			  \ 
 	 | \			   \__*database, *reports, *png folders (*will be created during the reduction)... 
 	 |  \
@@ -143,7 +143,7 @@ Here, we import the data of prereduced images and create a new database of prere
 
 
 other files
------------
+
 
 1c, 2b, 3c, 4b : write reports of the previous operation in your datadir. Basically, it displays what had been added to the db in the previous steps
 
@@ -166,7 +166,7 @@ fac_make_pngs  : make (big) pngs of the images (in ali) and wrap them in a nice 
 
 
 other files
------------
+
 
 1_alt_noskysub : mimic the sky substraction on simulated images, just that the pipeline won't complain later...
 
@@ -193,7 +193,7 @@ To find a reference image (hereafter refimg), we can look at the report files fr
 4   : Generates pngs from the aligned fits files. Have a look at them, and if something goes wrong add the image to the skiplist.
 
 other files
------------
+
 
 0_alt_no_ali  : if you do not want to align your images but do a pseudoalignment instead...
 
@@ -226,7 +226,7 @@ other files
 
 
 other files
------------
+
 
 2b  : facultative, write these apertures photometry in the db. To do so (and to execute the following facult. scripts as well), you need to define on which stars you want to perform the computations. These stars are to be written in photomstars.cat in your configdir, and can once again be the same that in alistars.cat and normstars.cat
 
@@ -267,12 +267,12 @@ Protip : to build your testlist, you can use report_seeing in your datadir. Do n
 
  
 COMMENTS 
--------- 
+
 Knowing which PSF set is the best (or even if a psf set is good enough to be used) is not that simple. There is however a few tricks that may help : 
 
-	- select enough psf stars per set, let's say 6. No need to take the brightest ones though, but avoid the ones that are too faint. Use the result from 4c in 4_norm_scripts to select your psfstars. Also look at the alistars.png. Avoid the stars that fall on the dead pixels columns as well.
+-select enough psf stars per set, let's say 6. No need to take the brightest ones though, but avoid the ones that are too faint. Use the result from 4c in 4_norm_scripts to select your psfstars. Also look at the alistars.png. Avoid the stars that fall on the dead pixels columns as well.
 	
-	- have a look at your numerical psf plot. Also, by looking at your total psf plot, you will see immediately is something went really wrong. 
+-have a look at your numerical psf plot. Also, by looking at your total psf plot, you will see immediately is something went really wrong. 
 	
 	
 
@@ -292,7 +292,7 @@ Finally, as computing the psf does not modify the db, you can already go on with
 
 
 other files
------------
+
 
 1a, 1b, 2 : old scripts, now combined altogether in 12
 
@@ -306,7 +306,7 @@ Okay, now the structure of the pipeline is getting a bit peculiar...Let's start 
 
 We want to deconvolve the lens, using a given psfset, but first, we need to normalise properly the images. Our normalisation coefficient computed before is not precise enough, so we need to find a better coefficient. In order to do this, we can use the information contained in the stars. Indeed, we know that the stars are in fact point sources, so we can apply the deconvolution on the stars and use the resulting flux to normalise better our images. Thus, we first perform the deconvolution on the stars normalised with our previous medcoeff, then compute a new normalisation coefficient, renormalise the images with that new coefficient and finally deconvolve the lens itself. Of course, the images here are in fact the small stamps extracted in the previous script folder (6_extract_scripts)
 
---Practically, it works as follows : 
+Practically, it works as follows : 
 
 
 7/0  : you can edit that script and configure it to generate a skiplist according to some criterias (seeing, ellipticipy, medcoeff...). You will have to copy that list into a corresponding skiplist in your configdir (the script will give you the path). Do it for E.V.E.R.Y. object you will deconvolve. The object selection is done in your settings.py, in the deconvolution section. Set the 4 dec*name with care and with respect to what you are currently doing. Everytime you switch between objects or between testset or fullset of images, you should tell it to your settings.
@@ -331,16 +331,16 @@ We want to deconvolve the lens, using a given psfset, but first, we need to norm
 
 8/2  : plot the new medcoeff for every images according to which stars you used. Useful for checks.
 
---Now, change the decnormfieldname in your settings.py to your new normalisation coefficient name, and go on with the lens deconvolution, following the steps from 7/0 to 7/6, as for the stars deconvolution. The trickiest part here is clearly 7/3-7/4, where you will have to change the obscure coefficients of the template_in.txt file in your configdir, deconvolve the images, and start again (and again and again and again...sigh) if you are not happy with it. Start with a bunch of test images before going on the full set ! And good luck...
+Now, change the decnormfieldname in your settings.py to your new normalisation coefficient name, and go on with the lens deconvolution, following the steps from 7/0 to 7/6, as for the stars deconvolution. The trickiest part here is clearly 7/3-7/4, where you will have to change the obscure coefficients of the template_in.txt file in your configdir, deconvolve the images, and start again (and again and again and again...sigh) if you are not happy with it. Start with a bunch of test images before going on the full set ! And good luck...
 
 
---Things to check if you want to make a good deconvolution:
+Things to check if you want to make a good deconvolution:
 	Your overall background should be quite small, if possible not negative (even if having a minlevel of -1 is OK, I guess)
 	The contrast in your background should not be too steep or too flat, and you shouldn't have more peak regions than deconvolved object (it makes sense, I guess...)
 
 
 other files
------------
+
 
 7/7 , 7/8: plot some stuff related to the deconvolution to check everything went well. Does not work everytime... 
 
@@ -362,7 +362,7 @@ other files
 
 
 other files
------------
+
 
 template   : config file for 1
 
