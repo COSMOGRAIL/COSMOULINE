@@ -37,17 +37,19 @@ write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 
 
 
-## How to use the COSMOULINE Pipeline -- advices and stuff (VB, 06/2015)
+# How to use the COSMOULINE Pipeline
+
+advices and stuff (VB, 06/2015)
 
 
-=====================================
-	GENERAL INFORMATIONS
-=====================================
+
+##	GENERAL INFORMATIONS
+
 
 COSMOULINE goal is to reduce the already flatfielded and debiased images, in order to measure the luminosity variation of the lens images over time. In short, it substracts the sky, aligns and normalises the images, determines a PSF fit from chosen stars, extracts the lens and some stars from the image, deconvolves them, measures their luminosity and writes everything in a nice, light database.
 
 
-COSMOULINE pipeline map (pardon my drawing skills)
+COSMOULINE pipeline map (pardon my drawing skills). Also have a look at cosmouline.png
 
 
 			        __config.py
@@ -60,7 +62,7 @@ COSMOULINE pipeline map (pardon my drawing skills)
 	    /
 	   /			    __ali (aligned images)	
 	  /			   /
-COSMOULINE---data--(one per lens)---- plots (all kind of pdf images)
+  COSMOULINE---data--(one per lens)---- plots (all kind of pdf images)
 	 |\			  \ 
 	 | \			   \__*database, *reports, *png folders (*will be created during the reduction)... 
 	 |  \
@@ -89,9 +91,9 @@ The lcmanip_svn directory (hereafter lcmanipdir) is where you will cook your .rd
 
 	       
 	     
-=====================================
-	RUN PREPARATION
-=====================================
+
+##	RUN PREPARATION
+
 
 For every new lens, make a related directory into configs and data. There is a 'sampleconfig_svn' directory into 'configs', copy it with the name your lens (e.g. WFI2033_ECAM, it will be your new configdir). In data, simply create a new empty directory (e.g. WFI2033_ECAM, it will be your new datadir)
 
@@ -109,17 +111,17 @@ pipedir --> configdir --> datadir
 Keep the settings.py from your configdir open, all the modification will be done in that file. Then, move to your pipedir. Now, you should be more or less ready, let's rock.
 
 
-======================================
-	0_preparation_scripts
-======================================
+
+###	0_preparation_scripts
+
 
 Scripts to crop images (remove ugly borders). Need to be adapted for every set of files, hardcoded.
 
 
 
-======================================
-	1_character_scripts
-======================================
+
+###	1_character_scripts
+
 
 Here, we import the data of prereduced images and create a new database of prereduced images.
 
@@ -152,9 +154,9 @@ fac_make_pngs  : make (big) pngs of the images (in ali) and wrap them in a nice 
 
 
 
-======================================
-	2_skysub_scripts
-======================================
+
+###	2_skysub_scripts
+
 
 1 : substract the sky from the images. Practically, it extracts an image of the sky for each original image, substract the sky to the original image, and save both of them (sky and skysubstracted) in ali (in your datadir).
 
@@ -175,9 +177,9 @@ default.*      : default parameters used by sextractor. retty fine as they are f
 
 
 
-======================================
-	3_align_scripts
-======================================
+
+###	3_align_scripts
+
 
 1a  : now, we will align the images. This is done by selecting some stars on a reference image. Thus, we need a reference image, and its 'best' stars.
 To find a reference image (hereafter refimg), we can look at the report files from 1_character_scripts. In your datadir, use the report_seeing to select an image with a high number of goodstars and small seeing, and put it as refimgname in the alignment section of your settings.py. Then, open alistars.cat in your configdir (or create it) and add some reference stars coordinates from that refimg with, e.g., ds9. Put the approximate coordinates and flux of a high number of stars, e.g. 30. Once this is done, DO NOT FORGET to add more infos in your setting.py : the lens region coordinates, the empty region coordinates. Put the dimensions of the aligned images at 4000*4000 for ECAM. Aaaaaand eventually launch the script ! You may check the output png to see if everything went correctly.
@@ -201,9 +203,9 @@ other files
 
 
 
-======================================
-	4_norm_scripts
-======================================
+
+###	4_norm_scripts
+
 
 1a  : compute some statistics on the empty region which should have been defined before launching 1a in 3_align_scripts, and add them to the database. Take the time right now to fill in the normstars.cat file in your configdir. These stars can be the same that the one selected for alignment, so you can basically copy your alistars.cat in your normstars.cat. These stars will be used to prenormalize the images.
 
@@ -239,15 +241,15 @@ other files
 
 4b  : next step of the previous script : combine the images into one single deep field image. May crash if you use too much images (thks to Iraf)
 
-4c  : draw circles around the alistars on the deep field image, to have it nicer as ever ! <3
+4c  : draw circles around the alistars on the deep field image, to have it nicer as ever ! 
 
 default.*      : default parameters used by sextractor. Fine as they are for ECAM images (I hope so). All the dark arts related to aperture photometry is in them, so modify with tremendous attention...
 
 
 
-======================================
-	5_pymcs_psf_scripts
-======================================
+
+###	5_pymcs_psf_scripts
+
 
 1  : Ok, now the fun begins. You need to select a certain number of stars to build the PSF for each images. You then need to create a .cat file with these stars. In your configdir, create a 'psf_mypsfname.cat' with the stars you want to use for your PSF construction (same format as alistars, normstars,...) In settings.py, under the PSF Construction paragraph, set your psfname as 'mypsfname'. The present script will create a new psfdir in your datadir, with a lot of stuff on it. A good idea may be to select some images to put in your testlist (with the refimg among them), to build different PSF sets (i.e. using different stars), then to choose the best set of stars for PSF construction and finally to compute the PSF on all images. You can perform the steps from 1 to 5 with test images (it is quite fast for only 10 images), and then select the best PSF set according to whatever criterias you like.
 Protip : to build your testlist, you can use report_seeing in your datadir. Do not forget to launch reset_testlist.py and set_testlist.py in extrascripts 
@@ -277,9 +279,9 @@ Knowing which PSF set is the best (or even if a psf set is good enough to be use
 Finally, as computing the psf does not modify the db, you can already go on with the extraction part below, which is completely decorrelated from psf construction
 
 
-======================================
-	6_extract_scripts
-======================================
+
+###	6_extract_scripts
+
 
 12  : This script will extract some small stamps around the object you selected (typically, your psf stars and your lens), mask cosmics and replace NaN values. This will be used for your deconvolution later on. In order to do this, in settings, give the name of the object you want to extract (a,b,c,lens,...), and in your configdir create an obj_name.cat where you will put the coordinate of that object (still the same coordinates than in your alistats.cat...). For your lens coordinates, you can take the center of the region defined in the alignment section of your settings.py (if you did it well back then, but you did, didn't you ?)
 
@@ -296,9 +298,9 @@ other files
 
 
 
-==================================================
-	7_deconv_scripts / 8_renorm_scripts
-==================================================
+
+###	7_deconv_scripts / 8_renorm_scripts
+
 
 Okay, now the structure of the pipeline is getting a bit peculiar...Let's start by giving the general idea:
 
@@ -351,9 +353,9 @@ other files
 
 
 
-======================================
-	8_pyMCS_lookback_scripts
-======================================
+
+###	8_pyMCS_lookback_scripts
+
 
 
 1  : this script will build html pages which give you an overview of your deconvolution process.
@@ -364,25 +366,25 @@ other files
 
 template   : config file for 1
 
-======================================
-	9_quicklook_lc_scripts
-======================================
+
+###	9_quicklook_lc_scripts
+
 
 No need for script by script description here, they are named straightforwardly. Basically, they plot a lightcurve, mag vs jds, and add a colorbar related to different observables (skylevel, ellipticity,...). One exception though, for the 1_by_night, which merge the points from the same night.
 
 run "csh plotall.csh" to launch them altogether.
 
 
-======================================
-	9_export_scripts
-======================================
+
+###	9_export_scripts
+
 
 export : simply export your database into your configdir. It creates a date_lens_db.dat, date_lens_db.pkl and date_lens_readme.txt that you will use later on.
 
 
-======================================
-             lcmanip
-======================================
+
+###            lcmanip
+
 
 Now that you have exported your db, you can start to prepare your lightcurves for further PyCS treatment.
 
@@ -398,5 +400,7 @@ join       : merge the points from one same night into a single point, and give 
 
 
 
----The END--- (clap clap clap!)
+###  ---The END--- 
+
+(clap clap clap!)
 
