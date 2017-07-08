@@ -12,14 +12,14 @@ import f2n
 ################### CONFIGURATION ###################################################################
 
 # ABSOLUTE PATH to where the files are and how to select them :
-origpaths = sorted(glob.glob("/run/media/vivien/LENSES-2/WFI2033_SMARTS/*.fits"))
+origpaths = sorted(glob.glob("/home/vivien/Desktop/D2346/*.fits"))
 
 
 # ABSOLUTE PATH to the directory where you want the croped images to be written :
-destdir="/run/media/vivien/LENSES-2/WFI2033_SMARTS_prered"
+destdir="/home/vivien/Desktop/D2346_crop/"
 
 # croped images png path :
-pngdir="/run/media/vivien/LENSES-2/WFI2033_SMARTS_prered_png"
+pngdir="/home/vivien/Desktop/D2346_crop_png"
 
 #####################################################################################################
 
@@ -48,13 +48,15 @@ for fitsfilepath in origpaths[::-1]:
 	
 	#sys.exit()
 	
-	pixelarray, hdr = pyfits.getdata(fitsfilepath, header=True, ignore_missing_end=True)
-	#sys.exit()
+	pixelarray = pyfits.getdata(fitsfilepath, header=False, ignore_missing_end=True)
+	# otherwise it takes the wrong header...
+	hdr = pyfits.getheader(fitsfilepath)
+
 	
 	# I commented this for the HE0435 SMARTS data...as the header is not the same...
 		
-	filterid = hdr["CCDFLTID"].strip()
-	filterlist.append(filterid)
+	#filterid = hdr["CCDFLTID"].strip()
+	#filterlist.append(filterid)
 	
 	"""
 	if hdr["CCDFLTID"].strip() != "R":
@@ -66,7 +68,7 @@ for fitsfilepath in origpaths[::-1]:
 	
 	pixelarray = numpy.asarray(pixelarray).transpose() # To put it in the usual ds9 orientation
 	pixelarrayshape = pixelarray.shape
-	print "Input : (%i, %i), %s, %s" % (pixelarrayshape[0], pixelarrayshape[1], hdr["BITPIX"], pixelarray.dtype.name)
+	#print "Input : (%i, %i), %s, %s" % (pixelarrayshape[0], pixelarrayshape[1], hdr["BITPIX"], pixelarray.dtype.name)
 	
 	#pixelarray = pixelarray[96:1037, 118:1024] # This was for J0158
 	
@@ -78,9 +80,10 @@ for fitsfilepath in origpaths[::-1]:
 	#pixelarray = pixelarray[60:, 140:]
 	
 	#For HE0435 some images are really ugly..., with enormous borders...
-	pixelarray = pixelarray[170:950, 404:950]
+	#pixelarray = pixelarray[170:950, 404:950]
 	
-	
+	#For D2346 using GMOS
+	pixelarray = pixelarray[1309:5054, 950:3980]
 	
 	pixelarrayshape = pixelarray.shape
 	print "Ouput : (%i, %i)" % (pixelarrayshape[0], pixelarrayshape[1])

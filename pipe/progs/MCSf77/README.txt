@@ -1,4 +1,16 @@
-Compilation of F77 MCS for cosmouline
+# License
+
+MCS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY ; without 
+even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+General Public License for more details (LICENSE.txt).
+
+You should have received a copy of the GNU General Public License along with MCS ; if not, 
+write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+
+
+# Compilation of F77 MCS for cosmouline
+
+
 The PSF here is the "new" one (old one is no longer supported)
 deconv has been modified to support individual fwhm-des-g, in May 2010
 

@@ -11,6 +11,7 @@ from readandreplace_fct import *
 import star
 import sys
 
+deconvonly = False  # If set to True, I will make pngs only for the deconvolution stamp
 
 if update:
 	# override config settings...
@@ -78,8 +79,29 @@ for i, image in enumerate(images):
 	ncosmics = image[objcosmicskey]
 	
 	pngpath = os.path.join(pngdir, image['imgname'] + ".png")
-	
-	
+
+
+
+
+	if deconvonly:
+
+		f2ndec = f2n.fromfits(os.path.join(decdir, "dec" +code+".fits"), verbose=False)
+		f2ndec.setzscale(-20, "auto")
+		f2ndec.makepilimage(scale = "exp", negative = False)
+		f2ndec.upsample(8)
+		#f2ndec.writeinfo(["Deconvolution"])
+
+		decpngpath = os.path.join(pngdir, image['imgname'] + "_deconly.png")
+		f2n.compose([[f2ndec]], pngpath)
+		continue
+
+	#else...
+	f2ndec = f2n.fromfits(os.path.join(decdir, "dec" +code+".fits"), verbose=False)
+	f2ndec.setzscale(-20, "auto")
+	f2ndec.makepilimage(scale = "log", negative = False)
+	f2ndec.upsample(2)
+	f2ndec.writeinfo(["Deconvolution"])
+
 	f2ng = f2n.fromfits(os.path.join(decdir, "g" +code+".fits"), verbose=False)
 	f2ng.setzscale(-20, "auto")
 	f2ng.makepilimage(scale = "log", negative = False)

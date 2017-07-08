@@ -1399,6 +1399,75 @@ def grondheader(rawimg):
 ##############################################################################################################
 
 
+def gmosheader(rawimg):
+	"""
+	Version for 6.5m GMOS-S images
+	Experimental
+	Written by Vivien, 06.2017
+	"""
+	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
+	header = pyfits.getheader(rawimg)
+
+	# From headers, http://www.gemini.edu/sciops/instruments/gmos/imaging/camera-properties and the web...
+	pixsize = header["PIXSCALE"]  #
+
+	readnoise = header["RDNOISE"]  # 5 for slow mode, 23 for fast mode. Let's assume slow mode here...
+	scalingfactor = 1.0  # no need for it right now...
+	saturlevel = 125000.0  # in ADU
+	rotator = 0.0  # ??
+
+	telescopelongitude = "-70:44:12.096"
+	telescopelatitude = "-30:14:26.700"
+	telescopeelevation = 2722.0
+
+
+	# availablekeywords = header.ascardlist().keys()  # not used anyway
+	gain = header["GAIN"]  # put it at 1.0 for now, according to the header...
+	treatme = True
+	gogogo = True
+	whynot = "na"
+	testlist = False
+	testcomment = "na"
+
+	pythondt = datetime.datetime.strptime(header["DATE"][0:19], "%Y-%m-%dT%H:%M:%S") # This is the start of the exposure.
+	exptime = float(header['EXPTIME']) # in seconds.
+
+	pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
+
+	# Now we produce the date and datet fields, middle of exposure :
+
+	date = pythondt.strftime("%Y-%m-%d")
+	datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+	myownjdfloat = juliandate(pythondt) # The function from headerstuff.py
+	myownmjdfloat = myownjdfloat - 2400000.5
+	jd = "%.6f" % myownjdfloat
+	mjd = myownmjdfloat
+
+
+	# The pre-reduction info :
+	# May be useful one day...can be used.
+	preredcomment1 = "None"
+	preredcomment2 = "None"
+	preredfloat1 = 0.0
+	preredfloat2 = 0.0
+
+
+	# We return a dictionnary containing all this info, that is ready to be inserted into the database.
+	returndict = {'imgname':imgname, 'treatme':treatme, 'gogogo':gogogo, 'whynot':whynot, 'testlist':testlist,'testcomment':testcomment ,
+	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg,
+	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
+	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
+	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
+	}
+
+	return returndict
+
+
+##############################################################################################################
+
+
 def sdssheader(rawimg):
 	"""
 	Version for SDSS images

@@ -15,15 +15,15 @@ showhist = False
 
 if 1:
 	# Normal rejection stuff :
-	maxseeing = 2.2
-	maxell = 0.30
-	maxmedcoeff = 2.5
+	maxseeing = 2.5
+	maxell = 0.25
+	maxmedcoeff = 3.0
 	maxsky = 8000.0
 
 
 if 0:
 	# The very best frames to draw a good background :
-	maxseeing = 1.35
+	maxseeing = 0.8
 	maxell = 0.12
 	maxmedcoeff = 1.28
 	maxsky = 550.0

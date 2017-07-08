@@ -81,7 +81,10 @@ refautostarsasdicts = [{"name":s.name, "x":s.x, "y":s.y} for s in refautostars]
 
 #print refmanstarsasdicts
 
-reffitsfile = os.path.join(alidir, refimage['imgname'] + "_skysub.fits")
+if defringed:
+	reffitsfile = os.path.join(alidir, refimage['imgname'] + "_defringed.fits")
+else:
+	reffitsfile = os.path.join(alidir, refimage['imgname'] + "_skysub.fits")
 
 f2nimg = f2n.fromfits(reffitsfile)
 f2nimg.setzscale(z1=0, z2=1000)

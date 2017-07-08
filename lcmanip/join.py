@@ -132,6 +132,31 @@ mednormcoeffs = groupfct.values(nights, normcoeffname, normkey=None)['median']
 mednormcoeffsigmas = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_sigma", normkey=None)['median'])) # Absolute error on these coeffs
 medrelnormcoeffsigmas = mednormcoeffsigmas / mednormcoeffs # relative errors on the norm coeffs
 
+import numpy as np
+print "Median seeing: ", np.median([img["seeing"] for img in images])
+print "Median sampling: ", (np.max(mhjds)-np.min(mhjds))/len(nights)
+fig = plt.figure(figsize=(6, 4))
+fig.subplots_adjust(left=0.1, right=0.97, bottom=0.15, top=0.98, wspace=0.01)
+plt.subplot(1,2,1)
+plt.hist(medseeings, bins=12, color="royalblue")
+plt.axvline(np.median([img["seeing"] for img in images]), linestyle='--', color='grey', linewidth=2.0, alpha=0.5)
+plt.annotate("$\mathrm{median = %.2f}$" % np.median([img["seeing"] for img in images]), xy=(0.31, 0.90), xycoords='axes fraction', xytext=(0, 0),
+			textcoords='offset points', ha='left', va='bottom', fontsize=16)
+plt.ylabel("$\mathrm{\# \ of \ nights}$", fontsize=18)
+plt.xlabel("$\mathrm{seeing \ [arcsec]}$", fontsize=18)
+plt.axis([0.6, 2.4, 0, 30])
+
+plt.subplot(1,2,2)
+plt.hist(medairmasses, bins=12, color="crimson")
+plt.axvline(np.median([img["airmass"] for img in images]), linestyle='--', color='grey', linewidth=2.0, alpha=0.5)
+plt.annotate("$\mathrm{median = %.2f}$" % np.median([img["airmass"] for img in images]), xy=(0.31, 0.90), xycoords='axes fraction', xytext=(0, 0),
+			textcoords='offset points', ha='left', va='bottom', fontsize=16)
+plt.xlabel(r"$\mathrm{airmass}$", fontsize=18)
+plt.yticks([])
+plt.axis([1.1, 1.6, 0, 30])
+plt.show()
+
+
 if min(mednormcoeffsigmas) <= 0.0001:
 	print "####### WARNING : some normcoefferrs seem to be zero ! #############"
 	print "Check/redo the normalization (with more stars ?), otherwise some of my error bars might be too small."

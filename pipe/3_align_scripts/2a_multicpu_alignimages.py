@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 import forkmap
 import progressbar
 
-redofromscratch = False
+redofromscratch = True
 updatedbonly = False # and this should stay False unless you really know what you do.
 print "WARNING !! I broke something and don't know what yet. Run this script once with updatedbonly set to False, the once again with set to True..."
 
@@ -53,8 +53,11 @@ for i, img in enumerate(images):
 def aliimage(image):
 
 	print "Image %i : %s" % (image["execi"], image["imgname"])
-	
-	imgtorotate = os.path.join(alidir, image['imgname'] + "_skysub.fits")
+
+	if os.path.isfile(os.path.join(alidir, image["imgname"] + "_defringed.fits")) and defringed:
+		imgtorotate = os.path.join(alidir, image['imgname'] + "_defringed.fits")
+	else:
+		imgtorotate = os.path.join(alidir, image['imgname'] + "_skysub.fits")
 	geomapin = os.path.join(alidir, image['imgname'] + ".geomap")
 	
 	aliimg = os.path.join(alidir, image['imgname'] + "_ali.fits")

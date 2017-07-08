@@ -3,6 +3,7 @@ from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
 import forkmap
+#import multiprocessing  # if forkmap fails...
 import star
 from readandreplace_fct import *
 
@@ -12,7 +13,7 @@ from MCS_interface import MCS_interface
 ####
 rewriteconfig = True
 nofitnum = False
-
+redofromscratch = True
 ####
 
 if rewriteconfig == True:
@@ -37,6 +38,7 @@ else :
 print "I will build the PSF of %i images." % len(images)
 
 ncorestouse = forkmap.nprocessors()
+#ncorestouse = multiprocessing.cpu_count()
 if maxcores > 0 and maxcores < ncorestouse:
 	ncorestouse = maxcores
 	print "maxcores = %i" % maxcores
@@ -57,7 +59,7 @@ for i, img in enumerate(images):
 def buildpsf(image):
 
 	imgpsfdir = os.path.join(psfdir, image['imgname'])
-	if os.path.isfile(os.path.join(imgpsfdir, "results", "psf_1.fits")):
+	if os.path.isfile(os.path.join(imgpsfdir, "results", "psf_1.fits")) and not redofromscratch:
 		print "Image %i : %s" % (image["execi"], imgpsfdir)
 		print "Already done ! I skip this one"
 		return
@@ -116,6 +118,8 @@ def buildpsf(image):
 	
 	
 starttime = datetime.now()
+#pool = multiprocessing.Pool(processes=ncorestouse)
+#pool.map(buildpsf, images)
 forkmap.map(buildpsf, images, n = ncorestouse)
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)

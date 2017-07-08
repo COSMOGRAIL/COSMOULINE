@@ -37,7 +37,8 @@ makejpgarchives = False
 # A switch to reduce the verbosity of the fortran MCS programs :
 silencemcs = True
 
-# A switch that allows you to update the previous configuration with new images
+# A switch to tell the scripts that you are running an update with the existing settings.
+# To be set to true ONLY if you work in all_update_scripts !!
 update = False
 
 
@@ -103,12 +104,16 @@ rawdir = "/run/media/vivien/LENSES/PRERED/HE0435-1223_RG_UL_RGUL4"
 #xephemlens =  "J1335+0118,f|Q,13:35:34.79,+01:18:05.50,20.0,2000"
 #xephemlens = "J0832+0404,f|Q,08:32:17.00,+04:04:05.20,20.0,2000"
 #xephemlens = "J1322+1052,f|Q,13:22:36.42,+10:52:39.43,20.0,2000"
-xephemlens = "HE0435-1223,f|Q,04:38:14.90,-12:17:14.40,19.0,2000"
+#xephemlens = "HE0435-1223,f|Q,04:38:14.90,-12:17:14.40,19.0,2000"
+xephemlens = "HE1104-1805,f|Q,11:06:33.39,-18:21:23.80,19.0,2000"
 #xephemlens = "Simulation,f|Q,00:00:00.00,+00:00:00.0,20.0,2000"
 
 # Now you can run all the scripts until the alignment !
 
 #------------------------ ALIGNMENT ----------------------------------------
+
+# do you want to work on defringed images (if they exists ?)
+defringed = False
 
 # reference image name (for alignment and deconvolution) :
 
@@ -243,6 +248,7 @@ decnormfieldname = "renormabcdfhm1m2"	# The normalization coefficient to apply t
 decpsfnames = ["pyMCSabcdfgh1"]		# The PSF(s) you want to use : give one or more psfnames in form of a list.
 				# The first psfname has the lowest priority.
 
+makeautoskiplist = True  # Do you want the automatic update scripts to rerun the autoskiplist script or not ?
 
 #------------------------ RENORMALIZATION ----------------------------------
 
