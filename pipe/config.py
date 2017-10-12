@@ -11,15 +11,15 @@
 #---------------------------------------------------------------------------
 
 # Choose a computer :
-computer = "vivien"
+computer = "regor4"
 
 # The pipeline dir that contains all the scripts (and this "config.Spy" ) :
-pipedir = "/run/media/vivien/LENSES-2/COSMOULINE/pipe_svn"
+pipedir = "/home/epfl/millon/Desktop/COSMOULINE/pipe"
 
 # The configuration directory that contains the configuration files :
 # ("small-precious-frequently-backuped-disk")
 # The scripts do only read, but never write, from here !
-configdir = "/run/media/vivien/LENSES-2/COSMOULINE/config/D2346"
+configdir = "/home/epfl/millon/Desktop/COSMOULINE/config/HE0435_ECAM"
 
 #---------------------------------------------------------------------------
 # All further settings are made into the configdir.
@@ -61,6 +61,9 @@ if computer=="topaze":
 #---------------------------------------------------------------------------
 if computer=="regor2":
 	sex = "nice -n 19 /scisoft/bin/sex"
+#---------------------------------------------------------------------------
+if computer=="regor4":
+	sex = "nice -n 19 /usr/bin/sex"
 #---------------------------------------------------------------------------
 
 # Path to compiled programs :
