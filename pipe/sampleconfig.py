@@ -11,15 +11,15 @@
 #---------------------------------------------------------------------------
 
 # Choose a computer :
-computer = "regor2"
+computer = "martin"
 
-# The pipeline dir that contains all the scripts (and this "config.py" ) :
-pipedir = "/my/absolute/path/to/cosmouline/pipe_svn"
+# The pipeline dir that contains all the scripts (and this "config.Spy" ) :
+pipedir = "/Users/martin/Desktop/COSMOULINE/pipe/"
 
 # The configuration directory that contains the configuration files :
 # ("small-precious-frequently-backuped-disk")
 # The scripts do only read, but never write, from here !
-configdir = "/my/absolute/path/to/cosmouline/configs/config_HE0435"
+configdir = "/Users/martin/Desktop/COSMOULINE/config/HE0435_ECAM/"
 
 #---------------------------------------------------------------------------
 # All further settings are made into the configdir.
@@ -36,10 +36,13 @@ import sys
 sys.path.append(os.path.join(pipedir, "modules"))
 
 # Read "global parameters" of the lens / deconvolution :
+print os.path.join(configdir, "settings.py")
 execfile(os.path.join(configdir, "settings.py"))
 
 #----------------------- COMPUTER SETUP -----------------------------
-
+if computer=="vivien":
+	sex = "/bin/sex"
+	#sex = "~/modules/ureka/Ureka/bin/sex"
 #---------------------------------------------------------------------------
 if computer=="maltemac":
 	sex = "/Applications/sextractor/sex"
@@ -60,24 +63,31 @@ if computer=="topaze":
 if computer=="regor2":
 	sex = "nice -n 19 /scisoft/bin/sex"
 #---------------------------------------------------------------------------
+if computer=="martin":
+	sex = "/sw/bin/sex"
+#---------------------------------------------------------------------------
 
 # Path to compiled programs :
 
 mcsf77dir = os.path.join(pipedir, "progs", "MCSf77")
 
-extractexe = "nice -n 19 " + os.path.join(mcsf77dir, "extract.exe") 
-psfexe = "nice -n 19 " + os.path.join(mcsf77dir, "psf.exe") 
-deconvexe = "nice -n 19 " + os.path.join(mcsf77dir, "deconv.exe") 
+if computer=="vivien":
+	mcsf77dir = '/home/vivien/modules/MCSf77'
+
+
+extractexe = "sudo nice -n 19 " + os.path.join(mcsf77dir, "extract.exe")
+psfexe = "sudo nice -n 19 " + os.path.join(mcsf77dir, "psf.exe")
+deconvexe = "sudo nice -n 19 " + os.path.join(mcsf77dir, "deconv.exe")
 if silencemcs == True:
-	psfexe = "nice -n 19 " + os.path.join(mcsf77dir, "psf_silence.exe") 
-	deconvexe = "nice -n 19 " + os.path.join(mcsf77dir, "deconv_silence.exe") 
+	psfexe = "sudo nice -n 19 " + os.path.join(mcsf77dir, "psf_silence.exe")
+	deconvexe = "sudo nice -n 19 " + os.path.join(mcsf77dir, "deconv_silence.exe")
 
-
+"""
 oldpsfmcsf77dir = os.path.join(pipedir, "progs", "oldpsfMCSf77")
 oldextractexe = "nice -n 19 " + os.path.join(oldpsfmcsf77dir, "extract.exe") 
 oldpsfmexe = "nice -n 19 " + os.path.join(oldpsfmcsf77dir, "psfm.exe") 
 oldpsfexe = "nice -n 19 " + os.path.join(oldpsfmcsf77dir, "psf-auto.exe") 
-
+"""
 
 #---------------------------------------------------------------------------
 
@@ -138,7 +148,7 @@ psfkicklist = os.path.join(configdir, psfkey + "_skiplist.txt")
 
 
 #------------------------ OBJECT EXTRACTION --------------------------------
-	
+# single extraction
 objkey = "obj_" + objname		# Don't touch, it would screw more than you can think of ! (dec preparation + png + lookback + ...)
 objdir = os.path.join(workdir, objkey)	# Don't touch, idem...
 objkeyflag = "flag_" + objkey	# Don't touch
@@ -146,6 +156,12 @@ objcosmicskey = objkey + "_cosmics" # Don't touch
 
 objcoordcat = os.path.join(configdir, objkey + ".cat")
 
+# multiple serial extractions
+objkeys = ["obj_" + objname for objname in objnames] # Don't touch my tralala
+objdirs = [os.path.join(workdir, objkey) for objkey in objkeys]
+objkeyflags = ["flag_" + objkey for objkey in objkeys]
+objcosmicskeys = [objkey + "_cosmics" for objkey in objkeys]
+objcoordcats = [os.path.join(configdir, objkey + ".cat") for objkey in objkeys]
 
 
 #------------------------ DECONVOLUTION ------------------------------------
