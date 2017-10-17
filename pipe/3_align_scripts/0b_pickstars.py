@@ -13,11 +13,11 @@ from itertools import count, product, islice
 from string import ascii_lowercase
 
 import numpy as np
-import matplotlib.pyplot
-matplotlib.use('TkAgg')
-#~ import matplotlib
-#~ matplotlib.use("TkAgg")
-#~ from matplotlib import pyplot
+#~ import matplotlib.pyplot
+#~ matplotlib.use('TkAgg')
+import matplotlib
+matplotlib.use("TkAgg")
+from matplotlib import pyplot
 
 """
 Script that allow to pick the good stars by clicking on the image. Still work in progress
