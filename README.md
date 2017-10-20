@@ -207,21 +207,28 @@ other files
 ###	4_norm_scripts
 
 
-1a  : compute some statistics on the empty region which should have been defined before launching 1a in 3_align_scripts, and add them to the database. Take the time right now to fill in the normstars.cat file in your configdir. These stars can be the same that the one selected for alignment, so you can basically copy your alistars.cat in your normstars.cat. These stars will be used to prenormalize the images.
+1a  : compute some statistics on the empty region which should have been defined before launching 1a in 3_align_scripts, and add them to the database. 
+Take the time right now to fill in the normstars.cat file in your configdir. These stars can be the same that the one selected for alignment, so you can basically copy your alistars.cat 
+in your normstars.cat. These stars will be used to prenormalize the images.
 
 
 1b  : add some noise when columns or row have a 0 value in our images. This may help the next scripts, as sextractor is not fond of 0...
 
-1c  : compute the mean value in the emptysky region and add it to the whole image. It corrects the sky substration from sextractor that is usually a bit too efficient. The efficiency of this step is yet to be tested...
+1c  : compute the mean value in the emptysky region and add it to the whole image. It corrects the sky substration from sextractor that is usually a bit too efficient. 
+The efficiency of this step is yet to be tested...
 
-2a  : run sextractor on the aligned images, and write the aperture photometry (by default for 30, 90 and 'auto' radius in pixels) in an .alicat file in your alidir. This will be used as a normalisation coefficient later on. Note that this is done on all the sextracted objects of your images.
+2a  : run sextractor on the aligned images, and write the aperture photometry (by default for 30, 90 and 'auto' radius in pixels) in an .alicat file in your alidir. 
+This will be used as a normalisation coefficient later on. Note that this is done on all the sextracted objects of your images.
 
-3a  : take all the normstars and their aperture photometry in the database, and compute a first guess normalisation coefficient with it related to the reference image. As normalisation coefficient we take the median value (we call it medcoeff) of the ratios between normstars of the images (one after the other) and the normstars of the refimg.
+3a  : take all the normstars and their aperture photometry in the database, and compute a first guess normalisation coefficient with it related to the reference image. 
+As normalisation coefficient we take the median value (we call it medcoeff) of the ratios between normstars of the images (one after the other) and the normstars of the refimg.
 
-3c  : plot the aperture photometry of each the stars (for all images), with each aperture, and also show the medcoeff computed above. Assuming the medcoeff should not vary too much, it gives you an idea on the quality of your dataset so far.
+3c  : plot the aperture photometry of each the stars (for all images), with each aperture, and also show the medcoeff computed above. Assuming the medcoeff should not vary too much, 
+it gives you an idea on the quality of your dataset so far.
 
 
-5   : make histograms with some statistics of ours plots (ellipticity, seeing, medcoeff and skylevel). It gives also a good idea of the quality of our datasets, but we can disregard the bad images later on...  
+5   : make histograms with some statistics of ours plots (ellipticity, seeing, medcoeff and skylevel). It gives also a good idea of the quality of our datasets, 
+but we can disregard the bad images later on...  
 
 
 
@@ -251,7 +258,12 @@ default.*      : default parameters used by sextractor. Fine as they are for ECA
 ###	5_pymcs_psf_scripts
 
 
-1  : Ok, now the fun begins. You need to select a certain number of stars to build the PSF for each images. You then need to create a .cat file with these stars. In your configdir, create a 'psf_mypsfname.cat' with the stars you want to use for your PSF construction (same format as alistars, normstars,...) In settings.py, under the PSF Construction paragraph, set your psfname as 'mypsfname'. The present script will create a new psfdir in your datadir, with a lot of stuff on it. A good idea may be to select some images to put in your testlist (with the refimg among them), to build different PSF sets (i.e. using different stars), then to choose the best set of stars for PSF construction and finally to compute the PSF on all images. You can perform the steps from 1 to 5 with test images (it is quite fast for only 10 images), and then select the best PSF set according to whatever criterias you like.
+1  : Ok, now the fun begins. You need to select a certain number of stars to build the PSF for each images. You then need to create a .cat file with these stars. 
+In your configdir, create a 'psf_mypsfname.cat' with the stars you want to use for your PSF construction (same format as alistars, normstars,...) 
+In settings.py, under the PSF Construction paragraph, set your psfname as 'mypsfname'. The present script will create a new psfdir in your datadir, with a lot of stuff on it. 
+A good idea may be to select some images to put in your testlist (with the refimg among them), to build different PSF sets (i.e. using different stars), then to choose the best set 
+of stars for PSF construction and finally to compute the PSF on all images. You can perform the steps from 1 to 5 with test images (it is quite fast for only 10 images), and then select 
+the best PSF set according to whatever criterias you like.
 Protip : to build your testlist, you can use report_seeing in your datadir. Do not forget to launch reset_testlist.py and set_testlist.py in extrascripts 
 
 2a  : This script will extract the psf stars for each image, and save them in the corresponding psfdir in your datadir. Also, it gives you instructions to build masks for your psfstars. Look just below to know more about it.-----WARNING : on regor2, remove the modules python 2.6.6 and scisoft/iraf or it will crash -----
@@ -270,7 +282,8 @@ COMMENTS
 
 Knowing which PSF set is the best (or even if a psf set is good enough to be used) is not that simple. There is however a few tricks that may help : 
 
--select enough psf stars per set, let's say 6. No need to take the brightest ones though, but avoid the ones that are too faint. Use the result from 4c in 4_norm_scripts to select your psfstars. Also look at the alistars.png. Avoid the stars that fall on the dead pixels columns as well.
+-select enough psf stars per set, let's say 6. No need to take the brightest ones though, but avoid the ones that are too faint. 
+Use the result from 4c in 4_norm_scripts to select your psfstars. Also look at the alistars.png. Avoid the stars that fall on the dead pixels columns as well.
 	
 -have a look at your numerical psf plot. Also, by looking at your total psf plot, you will see immediately is something went really wrong. 
 	

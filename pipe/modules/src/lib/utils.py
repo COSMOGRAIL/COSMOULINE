@@ -118,6 +118,9 @@ def switch_psf_shape(psf, center='SW'):
         dx = dy = 1.
     
     s = np.zeros(psf.shape)
+    dx, dy  = int(round(dx)) , int(round(dy))
+    ac1, ac2  = int(round(ac1)) , int(round(ac2))
+    c1, c2  = int(round(c1)) , int(round(c2))
     s[:ac1+dx, :ac2+dy] = psf[c1:, c2:]
     s[ac1+dx:, ac2+dy:] = psf[:c1, :c2]
     s[:ac1+dx, ac2+dy:] = psf[c1:, :c2]

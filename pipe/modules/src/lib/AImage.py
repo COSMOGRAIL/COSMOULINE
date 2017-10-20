@@ -39,7 +39,7 @@ class Image:
         self.pilimage = None
         self.noiseMap = None
         
-        if numpyarray == None:
+        if np.any(numpyarray) == None:
             self.array = np.zeros(shape, dtype=np.float64)
         else:
             if not isinstance(numpyarray, np.ndarray):

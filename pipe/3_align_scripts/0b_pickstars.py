@@ -171,6 +171,7 @@ class LoadImage:
 		sbarV.pack(side=LEFT, fill=Y)
 		sbarH.pack(side=BOTTOM, fill=X)
 		root.bind("<Button-3>",self.select)
+		root.bind("<space>",self.select)
 		root.bind("<Button-4>",self.zoomer)
 		root.bind("<Button-5>",self.zoomer)
 		#root.bind("<Button-1>",self.stat)
@@ -218,6 +219,8 @@ class LoadImage:
 		global bl_corner
 		global bl_text
 		global carre
+		
+		print "coucou"
 		if choice == "star":
 			x,y = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y) #to get the real coordinate of the star even after scrolling
 			ali = open(alistars, "a")

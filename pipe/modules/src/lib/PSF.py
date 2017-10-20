@@ -32,6 +32,7 @@ class PSF:
         self.var5 = 0.
         self._sin = 0.
         self._cos = 0.
+        shape = (int(round(shape[0])),int(round(shape[1])))
         self.array = zeros(shape).astype('float64')
         self.indexes = indices(shape)
         self.indexes2 = indices((32,32))
