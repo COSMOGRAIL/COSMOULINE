@@ -220,6 +220,12 @@ The efficiency of this step is yet to be tested...
 2a  : run sextractor on the aligned images, and write the aperture photometry (by default for 30, 90 and 'auto' radius in pixels) in an .alicat file in your alidir. 
 This will be used as a normalisation coefficient later on. Note that this is done on all the sextracted objects of your images.
 
+2b  : facultative (but needed for plot), write these apertures photometry in the db. To do so (and to execute the following facult. scripts as well), you need to define on which stars you want to perform the computations. These stars are to be written in photomstars.cat in your configdir, and can once again be the same that in alistars.cat and normstars.cat
+
+2c  : facultative, write an estimation of the peak values (with the skylevel) of each stars of photomstars.cat in the db.
+
+2d  : facultative, plot the peak values histogram for each star. It may help to select some good stars for the PSF later, so have a look at the plots...
+
 3a  : take all the normstars and their aperture photometry in the database, and compute a first guess normalisation coefficient with it related to the reference image. 
 As normalisation coefficient we take the median value (we call it medcoeff) of the ratios between normstars of the images (one after the other) and the normstars of the refimg.
 
@@ -234,12 +240,6 @@ but we can disregard the bad images later on...
 
 other files
 
-
-2b  : facultative, write these apertures photometry in the db. To do so (and to execute the following facult. scripts as well), you need to define on which stars you want to perform the computations. These stars are to be written in photomstars.cat in your configdir, and can once again be the same that in alistars.cat and normstars.cat
-
-2c  : facultative, write an estimation of the peak values (with the skylevel) of each stars of photomstars.cat in the db.
-
-2d  : facultative, plot the peak values histogram for each star. It may help to select some good stars for the PSF later, so have a look at the plots...
 
 3b  : write reports of the previous operations in your datadir.
 
