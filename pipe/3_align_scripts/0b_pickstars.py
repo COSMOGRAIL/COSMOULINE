@@ -16,7 +16,7 @@ import numpy as np
 #~ import matplotlib.pyplot
 #~ matplotlib.use('TkAgg')
 import matplotlib
-matplotlib.use('TkAgg')
+matplotlib.use("TkAgg")
 from matplotlib import pyplot
 
 
