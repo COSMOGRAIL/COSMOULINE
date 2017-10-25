@@ -13,8 +13,12 @@ from itertools import count, product, islice
 from string import ascii_lowercase
 
 import numpy as np
-import matplotlib.pyplot
+#~ import matplotlib.pyplot
+#~ matplotlib.use('TkAgg')
+import matplotlib
 matplotlib.use('TkAgg')
+from matplotlib import pyplot
+
 
 """
 Script that allow to pick the good stars by clicking on the image. Still work in progress
@@ -76,7 +80,7 @@ if os.path.isfile(alistars):
 
 
 z1 = 0	
-z2 = 5000
+z2 = 1000
 f2nimg = f2n.fromfits(fitsfile)
 f2nimg.setzscale(z1, z2)
 f2nimg.makepilimage(scale = "log", negative = False)

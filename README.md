@@ -216,6 +216,8 @@ other files
 
 2a  : run sextractor on the aligned images, and write the aperture photometry (by default for 30, 90 and 'auto' radius in pixels) in an .alicat file in your alidir. This will be used as a normalisation coefficient later on. Note that this is done on all the sextracted objects of your images.
 
+2b  : facultative(needed for the plot), write these apertures photometry in the db. To do so (and to execute the following facult. scripts as well), you need to define on which stars you want to perform the computations. These stars are to be written in photomstars.cat in your configdir, and can once again be the same that in alistars.cat and normstars.cat
+
 3a  : take all the normstars and their aperture photometry in the database, and compute a first guess normalisation coefficient with it related to the reference image. As normalisation coefficient we take the median value (we call it medcoeff) of the ratios between normstars of the images (one after the other) and the normstars of the refimg.
 
 3c  : plot the aperture photometry of each the stars (for all images), with each aperture, and also show the medcoeff computed above. Assuming the medcoeff should not vary too much, it gives you an idea on the quality of your dataset so far.
@@ -227,8 +229,6 @@ other files
 
 other files
 
-
-2b  : facultative, write these apertures photometry in the db. To do so (and to execute the following facult. scripts as well), you need to define on which stars you want to perform the computations. These stars are to be written in photomstars.cat in your configdir, and can once again be the same that in alistars.cat and normstars.cat
 
 2c  : facultative, write an estimation of the peak values (with the skylevel) of each stars of photomstars.cat in the db.
 

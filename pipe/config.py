@@ -19,7 +19,7 @@ pipedir = "/home/epfl/millon/Desktop/COSMOULINE/pipe"
 # The configuration directory that contains the configuration files :
 # ("small-precious-frequently-backuped-disk")
 # The scripts do only read, but never write, from here !
-configdir = "/home/epfl/millon/Desktop/COSMOULINE/config/HE0435_ECAM"
+configdir = "/home/epfl/millon/Desktop/COSMOULINE/config/UM673_ECAM"
 
 #---------------------------------------------------------------------------
 # All further settings are made into the configdir.
