@@ -10,7 +10,10 @@ execfile("../config.py")
 from kirbybase import KirbyBase, KBError 
 from variousfct import * 
 from readandreplace_fct import *
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use("TkAgg")
+from matplotlib import pyplot as plt
 import star
 import os
 import shutil
