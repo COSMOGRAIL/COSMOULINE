@@ -158,10 +158,10 @@ objcoordcat = os.path.join(configdir, objkey + ".cat")
 
 # multiple serial extractions
 objkeys = ["obj_" + objname for objname in objnames] # Don't touch my tralala
-objdirs = [os.path.join(workdir, objkey) for objkey in objkeys]
-objkeyflags = ["flag_" + objkey for objkey in objkeys]
-objcosmicskeys = [objkey + "_cosmics" for objkey in objkeys]
-objcoordcats = [os.path.join(configdir, objkey + ".cat") for objkey in objkeys]
+objdirs = [os.path.join(workdir, o) for o in objkeys]
+objkeyflags = ["flag_" + o for o in objkeys]
+objcosmicskeys = [o + "_cosmics" for o in objkeys]
+objcoordcats = [os.path.join(configdir, o + ".cat") for o in objkeys]
 
 
 #------------------------ DECONVOLUTION ------------------------------------
