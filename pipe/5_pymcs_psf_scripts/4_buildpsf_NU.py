@@ -37,7 +37,7 @@ else :
 
 print "I will build the PSF of %i images." % len(images)
 
-ncorestouse = 1#forkmap.nprocessors()
+ncorestouse = forkmap.nprocessors()
 #ncorestouse = multiprocessing.cpu_count()
 if maxcores > 0 and maxcores < ncorestouse:
 	ncorestouse = maxcores
