@@ -36,7 +36,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import sys
 
 
-fitsfile = os.path.join(alidir, refimgname + "_skysub.fits") #path to the img_skysub.fits you will display
+fitsfile = os.path.join(alidir, refimgname + "_ali.fits") #path to the img_skysub.fits you will display
 image = os.path.join(workdir, "refimg_skysub.fits") #path to the png that will be created from the img_skysub.fits
 alistars = alistarscat #path to the alistars catalogue
 
@@ -142,6 +142,7 @@ class LoadImage:
 		f = Figure(figsize=(5,5))
 			#a = f.add_subplot(111)
 		ax = Axes3D(f)
+		ax.mouse_init()
 
 		msg = Label(top, text="To plot the value of the pixels in a region, use the right button of your mouse")
 		msg.pack()
@@ -170,8 +171,12 @@ class LoadImage:
 
 		sbarV.pack(side=LEFT, fill=Y)
 		sbarH.pack(side=BOTTOM, fill=X)
-		root.bind("<Button-3>",self.select)
-		root.bind("<space>",self.select)
+		if computer == "martin":
+			#for MAC computer !!!!
+			root.bind("<Button-2>", self.select)
+			root.bind("space",self.select)
+		else :
+			root.bind("<Button-3>",self.select)
 		root.bind("<Button-4>",self.zoomer)
 		root.bind("<Button-5>",self.zoomer)
 		#root.bind("<Button-1>",self.stat)
@@ -219,8 +224,7 @@ class LoadImage:
 		global bl_corner
 		global bl_text
 		global carre
-		
-		print "coucou"
+
 		if choice == "star":
 			x,y = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y) #to get the real coordinate of the star even after scrolling
 			ali = open(alistars, "a")

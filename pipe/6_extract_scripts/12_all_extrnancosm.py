@@ -216,6 +216,8 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 		imgobjdir = os.path.join(objdir, image['imgname'])
 
 		os.chdir(imgobjdir)
+		if computer == "martin":
+			os.system("sudo chown martin sig.fits")
 		replaceNaN("sig.fits", 1.0e-8)
 		replacezeroes("sig.fits", 1.0e-7)
 		os.chdir(origdir)
