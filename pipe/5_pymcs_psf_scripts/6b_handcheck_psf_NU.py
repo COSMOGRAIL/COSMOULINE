@@ -1,11 +1,11 @@
 from Tkinter import *            
 from tkMessageBox import *
-try:
-	import ImageTk
-	import Image
-except:
-	from PIL import ImageTk
-	from PIL import Image
+#~ try:
+	#~ import ImageTk
+	#~ import Image
+#~ except:
+from PIL import ImageTk
+from PIL import Image
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError 
 from variousfct import * 

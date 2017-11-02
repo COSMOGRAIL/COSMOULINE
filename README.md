@@ -220,6 +220,12 @@ The efficiency of this step is yet to be tested...
 2a  : run sextractor on the aligned images, and write the aperture photometry (by default for 30, 90 and 'auto' radius in pixels) in an .alicat file in your alidir. 
 This will be used as a normalisation coefficient later on. Note that this is done on all the sextracted objects of your images.
 
+2b  : facultative (but needed for plot), write these apertures photometry in the db. To do so (and to execute the following facult. scripts as well), you need to define on which stars you want to perform the computations. These stars are to be written in photomstars.cat in your configdir, and can once again be the same that in alistars.cat and normstars.cat
+
+2c  : facultative, write an estimation of the peak values (with the skylevel) of each stars of photomstars.cat in the db.
+
+2d  : facultative, plot the peak values histogram for each star. It may help to select some good stars for the PSF later, so have a look at the plots...
+
 3a  : take all the normstars and their aperture photometry in the database, and compute a first guess normalisation coefficient with it related to the reference image. 
 As normalisation coefficient we take the median value (we call it medcoeff) of the ratios between normstars of the images (one after the other) and the normstars of the refimg.
 
@@ -235,15 +241,10 @@ but we can disregard the bad images later on...
 other files
 
 
-2b  : facultative, write these apertures photometry in the db. To do so (and to execute the following facult. scripts as well), you need to define on which stars you want to perform the computations. These stars are to be written in photomstars.cat in your configdir, and can once again be the same that in alistars.cat and normstars.cat
-
-2c  : facultative, write an estimation of the peak values (with the skylevel) of each stars of photomstars.cat in the db.
-
-2d  : facultative, plot the peak values histogram for each star. It may help to select some good stars for the PSF later, so have a look at the plots...
-
 3b  : write reports of the previous operations in your datadir.
 
 
+#TO MAKE a Deep field image : 
 4a  : prepare images to combine in order to obtain a good deep field image by stacking images. Run 5_histo_multifield before, and have a look at the histograms produced. It will help you select a set of parameters to enter in the Deep Field Combination paragraph of your settings.py. By adding these parameters, we select only a certain number of images to create our deep field image. The present script prepare the images, by normalising them and putting them in a new directory. This step takes really long, but is optional and we can go on with further scripts without any conflicts.
 
 4b  : next step of the previous script : combine the images into one single deep field image. May crash if you use too much images (thks to Iraf)
@@ -256,7 +257,7 @@ default.*      : default parameters used by sextractor. Fine as they are for ECA
 
 
 ###	5_pymcs_psf_scripts
-
+0 : Create a sub-catalog from alistar.cat with the psf stars that you selected by changing the psfname in setting.py
 
 1  : Ok, now the fun begins. You need to select a certain number of stars to build the PSF for each images. You then need to create a .cat file with these stars. 
 In your configdir, create a 'psf_mypsfname.cat' with the stars you want to use for your PSF construction (same format as alistars, normstars,...) 
