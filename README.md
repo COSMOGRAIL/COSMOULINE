@@ -300,7 +300,7 @@ Finally, as computing the psf does not modify the db, you can already go on with
 
 12_all : Same as 12 above, but lauch a serial extraction of a whole list of objects. Do not forget to create the obj_name.cat files. Use the objlists field in settings. This is particularly useful if parallell extractions are too slow, for example if the writing disk accesses are slow.
 
-3  : makes pngs of the extracted object, with their mask. Useful if you want to check if an object is too often polluted, but you should already have seen it before when checking your psf...just saying...
+3  : (not used anymore) makes pngs of the extracted object, with their mask. Useful if you want to check if an object is too often polluted, but you should already have seen it before when checking your psf...just saying...
 
 
 
