@@ -1,8 +1,25 @@
 #
 #	write the input file in.txt and deconv.txt for the deconvolution
 #
+import sys
 
-execfile("../config.py")
+if len(sys.argv) == 2:
+	execfile("../config.py")
+	decobjname = sys.argv[1]
+	deckey = "dec_" + decname + "_" + decobjname + "_" + decnormfieldname + "_" + "_".join(decpsfnames)
+	ptsrccat = os.path.join(configdir, deckey + "_ptsrc.cat")
+	decskiplist = os.path.join(configdir,deckey + "_skiplist.txt")
+	deckeyfilenum = "decfilenum_" + deckey
+	deckeypsfused = "decpsf_" + deckey
+	deckeynormused = "decnorm_" + deckey
+	decdir = os.path.join(workdir, deckey)
+	print "You are running the deconvolution on all the stars at once."
+	print "Current star : " + sys.argv[1]
+
+
+else :
+	execfile("../config.py")
+
 from kirbybase import KirbyBase, KBError
 #from variousfct import *
 from readandreplace_fct import *
@@ -10,7 +27,6 @@ import star
 import shutil
 from variousfct import *
 import os
-
 
 	# count nbr of images
 	
