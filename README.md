@@ -220,7 +220,7 @@ The efficiency of this step is yet to be tested...
 2a  : run sextractor on the aligned images, and write the aperture photometry (by default for 30, 90 and 'auto' radius in pixels) in an .alicat file in your alidir. 
 This will be used as a normalisation coefficient later on. Note that this is done on all the sextracted objects of your images.
 
-2b  : facultative (but needed for plot), write these apertures photometry in the db. To do so (and to execute the following facult. scripts as well), you need to define on which stars you want to perform the computations. These stars are to be written in photomstars.cat in your configdir, and can once again be the same that in alistars.cat and normstars.cat
+2b  : facultative (but needed for plot, and update photomstar.cat), write these apertures photometry in the db. To do so (and to execute the following facult. scripts as well), you need to define on which stars you want to perform the computations. These stars are to be written in photomstars.cat in your configdir, and can once again be the same that in alistars.cat and normstars.cat
 
 2c  : facultative, write an estimation of the peak values (with the skylevel) of each stars of photomstars.cat in the db.
 
@@ -337,7 +337,7 @@ Practically, it works as follows :
 
 7/5b  : show you more precisely the astrometry of your object (the thing you put at 33,33 above). Modify your corresponding .cat file then, and use it as a reference for the following scripts.
 
-7/6  : write the results (the flux of the deconvolved images?) into the database, mandatory for the 8/ scripts. 
+7/6  : (to do if not a test) write the results (the flux of the deconvolved images?) into the database, mandatory for the 8/ scripts. 
 
 --Perform ALL these steps with every stars you will use to compute your new normalisation coefficient. First on a bunch of test images (thus obtaining the precise astrometry), and then on all the images. Once this is done, go to 8/:
 
