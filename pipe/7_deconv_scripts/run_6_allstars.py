@@ -5,7 +5,7 @@ import star
 
 
 readoutcatpath = os.path.join(configdir, "readoutstars.cat")
-photomstars = star.readmancat(photomstarscatpath)
+photomstars = star.readmancat(readoutcatpath)
 
 print "I will readout the following stars:"
 print [star.name for star in photomstars]
