@@ -42,7 +42,7 @@ for telescopename in telescopenames:
 		fluxfieldname = "out_" + deckey + "_" + sourcename + "_flux"
 		errorfieldname = "out_" + deckey + "_" + sourcename + "_shotnoise"
 		#decnormfieldname = "decnorm_" + deckey
-	
+		
 		sourcetelimages = [image for image in telimages if image[deckeyfilenumfield] != None]
 		print "%20s %5s : %4i deconvolutions available" % (deckey, sourcename, len(sourcetelimages))
 	
