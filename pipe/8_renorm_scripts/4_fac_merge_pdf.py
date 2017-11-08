@@ -3,7 +3,7 @@ import glob
 execfile("../config.py")
 from variousfct import *
 
-files = glob.glob(plotdir + "renorm_*.pdf")
+files = glob.glob(plotdir + "renorm_" + renormname +"*.pdf")
 print "I will create a single pdf file with all the renormalisation plots" 
 
 # Creating a routine that appends files to the output file
@@ -20,7 +20,7 @@ for fil in files :
 	
 
 # Writing all the collected pages to a file
-output.write(open(plotdir + "Combined_renorm_pdf.pdf","wb"))
+output.write(open(plotdir + "Combined_"+renormname+".pdf","wb"))
 
 if computer == "regor4":
 	print "I can copy it in your visudir if you want." 
@@ -29,4 +29,4 @@ if computer == "regor4":
 	if not os.path.exists(visudir + "/plots"): 
 		os.makedirs(visudir + "/plots")
 
-	os.system("cp "+plotdir+"Combined_renorm_pdf.pdf " + visudir + "/plots")
+	os.system("cp "+plotdir+"Combined_"+renormname+".pdf " + visudir + "/plots")

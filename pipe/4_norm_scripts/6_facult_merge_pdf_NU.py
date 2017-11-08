@@ -1,7 +1,13 @@
 from pyPdf import PdfFileWriter, PdfFileReader
-import glob
 execfile("../config.py")
+from variousfct import *
+import glob
 
+if os.path.isfile(plotdir + "Combined_pdf.pdf"):
+	print "Removing existing stuff"
+	print "rm "+plotdir+"Combined_pdf.pdf"
+	os.system("rm "+plotdir+"Combined_pdf.pdf")
+	
 
 files = glob.glob(plotdir + "*.pdf")
 print "I will create a single pdf file with all the plots" 
@@ -21,3 +27,10 @@ for fil in files :
 
 # Writing all the collected pages to a file
 output.write(open(plotdir + "Combined_pdf.pdf","wb"))
+    
+if computer == "regor4" :
+		print "I can copy the result in your visudir if you want ?"
+		proquest(askquestions)
+		print "I'll copy the png to your visudir !"
+		print "cp " +plotdir + "Combined_pdf.pdf " + visudir
+		os.system("cp " +plotdir + "Combined_pdf.pdf " + visudir)
