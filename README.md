@@ -214,7 +214,7 @@ in your normstars.cat. These stars will be used to prenormalize the images.
 
 1b  : add some noise when columns or row have a 0 value in our images. This may help the next scripts, as sextractor is not fond of 0...
 
-1c  : compute the mean value in the emptysky region and add it to the whole image. It corrects the sky substration from sextractor that is usually a bit too efficient. 
+1c (don't do): compute the mean value in the emptysky region and add it to the whole image. It corrects the sky substration from sextractor that is usually a bit too efficient. 
 The efficiency of this step is yet to be tested...
 
 2a  : run sextractor on the aligned images, and write the aperture photometry (by default for 30, 90 and 'auto' radius in pixels) in an .alicat file in your alidir. 

@@ -36,7 +36,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import sys
 
 
-fitsfile = os.path.join(alidir, refimgname + "_ali.fits") #path to the img_skysub.fits you will display
+fitsfile = os.path.join(alidir, refimgname + "_skysub.fits") #path to the img_skysub.fits you will display
 image = os.path.join(workdir, "refimg_skysub.fits") #path to the png that will be created from the img_skysub.fits
 alistars = alistarscat #path to the alistars catalogue
 
@@ -175,6 +175,8 @@ class LoadImage:
 			#for MAC computer !!!!
 			root.bind("<Button-2>", self.select)
 			root.bind("space",self.select)
+			root.bind("i",self.zoomer_mac_in)
+			root.bind("o",self.zoomer_mac_out)
 		else :
 			root.bind("<Button-3>",self.select)
 		root.bind("<Button-4>",self.zoomer)
@@ -191,6 +193,16 @@ class LoadImage:
 			if self.zoomcycle != 5: self.zoomcycle += 1
 		elif (event.num==5):
 			if self.zoomcycle != 0: self.zoomcycle -= 1
+		self.crop(event)
+
+	def zoomer_mac_in(self,event):
+		if self.zoomcycle != 5: self.zoomcycle += 1
+		print "zoom : ", self.zoomcycle
+		self.crop(event)
+
+	def zoomer_mac_out(self,event):
+		if self.zoomcycle != 0: self.zoomcycle -= 1
+		print "zoom : ", self.zoomcycle
 		self.crop(event)
 
 	def crop(self,event):
@@ -211,6 +223,7 @@ class LoadImage:
 				size = 300,300
 		else:
 			size = 300,200
+			#tmp = self.orig_img
 			self.zimg = ImageTk.PhotoImage(tmp.resize(size))
 			self.zimg_id = self.canvas.create_image(x,y,image=self.zimg)
 
