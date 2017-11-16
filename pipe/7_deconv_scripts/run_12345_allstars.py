@@ -25,13 +25,13 @@ for star in photomstars :
     os.system("python 5a_decpngcheck_NU.py "+ star.name)
     
     if computer == "regor4" :
-		if not os.path.exists(visudir + "/dec_psf_" + decpsfnames + "/dec_" + star.name): 
-			os.makedirs(visudir + "/dec_psf_" + decpsfnames + "/dec_" + star.name)
-			print visudir + "/dec_psf_" + decpsfnames + "/dec_" + star.name
+		if not os.path.exists(visudir + "/dec_psf_" + decpsfnames[0] + "/dec_" + star.name): 
+			os.makedirs(visudir + "/dec_psf_" + decpsfnames[0] + "/dec_" + star.name)
+			print visudir + "/dec_psf_" + decpsfnames[0] + "/dec_" + star.name
 		
 		print "I'll copy the png to your visudir !"
 		key = "dec_" + decname + "_" + star.name + "_" + decnormfieldname + "_" + "_".join(decpsfnames)
-		os.system("cp "+workdir+"/"+key+ "_png/"+"0*.png " + visudir + "/dec_psf_" + decpsfnames + "/dec_" + star.name)
+		os.system("cp "+workdir+"/"+key+ "_png/"+"0*.png " + visudir + "/dec_psf_" + decpsfnames[0] + "/dec_" + star.name)
 
 if thisisatest == False: 
 	print "You can now check the png and readout the good stars."
