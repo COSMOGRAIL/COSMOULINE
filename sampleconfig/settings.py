@@ -227,7 +227,7 @@ objname = "a"	# Give a name to the object you want to extract.
 			# is no problem to extract the same object under different
 			# names !
 
-objnames = ["lens", "a", "b", "c", "d", "e", "f", "g", "h", "t", "m1", "m2", "m4", "m5"]
+objnames = ["lens", "a","b","c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o","p", "q", "r", "s", "t", "u", "v", "w","x","y", "z"]
 			# As above, but all extractions are performed in a single scrip
 			# 12_all_extrnancosm.py
 			# More efficient on some configurations (like if IO flow is limited)

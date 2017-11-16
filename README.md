@@ -214,17 +214,17 @@ in your normstars.cat. These stars will be used to prenormalize the images.
 
 1b  : add some noise when columns or row have a 0 value in our images. This may help the next scripts, as sextractor is not fond of 0...
 
-1c  : compute the mean value in the emptysky region and add it to the whole image. It corrects the sky substration from sextractor that is usually a bit too efficient. 
+1c (don't do): compute the mean value in the emptysky region and add it to the whole image. It corrects the sky substration from sextractor that is usually a bit too efficient. 
 The efficiency of this step is yet to be tested...
 
 2a  : run sextractor on the aligned images, and write the aperture photometry (by default for 30, 90 and 'auto' radius in pixels) in an .alicat file in your alidir. 
 This will be used as a normalisation coefficient later on. Note that this is done on all the sextracted objects of your images.
 
-2b  : facultative (but needed for plot, and update photomstar.cat), write these apertures photometry in the db. To do so (and to execute the following facult. scripts as well), you need to define on which stars you want to perform the computations. These stars are to be written in photomstars.cat in your configdir, and can once again be the same that in alistars.cat and normstars.cat
+2b (do it) : facultative (but needed for plot, and update photomstar.cat), write these apertures photometry in the db. To do so (and to execute the following facult. scripts as well), you need to define on which stars you want to perform the computations. These stars are to be written in photomstars.cat in your configdir, and can once again be the same that in alistars.cat and normstars.cat
 
-2c  : facultative, write an estimation of the peak values (with the skylevel) of each stars of photomstars.cat in the db.
+2c (do it, for the PSF)  : facultative, write an estimation of the peak values (with the skylevel) of each stars of photomstars.cat in the db.
 
-2d  : facultative, plot the peak values histogram for each star. It may help to select some good stars for the PSF later, so have a look at the plots...
+2d (do it, for the PSF) : facultative, plot the peak values histogram for each star. It may help to select some good stars for the PSF later, so have a look at the plots...
 
 3a  : take all the normstars and their aperture photometry in the database, and compute a first guess normalisation coefficient with it related to the reference image. 
 As normalisation coefficient we take the median value (we call it medcoeff) of the ratios between normstars of the images (one after the other) and the normstars of the refimg.
@@ -269,7 +269,7 @@ Protip : to build your testlist, you can use report_seeing in your datadir. Do n
 
 2a  : This script will extract the psf stars for each image, and save them in the corresponding psfdir in your datadir. Also, it gives you instructions to build masks for your psfstars. Look just below to know more about it.-----WARNING : on regor2, remove the modules python 2.6.6 and scisoft/iraf or it will crash -----
 
-2b  : facultative (but recommended). The stars you selected for the psf construction may have a companion star nearby, or be polluted by god knows what. In order to avoid it polluting our psf construction, we can build some masks for our stars. Thus, go into your datadir/psfdir/imgrefdir/results. With ds9, you can plot the so-called star_00*.fits, which are images of your psf stars. Inspect them: if one of it is polluted, select the polluted region and save it (region->save region) under your configdir/mypsfname_mask_#.reg, but WARNING, here the # is not the number of the star, but the name you gave it... for example, if you mask star_002.fits, the mask should be saved as mypsfname_mask_b.reg . Anyway, the script 2a gives you the correct paths to use. However, do not mask cosmics, the following script will do it for you
+2b  : facultative (but recommended and I think it's needed on regor). The stars you selected for the psf construction may have a companion star nearby, or be polluted by god knows what. In order to avoid it polluting our psf construction, we can build some masks for our stars. Thus, go into your datadir/psfdir/imgrefdir/results. With ds9, you can plot the so-called star_00*.fits, which are images of your psf stars. Inspect them: if one of it is polluted, select the polluted region and save it (region->save region) under your configdir/mypsfname_mask_#.reg, but WARNING, here the # is not the number of the star, but the name you gave it... for example, if you mask star_002.fits, the mask should be saved as mypsfname_mask_b.reg . Anyway, the script 2a gives you the correct paths to use. However, do not mask cosmics, the following script will do it for you
 
 3  : facultative (but recommended). Find automatically cosmic rays on your images and mask them. 
 
@@ -277,7 +277,11 @@ Protip : to build your testlist, you can use report_seeing in your datadir. Do n
 
 5  : Build overview images of the psf construction process in your datadir, under mypsfname_png. Look at them, to check that everything went as you wish. As said above, if you observ that some images are troublesome, put them in the corresponding psfkicklist (they will be kicked for the deconvolution with the corresponding psf set, that's why we don't put them in the general kicklist)
 
+6: Don't do. Use 6b instead.
 
+6b : To inspect by eyes the PSF construction. You can add directly to the skiplist the bad images. 
+
+7: To remove images where the PSF is built on saturated stars
  
 COMMENTS 
 
