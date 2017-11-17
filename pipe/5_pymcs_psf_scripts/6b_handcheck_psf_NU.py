@@ -72,7 +72,7 @@ resize = raw_input("Do you want to resize ? (yes/no) This is useful if your PSF 
 
 #Dimension of the window if you decide to resize
 if resize == 'yes':
-	dimension = raw_input("What dimension ?(1 for 1200/950, 2 for 1900/1150, 3 to enter your dimension")
+	dimension = raw_input("What dimension ?(1 for 1200/950, 2 for 1900/1150, 3 for 1600/968, 4 to enter your dimension")
 	
 	if dimension == '1':
 		width = 1200 
@@ -81,6 +81,9 @@ if resize == 'yes':
 		width = 1900
 		height = 1150
 	elif dimension == '3':
+		width = 1600
+		height = 968
+	elif dimension == '4':
 		width = int(raw_input("Width ?"))
 		height = int(raw_input("Height ?"))
 	
