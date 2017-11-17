@@ -226,6 +226,8 @@ This will be used as a normalisation coefficient later on. Note that this is don
 
 2d (do it, for the PSF) : facultative, plot the peak values histogram for each star. It may help to select some good stars for the PSF later, so have a look at the plots...
 
+2e, 2f : don't do 
+
 3a  : take all the normstars and their aperture photometry in the database, and compute a first guess normalisation coefficient with it related to the reference image. 
 As normalisation coefficient we take the median value (we call it medcoeff) of the ratios between normstars of the images (one after the other) and the normstars of the refimg.
 
