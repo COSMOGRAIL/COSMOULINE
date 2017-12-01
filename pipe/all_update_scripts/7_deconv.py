@@ -234,7 +234,12 @@ if 1:
 				back_name = os.path.join(abspath,line.split('|')[-1])
 				back_name = back_name.split('\n')[0]
 
-		shutil.copy(back_name, os.path.join(workdir, 'updating_back.fits'))
+		try :
+			shutil.copy(back_name, os.path.join(workdir, 'updating_back.fits'))
+		except:
+			print back_name
+			print "There is no background to backup, is this a deconvolution without backgound ??? "
+			proquest(askquestions)
 
 		# I could save some time running 1 and 2 only on the updating images but the gain is 1-2 min. per star -- don't care
 		if makeautoskiplist:

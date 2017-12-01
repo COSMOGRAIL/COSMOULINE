@@ -488,7 +488,7 @@ def findtrans(preciserefmanstars, autostars, scalingratio = 1.0, tolerance = 2.0
 			if f == b: continue
 			stardistance = brightstar.distance(faintstar)
 			if stardistance < mindist : continue
-			
+
 			# We have a pair of stars from the preciserefmancat.
 			# Let's see if we find to stars in the autocat with a similar distance.
 			
