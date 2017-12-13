@@ -9,7 +9,7 @@ if os.path.isfile(plotdir + "Combined_pdf.pdf"):
 	os.system("rm "+plotdir+"Combined_pdf.pdf")
 	
 
-files = glob.glob(plotdir + "*.pdf")
+files = sorted(glob.glob(plotdir + "*.pdf"))
 print "I will create a single pdf file with all the plots" 
 
 # Creating a routine that appends files to the output file

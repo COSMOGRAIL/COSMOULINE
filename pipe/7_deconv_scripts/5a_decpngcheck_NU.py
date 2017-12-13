@@ -195,7 +195,7 @@ for i, image in enumerate(images):
 	txtendpiece = f2n.f2nimage(shape = (256,256), fill = 0.0, verbose=False)
 	txtendpiece.setzscale(0.0, 1.0)
 	txtendpiece.makepilimage(scale = "lin", negative = False)
-	
+
 	
 	date = image['datet']
 	telname = "Instrument : %s" % image["telescopename"]
@@ -204,7 +204,7 @@ for i, image in enumerate(images):
 	nbralistars = "Nb alistars : %i" % image['nbralistars']
 	airmass = "Airmass : %4.2f" % image['airmass']
 	az = "Azimuth : %6.2f [deg]" % image['az']
-	stddev = "Sky stddev : %4.2f [e-]" % image['stddev']
+	# stddev = "Sky stddev : %4.2f [e-]" % image['stddev']
 	dkfn = "Deconv file : %s" % code
 	ncosmics = "Cosmics : %i" % ncosmics
 	selectedpsf = "Selected PSF : %s" % image[deckeypsfused]
@@ -215,7 +215,7 @@ for i, image in enumerate(images):
 		infolist = [image['imgname'][0:25], image['imgname'][25:]]
 	else:
 		infolist = [image['imgname']]
-	infolist.extend([telname, date, nbralistars, seeing, ell, stddev, airmass, dkfn, ncosmics, selectedpsf, normcoeff])
+	infolist.extend([telname, date, nbralistars, seeing, ell, airmass, dkfn, ncosmics, selectedpsf, normcoeff])
 	
 	if thisisatest:
 		testcomment = 'Testcomment: %s' %image['testcomment']

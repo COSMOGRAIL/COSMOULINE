@@ -36,144 +36,144 @@ else:
 
 os.chdir('../7_deconv_scripts')
 
-# Deconvolve each star with the new images
-if 1:
-	for renormsource in renormsources:
-
-		# start by creating a temporary configuration file with the deconvolution keywords needed...
-		# OH GOD THIS IS SO UGLY :O
-
-		infos = renormsource[0].split('_')
-
-		file = open(os.path.join(configdir,'deconv_config_update.py'), 'w')
-		file.write('import os\n\n')
-		file.write("configdir = '%s'\n " % configdir)
-		file.write("\ndecname = %s" % "'"+infos[1]+"'")
-		file.write("\ndecobjname = %s" % "'"+infos[2]+"'")
-		file.write("\ndecnormfieldname = %s" % "'"+infos[3]+"'")
-		file.write("\ndecpsfnames = %s" % '['+', '.join(["'"+decpsfname+"'" for decpsfname in infos[4:]])+']')
-		file.write("\n\ndeckey = '%s'" % renormsource[0])
-		file.write("\nptsrccat = os.path.join(configdir, deckey + '_ptsrc.cat')")
-		file.write("\ndecskiplist = os.path.join(configdir, deckey + '_skiplist.txt')")
-		file.write("\ndeckeyfilenum = 'decfilenum_' + deckey")
-		file.write("\ndeckeypsfused = 'decpsf_' + deckey")
-		file.write("\ndeckeynormused = 'decnorm_' + deckey")
-		file.write("\ndecdir = os.path.join(workdir, deckey)")
-		file.close()
-
-		# Now I simply can rexececute the scripts on the whole set of images.
-
-		# Before erasing the psfdir, I should grab the previous config files used:
-		# ptsrc.cat stays in configdir, nothing to do...
-		# must alter in.txt with stupid parameters
-		# must alter deconv.txt with the new number of images
-		# must rewrite fwhm-des-G.txt
-
-		inpath = os.path.join(workdir, renormsource[0], 'in.txt')
-		deconvpath = os.path.join(workdir, renormsource[0], 'deconv.txt')
-		fwhmpath = os.path.join(workdir, renormsource[0], 'fwhm-des-G.txt')
-
-		for path in [inpath, deconvpath, fwhmpath]:
-			os.system('cp %s %s' % (path, os.path.join(workdir, 'updating_'+os.path.basename(path))))
-			pass
-
-
-		# I could save some time running 1 and 2 only on the updating images but the gain is 1-2 min. per star -- don't care
-		# Note that we don't run 0 on stars - we want to compute the coeff for all the images !
-		os.system('python 1_prepfiles.py')
-		os.system('python 2_applynorm_NU.py')
-
-		# Instead of 3, I simply move back or change wisely the config files previously backuped:
-		execfile(os.path.join(configdir, 'deconv_config_update.py'))
-
-		allimages = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum])
-		refimage = [image for image in allimages if image['imgname'] == refimgname][0]
-		allimages.insert(0, refimage.copy())
-		images[0][deckeyfilenum] = mcsname(1)
-		nbimg = len(allimages)
-
-		ptsrc = star.readmancat(ptsrccat)
-		nbptsrc = len(ptsrc)
-
-		# alter in.txt
-
-		in_backuped = open(os.path.join(workdir, 'updating_'+os.path.basename(inpath)), 'r').readlines()
-		new_in_backuped = open(inpath, 'w')
-
-		toreplace = []
-		for ind, line in enumerate(in_backuped):
-			if line[0] not in ['|', '-'] and in_backuped[ind-1][0] == '-':
-				indstart = ind
-				for i in np.arange(len(in_backuped))[ind:]:
-					if in_backuped[i][0] == '-':
-						indend = i-1
-						break
-				if not indend <=indstart:
-					toreplace.append([indstart, indend])
-
-		# int and pos of the sources : first bunch of lines that does not start with | or -
-		intandposblock = ""
-		print "Reformatted point sources :"
-		for i in range(nbptsrc):
-			if ptsrc[i].flux < 0.0 :
-				raise mterror("Please specify a positive flux for your point sources !")
-			intandposblock = intandposblock + nbimg * (str(ptsrc[i].flux) + " ") + "\n"
-			intandposblock = intandposblock + str(2*ptsrc[i].x-0.5) + " " + str(2*ptsrc[i].y-0.5) + "\n"
-
-		# other params : second bunch of lines
-		otheriniblock = nbimg * "1.0 0.0 0.0 0.0\n"
-
-		# and apply the modifs. in reverse order, to avoid messing up the line numbers...
-		for ind in np.arange(len(in_backuped))[toreplace[1][0]+1: toreplace[1][1]+1][::-1]:
-			in_backuped.pop(ind)
-		in_backuped[toreplace[1][0]] = otheriniblock
-
-		for ind in np.arange(len(in_backuped))[toreplace[0][0]+1: toreplace[0][1]+1][::-1]:
-			in_backuped.pop(ind)
-		in_backuped[toreplace[0][0]] = intandposblock
-
-		for line in in_backuped:
-			new_in_backuped.write(line)
-		new_in_backuped.close()
-
-		# alter deconv.txt
-		deconv_backuped = open(os.path.join(workdir, 'updating_'+os.path.basename(deconvpath)), 'r').readlines()
-		new_deconv_backuped = open(deconvpath, 'w')
-		for ind, line in enumerate(deconv_backuped):
-			if ind==3: # ugly as well. Do NOT change the shape of deconv.txt... (it is not intented to be changed anyway)
-				line = deconv_backuped[ind] = '|' + line[1:].split('|')[0] + '|%i\n' % int(nbimg)
-			new_deconv_backuped.write(line)
-		new_deconv_backuped.close()
-
-		# rewrite fwhm-des-G.txt
-		# We test the seeingpixels : all values should be above 2, otherwise the dec code will crash :
-		testseeings = np.array([image["seeingpixels"] for image in allimages])
-		if not np.all(testseeings>2.0):
-			raise mterror("I have seeinpixels <= 2.0, deconv.exe cannot deal with those.")
-		fwhmtxt = "\n".join(["%.4f" % image["seeingpixels"] for image in allimages]) + "\n"
-		fwhmfile = open(fwhmpath, "w")
-		fwhmfile.write(fwhmtxt)
-		fwhmfile.close()
-
-
-		# And now the rest of the deconv procedure
-		os.system('python 4_deconv_NU.py')
-		os.system('python 5a_decpngcheck_NU.py')
-		os.system('python 6_readout.py')
-
-
-
-	# I need to recompute the normalisation coefficient with these new values:
-	os.chdir('../8_renorm_scripts')
-	os.system('python 1a_renormalize.py')
-	os.system('python 1b_report_NU.py')
-	os.system('python 2_plot_star_curves_NU.py')
-
-
+# # Deconvolve each star with the new images
+# if 1:
+# 	for renormsource in renormsources:
+#
+# 		# start by creating a temporary configuration file with the deconvolution keywords needed...
+# 		# OH GOD THIS IS SO UGLY :O
+#
+# 		infos = renormsource[0].split('_')
+#
+# 		file = open(os.path.join(configdir,'deconv_config_update.py'), 'w')
+# 		file.write('import os\n\n')
+# 		file.write("configdir = '%s'\n " % configdir)
+# 		file.write("\ndecname = %s" % "'"+infos[1]+"'")
+# 		file.write("\ndecobjname = %s" % "'"+infos[2]+"'")
+# 		file.write("\ndecnormfieldname = %s" % "'"+infos[3]+"'")
+# 		file.write("\ndecpsfnames = %s" % '['+', '.join(["'"+decpsfname+"'" for decpsfname in infos[4:]])+']')
+# 		file.write("\n\ndeckey = '%s'" % renormsource[0])
+# 		file.write("\nptsrccat = os.path.join(configdir, deckey + '_ptsrc.cat')")
+# 		file.write("\ndecskiplist = os.path.join(configdir, deckey + '_skiplist.txt')")
+# 		file.write("\ndeckeyfilenum = 'decfilenum_' + deckey")
+# 		file.write("\ndeckeypsfused = 'decpsf_' + deckey")
+# 		file.write("\ndeckeynormused = 'decnorm_' + deckey")
+# 		file.write("\ndecdir = os.path.join(workdir, deckey)")
+# 		file.close()
+#
+# 		# Now I simply can rexececute the scripts on the whole set of images.
+#
+# 		# Before erasing the psfdir, I should grab the previous config files used:
+# 		# ptsrc.cat stays in configdir, nothing to do...
+# 		# must alter in.txt with stupid parameters
+# 		# must alter deconv.txt with the new number of images
+# 		# must rewrite fwhm-des-G.txt
+#
+# 		inpath = os.path.join(workdir, renormsource[0], 'in.txt')
+# 		deconvpath = os.path.join(workdir, renormsource[0], 'deconv.txt')
+# 		fwhmpath = os.path.join(workdir, renormsource[0], 'fwhm-des-G.txt')
+#
+# 		for path in [inpath, deconvpath, fwhmpath]:
+# 			os.system('cp %s %s' % (path, os.path.join(workdir, 'updating_'+os.path.basename(path))))
+# 			pass
+#
+#
+# 		# I could save some time running 1 and 2 only on the updating images but the gain is 1-2 min. per star -- don't care
+# 		# Note that we don't run 0 on stars - we want to compute the coeff for all the images !
+# 		os.system('python 1_prepfiles.py')
+# 		os.system('python 2_applynorm_NU.py')
+#
+# 		# Instead of 3, I simply move back or change wisely the config files previously backuped:
+# 		execfile(os.path.join(configdir, 'deconv_config_update.py'))
+#
+# 		allimages = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum])
+# 		refimage = [image for image in allimages if image['imgname'] == refimgname][0]
+# 		allimages.insert(0, refimage.copy())
+# 		images[0][deckeyfilenum] = mcsname(1)
+# 		nbimg = len(allimages)
+#
+# 		ptsrc = star.readmancat(ptsrccat)
+# 		nbptsrc = len(ptsrc)
+#
+# 		# alter in.txt
+#
+# 		in_backuped = open(os.path.join(workdir, 'updating_'+os.path.basename(inpath)), 'r').readlines()
+# 		new_in_backuped = open(inpath, 'w')
+#
+# 		toreplace = []
+# 		for ind, line in enumerate(in_backuped):
+# 			if line[0] not in ['|', '-'] and in_backuped[ind-1][0] == '-':
+# 				indstart = ind
+# 				for i in np.arange(len(in_backuped))[ind:]:
+# 					if in_backuped[i][0] == '-':
+# 						indend = i-1
+# 						break
+# 				if not indend <=indstart:
+# 					toreplace.append([indstart, indend])
+#
+# 		# int and pos of the sources : first bunch of lines that does not start with | or -
+# 		intandposblock = ""
+# 		print "Reformatted point sources :"
+# 		for i in range(nbptsrc):
+# 			if ptsrc[i].flux < 0.0 :
+# 				raise mterror("Please specify a positive flux for your point sources !")
+# 			intandposblock = intandposblock + nbimg * (str(ptsrc[i].flux) + " ") + "\n"
+# 			intandposblock = intandposblock + str(2*ptsrc[i].x-0.5) + " " + str(2*ptsrc[i].y-0.5) + "\n"
+#
+# 		# other params : second bunch of lines
+# 		otheriniblock = nbimg * "1.0 0.0 0.0 0.0\n"
+#
+# 		# and apply the modifs. in reverse order, to avoid messing up the line numbers...
+# 		for ind in np.arange(len(in_backuped))[toreplace[1][0]+1: toreplace[1][1]+1][::-1]:
+# 			in_backuped.pop(ind)
+# 		in_backuped[toreplace[1][0]] = otheriniblock
+#
+# 		for ind in np.arange(len(in_backuped))[toreplace[0][0]+1: toreplace[0][1]+1][::-1]:
+# 			in_backuped.pop(ind)
+# 		in_backuped[toreplace[0][0]] = intandposblock
+#
+# 		for line in in_backuped:
+# 			new_in_backuped.write(line)
+# 		new_in_backuped.close()
+#
+# 		# alter deconv.txt
+# 		deconv_backuped = open(os.path.join(workdir, 'updating_'+os.path.basename(deconvpath)), 'r').readlines()
+# 		new_deconv_backuped = open(deconvpath, 'w')
+# 		for ind, line in enumerate(deconv_backuped):
+# 			if ind==3: # ugly as well. Do NOT change the shape of deconv.txt... (it is not intented to be changed anyway)
+# 				line = deconv_backuped[ind] = '|' + line[1:].split('|')[0] + '|%i\n' % int(nbimg)
+# 			new_deconv_backuped.write(line)
+# 		new_deconv_backuped.close()
+#
+# 		# rewrite fwhm-des-G.txt
+# 		# We test the seeingpixels : all values should be above 2, otherwise the dec code will crash :
+# 		testseeings = np.array([image["seeingpixels"] for image in allimages])
+# 		if not np.all(testseeings>2.0):
+# 			raise mterror("I have seeinpixels <= 2.0, deconv.exe cannot deal with those.")
+# 		fwhmtxt = "\n".join(["%.4f" % image["seeingpixels"] for image in allimages]) + "\n"
+# 		fwhmfile = open(fwhmpath, "w")
+# 		fwhmfile.write(fwhmtxt)
+# 		fwhmfile.close()
+#
+#
+# 		# And now the rest of the deconv procedure
+# 		os.system('python 4_deconv_NU.py')
+# 		os.system('python 5a_decpngcheck_NU.py')
+# 		os.system('python 6_readout.py')
+#
+#
+#
+# 	# I need to recompute the normalisation coefficient with these new values:
+# 	os.chdir('../8_renorm_scripts')
+# 	os.system('python 1a_renormalize.py')
+# 	os.system('python 1b_report_NU.py')
+# 	os.system('python 2_plot_star_curves_NU.py')
+#
+#
 # That being done, I can get back to the lens now
 # I do it simple, I update all the dec_*_lens_* I find in the datadir, except dec_best
 
-os.chdir('../7_deconv_scripts')
+# os.chdir('../7_deconv_scripts')
 
 if lensdecpaths==None:
 	lensdecpaths = glob.glob(os.path.join(workdir, "dec_*_lens_*"))
@@ -186,7 +186,7 @@ else:
 			print decpath, " does not exists ! Check your lensdecpaths !!"
 			sys.exit()
 
-# This is pretty much the same than above.
+#This is pretty much the same than above.
 if 1:
 	for abspath in lensdecpaths:
 
@@ -242,7 +242,7 @@ if 1:
 			proquest(askquestions)
 
 		# I could save some time running 1 and 2 only on the updating images but the gain is 1-2 min. per star -- don't care
-		if makeautoskiplist:
+		if 0: #makeautoskiplist
 			os.system('python 0_facult_autoskiplist_NU.py')
 		os.system('python 1_prepfiles.py')
 		os.system('python 2_applynorm_NU.py')

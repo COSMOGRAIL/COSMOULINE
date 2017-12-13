@@ -22,6 +22,7 @@ import sys
 import datetime
 import pyfits
 import math
+import astropy.io.fits as fits
 
 from variousfct import *
 
@@ -808,10 +809,15 @@ def holiheader(rawimg): # HoLiCam header
 	# Images are in natural orientation
 	
 	header = pyfits.getheader(rawimg)
-	#date = str(header['DATE-OBS']) # this does not work for Holicam, funny problem.
-	# But there is an alternative :
-	headerascardlist = header.ascardlist()
-	headerascardlist["DATE-OBS"].verify("fix")
+	# date = str(header['DATE-OBS']) # this does not work for Holicam, funny problem.
+	# But there is an alternative : (doesn't work anymore in 2017)
+	# headerascardlist = header.cards()
+	# headerascardlist["DATE-OBS"].verify("fix")
+	#Here is the proper fix :
+	hdu = fits.open(rawimg)
+	hdu.verify("fix")
+	header = hdu[0].header
+	date = str(header['DATE-OBS'])
 	
 	treatme = True
 	gogogo = True
@@ -1043,6 +1049,69 @@ def skysimheader(rawimg):
     }
 
     return returndict
+
+
+###############################################################################################
+
+def PANSTARRSheader(rawimg):
+	print rawimg
+	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0]  # drop extension
+
+	header = pyfits.getheader(rawimg)
+
+	pixsize = 0.26 # Measured on an image, Malte
+	gain = float(header['CELL.GAIN'])  # Rough mean of Monika's measure in Q1, might get updated.
+	readnoise = float(header['CELL.READNOISE']) # typical value for quadrant 1, i.e. also all LL frames.
+	scalingfactor = 0.89767829371  # measured scalingfactor (with respect to Mercator = 1.0)
+	saturlevel = float(header['CELL.SATURATION'])  # arbitrary
+	rotator = 0.0
+
+	telescopelongitude = "20:42:30.00"
+	telescopelatitude = "-156:15:26.00"
+	telescopeelevation = 3048.0
+
+	# availablekeywords = header.ascardlist().keys() # depreciated, not needed anyway
+
+	treatme = True
+	gogogo = True
+	whynot = "na"
+	testlist = False
+	testcomment = "na"
+
+	pythondt = datetime.datetime.strptime(header["DATE"][0:19],
+										  "%Y-%m-%dT%H:%M:%S")  # This is the start of the exposure.
+	exptime = float(header['EXPTIME'])  # in seconds.
+
+	pythondt = pythondt + datetime.timedelta(seconds=exptime / 2.0)  # This is the middle of the exposure.
+
+	# Now we produce the date and datet fields, middle of exposure :
+
+	date = pythondt.strftime("%Y-%m-%d")
+	datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+	myownjdfloat = juliandate(pythondt)  # The function from headerstuff.py
+	myownmjdfloat = myownjdfloat - 2400000.5
+	jd = "%.6f" % myownjdfloat
+	mjd = myownmjdfloat
+
+	# The pre-reduction info :
+	# preredcomment1 = "None"
+	# preredcomment2 = "None"
+	# preredfloat1 = 0.0
+	# preredfloat2 = 0.0
+	# We return a dictionnary containing all this info, that is ready to be inserted into the database.
+	returndict = {'imgname': imgname, 'treatme': treatme, 'gogogo': gogogo, 'whynot': whynot, 'testlist': testlist,
+				  'testcomment': testcomment,
+				  'telescopename': telescopename, 'setname': setname, 'rawimg': rawimg,
+				  'scalingfactor': scalingfactor, 'pixsize': pixsize, 'date': date, 'datet': datet, 'jd': jd,
+				  'mjd': mjd,
+				  'telescopelongitude': telescopelongitude, 'telescopelatitude': telescopelatitude,
+				  'telescopeelevation': telescopeelevation,
+				  'exptime': exptime, 'gain': gain, 'readnoise': readnoise, 'rotator': rotator,
+				  'saturlevel': saturlevel
+				  }
+
+	return returndict
 
 #########################################################################################################
 

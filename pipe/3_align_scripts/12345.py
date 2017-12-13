@@ -1,5 +1,6 @@
 import os
 execfile("../config.py")
+from variousfct import *
 
 os.system("python 1a_checkalistars_NU.py")
 os.system("python 1b_identcoord.py")
