@@ -14,19 +14,21 @@ builtin_map = map
 def nprocessors():
   try:
     try:
-		import multiprocessing
-		return multiprocessing.cpu_count()
-      #~ # Mac OS
-      #~ libc=ctypes.cdll.LoadLibrary(ctypes.util.find_library('libc'))
-      #~ v=ctypes.c_int(0)
-      #~ size=ctypes.c_size_t(ctypes.sizeof(v))
-      #~ libc.sysctlbyname('hw.ncpu', ctypes.c_voidp(ctypes.addressof(v)), ctypes.addressof(size), None, 0)
-      #~ return v.value
+      try:
+        # Mac OS
+        libc=ctypes.cdll.LoadLibrary(ctypes.util.find_library('libc'))
+        v=ctypes.c_int(0)
+        size=ctypes.c_size_t(ctypes.sizeof(v))
+        libc.sysctlbyname('hw.ncpu', ctypes.c_voidp(ctypes.addressof(v)), ctypes.addressof(size), None, 0)
+        return v.value
+      except:
+        # Cygwin (Windows) and Linuxes
+        # Could try sysconf(_SC_NPROCESSORS_ONLN) (LSB) next.  Instead, count processors in cpuinfo.
+        s = open('/proc/cpuinfo', 'r').read()
+        return s.replace(' ', '').replace('\t', '').count('processor:')
     except:
-      # Cygwin (Windows) and Linuxes
-      # Could try sysconf(_SC_NPROCESSORS_ONLN) (LSB) next.  Instead, count processors in cpuinfo.
-      s = open('/proc/cpuinfo', 'r').read()
-      return s.replace(' ', '').replace('\t', '').count('processor:')
+      import multiprocessing
+      return multiprocessing.cpu_count()
   except:
     return 1
 

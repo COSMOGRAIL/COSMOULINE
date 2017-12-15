@@ -13,7 +13,7 @@ from MCS_interface import MCS_interface
 ####
 rewriteconfig = True
 nofitnum = False
-redofromscratch = True
+redofromscratch = False
 ####
 
 if rewriteconfig == True:

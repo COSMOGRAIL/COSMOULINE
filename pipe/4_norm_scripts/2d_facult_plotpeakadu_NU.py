@@ -28,10 +28,11 @@ for s in photomstars:
 	
 	plt.figure(figsize=(12,8))
 	peakadus = np.array([image["%s_%s_peakadu" % (sexphotomname, s.name)] for image in images])
-	
+
 	n, bins, patches = plt.hist(peakadus, 1000, range=(0,67000), histtype='stepfilled', facecolor='grey')
 	
 	medianpeak = float(np.median(peakadus))
+
 	print s.name, medianpeak
 	
 	#axes = plt.gca()

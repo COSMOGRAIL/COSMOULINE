@@ -388,7 +388,7 @@ class f2nimage:
 		
 		calcarray = self.numpyarray.transpose()
 		
-		if scale == "log" or scale == "lin":
+		if scale in ["log", "lin", "exp"]:
 			self.negative = negative
 			#numpyarrayshape = self.numpyarray.shape
 			
@@ -398,6 +398,9 @@ class f2nimage:
 			if scale == "log":
 				#calcarray = np.array(map(lambda x: loggray(x, self.z1, self.z2), calcarray))
 				calcarray = loggray(calcarray, self.z1, self.z2)
+			elif scale == "exp":
+				#calcarray = np.array(map(lambda x: loggray(x, self.z1, self.z2), calcarray))
+				calcarray = expgray(calcarray, self.z1, self.z2)
 			else :
 				#calcarray = np.array(map(lambda x: lingray(x, self.z1, self.z2), calcarray))
 				calcarray = lingray(calcarray, self.z1, self.z2)
@@ -930,6 +933,7 @@ def lingray(x, a=None, b=None):
 		b = np.max(x)
 	
 	return 255.0 * (x-float(a))/(b-a)
+
 	
 def loggray(x, a=None, b=None):
 	"""
@@ -944,7 +948,20 @@ def loggray(x, a=None, b=None):
 	linval = 10.0 + 990.0 * (x-float(a))/(b-a)
 	return (np.log10(linval)-1.0)*0.5 * 255.0
 
+def expgray(x, a=None, b=None):
+	"""
+	Auxiliary function that specifies the exponential gray scale.
+	a and b are the cutoffs : if not specified, min and max are used
 
+	Not working well so far
+	"""
+	if a == None:
+		a = np.min(x)
+	if b == None:
+		b = np.max(x)
+	x = x ** 2
+	linval = 10.0 + 990.0 * (x-float(a))/(b-a)
+	return (np.log10(linval)-1.0)*0.5 * 255.0
 
 def rainbow(data, autoscale=False):
 	"""

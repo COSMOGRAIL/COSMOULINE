@@ -113,7 +113,7 @@ def findcosmics(image):
 		sigarray[c.getdilatedmask(size=5)] = 1.0e8
 		cosmics.tofits(sigfilename, sigarray, sigheader, verbose=False)
 	
-	
+#pool = multiprocessing.Pool(processes=ncorestouse)
 forkmap.map(findcosmics, images, n = ncorestouse)
 
 notify(computer, withsound, "Cosmics masked for psfname %s." % (psfname))

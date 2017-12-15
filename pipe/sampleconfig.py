@@ -36,7 +36,6 @@ import sys
 sys.path.append(os.path.join(pipedir, "modules"))
 
 # Read "global parameters" of the lens / deconvolution :
-print os.path.join(configdir, "settings.py")
 execfile(os.path.join(configdir, "settings.py"))
 
 #----------------------- COMPUTER SETUP -----------------------------
@@ -65,6 +64,9 @@ if computer=="regor2":
 #---------------------------------------------------------------------------
 if computer=="martin":
 	sex = "/sw/bin/sex"
+#---------------------------------------------------------------------------
+if computer=="regor4":
+	sex = "nice -n 19 /usr/bin/sex"
 #---------------------------------------------------------------------------
 
 # Path to compiled programs :
@@ -157,12 +159,15 @@ objcosmicskey = objkey + "_cosmics" # Don't touch
 objcoordcat = os.path.join(configdir, objkey + ".cat")
 
 # multiple serial extractions
-objkeys = ["obj_" + objname for objname in objnames] # Don't touch my tralala
-objdirs = [os.path.join(workdir, objkey) for objkey in objkeys]
-objkeyflags = ["flag_" + objkey for objkey in objkeys]
-objcosmicskeys = [objkey + "_cosmics" for objkey in objkeys]
-objcoordcats = [os.path.join(configdir, objkey + ".cat") for objkey in objkeys]
-
+try:
+	objkeys = ["obj_" + objname for objname in objnames] # Don't touch my tralala
+	objdirs = [os.path.join(workdir, objkey) for objkey in objkeys]
+	objkeyflags = ["flag_" + objkey for objkey in objkeys]
+	objcosmicskeys = [objkey + "_cosmics" for objkey in objkeys]
+	objcoordcats = [os.path.join(configdir, objkey + ".cat") for objkey in objkeys]
+except:
+	print "Your setting.py is older than the serial extraction update. Shame."
+	pass
 
 #------------------------ DECONVOLUTION ------------------------------------
 
@@ -179,7 +184,7 @@ deckeynormused = "decnorm_" + deckey				# the name of the field to contain the n
 							# Don't even think of changing this last one (hard coded in : renorm)
 decdir = os.path.join(workdir, deckey)				# where the deconvolution will be done
 
-
+postdecskiplist = os.path.join(configdir, deckey + "_postdecskiplist.txt") # put here images on which the deconvolution has failed.
 
 #------------------------ RENORMALZATION -----------------------------------
 

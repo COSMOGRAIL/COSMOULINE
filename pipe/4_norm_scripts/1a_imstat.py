@@ -11,6 +11,8 @@
 #	sumlens : sum of the pixels in the small region around the lens
 #
 
+
+
 execfile("../config.py")
 from pyraf import iraf
 from kirbybase import KirbyBase, KBError

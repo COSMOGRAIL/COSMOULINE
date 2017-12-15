@@ -36,8 +36,10 @@ from mpl_toolkits.mplot3d import Axes3D
 
 import sys
 
-
-fitsfile = os.path.join(alidir, refimgname + "_skysub.fits") #path to the img_skysub.fits you will display
+if not defringed:
+	fitsfile = os.path.join(alidir, refimgname + "_skysub.fits") #path to the img_skysub.fits you will display
+else:
+	fitsfile = os.path.join(alidir, refimgname + "_defringed.fits") #path to the img_skysub.fits you will display
 image = os.path.join(workdir, "refimg_skysub.fits") #path to the png that will be created from the img_skysub.fits
 alistars = alistarscat #path to the alistars catalogue
 
@@ -80,7 +82,7 @@ if os.path.isfile(alistars):
 
 
 z1 = 0	
-z2 = 1000
+z2 = 5000
 f2nimg = f2n.fromfits(fitsfile)
 f2nimg.setzscale(z1, z2)
 f2nimg.makepilimage(scale = "log", negative = False)
