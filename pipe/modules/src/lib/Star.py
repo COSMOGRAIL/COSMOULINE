@@ -43,7 +43,7 @@ class Star():
         self.height             = float(self.image.array.shape[1]*self.sampling_factor)
         #shape of the image in big and small pixels:
         self.bshape             = self.image.array.shape
-        self.sshape             = (self.width, self.height)
+        self.sshape             = (int(round(self.width)), int(round(self.height)))
         #the different PSFs:
         self.psfm                = PSF(self.sshape, (self.width/2., self.height/2.))
         self.psfg               = PSF(self.sshape, (self.width/2., self.height/2.))
@@ -346,7 +346,7 @@ class Star():
         w = 8.0
         
         cr = 2.0
-        centraldata = self.image.array[c1-cr:c1+cr,c2-cr:c2+cr]
+        centraldata = self.image.array[int(round(c1-cr)):int(round(c1+cr)),int(round(c2-cr)):int(round(c2+cr))]
         i0 = np.median(centraldata)
         
         params =  0., w, 0.1, c1, c2, i0 # theta, fwhm, e, c1, c2, i0

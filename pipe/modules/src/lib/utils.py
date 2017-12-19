@@ -118,10 +118,10 @@ def switch_psf_shape(psf, center='SW'):
         dx = dy = 1.
     
     s = np.zeros(psf.shape)
-    s[:ac1+dx, :ac2+dy] = psf[c1:, c2:]
-    s[ac1+dx:, ac2+dy:] = psf[:c1, :c2]
-    s[:ac1+dx, ac2+dy:] = psf[c1:, :c2]
-    s[ac1+dx:, :ac2+dy] = psf[:c1, c2:]
+    s[:int(round(ac1+dx)), :int(round(ac2+dy))] = psf[int(round(c1)):, int(round(c2)):]
+    s[int(round(ac1+dx)):, int(round(ac2+dy)):] = psf[:int(round(c1)), :int(round(c2))]
+    s[:int(round(ac1+dx)), int(round(ac2+dy)):] = psf[int(round(c1)):, :int(round(c2))]
+    s[int(round(ac1+dx)):, :int(round(ac2+dy))] = psf[:int(round(c1)), int(round(c2)):]
     return s
 
 def psf_gen(size, bak, mpar, gpar, gpos, gstrat, sfact=2.):
