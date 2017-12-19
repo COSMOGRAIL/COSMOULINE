@@ -100,7 +100,7 @@ def populate(filename, spos, npix, opos, orad, sky, sig, gain, clean=0, as_exe=F
         r = size-radius * 2.
         if x+radius+r > data.shape[0] or y+radius+r > data.shape[1] or x-radius<0 or y-radius<0:
             raise RuntimeError, 'extraction error: sides too close'
-        return data[x-radius:x+radius+r, y-radius:y+radius+r]
+        return data[int(round(x-radius)):int(round(x+radius+r)), int(round(y-radius)):int(round(y+radius+r))]
     if as_exe:
         cd = './'
         cdim = './'
