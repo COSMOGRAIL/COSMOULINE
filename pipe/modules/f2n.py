@@ -57,11 +57,17 @@ class f2nimage:
 		
 		# Now the numpy array to hold the actual data.
 
-		if numpyarray.all() == None:
+		isnone = False
+		try:
+			if numpyarray.all() == None:
+				self.numpyarray = np.ones(shape, dtype=np.float32)*fill
+				isnone = True
+		except:
+			if numpyarray == None:
+				self.numpyarray = np.ones(shape, dtype=np.float32) * fill
+				isnone = True
 
-			self.numpyarray = np.ones(shape, dtype=np.float32)*fill
-
-		else:
+		if not isnone:
 			if not isinstance(numpyarray, np.ndarray):
 
 				raise RuntimeError, "Please give me numpy arrays."
@@ -237,7 +243,7 @@ class f2nimage:
 				# Here we want to reject a percentage of high values...
 				sortedstatsel = np.sort(statsel) 
 				n = round(0.9995 * statsel.size)
-				self.z2 = sortedstatsel[n]
+				self.z2 = sortedstatsel[int(round(n))]
 				if self.verbose :
 					print "Setting auto z2 to %f" % self.z2 
 				
