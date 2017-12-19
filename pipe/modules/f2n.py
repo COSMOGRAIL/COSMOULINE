@@ -25,7 +25,7 @@ fontsdir = os.path.join(os.path.dirname(__file__), "f2n_fonts")
 
 
 class f2nimage:
-	def __init__(self,numpyarray=None, shape = (100,100), fill = 10000.0, verbose=True):
+	def __init__(self, numpyarray=None, shape = (100,100), fill = 10000.0, verbose=True):
 		"""
 		Give me a numpyarray, or give me a shape (in this case I build my own array and fill it with the value fill).
 		
@@ -56,8 +56,8 @@ class f2nimage:
 		self.infofont = None
 		
 		# Now the numpy array to hold the actual data.
-		
-		if numpyarray == None:
+
+		if numpyarray.all() == None:
 
 			self.numpyarray = np.ones(shape, dtype=np.float32)*fill
 
