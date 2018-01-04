@@ -4,7 +4,7 @@ from variousfct import *
 import star
 
 
-readoutcatpath = os.path.join(configdir, "readoutstars.cat")
+readoutcatpath = os.path.join(configdir, "photomstars.cat")
 photomstars = star.readmancat(readoutcatpath)
 
 print "I will readout the following stars:"

@@ -351,7 +351,7 @@ def mercatorheader(rawimg):
 	telescopeelevation = 2327.0
 	
 	header = pyfits.getheader(rawimg)
-	availablekeywords = header.ascardlist().keys()
+	availablekeywords = header.keys()
 	
 	treatme = True
 	gogogo = True
@@ -437,7 +437,7 @@ def liverpoolheader(rawimg):
 	telescopeelevation = 2327.0
 	
 	header = pyfits.getheader(rawimg)
-	availablekeywords = header.ascardlist().keys()
+	availablekeywords = header.keys()
 	
 	treatme = True
 	gogogo = True
@@ -813,6 +813,7 @@ def holiheader(rawimg): # HoLiCam header
 	# But there is an alternative : (doesn't work anymore in 2017)
 	# headerascardlist = header.cards()
 	# headerascardlist["DATE-OBS"].verify("fix")
+
 	#Here is the proper fix :
 	hdu = fits.open(rawimg)
 	hdu.verify("fix")
