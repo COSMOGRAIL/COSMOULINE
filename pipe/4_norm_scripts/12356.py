@@ -4,7 +4,6 @@ execfile("../config.py")
 
 os.system("python 1a_imstat.py")
 os.system("python 1b_facult_multicpu_fillnoise_NU.py")
-#os.system("python 1c_facult_correcsky.py") don't do
 os.system("python 2a_runsex_NU.py")
 os.system("python 2b_facult_photomdb.py")
 os.system("python 2c_facult_peakdb.py")

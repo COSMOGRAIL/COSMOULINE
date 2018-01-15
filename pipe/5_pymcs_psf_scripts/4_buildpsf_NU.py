@@ -39,6 +39,10 @@ print "I will build the PSF of %i images." % len(images)
 
 ncorestouse = forkmap.nprocessors()
 #ncorestouse = multiprocessing.cpu_count()
+
+if computer == "martin": #patch to fix the the forkmap bug (crash under macOSX)
+	maxcores = 1
+
 if maxcores > 0 and maxcores < ncorestouse:
 	ncorestouse = maxcores
 	print "maxcores = %i" % maxcores

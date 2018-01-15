@@ -3,7 +3,7 @@ import glob
 execfile("../config.py")
 from variousfct import *
 
-files = glob.glob(plotdir + "renorm_" + renormname +"*.pdf")
+files = sorted(glob.glob(plotdir + "renorm_" + renormname +"*.pdf"))
 print "I will create a single pdf file with all the renormalisation plots" 
 
 # Creating a routine that appends files to the output file
