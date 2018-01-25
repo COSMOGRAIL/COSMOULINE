@@ -41,6 +41,9 @@ silencemcs = True
 # To be set to true ONLY if you work in all_update_scripts !!
 update = False
 
+#If you want only your test sample whan checking the png :
+sample_only = True
+
 
 # Max number of CPU cores to use (0 = automatic, meaning that all available cores will be used) :
 maxcores = 0

@@ -59,7 +59,12 @@ print "Number of point sources :", len(ptsrcs)
 
 
 db = KirbyBase()
-images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum])
+if sample_only :
+	print "I will draw the png only for your test sample."
+	images = db.select(imgdb, [deckeyfilenum,'testlist'], ['\d\d*',True], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum])
+else :
+	images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum])
+
 
 # This time we do not include the duplicated reference !
 print "Number of images (we disregard the duplicated reference) : %i" % (len(images))
