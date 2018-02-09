@@ -269,7 +269,7 @@ for i, image in enumerate(readyimages):
 	imgpsfdir = os.path.join(psfdir, image['imgname'])	# we take the psf from here
 	imgobjdir = os.path.join(objdir, image['imgname'])	# and the g.fits + sig.fits here
 
-	os.symlink(os.path.join(imgpsfdir, "s001.fits") , os.path.join(decdir, "s%s.fits" % decfilenum))
+	os.symlink(os.path.join(imgpsfdir +"/results","s_1.fits") , os.path.join(decdir, "s%s.fits" % decfilenum)) #fix here : go back to the original file instead of the alias that might be corrupted
 	os.symlink(os.path.join(imgobjdir, "g.fits") , os.path.join(decdir, "g%s_notnorm.fits" % decfilenum))
 	os.symlink(os.path.join(imgobjdir, "sig.fits") , os.path.join(decdir, "sig%s_notnorm.fits" % decfilenum))
 

@@ -6,7 +6,7 @@ __author__ = "Cantale Nicolas - EPFL <n.cantale@gmail.com>"
 
 import numpy
 from numpy import *
-from scipy import weave
+import weave
 
 class PSF:
     def __init__(self, shape, center=None):

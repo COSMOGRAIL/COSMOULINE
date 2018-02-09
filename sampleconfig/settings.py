@@ -281,6 +281,9 @@ plotnormfieldname = None	# Used only for the quicklook plots, after the deconvol
 				# renormname -> we use these coeffs instead. Allows for a first check.
 				# Note that this does NOT affect the content of the database in any way !
 
+lc_to_sum = None #used in quicklooks by night
+                # None --> will plot all the available lightcurves
+                # ['A','D'] --> sum the two entry given in a list
 
 #---------------------------------------------------------------------------
 

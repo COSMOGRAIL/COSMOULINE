@@ -21,6 +21,7 @@ else:
     deckeynormused = plotnormfieldname
 
 ptsources = star.readmancat(ptsrccat)
+
 print "Number of point sources : %i" % len(ptsources)
 print "Names of sources : %s" % ", ".join([s.name for s in ptsources])
 
@@ -66,6 +67,8 @@ exportcols = [
 # deckeynormused = "medcoeff"
 magtot = []
 magerrtot = []
+fluxvalstot =[]
+fluxvalserrtot =[]
 
 # colors = ["red", "blue", "purple", "green"]
 for j, s in enumerate(ptsources):
@@ -88,19 +91,75 @@ for j, s in enumerate(ptsources):
     upmags = -2.5 * np.log10(fluxvals + absfluxerrors)
     downmags = -2.5 * np.log10(fluxvals - absfluxerrors)
     magerrorbars = (downmags - upmags) / 2.0
-
-    plt.errorbar(mhjds, mags, yerr=[upmags - mags, mags - downmags], linestyle="None", marker=".", label=s.name)
-
+    if lc_to_sum != None :
+        if s.name != lc_to_sum[0] and s.name!=lc_to_sum[1] :
+            plt.figure(1)
+            plt.errorbar(mhjds, mags, yerr=[upmags - mags, mags - downmags], linestyle="None", marker=".", label=s.name)
+    else :
+        plt.errorbar(mhjds, mags, yerr=[upmags - mags, mags - downmags], linestyle="None", marker=".", label=s.name)
     # exportcols.extend([{"name":"mag_%s" % ptsrc.name, "data":mags}, {"name":"magerr_%s" % ptsrc.name, "data":2.0*magerrorbars}])
     magtot.append(mags)
     magerrtot.append(magerrorbars)
+    fluxvalstot.append(fluxvals)
+    fluxvalserrtot.append(absfluxerrors)
 
+
+
+# for el in exportcols:
+#	print len(el["data"])
+
+# rdbexport.writerdb(exportcols, "out.rdb", True)
+
+###########################################################
+# Estimate the scatter index :
+
+
+magerrtot = np.asarray(magerrtot)
+magtot = np.asarray(magtot)
+fluxvalstot = np.asarray(fluxvalstot)
+fluxvalserrtot = np.asarray(fluxvalserrtot)
+print np.shape(magtot)
+
+if not lc_to_sum == None:
+    if not len(lc_to_sum) == 2:
+        print "I can sum only two light curves !"
+        exit()
+    magtot_sum = np.zeros((len(magtot[:, 0])-1,len(magtot[0,:])))
+    magerrortot_sum = np.zeros((len(magtot[:, 0])-1,len(magtot[0,:])))
+    ptsources_str = []
+
+    i = [i for i,source in enumerate(ptsources) if source.name==lc_to_sum[0] or source.name==lc_to_sum[1]]
+    fluxvalstot_sum = [fluxvalstot[i[0]]+fluxvalstot[i[1]]]
+    ptsources_str = [ptsources[i[0]].name + "+"+ptsources[i[1]].name]
+    magtot_sum[0,:] = -2.5*np.log10(fluxvalstot_sum)
+    fluxerr_sum = [np.sqrt(fluxvalserrtot[i[0]]**2+fluxvalserrtot[i[1]]**2)]
+    fluxerr_sum= np.asarray(fluxerr_sum)
+    fluxvalstot_sum= np.asarray(fluxvalstot_sum)
+    upmags = -2.5 * np.log10(fluxvalstot_sum + fluxerr_sum)
+    downmags = -2.5 * np.log10(fluxvalstot_sum - fluxerr_sum)
+    magerrortot_sum[0,:]= (downmags - upmags) / 2.0
+    plt.errorbar(mhjds, magtot_sum[0,:], yerr=magerrortot_sum[0,:], linestyle="None", marker=".",label=ptsources_str[0])
+
+    z =1
+    for j in range(len(magtot)):
+        if j != i[0] and j!=i[1]:
+            magtot_sum[z,:] = magtot[j,:]
+            magerrortot_sum[z,:] = magerrtot[j,:]
+            ptsources_str.append(ptsources[j].name)
+            z+=1
+
+    magerrtot = magerrortot_sum
+    magtot = magtot_sum
+
+else :
+    ptsources_str = [s.name for s in ptsources]
+
+#make the plots :
 plt.grid(True)
-
 # reverse y axis for magnitudes :
 ax = plt.gca()
 ax.set_ylim(ax.get_ylim()[::-1])
-ax.set_xlim(np.min(mhjds), np.max(mhjds))  # DO NOT REMOVE THIS !!!
+ax.set_xlim(np.min(mhjds)-20, np.max(mhjds)+20)  # DO NOT REMOVE THIS !!!
 # IT IS IMPORTANT TO GET THE DATES RIGHT
 
 # plt.title(deckey, fontsize=20)
@@ -117,7 +176,8 @@ if plotnormfieldname:
     titletext3 = "Renormalized with %s" % (plotnormfieldname)
     ax.text(0.02, 0.92, titletext3, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
 
-# plt.legend()
+
+#plt.legend()
 leg = ax.legend(loc='upper right', fancybox=True)
 leg.get_frame().set_alpha(0.5)
 
@@ -132,26 +192,19 @@ yearx.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%Y'))
 yearx.xaxis.tick_top()
 yearx.set_xlabel("Date")
 
-# for el in exportcols:
-#	print len(el["data"])
 
-# rdbexport.writerdb(exportcols, "out.rdb", True)
-
-###########################################################
-# Estimate the scatter index :
-magerrtot = np.asarray(magerrtot)
-magtot = np.asarray(magtot)
+#compute the dispersion estimator :
+print ptsources_str
 nsource = len(magtot[:, 0])
-color = ['b', 'g','y','k']
-n_source = len(ptsources)
-sources = []
+color = ['b', 'g' , 'r' , 'm']
+n_source = len(ptsources_str)
 chi_vec = np.zeros(n_source)
 med_vec = np.zeros(n_source)
 chitot = 0.0
 counttot = 0.0
 weitot = []
 
-for k, s in enumerate(ptsources):
+for k, s in enumerate(ptsources_str):
     mags = magtot[k, :]
     magerrorbars = magerrtot[k, :]
     plt.figure(2)
@@ -177,9 +230,8 @@ for k, s in enumerate(ptsources):
     wei = np.asarray(wei)
     chi_vec[k] = chi / count
     med_vec[k] = np.median(wei)
-    sources.append(s.name)
     print "#####################"
-    print "SOURCE ", s.name
+    print "SOURCE ", s
     print "number of points taken : ", len(wei)
     print "chi :", chi
     print "chi red (mean weight):", chi / count
@@ -194,10 +246,10 @@ print "median weight :", np.median(weitot)
 
 pos = 0.03
 titletext4 = ""
-for i,s in enumerate(sources):
-    titletext4 += "$\chi^2_" + s + "$" + " = " + str(round(chi_vec[i]*10000)/10000.0) + " , $med_" + s + "$= " + str(round(med_vec[i]*10000)/10000.) + ", "
+for i,s in enumerate(ptsources_str):
+    titletext4 += "$\chi^2_{" + s + "}$" + " = " + str(round(chi_vec[i]*1000)/1000.0) + " , $med_{" + s + "}$= " + str(round(med_vec[i]*1000)/1000.) + ", "
 
-titletext4 += "all lightcurves : $\chi^2_{tot}$" + " = " + str(round((chitot/counttot)*10000)/10000.0) + " ,  $med_{tot}$= "  + str(round(np.median(weitot)*10000)/10000.0)
+titletext4 += "all lightcurves : $\chi^2_{tot}$" + " = " + str(round((chitot/counttot)*1000)/1000.0) + " ,  $med_{tot}$= "  + str(round(np.median(weitot)*1000)/1000.0)
 
 plt.figure(1)
 ax.text(0.02, pos, titletext4, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
