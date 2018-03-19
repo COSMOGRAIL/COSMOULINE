@@ -15,6 +15,7 @@
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
+import getpass
 from readandreplace_fct import *
 import shutil
 import progressbar
@@ -216,6 +217,7 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 		imgobjdir = os.path.join(objdir, image['imgname'])
 
 		os.chdir(imgobjdir)
+		os.system("sudo chown %s sig.fits" % getpass.getuser())  # because extract.exe now extract non-writable files
 		replaceNaN("sig.fits", 1.0e-8)
 		replacezeroes("sig.fits", 1.0e-7)
 		os.chdir(origdir)

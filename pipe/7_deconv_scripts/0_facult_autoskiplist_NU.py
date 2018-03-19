@@ -18,7 +18,7 @@ if 1:
 	maxseeing = 2.5
 	maxell = 0.25
 	maxmedcoeff = 3.0
-	maxsky = 8000.0
+	maxsky = 20000.0
 
 
 if 0:

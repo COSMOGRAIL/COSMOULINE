@@ -1,4 +1,4 @@
-"""
+git """
 Joins images by night, automatically splitting according to different telescope names, 
 and exports the resulting lightcurves as plain rdb lists.
 """
