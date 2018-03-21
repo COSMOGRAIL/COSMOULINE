@@ -25,7 +25,6 @@ import math
 
 from variousfct import *
 
-print "Re-exec config :"
 execfile("../config.py") # yes, this line is required so that settings.py are available within the functions below.
 
 

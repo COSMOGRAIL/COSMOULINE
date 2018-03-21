@@ -227,8 +227,6 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 
 	# And finally the cosmics :
 
-
-
 	for i, image in enumerate(images):
 
 		print "Cosmics %s %i/%i : %s" % (objkey, i+1, len(images), image["imgname"])
