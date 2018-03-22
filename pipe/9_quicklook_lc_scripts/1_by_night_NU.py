@@ -256,9 +256,15 @@ ax.text(0.02, pos, titletext4, verticalalignment='top', horizontalalignment='lef
 
 if savefigs:
     if plotnormfieldname:
-        plotfilepath = os.path.join(plotdir, "%s_lc_%s_by_night.pdf" % (deckey, plotnormfieldname))
+        if lc_to_sum == None:
+            plotfilepath = os.path.join(plotdir, "%s_lc_%s_by_night.pdf" % (deckey, plotnormfieldname))
+        else :
+            plotfilepath = os.path.join(plotdir, "%s_lc_%s_by_night_sum.pdf" % (deckey, plotnormfieldname))
     else:
-        plotfilepath = os.path.join(plotdir, "%s_lc_by_night.pdf" % (deckey))
+        if lc_to_sum == None:
+            plotfilepath = os.path.join(plotdir, "%s_lc_by_night.pdf" % (deckey))
+        else :
+            plotfilepath = os.path.join(plotdir, "%s_lc_by_night_sum.pdf" % (deckey))
     plt.savefig(plotfilepath)
     print "Wrote %s" % (plotfilepath)
     plt.show()

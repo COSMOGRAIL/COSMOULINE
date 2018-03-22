@@ -173,8 +173,8 @@ def eulerc2header(rawimg):
 	telescopeelevation = 2347.0
 		
 	header = pyfits.getheader(rawimg)
-	availablekeywords = header.ascardlist().keys()
-	
+	availablekeywords = header.keys()
+
 	treatme = True
 	gogogo = True
 	whynot = "na"
@@ -517,7 +517,7 @@ def maidanaksiteheader(rawimg):
 	telescopeelevation = 2593.0
 
 	header = pyfits.getheader(rawimg)
-	#availablekeywords = header.ascardlist().keys()
+	availablekeywords = header.keys()
 	
 	treatme = True
 	gogogo = True
@@ -597,7 +597,7 @@ def maidanaksiheader(rawimg):
 	telescopeelevation = 2593.0
 
 	header = pyfits.getheader(rawimg)
-	#availablekeywords = header.ascardlist().keys()
+	#availablekeywords = header.keys()
 	
 	treatme = True
 	gogogo = True
@@ -668,7 +668,7 @@ def maidanak2k2kheader(rawimg):
 	telescopeelevation = 2593.0
 
 	header = pyfits.getheader(rawimg)
-	#availablekeywords = header.ascardlist().keys()
+	#availablekeywords = header.keys()
 	
 	treatme = True
 	gogogo = True
@@ -735,7 +735,7 @@ def hctheader(rawimg):
 	telescopeelevation = 4500.0
 
 	header = pyfits.getheader(rawimg)
-	availablekeywords = header.ascardlist().keys()
+	availablekeywords = header.keys()
 	
 	treatme = True
 	gogogo = True
@@ -895,7 +895,7 @@ def smartsandicamheader(rawimg):
 		
 	header = pyfits.getheader(rawimg)
 	try:
-		availablekeywords = header.ascardlist().keys()
+		availablekeywords = header.keys()
 	except:
 		availablekeywords = [card[0] for card in header.cards]
 
@@ -992,7 +992,7 @@ def skysimheader(rawimg):
     imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
 	
     header = pyfits.getheader(rawimg)
-    availablekeywords = header.ascardlist().keys()
+    availablekeywords = header.keys()
 
 
     pixsize = float(header['PIXSIZE'])
@@ -1071,7 +1071,7 @@ def PANSTARRSheader(rawimg):
 	telescopelatitude = "-156:15:26.00"
 	telescopeelevation = 3048.0
 
-	# availablekeywords = header.ascardlist().keys() # depreciated, not needed anyway
+	# availablekeywords = header.keys() # depreciated, not needed anyway
 
 	treatme = True
 	gogogo = True
@@ -1125,7 +1125,7 @@ def combiheader(rawimg):
 	print rawimg
 
 	header = pyfits.getheader(rawimg)
-	availablekeywords = header.ascardlist().keys()
+	availablekeywords = header.keys()
 	
 	imgname = setname + "_" + header["IMGNAME"]
 	
@@ -1219,7 +1219,7 @@ def fors2header(rawimg):
 	telescopeelevation = 2635.43
 
 	header = pyfits.getheader(rawimg)
-	# availablekeywords = header.ascardlist().keys()  # not used anyway
+	# availablekeywords = header.keys()  # not used anyway
 
 	treatme = True
 	gogogo = True
@@ -1287,7 +1287,7 @@ def efosc2header(rawimg):
 	telescopeelevation = 2375.0
 
 	header = pyfits.getheader(rawimg)
-	# availablekeywords = header.ascardlist().keys()  # not used anyway
+	# availablekeywords = header.keys()  # not used anyway
 
 	treatme = True
 	gogogo = True
@@ -1354,7 +1354,7 @@ def wfiheader(rawimg):
 	telescopeelevation = 2335.0
 
 	header = pyfits.getheader(rawimg)
-	# availablekeywords = header.ascardlist().keys()  # not used anyway
+	# availablekeywords = header.keys()  # not used anyway
 
 	treatme = True
 	gogogo = True
@@ -1422,7 +1422,7 @@ def grondheader(rawimg):
 	telescopeelevation = 2335.0
 
 	header = pyfits.getheader(rawimg)
-	# availablekeywords = header.ascardlist().keys()  # not used anyway
+	# availablekeywords = header.keys()  # not used anyway
 	gain = header["GAIN"]  # put it at 1.0 for now, according to the header...
 	treatme = True
 	gogogo = True
@@ -1491,7 +1491,7 @@ def gmosheader(rawimg):
 	telescopeelevation = 2722.0
 
 
-	# availablekeywords = header.ascardlist().keys()  # not used anyway
+	# availablekeywords = header.keys()  # not used anyway
 	gain = header["GAIN"]  # put it at 1.0 for now, according to the header...
 	treatme = True
 	gogogo = True
@@ -1566,7 +1566,7 @@ def sdssheader(rawimg):
 	telescopeelevation = 2788.0
 
 	header = pyfits.getheader(rawimg)
-	# availablekeywords = header.ascardlist().keys()  # not used anyway
+	# availablekeywords = header.keys()  # not used anyway
 	gain = 1.0  # put it at 1.0 for now, according to the header...
 	treatme = True
 	gogogo = True

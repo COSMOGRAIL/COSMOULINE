@@ -96,7 +96,11 @@ refautostarsasdicts = [{"name":s.name, "x":s.x, "y":s.y} for s in refautostars]
 if defringed:
 	reffitsfile = os.path.join(alidir, refimage['imgname'] + "_defringed.fits")
 else:
-	reffitsfile = os.path.join(alidir, refimage['imgname'] + "_skysub.fits")
+	if os.path.isfile(os.path.join(alidir, refimage['imgname'] + "_skysub.fits")):
+		reffitsfile = os.path.join(alidir, refimage['imgname'] + "_skysub.fits")  # path to the img_skysub.fits you will display
+	else:
+		print "Apparently, you removed your non-ali images, I'll try to find your _ali image."
+		reffitsfile = os.path.join(alidir, refimage['imgname'] + "_ali.fits")
 
 f2nimg = f2n.fromfits(reffitsfile)
 f2nimg.setzscale(z1=0, z2=1000)

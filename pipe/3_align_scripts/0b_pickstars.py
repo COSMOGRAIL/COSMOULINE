@@ -35,8 +35,12 @@ from mpl_toolkits.mplot3d import Axes3D
 
 import sys
 
+if os.path.isfile(os.path.join(alidir, refimgname + "_skysub.fits")):
+	fitsfile = os.path.join(alidir, refimgname + "_skysub.fits") #path to the img_skysub.fits you will display
+else :
+	print "Apparently, you removed your non-ali images, I'll try to find your _ali image."
+	fitsfile = os.path.join(alidir, refimgname + "_ali.fits")
 
-fitsfile = os.path.join(alidir, refimgname + "_skysub.fits") #path to the img_skysub.fits you will display
 image = os.path.join(workdir, "refimg_skysub.fits") #path to the png that will be created from the img_skysub.fits
 alistars = alistarscat #path to the alistars catalogue
 
