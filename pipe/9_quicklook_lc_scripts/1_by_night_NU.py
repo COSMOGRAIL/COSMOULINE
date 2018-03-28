@@ -211,6 +211,7 @@ for k, s in enumerate(ptsources_str):
     plt.errorbar(mhjds, mags, yerr=magerrorbars, fmt='+', color=color[k])
     chi = 0.0
     count = 0.0
+    countnan =0.0
     wei = []
 
     for i in range(len(mhjds) - 2):
@@ -220,12 +221,16 @@ for k, s in enumerate(ptsources_str):
         b = mags[i] - a * mhjds[i]
         plt.plot([mhjds[i], mhjds[i + 2]], [mags[i], mags[i + 2]], 'r')
         w = np.abs(mags[i + 1] - (a * mhjds[i + 1] + b)) / magerrorbars[i + 1]
-        wei.append(w)
-        weitot.append(w)
-        count += 1.0
-        counttot += 1.0
-        chi += w
-        chitot += w
+
+        if not np.isnan(w):
+            wei.append(w)
+            weitot.append(w)
+            count += 1.0
+            counttot += 1.0
+            chi += w
+            chitot += w
+        else :
+            countnan +=1.0
 
     wei = np.asarray(wei)
     chi_vec[k] = chi / count
@@ -243,6 +248,7 @@ print "number of points taken : ", len(weitot)
 print "chi :", chitot
 print "chi red (mean weight):", chitot / counttot
 print "median weight :", np.median(weitot)
+print "I wasn't able to compue the chi2 for %i datapoints (NaN)"%countnan
 
 pos = 0.03
 titletext4 = ""
