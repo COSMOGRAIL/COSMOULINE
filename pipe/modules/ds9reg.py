@@ -61,6 +61,14 @@ class regions:
 				content = content[:endi]
 				(x, y, r) = content.split(",")
 				self.circles.append({"x":float(x), "y":float(y), "r":float(r)})
+
+			elif line[0:3] == "box":
+				content = line[4:].strip()
+				endi = content.find(")")
+				content = content[:endi]
+				(centerx, centery, sizex,sizey,_) = content.split(",")
+				self.boxes.append({"centerx": float(centerx), "centery": float(centery), "sizex": float(sizex), "sizey":float(sizey)})
+
 			else:
 				print "WARNING : unknown region in line : %s" % line.strip()
 				continue
@@ -80,6 +88,10 @@ class regions:
 				for circle in self.circles:
 					squaredist = (i+1 - circle["x"])**2.0 + (j+1 - circle["y"])**2.0
 					if (squaredist < circle["r"]**2.0):
+						self.mask[i,j] = True
+
+				for box in self.boxes:
+					if (i > box["centerx"] - box["sizex"]/2.0) and (i < box["centerx"] + box["sizex"]/2.0) and (j > box["centery"] - box["sizey"]/2.0) and (j < box["centery"] + box["sizey"]/2.0) :
 						self.mask[i,j] = True
 			
 		

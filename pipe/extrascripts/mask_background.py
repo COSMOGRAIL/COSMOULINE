@@ -6,6 +6,8 @@ execfile("../config.py")
 import ds9reg
 from variousfct import *
 
+#This script is made to mask part of the background to avoid influencing the fit
+
 
 filename = 'back0001'
 outputname = 'back_m'
