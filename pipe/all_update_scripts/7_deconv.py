@@ -22,7 +22,7 @@ nbrofimages = len(images)
 print "Number of images to treat :", nbrofimages
 
 lensdecpaths = None
-#lensdecpaths = ["dec_back_lens_medcoeff_pyMCSabc", "dec_back_lens_renormbefij_pyMCSabc"] # put here the name of the lens deconvolutions you want to update
+# lensdecpaths = ["dec_back_lens_renorm-defh_adefgh"] # put here the name of the lens deconvolutions you want to update
 
 if not lensdecpaths == None:
 	print "You want to update the following lens deconvolutions:"

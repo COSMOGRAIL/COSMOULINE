@@ -37,7 +37,13 @@ if not checkplots :
 
 	# We add some new fields into the holy database.
 	if "seeing" not in db.getFieldNames(imgdb) :
-		db.addFields(imgdb, ['seeing:float', 'ell:float', 'goodstars:int', 'seeingpixels:float'])
+		db.addFields(imgdb, ['seeing:float', 'ell:float', 'goodstars:int', 'seeingpixels:float', 'pa:float'])
+
+	if "pa" not in db.getFieldNames(imgdb):
+		db.addFields(imgdb, ['pa:float'])
+
+	if "pastd" not in db.getFieldNames(imgdb):
+		db.addFields(imgdb, ['pastd:float'])
 
 
 for i,image in enumerate(images):
@@ -48,7 +54,7 @@ for i,image in enumerate(images):
 	catfilename = alidir+image['imgname']+".cat"
 	
 	# We read and sort the sextractor catalog
-	goodsexstars = star.readsexcat(catfilename, maxflag = 2, posflux = True)
+	goodsexstars = star.readsexcat(catfilename, maxflag=2, posflux=True, propfields=["THETA_IMAGE"])
 	nbrstars = len(goodsexstars)
 	sortedsexstars = star.sortstarlistby(goodsexstars, 'fwhm')
 	#print "Best and worst FWHM:"
@@ -192,8 +198,21 @@ for i,image in enumerate(images):
 		plt.show()
 
 
+	# New thing, we also measure the position angle of the ellipcitity
+	pas = np.array([s.props["THETA_IMAGE"] for s in sortedsexstars])
+	starpas = np.array([s.props["THETA_IMAGE"] for s in sortedsexstars if abs(s.fwhm-seeingpixels) < 1.0])
+
+
+	if len(starpas) > 0:
+		pa = np.median(starpas)
+		pastd = np.std(starpas)
+	else:
+		pa = -1.0
+		pastd = 0.0
+	print "Measured position angle :", pa, pastd
+
 	if not checkplots:	
-		db.update(imgdb, ['recno'], [image['recno']], {'seeing': float(seeing), 'ell': float(ell), 'goodstars': nbrstars, 'seeingpixels': float(seeingpixels)})
+		db.update(imgdb, ['recno'], [image['recno']], {'seeing': float(seeing), 'ell': float(ell), 'goodstars': nbrstars, 'seeingpixels': float(seeingpixels), 'pa': float(pa), 'pastd': float(pastd)})
 	
 print "- " * 40
 

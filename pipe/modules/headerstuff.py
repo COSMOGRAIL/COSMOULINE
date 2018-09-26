@@ -1067,8 +1067,8 @@ def PANSTARRSheader(rawimg):
 	saturlevel = float(header['CELL.SATURATION'])  # arbitrary
 	rotator = 0.0
 
-	telescopelongitude = "20:42:30.00"
-	telescopelatitude = "-156:15:26.00"
+	telescopelongitude = "-156:15:26.00"
+	telescopelatitude = "20:42:30.00"
 	telescopeelevation = 3048.0
 
 	# availablekeywords = header.keys() # depreciated, not needed anyway
@@ -1101,6 +1101,61 @@ def PANSTARRSheader(rawimg):
 	# preredfloat1 = 0.0
 	# preredfloat2 = 0.0
 	# We return a dictionnary containing all this info, that is ready to be inserted into the database.
+	returndict = {'imgname': imgname, 'treatme': treatme, 'gogogo': gogogo, 'whynot': whynot, 'testlist': testlist,
+				  'testcomment': testcomment,
+				  'telescopename': telescopename, 'setname': setname, 'rawimg': rawimg,
+				  'scalingfactor': scalingfactor, 'pixsize': pixsize, 'date': date, 'datet': datet, 'jd': jd,
+				  'mjd': mjd,
+				  'telescopelongitude': telescopelongitude, 'telescopelatitude': telescopelatitude,
+				  'telescopeelevation': telescopeelevation,
+				  'exptime': exptime, 'gain': gain, 'readnoise': readnoise, 'rotator': rotator,
+				  'saturlevel': saturlevel
+				  }
+
+	return returndict
+
+#########################################################################################################
+def SPECULOOSheader(rawimg):
+	print rawimg
+	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0]  # drop extension
+
+	header = pyfits.getheader(rawimg)
+
+	pixsize = 0.347 # Measured on an image, Malte
+	gain = 1.0  # Rough mean of Monika's measure in Q1, might get updated.
+	readnoise = 10.0 # typical value for quadrant 1, i.e. also all LL frames.
+	scalingfactor = 1.0 # measured scalingfactor (with respect to Mercator = 1.0)
+	saturlevel = 65535.0  # arbitrary
+	rotator = 0.0
+
+	telescopelongitude = "-24:36:58"
+	telescopelatitude = "-70:23:26"
+	telescopeelevation = 2482.0
+
+	# availablekeywords = header.keys() # depreciated, not needed anyway
+
+	treatme = True
+	gogogo = True
+	whynot = "na"
+	testlist = False
+	testcomment = "na"
+
+	pythondt = datetime.datetime.strptime(header["DATE-OBS"][0:19],
+										  "%Y-%m-%dT%H:%M:%S")  # This is the start of the exposure.
+	exptime = float(header['EXPTIME'])  # in seconds.
+
+	pythondt = pythondt + datetime.timedelta(seconds=exptime / 2.0)  # This is the middle of the exposure.
+
+	# Now we produce the date and datet fields, middle of exposure :
+
+	date = pythondt.strftime("%Y-%m-%d")
+	datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+	myownjdfloat = juliandate(pythondt)  # The function from headerstuff.py
+	myownmjdfloat = myownjdfloat - 2400000.5
+	jd = "%.6f" % myownjdfloat
+	mjd = myownmjdfloat
+
 	returndict = {'imgname': imgname, 'treatme': treatme, 'gogogo': gogogo, 'whynot': whynot, 'testlist': testlist,
 				  'testcomment': testcomment,
 				  'telescopename': telescopename, 'setname': setname, 'rawimg': rawimg,
