@@ -129,7 +129,15 @@ def mags(listofnights, key, normkey = None):
 	downerrors=[]
 	for night in listofnights:
 		#values = -2.5 * log10(asarray([float(image[key]) for image in night]))
-		
+
+		print "----"
+		print normkey
+		print [float(im[key]) for im in night]
+		print [im[normkey] for im in night]
+		print [im['medcoeff'] for im in night]
+		print [im['box_renorm'] for im in night]
+		print [im['imgname'] for im in night]
+
 		if normkey == None:
 			values = -2.5 * log10(clip(asarray([float(image[key]) for image in night]), 1.0, 1.0e18)) # We clip at 1.0, to avoid negative values
 		else:

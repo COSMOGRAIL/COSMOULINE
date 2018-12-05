@@ -52,7 +52,7 @@ imgmaxmedcoeff = 8.0
 # To use such a list, give the filename (not the full path) below, and put the file into 
 # the lcmanipdir.
 
-imgskiplistfilename = None
+imgskiplistfilename = [deconvname + "_skiplist.txt", "kicklist.txt"]
 #imgskiplistfilename = "skiplist.txt"
 
 # Narrow the range of nights you want to use (values are the medians among the images in a night).

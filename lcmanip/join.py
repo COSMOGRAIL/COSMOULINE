@@ -48,10 +48,17 @@ print "Rejected because medcoeff > %.2f : %i" % (imgmaxmedcoeff, before-len(imag
 
 # Rejecting according to an eventual skiplist :
 if imgskiplistfilename != None:
-	imgskiplist = variousfct.readimagelist(os.path.join(lcmanipdir, imgskiplistfilename))
-	# Getting the image names, disregarding the comments :
-	imgskiplist = [item[0] for item in imgskiplist]
-	images = [image for image in images if image["imgname"] not in imgskiplist]
+	if isinstance(imgskiplistfilename, (list,)):
+		for skip in imgskiplistfilename:
+			imgskiplist = variousfct.readimagelist(os.path.join(lcmanipdir, skip))
+			# Getting the image names, disregarding the comments :
+			imgskiplist = [item[0] for item in imgskiplist]
+			images = [image for image in images if image["imgname"] not in imgskiplist]
+	else :
+		imgskiplist = variousfct.readimagelist(os.path.join(lcmanipdir, imgskiplistfilename))
+		# Getting the image names, disregarding the comments :
+		imgskiplist = [item[0] for item in imgskiplist]
+		images = [image for image in images if image["imgname"] not in imgskiplist]
 
 print "Number of rejected images : %i." % (ava - len(images))
 print "We keep %i images among %i." % (len(images), ava)
@@ -66,19 +73,17 @@ for image in images:
 
 		print image["imgname"], normcoeffname, float(image[normcoeffname])
 		
-		try:
-			if float(image[fluxfieldname]) < 0.0:
-				print "%s ERROR, negative flux for source %s" % (image["imgname"], sourcename)
-				#print "Please, put this image on a skiplist."
-		except:
-			print "%s ERROR, not a float : %s" % (image["imgname"], str(image[fluxfieldname]))
+
+		if float(image[fluxfieldname]) < 0.0:
+			print "%s ERROR, negative flux for source %s" % (image["imgname"], sourcename)
+			#print "Please, put this image on a skiplist."
+			exit()
 	
 	# We also check the normalizations :
-	try:
+
 		if float(image[normcoeffname]) < 0.0:
-			print "%s ERROR, negative normcoeff %s" % (image["imgname"], normcoeffname)		
-	except:
-		print "%s ERROR, not a float : %s" % (image["imgname"], str(image[normcoeffname]))
+			print "%s ERROR, negative normcoeff %s" % (image["imgname"], normcoeffname)
+			exit()
 
 
 # We now add some new fields to each image, in preparation to the errorbar calculation.

@@ -27,7 +27,7 @@ print "Names of sources : %s" % ", ".join([s.name for s in ptsources])
 
 db = KirbyBase()
 
-images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=['mjd'])
+images = db.select(imgdb, [deckeyfilenum,'gogogo'], ['\d\d*', True], returnType='dict', useRegExp=True, sortFields=['mjd'])
 print "%i images" % len(images)
 
 groupedimages = combibynight_fct.groupbynights(images)
