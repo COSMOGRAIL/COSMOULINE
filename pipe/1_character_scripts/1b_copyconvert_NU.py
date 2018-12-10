@@ -35,6 +35,7 @@ proquest(askquestions)
 for i, image in enumerate(images):
 	
 	# check if file exists
+	print image['imgname']
 	outfilename = os.path.join(alidir, image['imgname'] + ".fits")
 	print i+1, "/", nbrofimages, " : ", image['imgname'], ", gain = %.3f" % (image['gain'])
 	if not redofromscratch:

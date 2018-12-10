@@ -1171,6 +1171,64 @@ def SPECULOOSheader(rawimg):
 
 #########################################################################################################
 
+def UH2m2header(rawimg):
+	print rawimg
+	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0]  # drop extension
+
+	header = pyfits.getheader(rawimg)
+
+	pixsize = 0.22 # Measured on an image, Malte
+	gain = 1.78  #
+	readnoise = 10.0 # t
+	scalingfactor = 1.0 # measured scalingfactor (with respect to Mercator = 1.0)
+	saturlevel = 65535.0  # arbitrary
+	rotator = 0.0
+
+	telescopelongitude = "19:49:34"
+	telescopelatitude = "-155:28:15"
+	telescopeelevation = 4205.0
+
+	# availablekeywords = header.keys() # depreciated, not needed anyway
+
+	treatme = True
+	gogogo = True
+	whynot = "na"
+	testlist = False
+	testcomment = "na"
+
+	date_str = header["DATE-OBS"] + 'T' + header['UT'][1:-3]
+
+	pythondt = datetime.datetime.strptime(date_str,
+										  "%Y-%m-%dT%H:%M:%S")  # This is the start of the exposure.
+	exptime = float(header['EXPTIME'])  # in seconds.
+
+	pythondt = pythondt + datetime.timedelta(seconds=exptime / 2.0)  # This is the middle of the exposure.
+
+	# Now we produce the date and datet fields, middle of exposure :
+
+	date = pythondt.strftime("%Y-%m-%d")
+	datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+	myownjdfloat = juliandate(pythondt)  # The function from headerstuff.py
+	myownmjdfloat = myownjdfloat - 2400000.5
+	jd = "%.6f" % myownjdfloat
+	mjd = myownmjdfloat
+
+	returndict = {'imgname': imgname, 'treatme': treatme, 'gogogo': gogogo, 'whynot': whynot, 'testlist': testlist,
+				  'testcomment': testcomment,
+				  'telescopename': telescopename, 'setname': setname, 'rawimg': rawimg,
+				  'scalingfactor': scalingfactor, 'pixsize': pixsize, 'date': date, 'datet': datet, 'jd': jd,
+				  'mjd': mjd,
+				  'telescopelongitude': telescopelongitude, 'telescopelatitude': telescopelatitude,
+				  'telescopeelevation': telescopeelevation,
+				  'exptime': exptime, 'gain': gain, 'readnoise': readnoise, 'rotator': rotator,
+				  'saturlevel': saturlevel
+				  }
+
+	return returndict
+
+#########################################################################################################
+
 def combiheader(rawimg):
 	"""
 	combi = it is not a telscope. This is use to read the header of the combined images and to add them to the database like a new telescope.

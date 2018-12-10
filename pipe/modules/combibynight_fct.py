@@ -135,7 +135,7 @@ def mags(listofnights, key, normkey = None):
 		print [float(im[key]) for im in night]
 		print [im[normkey] for im in night]
 		print [im['medcoeff'] for im in night]
-		print [im['box_renorm'] for im in night]
+		# print [im['box_renorm'] for im in night]
 		print [im['imgname'] for im in night]
 
 		if normkey == None:

@@ -69,6 +69,8 @@ def readheader(telescopename, rawimg):
 		dbdict = PANSTARRSheader(rawimg)
 	elif telescopename == "SPECULOOS":
 		dbdict = SPECULOOSheader(rawimg)
+	elif telescopename == "UH2m2":
+		dbdict = UH2m2header(rawimg)
 	else:
 		raise mterror("Unknown telescope.")	
 
