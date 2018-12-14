@@ -71,6 +71,8 @@ def readheader(telescopename, rawimg):
 		dbdict = SPECULOOSheader(rawimg)
 	elif telescopename == "UH2m2":
 		dbdict = UH2m2header(rawimg)
+	elif telescopename == "Maidanak_2.5k":
+		dbdict = Maidanak_2_5kheader(rawimg)
 	else:
 		raise mterror("Unknown telescope.")	
 
