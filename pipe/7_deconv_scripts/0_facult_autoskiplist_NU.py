@@ -148,6 +148,12 @@ rejectimages = [image for image in images if image["skylevel"] > maxsky]
 rejlines.extend(["%s\t\t%s" % (image["imgname"], "skylevel = %.2f" % image["skylevel"]) for image in rejectimages])
 images = [image for image in images if image not in rejectimages] # The "remaining" images
 
+# shooting images with wrong decnormfieldname...
+rejectimages = [image for image in images if image[decnormfieldname] == 0]
+rejlines.extend(["%s\t\t%s" % (image["imgname"], "%s == 0" % decnormfieldname) for image in rejectimages])
+images = [image for image in images if image not in rejectimages] # The "remaining" images
+
+
 
 print "# Autoskiplist made with maxseeing = %.3f, maxell = %.3f, maxmedcoeff = %.3f, maxsky = %.1f ." % (maxseeing, maxell, maxmedcoeff, maxsky)
 print "# It contains %i images." % len(rejlines)

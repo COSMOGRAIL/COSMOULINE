@@ -1,15 +1,18 @@
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
-import forkmap
 import glob
 import star
+
+import forkmap
+from multiprocessing import Pool
 
 #import src.lib.utils as fn
 from MCS_interface import MCS_interface
 
 psfstars = star.readmancat(psfstarcat)
 
+redofromscratch = False
 
 # Select images to treat
 db = KirbyBase()
@@ -41,15 +44,23 @@ def extractpsf(image):
 
 	imgpsfdir = os.path.join(psfdir, image['imgname'])
 	print "Image %i : %s" % (image["execi"], imgpsfdir)
-	
+	if not redofromscratch:
+		if os.path.isfile(os.path.join(imgpsfdir, "results", "starsig_001.fits")):
+			print "Already done..."
+			return
+
 	os.chdir(imgpsfdir)
 	mcs = MCS_interface("pyMCS_psf_config.py")
 	mcs.set_up_workspace(extract=True, clear=False, backup=False)
 	
 	
-forkmap.map(extractpsf, images, n = ncorestouse)
+#forkmap.map(extractpsf, images, n = ncorestouse)
 
-notify(computer, withsound, "PSF extraction done for psfname %s." % (psfname))
+p = Pool(ncorestouse)
+p.map(extractpsf, images)
+
+
+#notify(computer, withsound, "PSF extraction done for psfname %s." % (psfname))
 
 # Now we help the user with the mask creation.
 if refimgname in [img["imgname"] for img in images]:

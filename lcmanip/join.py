@@ -1,4 +1,4 @@
-git """
+"""
 Joins images by night, automatically splitting according to different telescope names, 
 and exports the resulting lightcurves as plain rdb lists.
 """
@@ -153,7 +153,14 @@ plt.annotate("$\mathrm{median = %.2f}$" % np.median([img["airmass"] for img in i
 			textcoords='offset points', ha='left', va='bottom', fontsize=16)
 plt.xlabel(r"$\mathrm{airmass}$", fontsize=18)
 plt.yticks([])
-plt.axis([1.1, 1.6, 0, 30])
+#plt.axis([1.1, 1.6, 0, 30])
+# save the histograms with pycs
+try:
+	from pycs.gen.util import writepickle as wp
+	wp([np.array(medairmasses), np.array(medseeings)], "/home/vivien/Desktop/stats_%s.pkl" % dbfilename.split('.')[0])
+except:
+	print "Cannot load PyCS - I do not save the airmasses and seeings. No big deal."
+	pass
 plt.show()
 
 

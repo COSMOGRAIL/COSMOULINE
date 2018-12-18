@@ -9,7 +9,7 @@
 
 
 execfile("../config.py")
-redofromscratch = False
+redofromscratch = True
 
 from kirbybase import KirbyBase, KBError
 from variousfct import *

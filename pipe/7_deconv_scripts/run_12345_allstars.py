@@ -19,10 +19,10 @@ if thisisatest == False:
 for star in deconvstars :
     os.system("python 1_prepfiles.py " + star.name)
     os.system("python 2_applynorm_NU.py " + star.name)
-    os.system("python 3_fillinfile_NU.py "+ star.name)
-    os.system("python 4_deconv_NU.py "+ star.name)
+    os.system("python 3_fillinfile_NU.py " + star.name)
+    os.system("python 4_deconv_NU.py " + star.name)
     os.system("python 5b_showptsrc_NU.py " + star.name)
-    os.system("python 5a_decpngcheck_NU.py "+ star.name)
+    os.system("python 5a_decpngcheck_NU.py " + star.name)
     
     if computer == "regor4" :
 		if not os.path.exists(visudir + "/dec_psf_" + decpsfnames[0] + "/dec_" + star.name): 

@@ -195,6 +195,13 @@ def aliimage(image):
 
 starttime = datetime.now()
 retdicts = forkmap.map(aliimage, images, n = ncorestouse)
+
+
+import multiprocessing
+
+
+
+
 #pool = multiprocessing.Pool(processes=ncorestouse)
 #pool.map(aliimage, images)
 

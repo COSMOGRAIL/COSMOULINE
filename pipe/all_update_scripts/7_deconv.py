@@ -37,7 +37,7 @@ else:
 os.chdir('../7_deconv_scripts')
 
 # Deconvolve each star with the new images
-if 1:
+if 0:
 	for renormsource in renormsources:
 
 		# start by creating a temporary configuration file with the deconvolution keywords needed...

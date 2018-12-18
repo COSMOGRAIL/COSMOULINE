@@ -12,6 +12,8 @@ from datetime import datetime, timedelta
 import shutil
 import os
 
+removeskyimg = True
+
 
 db = KirbyBase()
 if thisisatest:
@@ -76,8 +78,11 @@ for i,image in enumerate(images):
 		os.remove(skysubimagepath)
 	
 	tofits(skysubimagepath, skysubimagea, hdr = imageh, verbose = True)
-	
-	
+	if removeskyimg:
+		print "directly removing sky image to save some space..."
+		os.remove(skyimagepath)
+
+
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
 

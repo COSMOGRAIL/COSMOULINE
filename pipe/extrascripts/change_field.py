@@ -20,5 +20,4 @@ sys.exit()
 
 
 # Changing the raw path to the images (after an HDD loss...)
-
 #myimgs = [image of images]

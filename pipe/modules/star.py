@@ -270,8 +270,7 @@ def readsexcat(sexcatfilepath, verbose=True, maxflag = 2, posflux = True, propfi
 			
 			props = dict([[propfield, mycat[propfield][i]] for propfield in propfields])
 			
-			newstar = Star(x = mycat['X_IMAGE'][i], y = mycat['Y_IMAGE'][i], name = str(num), flux=flux,
-					props = props, fwhm = mycat['FWHM_IMAGE'][i], ell = mycat['ELLIPTICITY'][i])
+			newstar = Star(x = mycat['X_IMAGE'][i], y = mycat['Y_IMAGE'][i], name = str(num), flux=flux, props = props, fwhm = mycat['FWHM_IMAGE'][i], ell = mycat['ELLIPTICITY'][i])
 			
 			returnlist.append(newstar)
 	
