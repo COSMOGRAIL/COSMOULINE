@@ -13,6 +13,7 @@ filename = 'back0001'
 outputname = 'back_m'
 extension = ".fits"
 back = os.path.join(decdir,filename+extension)
+inverted = True
 
 region = os.path.join(configdir,deckey + '_mask_lens.reg')
 
