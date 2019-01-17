@@ -70,8 +70,6 @@ print "We keep %i images among %i." % (len(images), ava)
 for image in images:
 	for sourcename in sourcenames:
 		fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
-
-		print image["imgname"], normcoeffname, float(image[normcoeffname])
 		
 
 		if float(image[fluxfieldname]) < 0.0:

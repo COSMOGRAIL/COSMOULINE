@@ -124,8 +124,12 @@ defringed = False
 refimgname = "3_ECAM.2011-08-31T09:35:49.000"
 
 # dimensions you want for the aligned images (you have to start at pixels (1,1), no choice)
-dimx = 3600
-dimy = 3600
+if telescopename == "WFI":
+    dimx = 2022
+    dimy = 4000
+else :
+    dimx = 3600
+    dimy = 3600
 # currently this is used only in the stupid geomap, to make the transform valid
 # for the full frame.
 
