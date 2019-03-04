@@ -6,14 +6,16 @@
 
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
-from calccoeff_fct import *
+# os.system("cd ..")
+# from calccoeff_fct import *
 from variousfct import *
 from star import *
 import os
 
 #---- Here is the only parameter you have to tweak ---------
 
-startoadd = "lens"		# specify the name of the star here
+startoadd = "quasar"		# specify the name of the star here
+aperture = "auto"
 
 #----------------------------------------------------------
 
@@ -33,7 +35,7 @@ images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict'
 
 
 # we prepare the database
-newfield = "flux_sex_%s" %startoadd
+newfield = "%s_%s_%s_flux" % (sexphotomname, startoadd, aperture)
 if newfield not in db.getFieldNames(imgdb) :
 	print "I will add a field to the database."
 	proquest(askquestions)
@@ -41,7 +43,7 @@ if newfield not in db.getFieldNames(imgdb) :
 
 # we read the handwritten star catalog
 starcat = os.path.join(configdir, "obj_%s.cat" %startoadd)
-objcoords = readmancatasstars(starcat)
+objcoords = readmancat(starcat)
 if len(objcoords) != 1 : raise mterror("Oh boy ... one star at a time please !")
 
 
@@ -54,7 +56,7 @@ for i, image in enumerate(images):
 	sexcat = alidir + image['imgname'] + ".alicat"
 	
 	# read sextractor catalog
-	catstars = readsexcatasstars(sexcat)
+	catstars = readsexcat(sexcat)
 	if len(catstars) == 0:
 		print "No stars in catalog !"
 		db.update(imgdb, ['recno'], [image['recno']], {newfield: 0.0})
@@ -62,9 +64,12 @@ for i, image in enumerate(images):
 		
 	# cross-identify the stars with the handwritten selection
 	identstars = listidentify(objcoords, catstars, 5.0)
-	
-	print 'star flux : ', identstars[0].flux
-	db.update(imgdb, ['recno'], [image['recno']], {newfield: identstars[0].flux})
+
+	if  not len(identstars['match']) == 0 :
+		print 'star flux : ', identstars['match'][0].flux
+		db.update(imgdb, ['recno'], [image['recno']], {newfield: identstars['match'][0].flux})
+	else :
+		db.update(imgdb, ['recno'], [image['recno']], {newfield: np.float('NaN')})
 
 db.pack(imgdb) # to erase the blank lines
 

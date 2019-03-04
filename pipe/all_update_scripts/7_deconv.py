@@ -21,8 +21,8 @@ images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict'
 nbrofimages = len(images)
 print "Number of images to treat :", nbrofimages
 
-lensdecpaths = None
-# lensdecpaths = ["dec_back_lens_renorm-defh_adefgh"] # put here the name of the lens deconvolutions you want to update
+# lensdecpaths = None
+lensdecpaths = ["dec_back_full_lens_renorm_biloqz_abciqr"] # put here the name of the lens deconvolutions you want to update
 
 if not lensdecpaths == None:
 	print "You want to update the following lens deconvolutions:"
