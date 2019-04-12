@@ -140,8 +140,8 @@ medrelnormcoeffsigmas = mednormcoeffsigmas / mednormcoeffs # relative errors on 
 import numpy as np
 print "Median seeing: ", np.median([img["seeing"] for img in images])
 print "Median sampling: ", (np.max(mhjds)-np.min(mhjds))/len(nights)
-fig = plt.figure(figsize=(6, 4))
-fig.subplots_adjust(left=0.1, right=0.97, bottom=0.15, top=0.98, wspace=0.01)
+fig1 = plt.figure(figsize=(6, 4))
+fig1.subplots_adjust(left=0.1, right=0.97, bottom=0.15, top=0.98, wspace=0.01)
 plt.subplot(1,2,1)
 plt.hist(medseeings, bins=12, color="royalblue")
 plt.axvline(np.median([img["seeing"] for img in images]), linestyle='--', color='grey', linewidth=2.0, alpha=0.5)
@@ -160,6 +160,8 @@ plt.xlabel(r"$\mathrm{airmass}$", fontsize=18)
 plt.yticks([])
 plt.axis([1.1, 1.6, 0, 30])
 plt.show()
+fig1.savefig(os.path.join(lcmanipdir, outputname + "_median_seeing.png"))
+
 
 
 if min(mednormcoeffsigmas) <= 0.0001:
@@ -330,8 +332,8 @@ rdbexport.writerdb(exportcols, os.path.join(lcmanipdir, outputname + ".rdb"), wr
 
 
 # And make a plot just for the fun of it.
-fig = plt.figure(figsize=(20,12))
-fig.subplots_adjust(left=0.06, right=0.98, bottom=0.1, top=0.95, wspace=0.1, hspace=0.1)
+fig2 = plt.figure(figsize=(20,12))
+fig2.subplots_adjust(left=0.06, right=0.98, bottom=0.1, top=0.95, wspace=0.1, hspace=0.1)
 
 for i, sourcename in enumerate(sourcenames):
 	mags = [col for col in exportcols if col["name"] == "mag_%s" % sourcename][0]["data"]
@@ -373,16 +375,18 @@ yearx.set_xlabel("Date")
 
 if showplots == True:
 	plt.show()
+	fig2.savefig(os.path.join(lcmanipdir, outputname + "_plot.pdf"))
+	print "Wrote plot."
 else:
-	plt.savefig(os.path.join(lcmanipdir, outputname + "_plot.pdf"))
+	fig2.savefig(os.path.join(lcmanipdir, outputname + "_plot.pdf"))
 	print "Wrote plot."
 
 plt.clf()
 
 # Visualization of all those different error bars...
 
-fig = plt.figure(figsize=(14,2.0*len(sourcenames)))
-fig.subplots_adjust(left=0.05, right=0.95, bottom=0.05, top=0.95, wspace=0.1, hspace=0.15)
+fig3 = plt.figure(figsize=(14,2.0*len(sourcenames)))
+fig3.subplots_adjust(left=0.05, right=0.95, bottom=0.05, top=0.95, wspace=0.1, hspace=0.15)
 
 for i, sourcename in enumerate(sourcenames):
 	ax = plt.subplot(len(sourcenames), 1, i+1)
@@ -398,7 +402,7 @@ ax.legend()
 if showplots == True:
 	plt.show()
 else:
-	plt.savefig(os.path.join(lcmanipdir, outputname + "_plot_magerrs.pdf"))
+	fig3.savefig(os.path.join(lcmanipdir, outputname + "_plot_magerrs.pdf"))
 	print "Wrote plot."
 
 print "Done."

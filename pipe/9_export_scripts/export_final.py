@@ -33,6 +33,8 @@ os.system("cp " + configdir+"/" + os.path.split(configdir)[-1] + "_db.pkl " + ex
 os.system("cp " + configdir + "/lcmanip_setting.rdb " + exportdir)
 os.system("mv " + exportdir + "/lcmanip_setting.rdb " + exportdir+ "/" + os.path.split(configdir)[-1] + ".rdb")
 os.system("cp " + configdir + "/*_readme.txt " + exportdir)
+os.system("mv " + configdir + "/*_median_seeing.png " + exportdir)
+os.system("mv " + configdir + "/*_plot.pdf " + exportdir)
 os.system("touch " + exportdir + "/" + telescopename + "_README.txt" )
 print "I touched the README for you, please write something in there."
 
