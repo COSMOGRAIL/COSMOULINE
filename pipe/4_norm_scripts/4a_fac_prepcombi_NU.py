@@ -19,6 +19,7 @@ import time
 print "Name of combination: %s" % combibestname
 
 combidir = os.path.join(workdir, combibestkey)
+f = open(os.path.join(workdir, combibestkey + '_log.txt'), 'w')
 
 db = KirbyBase()
 if thisisatest:
@@ -36,7 +37,15 @@ if os.path.isdir(combidir):
 	proquest(askquestions)
 	shutil.rmtree(combidir)
 os.mkdir(combidir)
-	
+
+f.write('Image combination %s \n'%combibestkey)
+f.write('Number of images : %i \n'%len(images))
+f.write('Max seeing : %2.2f \n'%combibestmaxseeing)
+f.write('Max ellipticity : %2.2f \n'%combibestmaxell)
+f.write('Max medcoeff : %2.2f \n'%combibestmaxmedcoeff)
+f.write('Max sky std : %2.2f \n'%combibestmaxstddev)
+f.close()
+
 	
 combilist = []
 print "Normalizing images ..."
