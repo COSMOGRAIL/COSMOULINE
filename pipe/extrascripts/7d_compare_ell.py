@@ -18,7 +18,7 @@ db = KirbyBase()
 images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', useRegExp=True, sortFields=['mjd'])
 
 # keep only the images taken in UL
-images = [i for i in images if "1_" in i["imgname"]]
+images = [i for i in images if "%s_"%i['setname'] in i["imgname"]]
 
 # isolate the variables of interest
 mhjds = np.array([image["mhjd"] for image in images])
