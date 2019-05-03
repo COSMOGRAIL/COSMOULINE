@@ -188,7 +188,7 @@ else:
 			sys.exit()
 
 #This is pretty much the same than above.
-if 1:
+if 0:
 	for abspath in lensdecpaths:
 
 		infos = os.path.basename(abspath).split('_')
