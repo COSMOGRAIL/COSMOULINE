@@ -7,12 +7,11 @@ execfile("../config.py")  # probably not needed...
 from kirbybase import KirbyBase, KBError
 import numpy as np
 import matplotlib.pyplot as plt
-import sys
+import sys, os
 
 
 # load the database
-lensname = "datatest"
-imgdb = "/Users/martin/Desktop/COSMO3b/run/datatest_ECAM/database.dat"
+lensname = workdir.split('/')[-1]
 
 db = KirbyBase()
 
@@ -37,7 +36,7 @@ ells = np.array([e if e < 0.5 else 0.5 for e in ells])
 
 
 # load the output of get_prered_vals.py
-vals = np.load("valstemp_%s.npy"%lensname)
+vals = np.load(os.path.join(workdir,"valstemp_%s.npy"%lensname))
 vals = [v for v in vals if v["imgname"] in [i["imgname"].split("_")[1] for i in images]]
 
 # isolate the variables of interest from get_prered_vals.py for the images in the db
