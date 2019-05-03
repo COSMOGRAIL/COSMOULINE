@@ -310,10 +310,10 @@ def eulercamheader(rawimg):
 	
 	
 	# The pre-reduction info :
-	#preredcomment1 = "None"
-	#preredcomment2 = "None"
-	#preredfloat1 = 0.0
-	#preredfloat2 = 0.0
+	# preredcomment1 = "None"
+	# preredcomment2 = "None"
+	# preredfloat1 = 0.0
+	# preredfloat2 = 0.0
 	preredcomment1 = str(header["PR_NFLAT"])
 	preredcomment2 = str(header["PR_FORMA"]) # There was the "NIGHT" before, but the format is more important.
 	preredfloat1 = float(header["PR_FSPAN"])
