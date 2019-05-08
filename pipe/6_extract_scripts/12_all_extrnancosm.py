@@ -267,12 +267,12 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 
 
 		# Ok let's try a full run :
-		c.run(maxiter=3)
+		c.run(maxiter=3, verbose= False)
 
 		ncosmics = np.sum(c.mask)
 
-		if ncosmics != 0:
-			print "--- %i pixels ---" % ncosmics
+		# if ncosmics != 0:
+		# 	print "--- %i pixels ---" % ncosmics
 
 		# We do the rest anyway (easier):
 
