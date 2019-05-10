@@ -60,7 +60,7 @@ for i,image in enumerate(images):
 		print "FORS2 detected, switching to FORS sky"
 		cmd = "%s %s -c default_sky_template_FORS.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CHECKIMAGE_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, skyimagepath)
 	else:
-		cmd = "%s %s -c default_sky_template_fine.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CHECKIMAGE_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, skyimagepath)
+		cmd = "%s %s -c default_sky_template_smooth.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CHECKIMAGE_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, skyimagepath)
 
 	#print cmd
 	os.system(cmd)
