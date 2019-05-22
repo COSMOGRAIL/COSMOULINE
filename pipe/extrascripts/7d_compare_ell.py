@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys, os
 
-
+pixscale = 0.2149
 # load the database
 lensname = workdir.split('/')[-1]
 
@@ -26,8 +26,8 @@ ells = np.array([image["ell"] for image in images])
 airmasses = np.array([image["airmass"] for image in images])
 seeings = np.array([image["seeing"] for image in images])
 pas = np.array([image["pa"] for image in images])
-bimgs = np.array([image["bimage"] for image in images])
-aimgs = np.array([image["aimage"] for image in images])
+bimgs = np.array([image["bimage"] for image in images]) * pixscale
+aimgs = np.array([image["aimage"] for image in images]) * pixscale
 diffaxes = np.array(aimgs-bimgs)*[i["pixsize"] for i in images]
 
 
@@ -44,6 +44,7 @@ windspeeds = []
 winddirs = []
 azimuths = []
 elevs = []
+derots = []
 for i in images:
 	try:
 		val = [v for v in vals if v["imgname"] == i["imgname"].split("_")[1]][0]
@@ -51,6 +52,7 @@ for i in images:
 		wd = float(val["winddir"])
 		azi = float(val["azi"])
 		elev = float(val["elev"])
+		derot = float(val["derot"])
 
 		# If one of these values is crazy, it means it has not been properly acquired in the header. We put null values instead
 
@@ -61,16 +63,19 @@ for i in images:
 		winddirs.append(wd)
 		azimuths.append(azi)
 		elevs.append(elev)
+		derots.append(derot)
 	except:
 		windspeeds.append(-0)
 		winddirs.append(-0)
 		azimuths.append(0)
 		elevs.append(0)
+		derots.append(0)
 
 
 #np the shit our of these
 windspeeds, winddirs, elevs = np.array(windspeeds), np.array(winddirs), np.array(elevs)
 azimuths = np.array(azimuths)
+derots = np.array(derots)
 
 
 # compute the wind angle. A bit tricky because of the 360deg modulo
@@ -88,7 +93,7 @@ import math
 elev_speeds = [math.cos(29*math.pi/180.) * math.sin(azi/180.*math.pi) for azi in azimuths]
 azi_speeds = [(math.sin(-29*math.pi/180.) - (math.sin(-47*math.pi/180.) * math.cos(azi/180.*math.pi)))/math.sin(azi/180.*math.pi)**2 for azi in azimuths]
 total_speed = [np.sqrt(e**2 + a**2) for e, a in zip(elev_speeds, azi_speeds)]
-
+AB = aimgs - bimgs
 
 
 # Create an index of the good images (kick bad seeing, bad airmass, crazy wind)
@@ -101,9 +106,14 @@ good_inds = [True
 
 
 # Ok, so now we have a bit of everything. Let's explore the correlations. Change the first value in the zip functions below to chose what you want
-xs = [x for x, v in zip(total_speed, good_inds) if v is True]
-ys = [y for y, v in zip(diffaxes, good_inds) if v is True]
-cs = [c for c, v in zip(mhjds, good_inds) if v is True]
+xs = [x for x, v in zip(mhjds, good_inds) if v is True]
+ys = [y for y, v in zip(AB, good_inds) if v is True]
+cs = [c for c, v in zip(seeings, good_inds) if v is True]
+
+xs2 = [x for x, v in zip(derots, good_inds) if v is True]
+ys2 = [y for y, v in zip(pas, good_inds) if v is True]
+cs2 = [c for c, v in zip(ells, good_inds) if v is True]
+
 
 
 # if you want to write in a txt file
@@ -117,12 +127,35 @@ if 0:
 
 # finally, the plot
 cm = plt.cm.get_cmap('RdYlBu')
-plt.figure()
+# cm = plt.cm.get_cmap('Accent')
+plt.figure(1)
 sc = plt.scatter(xs, ys, c=cs, cmap=cm)
-plt.colorbar(sc, label='mhjds')
+plt.clim(1,2)
+plt.colorbar(sc, label='seeing')
 plt.title(lensname)
-plt.xlabel("total speed", fontsize=12)
+# plt.xlabel("derots", fontsize=12)
+plt.xlabel("mhjds", fontsize=12)
+# plt.ylabel("pas", fontsize=12)
 plt.ylabel("A-B", fontsize=12)
+# plt.plot([0,-180],[-90,90])
+# plt.plot([-180,-360],[-90,90])
+plt.plot([58611,58611], [0,1.5], 'r') #reparation date
+# plt.plot([-180,-360],[-90,90])
+#plt.axis([-0.1, 1.1, 0, 0.2])
+
+plt.figure(2)
+cm2 = plt.cm.get_cmap('RdYlBu')
+sc = plt.scatter(xs2, ys2, c=cs2, cmap=cm2)
+plt.colorbar(sc, label='ells')
+plt.title(lensname)
+plt.xlabel("derots", fontsize=12)
+# plt.xlabel("mhjds", fontsize=12)
+plt.ylabel("pas", fontsize=12)
+# plt.ylabel("ellipticity", fontsize=12)
+plt.plot([0,-180],[-90,90])
+plt.plot([-180,-360],[-90,90])
+# plt.plot([58611,58611], [0,0.5], 'r') #reparation date
+# plt.plot([-180,-360],[-90,90])
 #plt.axis([-0.1, 1.1, 0, 0.2])
 plt.show()
 
