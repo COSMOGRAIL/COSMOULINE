@@ -781,8 +781,8 @@ def hctheader(rawimg):
 	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
 	
 	pixsize = 0.296
-	gain = 1.22
-	readnoise = 4.8
+	gain = 0.28 #1.22 old camera
+	readnoise = 5.75 #4.8
 	scalingfactor = 0.65189 # measured scalingfactor (with respect to Mercator = 1.0)#
 	saturlevel = 65000.0 #arbitrary
 	
@@ -802,8 +802,7 @@ def hctheader(rawimg):
 	rotator = 0.0
 	
 	# Now the date and time stuff :
-	pythondt = datetime.datetime.strptime(header['DATE-OBS'], "%Y-%m-%d")
-	pythondt += datetime.timedelta(seconds = int(header["TM_START"]))
+	pythondt = datetime.datetime.strptime(header['DATE-AVG'], "%Y-%m-%d")
 	exptime = float(header['EXPTIME'])
 	if (exptime < 10.0) or (exptime > 1800):
 		raise mterror("Problem with exptime...")
