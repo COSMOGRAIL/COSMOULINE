@@ -802,7 +802,7 @@ def hctheader(rawimg):
 	rotator = 0.0
 	
 	# Now the date and time stuff :
-	pythondt = datetime.datetime.strptime(header['DATE-AVG'], "%Y-%m-%d")
+	pythondt = datetime.datetime.strptime(header['DATE-AVG'], "%Y-%m-%dT%H:%M:%S.%f")
 	exptime = float(header['EXPTIME'])
 	if (exptime < 10.0) or (exptime > 1800):
 		raise mterror("Problem with exptime...")
