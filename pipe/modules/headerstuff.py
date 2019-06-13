@@ -1902,6 +1902,68 @@ def VSTheader(rawimg):
 	}
 
 	return returndict
+
+def VATTheader(rawimg):
+	"""
+	Version for VST images
+	Experimental
+	Written by Vivien, 02.2016
+	"""
+	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
+
+	header = pyfits.getheader(rawimg)
+	pixsize = 0.187
+	gain = 1.730
+	print "image : %s, gain : %2.4f"%(imgname, gain)
+	readnoise = 5.1  # from the http://www.public.asu.edu/~rjansen/vatt/vatt4k.html
+	scalingfactor = 1.0  # no need for it right now...
+	saturlevel = 65535.0  # in ADU
+	rotator = 0.0  # useless
+
+	telescopelongitude = "-109:53:31.00"
+	telescopelatitude = "32:42:05.00" #MT Graham, AZ
+	telescopeelevation = 3178.0
+
+	treatme = True
+	gogogo = True
+	whynot = "na"
+	testlist = False
+	testcomment = "na"
+
+	pythondt = datetime.datetime.strptime(header["DATE-OBS"]+"T"+header["TIME-OBS"][:-4], "%Y-%m-%dT%H:%M:%S") # This is the start of the exposure.
+	exptime = float(header['EXPTIME']) # in seconds.
+
+	pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
+
+	# Now we produce the date and datet fields, middle of exposure :
+
+	date = pythondt.strftime("%Y-%m-%d")
+	datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+	myownjdfloat = juliandate(pythondt) # The function from headerstuff.py
+	myownmjdfloat = myownjdfloat - 2400000.5
+	jd = "%.6f" % myownjdfloat
+	mjd = myownmjdfloat
+
+
+	# The pre-reduction info :
+	# May be useful one day...can be used.
+	preredcomment1 = "None"
+	preredcomment2 = "None"
+	preredfloat1 = 0.0
+	preredfloat2 = 0.0
+
+
+	# We return a dictionnary containing all this info, that is ready to be inserted into the database.
+	returndict = {'imgname':imgname, 'treatme':treatme, 'gogogo':gogogo, 'whynot':whynot, 'testlist':testlist,'testcomment':testcomment ,
+	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg,
+	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
+	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
+	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
+	}
+
+	return returndict
 """
 if telescopename == "Liverpool":
 	#pixsize = 0.279 # (if a 2 x 2 binning is used)
