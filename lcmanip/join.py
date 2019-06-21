@@ -13,7 +13,7 @@ images = variousfct.readpickle(dbfilepath, verbose=True)
 print "%i images in db." % (len(images))
 
 # Selecting the right telescopes and setnames :
-images = [image for image in images if (image["telescopename"] in telescopenames) and (image["setname"] in setnames)]
+images = [image for image in images if (image["telescopename"] in telescopenames) and (image["setname"] in setnames) and (image["gogogo"] == True) ]
 print "%i images have the chosen telescope- and set- names." % (len(images))
 
 # Selecting the right deconvolution :
@@ -74,7 +74,7 @@ for image in images:
 
 		if float(image[fluxfieldname]) < 0.0:
 			print "%s ERROR, negative flux for source %s" % (image["imgname"], sourcename)
-			#print "Please, put this image on a skiplist."
+			print "Please, put this image on a skiplist and re-export the database."
 			exit()
 	
 	# We also check the normalizations :
