@@ -12,10 +12,10 @@ import combibynight_fct
 import numpy as np
 import sys, os
 
-star_ref = 'a'
+star_ref = 'b'
 aperture = 'auto'
 ptsources = star.readmancat(ptsrccat)
-skip_night = ['58546.0']
+skip_night = []
 write_in_file = True #to write the report, turn to false to print in the terminal
 
 if write_in_file :
@@ -78,7 +78,7 @@ print "star ", star_ref, " : ", np.mean(average_night_rms_refstar)
 print ""
 print "#" * 30
 print "Night to Night scatter (of the combined exposures) : "
-print "Average flux and scatter over the period : ", good_night[0][0]['date'], "-", good_night[-1][0]['date'], '(%i nigths)'%(len(good_night))
+print "Average mag and scatter over the period ", good_night[0][0]['date'], "-", good_night[-1][0]['date'], '(%i nigths)'%(len(good_night))
 
 for j, s in enumerate(ptsources):
     print s.name, "mean : ", np.mean(average_night_mag[j]), "+/-", np.std(average_night_mag[j])
