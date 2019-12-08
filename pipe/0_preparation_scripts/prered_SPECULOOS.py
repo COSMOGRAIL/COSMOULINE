@@ -2,7 +2,7 @@ execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import glob
-import pyfits as pf
+import astropy.io.fits as pf
 import numpy as np
 import matplotlib.pyplot as plt
 

@@ -74,7 +74,7 @@ import Image as im
 import ImageOps as imop
 import ImageDraw as imdw
 import ImageFont as imft
-import pyfits as ft
+import astropy.io.fits as ft
 
 # - - - - - - - - -  Where are my fonts ? - - - - - - - - - - - - 
 # To use the fonts, put the directory containing them (whose name

@@ -9,7 +9,7 @@ execfile("../config.py")  # probably not needed...
 from kirbybase import KirbyBase, KBError
 import numpy as np
 import glob, sys, os
-import pyfits #use astropy.io.fits if you are not stuck in 2010 anymore
+import astropy.io.fits as pyfits #use astropy.io.fits if you are not stuck in 2010 anymore
 
 # read the headers of the original data files
 vals = []

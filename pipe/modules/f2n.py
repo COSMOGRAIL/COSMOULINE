@@ -9,7 +9,7 @@ from PIL import Image as im
 from PIL import ImageOps as imop
 from PIL import ImageDraw as imdw
 from PIL import ImageFont as imft
-import pyfits as ft
+import astropy.io.fits as ft
 
 # - - - - - - - - -  Where are my fonts ? - - - - - - - - - - - - 
 # To use the fonts, put the directory containing them (whose name

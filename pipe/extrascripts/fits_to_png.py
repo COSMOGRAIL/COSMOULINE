@@ -1,4 +1,4 @@
-import pyfits as pf
+import astropy.io.fits as pf
 import scipy.misc as sc
 import numpy as np
 execfile("../config.py")

@@ -22,7 +22,7 @@ nbrofimages = len(images)
 print "Number of images to treat :", nbrofimages
 
 # lensdecpaths = None
-lensdecpaths = ["dec_back_full_lens_renorm_biloqz_abciqr"] # put here the name of the lens deconvolutions you want to update
+lensdecpaths = ["dec_backfull_lens_renorm_adgjlnrvwxy_aegijk"] # put here the name of the lens deconvolutions you want to update
 
 if not lensdecpaths == None:
 	print "You want to update the following lens deconvolutions:"
@@ -188,7 +188,7 @@ else:
 			sys.exit()
 
 #This is pretty much the same than above.
-if 0:
+if 1:
 	for abspath in lensdecpaths:
 
 		infos = os.path.basename(abspath).split('_')
