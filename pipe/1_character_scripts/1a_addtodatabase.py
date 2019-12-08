@@ -73,6 +73,10 @@ def readheader(telescopename, rawimg):
 		dbdict = UH2m2header(rawimg)
 	elif telescopename == "Maidanak_2.5k":
 		dbdict = Maidanak_2_5kheader(rawimg)
+	elif telescopename == "VST":
+		dbdict = VSTheader(rawimg)
+	elif telescopename == "VATT":
+		dbdict = VATTheader(rawimg)
 	else:
 		raise mterror("Unknown telescope.")	
 
