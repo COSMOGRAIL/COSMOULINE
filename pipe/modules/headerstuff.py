@@ -1844,12 +1844,11 @@ def VSTheader(rawimg):
 	"""
 	Version for VST images
 	Experimental
-	Written by Vivien, 02.2016
 	"""
 	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
 
 	header = pyfits.getheader(rawimg)
-	pixsize = 0.215  # 0.12 for 1x1 binning
+	pixsize = 0.215
 	gain = header['GAIN']
 	print "image : %s, gain : %2.4f"%(imgname, gain)
 	readnoise = 2.1  # from the Health check report in May 2019
@@ -1867,7 +1866,7 @@ def VSTheader(rawimg):
 	testlist = False
 	testcomment = "na"
 
-	pythondt = datetime.datetime.strptime(header["DATE-ST"], "%Y-%m-%d") # This is the start of the exposure.
+	pythondt = datetime.datetime.strptime(header["OBSTART"], "%Y-%m-%dT%H:%M:%S") # This is the start of the exposure.
 	exptime = float(header['EXPTIME']) # in seconds.
 
 	pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
@@ -1885,9 +1884,9 @@ def VSTheader(rawimg):
 
 	# The pre-reduction info :
 	# May be useful one day...can be used.
-	preredcomment1 = "None"
+	preredcomment1 = "Zero Point"
 	preredcomment2 = "None"
-	preredfloat1 = 0.0
+	preredfloat1 = header['ZP']
 	preredfloat2 = 0.0
 
 
@@ -1904,9 +1903,8 @@ def VSTheader(rawimg):
 
 def VATTheader(rawimg):
 	"""
-	Version for VST images
-	Experimental
-	Written by Vivien, 02.2016
+	Version for VATT images
+	Written by Martin, 09.2019
 	"""
 	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
 
