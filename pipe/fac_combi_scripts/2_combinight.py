@@ -12,7 +12,7 @@ import shutil
 from variousfct import *
 import time
 from headerstuff import *
-import pyfits
+import astropy.io.fits as pyfits
 import numpy as np
 
 print "You want to combine the images per night of observation for the combiname: %s, using the coeff: %s" %(combiname,renormcoeff)

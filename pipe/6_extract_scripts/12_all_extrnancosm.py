@@ -18,7 +18,7 @@ from variousfct import *
 from readandreplace_fct import *
 import shutil
 import progressbar
-import pyfits
+import astropy.io.fits as pyfits
 import cosmics
 
 # I could try to be smarter, and extract only the stars needed for the renormalisation...

@@ -9,7 +9,6 @@ It seems to work.
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
-import pyfits
 import numpy as np
 import cosmics # used to read and write the fits files
 import multiprocessing

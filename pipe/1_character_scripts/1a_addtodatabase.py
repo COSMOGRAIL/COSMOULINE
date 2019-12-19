@@ -9,7 +9,7 @@ execfile("../config.py")
 
 
 import glob
-import pyfits
+import astropy.io.fits as pyfits
 import datetime
 from kirbybase import KirbyBase, KBError
 from variousfct import *

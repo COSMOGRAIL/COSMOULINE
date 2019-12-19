@@ -1,8 +1,5 @@
-import sys, os
-import numpy as np
-import math
-import pyfits
 import pickle
+
 
 def writepickle(obj, filepath, verbose=True):
 

@@ -3,7 +3,7 @@ Classes and functions around simulated Skymaker images
 """
 import sys, os, shutil
 from datetime import datetime, timedelta
-import pyfits
+import astropy.io.fits as pyfits
 import skysim_sources
 import f2n
 

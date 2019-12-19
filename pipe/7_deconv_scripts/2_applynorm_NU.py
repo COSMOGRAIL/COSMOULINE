@@ -21,7 +21,7 @@ else :
 
 from kirbybase import KirbyBase, KBError
 from variousfct import *
-import pyfits
+import astropy.io.fits as pyfits
 
 if update:
 	# override config settings...

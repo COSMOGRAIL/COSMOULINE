@@ -8,7 +8,7 @@ import glob
 import f2n
 from variousfct import *
 import star
-import pyfits
+import astropy.io.fits as pyfits
 from itertools import count, product, islice
 from string import ascii_lowercase
 

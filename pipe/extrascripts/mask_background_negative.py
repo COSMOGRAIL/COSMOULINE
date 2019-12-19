@@ -1,5 +1,4 @@
 import numpy as np
-import pyfits
 import os
 
 execfile("../config.py")

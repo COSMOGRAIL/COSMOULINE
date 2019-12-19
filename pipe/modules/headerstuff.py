@@ -20,7 +20,7 @@
 
 import sys
 import datetime
-import pyfits
+import astropy.io.fits as pyfits
 import math
 import astropy.io.fits as fits
 

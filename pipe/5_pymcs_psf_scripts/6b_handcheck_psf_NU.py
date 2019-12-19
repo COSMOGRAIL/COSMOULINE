@@ -16,10 +16,6 @@ matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
 import star
 import os
-import shutil
-import glob
-import pyfits
-import datetime
 
 
 """

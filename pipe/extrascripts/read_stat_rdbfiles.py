@@ -9,6 +9,7 @@ mpl.rcParams['xtick.labelsize'] = 14
 mpl.rcParams['ytick.labelsize'] = 14
 
 rdb_list = [
+     "/Users/martin/Desktop/cosmograil-dr1/WFI_lenses/HE0047_WFI/HE0047_WFI.rdb",
      "/Users/martin/Desktop/cosmograil-dr1/WFI_lenses/WG0214_WFI/WG0214_WFI.rdb",
      "/Users/martin/Desktop/cosmograil-dr1/WFI_lenses/DES0407_WFI/DES0407_WFI.rdb",
      "/Users/martin/Desktop/cosmograil-dr1/WFI_lenses/J0832_WFI/J0832_WFI.rdb",
@@ -19,7 +20,7 @@ rdb_list = [
 object_list = [os.path.basename(r).split("_")[0] for  r in rdb_list]
 print object_list
 nicename = [
- # ' HE\ 0047-1756}$',
+ ' HE 0047-1756',
  ' WG 0214-2105',
  ' DES 0407-5006',
  ' SDSS J0832+0404',

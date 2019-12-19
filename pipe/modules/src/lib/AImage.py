@@ -12,7 +12,7 @@ __author__ = "Tewes Malte - EPFL <malte.tewes@epfl.ch>   \
 #import sys
 import os
 #import scipy as sp
-import pyfits
+import astropy.io.fits as pyfits
 #from numpy import *
 import numpy as np
 import utils as fn
