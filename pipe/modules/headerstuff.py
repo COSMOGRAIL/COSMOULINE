@@ -316,8 +316,14 @@ def eulercamheader(rawimg):
 	# preredfloat2 = 0.0
 	preredcomment1 = str(header["PR_NFLAT"])
 	preredcomment2 = str(header["PR_FORMA"]) # There was the "NIGHT" before, but the format is more important.
-	preredfloat1 = float(header["PR_FSPAN"])
-	preredfloat2 = float(header["PR_FDISP"])
+	if "PR_FSPAN" in header.keys():
+		preredfloat1 = float(header["PR_FSPAN"])
+	else :
+		preredfloat1 = None
+	if "PR_FDISP" in header.keys():
+		preredfloat2 = float(header["PR_FDISP"])
+	else :
+		preredfloat2 = None
 	
 	
 	# We return a dictionnary containing all this info, that is ready to be inserted into the database.
