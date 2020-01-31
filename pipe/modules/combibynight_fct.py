@@ -3,7 +3,7 @@
 Functions to group images, for plots or exports.
 
 """
-
+import numpy
 
 def groupbynights(imagelist, separatesetnames=True):
 	"""
@@ -129,11 +129,14 @@ def mags(listofnights, key, normkey = None, verbose = True):
 	downerrors=[]
 	for night in listofnights:
 		#values = -2.5 * log10(asarray([float(image[key]) for image in night]))
+		for im in night:
+			if im[normkey] is None :
+				im[normkey] = numpy.nan
 		if verbose :
 			print "----"
 			print normkey
 			print [float(im[key]) for im in night]
-			print [im[normkey] for im in night]
+			print [float(im[key]) for im in night]
 			print [im['medcoeff'] for im in night]
 			# print [im['box_renorm'] for im in night]
 			print [im['imgname'] for im in night]
