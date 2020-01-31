@@ -149,7 +149,7 @@ plt.annotate("$\mathrm{median = %.2f}$" % np.median([img["seeing"] for img in im
 			textcoords='offset points', ha='left', va='bottom', fontsize=16)
 plt.ylabel("$\mathrm{\# \ of \ nights}$", fontsize=18)
 plt.xlabel("$\mathrm{seeing \ [arcsec]}$", fontsize=18)
-plt.axis([0.6, 2.4, 0, 30])
+# plt.axis([0.6, 2.4, 0, 30])
 
 plt.subplot(1,2,2)
 plt.hist(medairmasses, bins=12, color="crimson")
@@ -158,7 +158,7 @@ plt.annotate("$\mathrm{median = %.2f}$" % np.median([img["airmass"] for img in i
 			textcoords='offset points', ha='left', va='bottom', fontsize=16)
 plt.xlabel(r"$\mathrm{airmass}$", fontsize=18)
 plt.yticks([])
-plt.axis([1.1, 1.6, 0, 30])
+# plt.axis([1.1, 1.6, 0, 30])
 plt.show()
 fig1.savefig(os.path.join(lcmanipdir, outputname + "_median_seeing.png"))
 

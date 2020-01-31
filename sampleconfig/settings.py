@@ -3,7 +3,7 @@
 
 # The "working" dir where all the pipeline products will be *written*
 # ("big-old-never-backuped-disk")
-workdir = "/Users/martin/Desktop/COSMOULINE/run/RXJ1131_ECAM"
+workdir = "/Users/martin/Desktop/lc_run/run/RXJ1131_ECAM"
 
 
 #------------------------ SWITCHES -----------------------------------------
@@ -66,7 +66,7 @@ telescopename = "EulerCAM"
 # where skysim is a scecial name to read the header of the simulated images.
 
 # Where are these images ?
-rawdir = "/Users/martin/Desktop/COSMOULINE/data_raw/"
+rawdir = "/Users/martin/Desktop/lc_run/data_raw/"
 # Remember that these images should be prereduced and have clean borders (cut pre/overscan) !
 # Also they should be in a coherent "orientation" (rotations are ok, but no mirror flips).
 

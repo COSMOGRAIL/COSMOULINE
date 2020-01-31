@@ -196,7 +196,7 @@ yearx.set_xlabel("Date")
 #compute the dispersion estimator :
 print ptsources_str
 nsource = len(magtot[:, 0])
-color = ['b', 'g' , 'r' , 'm']
+color = ['b', 'g' , 'r' , 'm', 'k', 'y']
 n_source = len(ptsources_str)
 chi_vec = np.zeros(n_source)
 med_vec = np.zeros(n_source)
