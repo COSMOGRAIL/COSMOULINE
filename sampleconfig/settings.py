@@ -117,7 +117,10 @@ xephemlens = "HE1104-1805,f|Q,11:06:33.39,-18:21:23.80,19.0,2000"
 #------------------------ ALIGNMENT ----------------------------------------
 
 # do you want to work on defringed images (if they exists ?)
-defringed = False
+if telescopename == "WFI":
+    defringed = True
+else :
+    defringed = False
 
 # reference image name (for alignment and deconvolution) :
 
