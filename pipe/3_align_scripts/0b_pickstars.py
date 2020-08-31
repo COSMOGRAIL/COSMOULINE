@@ -19,6 +19,7 @@ import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib import pyplot
 
+
 """
 Script that allow to pick the good stars by clicking on the image. Still work in progress
 Written by Eric Paic, early 2017 version. Modified by Vivien Bonvin to fit smoothly (and with less bugs...) into the cosmouline pipeline.
@@ -83,7 +84,7 @@ if os.path.isfile(alistars):
 
 
 z1 = 0	
-z2 = 5000
+z2 = 1000
 f2nimg = f2n.fromfits(fitsfile)
 f2nimg.setzscale(z1, z2)
 f2nimg.makepilimage(scale = "log", negative = False)

@@ -56,7 +56,7 @@ for s in photomstars :
 	ax2 = ax1.twinx()
 	
 
-	
+	print images[5]
 	
 	# The specifictaion of dtype is important, toherwise the None produce crap.
 	autofluxes = np.array([image["%s_%s_auto_flux" % (sexphotomname, s.name)] for image in images], np.float64)
