@@ -2,8 +2,6 @@
 execfile("../config.py")
 import os,sys
 import glob
-import pyfits
-import datetime
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from headerstuff import *
@@ -15,8 +13,14 @@ nimages = len(glob.glob(os.path.join(rawdir, "*.fits")))
 db = KirbyBase()
 images = db.select(imgdb, ['recno'], ['*'],['setname'], returnType='dict')
 nimagesindb = len([image for image in images if image['setname'] == setname])
-nnewimages = nimages-nimagesindb
-print "This means %i new images added to this set" % nnewimages
+print "I have %i images in the database for set %s"%(nimagesindb, setname)
+print "I have found %i images in the your raw folder"%(nimages)
+if nimages > nimagesindb :
+	nnewimages = nimages-nimagesindb
+	print "This means %i new images added to this set" % nnewimages
+else :
+	nnewimages = nimages
+	print "It seems that you have only the new images in the raw folder, I will add %i new images."%nimages
 
 if nnewimages == 0:
 	print "Nothing to do."

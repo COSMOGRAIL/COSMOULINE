@@ -21,8 +21,8 @@ images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict'
 nbrofimages = len(images)
 print "Number of images to treat :", nbrofimages
 
-lensdecpaths = None
-#lensdecpaths = ["dec_back_lens_medcoeff_pyMCSabc", "dec_back_lens_renormbefij_pyMCSabc"] # put here the name of the lens deconvolutions you want to update
+# lensdecpaths = None
+lensdecpaths = ["dec_backfull_lens_renorm_adgjlnrvwxy_aegijk"] # put here the name of the lens deconvolutions you want to update
 
 if not lensdecpaths == None:
 	print "You want to update the following lens deconvolutions:"
@@ -168,6 +168,7 @@ if 1:
 	os.system('python 1a_renormalize.py')
 	os.system('python 1b_report_NU.py')
 	os.system('python 2_plot_star_curves_NU.py')
+	os.system('python 4_fac_merge_pdf_NU.py')
 
 
 # That being done, I can get back to the lens now
@@ -186,21 +187,51 @@ else:
 			print decpath, " does not exists ! Check your lensdecpaths !!"
 			sys.exit()
 
-# This is pretty much the same than above.
+#This is pretty much the same than above.
 if 1:
 	for abspath in lensdecpaths:
 
 		infos = os.path.basename(abspath).split('_')
+		try :
+			r_index = infos.index('renorm')
+			n_fieldname = infos[r_index] + "_" + infos[r_index+1]
+		except:
+			print "You don't have the key word 'renorm' in your renorm name ! I might get it wrong here !"
+			n_fieldname = infos[-2]
+
+		try :
+			obj_index = infos.index("lens")
+			if obj_index > 2 :
+				print "Arf you choose a decname with '_', that was a bad idea ! But I can still live with it."
+				deconvname = ""
+				for i in range(1,obj_index+1):
+					deconvname+=infos[i]
+					if not i == obj_index:
+						deconvname+="_"
+			elif obj_index == 2 :
+				deconvname = infos[obj_index-1]
+
+			else :
+				print "There is something strange here, I prefer to stop."
+				print "Name of your deconv name : ", abspath
+				sys.exit()
+
+		except:
+			print "I'm not deconvolving a lens, alles gut !"
+			obj_index = 2
+			deconvname = infos[obj_index-1]
+
+
 
 		# still ugly...
 
 		file = open(os.path.join(configdir,'deconv_config_update.py'), 'w')
 		file.write('import os\n\n')
 		file.write("configdir = '%s'\n " % configdir)
-		file.write("\ndecname = %s" % "'"+infos[1]+"'")
-		file.write("\ndecobjname = %s" % "'"+infos[2]+"'")
-		file.write("\ndecnormfieldname = %s" % "'"+infos[3]+"'")
-		file.write("\ndecpsfnames = %s" % '['+', '.join(["'"+decpsfname+"'" for decpsfname in infos[4:]])+']')
+		file.write("\ndecname = %s" % "'"+deconvname+"'")
+		file.write("\ndecobjname = %s" % "'"+infos[obj_index]+"'")
+		file.write("\ndecnormfieldname = %s" % "'"+n_fieldname+"'")
+		file.write("\ndecpsfnames = %s" % "['"+infos[-1]+"']")
 		file.write("\n\ndeckey = '%s'" % os.path.basename(abspath))
 		file.write("\nptsrccat = os.path.join(configdir, deckey + '_ptsrc.cat')")
 		file.write("\ndecskiplist = os.path.join(configdir, deckey + '_skiplist.txt')")
@@ -209,7 +240,6 @@ if 1:
 		file.write("\ndeckeynormused = 'decnorm_' + deckey")
 		file.write("\ndecdir = os.path.join(workdir, deckey)")
 		file.close()
-
 		# Now I simply can rexececute the scripts on the whole set of images.
 
 		# Before erasing the psfdir, I should grab the previous config files used:
@@ -234,11 +264,17 @@ if 1:
 				back_name = os.path.join(abspath,line.split('|')[-1])
 				back_name = back_name.split('\n')[0]
 
-		shutil.copy(back_name, os.path.join(workdir, 'updating_back.fits'))
+		try :
+			shutil.copy(back_name, os.path.join(workdir, 'updating_back.fits'))
+		except:
+			print back_name
+			print "There is no background to backup, is this a deconvolution without backgound ??? "
+			proquest(askquestions)
 
 		# I could save some time running 1 and 2 only on the updating images but the gain is 1-2 min. per star -- don't care
-		if makeautoskiplist:
+		if 0: #makeautoskiplist
 			os.system('python 0_facult_autoskiplist_NU.py')
+
 		os.system('python 1_prepfiles.py')
 		os.system('python 2_applynorm_NU.py')
 

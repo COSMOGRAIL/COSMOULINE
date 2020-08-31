@@ -18,7 +18,7 @@ from variousfct import *
 from readandreplace_fct import *
 import shutil
 import progressbar
-import pyfits
+import astropy.io.fits as pyfits
 import cosmics
 
 # I could try to be smarter, and extract only the stars needed for the renormalisation...
@@ -216,6 +216,8 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 		imgobjdir = os.path.join(objdir, image['imgname'])
 
 		os.chdir(imgobjdir)
+		# if computer == "martin":
+		# 	os.system("sudo chown martin sig.fits")
 		replaceNaN("sig.fits", 1.0e-8)
 		replacezeroes("sig.fits", 1.0e-7)
 		os.chdir(origdir)
@@ -265,12 +267,12 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 
 
 		# Ok let's try a full run :
-		c.run(maxiter=3)
+		c.run(maxiter=3, verbose= False)
 
 		ncosmics = np.sum(c.mask)
 
-		if ncosmics != 0:
-			print "--- %i pixels ---" % ncosmics
+		# if ncosmics != 0:
+		# 	print "--- %i pixels ---" % ncosmics
 
 		# We do the rest anyway (easier):
 

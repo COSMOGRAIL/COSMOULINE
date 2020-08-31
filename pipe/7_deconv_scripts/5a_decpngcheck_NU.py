@@ -1,15 +1,32 @@
 #
 #	generates pngs related to the deconvolution
 #
+import sys
+if len(sys.argv) == 2:
+	execfile("../config.py")
+	decobjname = sys.argv[1]
+	deckey = "dec_" + decname + "_" + decobjname + "_" + decnormfieldname + "_" + "_".join(decpsfnames)
+	ptsrccat = os.path.join(configdir, deckey + "_ptsrc.cat")
+	decskiplist = os.path.join(configdir,deckey + "_skiplist.txt")
+	deckeyfilenum = "decfilenum_" + deckey
+	deckeypsfused = "decpsf_" + deckey
+	deckeynormused = "decnorm_" + deckey
+	decdir = os.path.join(workdir, deckey)
+	print "You are running the deconvolution on all the stars at once."
+	print "Current star : " + sys.argv[1]
 
-execfile("../config.py")
+
+else:
+	execfile("../config.py")
 import shutil
 import f2n
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from readandreplace_fct import *
 import star
-import sys
+
+
+
 
 deconvonly = False  # If set to True, I will make pngs only for the deconvolution stamp
 
@@ -42,7 +59,12 @@ print "Number of point sources :", len(ptsrcs)
 
 
 db = KirbyBase()
-images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum])
+if sample_only :
+	print "I will draw the png only for your test sample."
+	images = db.select(imgdb, [deckeyfilenum,'testlist'], ['\d\d*',True], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum])
+else :
+	images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum])
+
 
 # This time we do not include the duplicated reference !
 print "Number of images (we disregard the duplicated reference) : %i" % (len(images))
@@ -178,7 +200,7 @@ for i, image in enumerate(images):
 	txtendpiece = f2n.f2nimage(shape = (256,256), fill = 0.0, verbose=False)
 	txtendpiece.setzscale(0.0, 1.0)
 	txtendpiece.makepilimage(scale = "lin", negative = False)
-	
+
 	
 	date = image['datet']
 	telname = "Instrument : %s" % image["telescopename"]
@@ -187,7 +209,7 @@ for i, image in enumerate(images):
 	nbralistars = "Nb alistars : %i" % image['nbralistars']
 	airmass = "Airmass : %4.2f" % image['airmass']
 	az = "Azimuth : %6.2f [deg]" % image['az']
-	stddev = "Sky stddev : %4.2f [e-]" % image['stddev']
+	# stddev = "Sky stddev : %4.2f [e-]" % image['stddev']
 	dkfn = "Deconv file : %s" % code
 	ncosmics = "Cosmics : %i" % ncosmics
 	selectedpsf = "Selected PSF : %s" % image[deckeypsfused]
@@ -198,7 +220,7 @@ for i, image in enumerate(images):
 		infolist = [image['imgname'][0:25], image['imgname'][25:]]
 	else:
 		infolist = [image['imgname']]
-	infolist.extend([telname, date, nbralistars, seeing, ell, stddev, airmass, dkfn, ncosmics, selectedpsf, normcoeff])
+	infolist.extend([telname, date, nbralistars, seeing, ell, airmass, dkfn, ncosmics, selectedpsf, normcoeff])
 	
 	if thisisatest:
 		testcomment = 'Testcomment: %s' %image['testcomment']

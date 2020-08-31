@@ -60,7 +60,7 @@ for i, image in enumerate(images):
 	
 	for s in photomstars:
 		
-		maxvalelnosky = np.max(imagea[s.x-3:s.x+3, s.y-3:s.y+3])
+		maxvalelnosky = np.max(imagea[int(round(s.x))-3:int(round(s.x))+3, int(round(s.y))-3:int(round(s.y))+3])
 		peakadu = float((maxvalelnosky + image["skylevel"]) / image["gain"])
 		#print s.name, peakadu
 

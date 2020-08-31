@@ -9,7 +9,7 @@ execfile("../config.py")
 
 
 import glob
-import pyfits
+import astropy.io.fits as pyfits
 import datetime
 from kirbybase import KirbyBase, KBError
 from variousfct import *
@@ -64,7 +64,19 @@ def readheader(telescopename, rawimg):
 	elif telescopename == "GMOS":
 		dbdict = gmosheader(rawimg)
 	elif telescopename == "NOHEADER":
-		dbdict = noheader(rawimg)	
+		dbdict = noheader(rawimg)
+	elif telescopename == "PANSTARRS":
+		dbdict = PANSTARRSheader(rawimg)
+	elif telescopename == "SPECULOOS":
+		dbdict = SPECULOOSheader(rawimg)
+	elif telescopename == "UH2m2":
+		dbdict = UH2m2header(rawimg)
+	elif telescopename == "Maidanak_2.5k":
+		dbdict = Maidanak_2_5kheader(rawimg)
+	elif telescopename == "VST":
+		dbdict = VSTheader(rawimg)
+	elif telescopename == "VATT":
+		dbdict = VATTheader(rawimg)
 	else:
 		raise mterror("Unknown telescope.")	
 

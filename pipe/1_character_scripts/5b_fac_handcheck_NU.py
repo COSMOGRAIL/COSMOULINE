@@ -15,7 +15,7 @@ import star
 import os
 import shutil
 import glob
-import pyfits
+import astropy.io.fits as pyfits
 import datetime
 
 

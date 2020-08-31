@@ -118,6 +118,9 @@ def switch_psf_shape(psf, center='SW'):
         dx = dy = 1.
     
     s = np.zeros(psf.shape)
+    dx, dy  = int(round(dx)) , int(round(dy))
+    ac1, ac2  = int(round(ac1)) , int(round(ac2))
+    c1, c2  = int(round(c1)) , int(round(c2))
     s[:ac1+dx, :ac2+dy] = psf[c1:, c2:]
     s[ac1+dx:, ac2+dy:] = psf[:c1, :c2]
     s[:ac1+dx, ac2+dy:] = psf[c1:, :c2]
@@ -415,7 +418,7 @@ def makepilimage(img, ztrans="log", cutoffs=(None,None)):
     #    But we will not notice this orientation change in pixel access until we export the image.
 
 def array2fits(array, filename, header = None):
-    import pyfits
+    import astropy.io.fits as pyfits
     if header is not None:
         hdu = pyfits.PrimaryHDU(array.transpose(), header)
         hdu.verify('fix')
@@ -499,7 +502,8 @@ def string2val(sdict):
 
 
 def get_data(filename, directory=None, pos=None, transpose=True, sky = 0., retall = False): 
-    import pyfits, os
+    import astropy.io.fits as pyfits
+    import os
     if directory is None:
         cd = os.path.join(os.getcwd(),'results')
     else:

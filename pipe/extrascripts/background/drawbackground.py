@@ -3,9 +3,8 @@ Draw a background for HE0435 (should be generalized later)
 Compute the precise astometry for Euler pixel size from Courbin2011
 """
 
-import numpy as np
-import os,sys
-import pyfits
+import os
+import astropy.io.fits as pyfits
 import scipy
 
 

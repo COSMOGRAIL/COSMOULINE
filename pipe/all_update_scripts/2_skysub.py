@@ -1,8 +1,5 @@
 execfile("../config.py")
 import os,sys
-import glob
-import pyfits
-import datetime
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from headerstuff import *
@@ -32,11 +29,10 @@ try:
 except:
 	print "Problem with script 2"
 	sys.exit()
-try:
-	#os.system('python 3_facult_rm_electrons_NU.py')
-	pass
-except:
-	print "Problem with script 3"
-	sys.exit()
+# try:
+# 	os.system('python 3_facult_rm_electrons_NU.py')
+# except:
+# 	print "Problem with script 3"
+# 	sys.exit()
 
 print "Sky substraction done !"

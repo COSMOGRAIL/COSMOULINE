@@ -1,5 +1,5 @@
 import numpy as np
-import pyfits
+import astropy.io.fits as pyfits
 
 def fromfits(filename):
 	return pyfits.getdata(filename).transpose()

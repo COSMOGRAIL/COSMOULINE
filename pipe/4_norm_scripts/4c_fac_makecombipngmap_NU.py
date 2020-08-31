@@ -74,3 +74,9 @@ f2nimg.tonet(pngpath)
 print "I have written the map into :"
 print pngpath
 
+# print "Do you want to clean the selected image to save some space on the disk ? "
+# proquest(True)
+#
+# combidir = os.path.join(workdir, combibestkey)
+# os.remove(combidir)
+

@@ -12,14 +12,18 @@ import f2n
 ################### CONFIGURATION ###################################################################
 
 # ABSOLUTE PATH to where the files are and how to select them :
-origpaths = sorted(glob.glob("/run/media/vivien/LENSES-2/WFI2033_SMARTS/*.fits"))
-
+origpaths = sorted(glob.glob(os.path.join(rawdir,'*')))
+origpaths = [p for p in origpaths if os.path.isfile(p)]
 
 # ABSOLUTE PATH to the directory where you want the croped images to be written :
-destdir="/run/media/vivien/LENSES-2/WFI2033_SMARTS_prered"
+destdir=os.path.join(rawdir,'cropped')
+if not os.path.exists(destdir):
+	os.mkdir(destdir)
 
 # croped images png path :
-pngdir="/run/media/vivien/LENSES-2/WFI2033_SMARTS_prered_png"
+pngdir=os.path.join(rawdir,'cropped_png')
+if not os.path.exists(pngdir):
+	os.mkdir(pngdir)
 
 #####################################################################################################
 
@@ -33,9 +37,6 @@ def newpath(origpath, destdir): 	# specifies how to change the name :
 	return destpath
 
 
-if not os.path.isdir(destdir):
-	os.mkdir(destdir)
-
 filterlist = []
 
 for fitsfilepath in origpaths[::-1]:
@@ -47,7 +48,6 @@ for fitsfilepath in origpaths[::-1]:
 	#hdulist.info()
 	
 	#sys.exit()
-	
 	pixelarray, hdr = pyfits.getdata(fitsfilepath, header=True, ignore_missing_end=True)
 	#sys.exit()
 	
@@ -78,7 +78,9 @@ for fitsfilepath in origpaths[::-1]:
 	#pixelarray = pixelarray[60:, 140:]
 	
 	#For HE0435 some images are really ugly..., with enormous borders...
-	pixelarray = pixelarray[170:950, 404:950]
+	# pixelarray = pixelarray[170:950, 404:950]
+	pixelarray = pixelarray[77:950, 156:950] #for WFI2026
+
 	
 	
 	

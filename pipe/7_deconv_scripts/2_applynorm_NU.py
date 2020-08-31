@@ -1,12 +1,27 @@
 #	
 #	Here we will apply the normalisation to the g and sig images
 #
+import sys
 
-execfile("../config.py")
+if len(sys.argv) == 2:
+	execfile("../config.py")
+	decobjname = sys.argv[1]
+	deckey = "dec_" + decname + "_" + decobjname + "_" + decnormfieldname + "_" + "_".join(decpsfnames)
+	ptsrccat = os.path.join(configdir, deckey + "_ptsrc.cat")
+	decskiplist = os.path.join(configdir,deckey + "_skiplist.txt")
+	deckeyfilenum = "decfilenum_" + deckey
+	deckeypsfused = "decpsf_" + deckey
+	deckeynormused = "decnorm_" + deckey
+	decdir = os.path.join(workdir, deckey)
+	print "You are running the deconvolution on all the stars at once."
+	print "Current star : " + sys.argv[1]
+
+else :
+	execfile("../config.py")
+
 from kirbybase import KirbyBase, KBError
 from variousfct import *
-import pyfits
-
+import astropy.io.fits as pyfits
 
 if update:
 	# override config settings...

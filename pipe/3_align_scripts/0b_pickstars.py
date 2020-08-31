@@ -8,7 +8,7 @@ import glob
 import f2n
 from variousfct import *
 import star
-import pyfits
+import astropy.io.fits as pyfits
 from itertools import count, product, islice
 from string import ascii_lowercase
 
@@ -36,8 +36,12 @@ from mpl_toolkits.mplot3d import Axes3D
 
 import sys
 
+if os.path.isfile(os.path.join(alidir, refimgname + "_skysub.fits")):
+	fitsfile = os.path.join(alidir, refimgname + "_skysub.fits") #path to the img_skysub.fits you will display
+else :
+	print "Apparently, you removed your non-ali images, I'll try to find your _ali image."
+	fitsfile = os.path.join(alidir, refimgname + "_ali.fits")
 
-fitsfile = os.path.join(alidir, refimgname + "_skysub.fits") #path to the img_skysub.fits you will display
 image = os.path.join(workdir, "refimg_skysub.fits") #path to the png that will be created from the img_skysub.fits
 alistars = alistarscat #path to the alistars catalogue
 
@@ -143,6 +147,7 @@ class LoadImage:
 		f = Figure(figsize=(5,5))
 			#a = f.add_subplot(111)
 		ax = Axes3D(f)
+		ax.mouse_init()
 
 		msg = Label(top, text="To plot the value of the pixels in a region, use the right button of your mouse")
 		msg.pack()
@@ -171,7 +176,14 @@ class LoadImage:
 
 		sbarV.pack(side=LEFT, fill=Y)
 		sbarH.pack(side=BOTTOM, fill=X)
-		root.bind("<Button-3>",self.select)
+		if computer == "martin":
+			#for MAC computer !!!!
+			root.bind("<Button-2>", self.select)
+			root.bind("space",self.select)
+			root.bind("i",self.zoomer_mac_in)
+			root.bind("o",self.zoomer_mac_out)
+		else :
+			root.bind("<Button-3>",self.select)
 		root.bind("<Button-4>",self.zoomer)
 		root.bind("<Button-5>",self.zoomer)
 		#root.bind("<Button-1>",self.stat)
@@ -186,6 +198,16 @@ class LoadImage:
 			if self.zoomcycle != 5: self.zoomcycle += 1
 		elif (event.num==5):
 			if self.zoomcycle != 0: self.zoomcycle -= 1
+		self.crop(event)
+
+	def zoomer_mac_in(self,event):
+		if self.zoomcycle != 5: self.zoomcycle += 1
+		print "zoom : ", self.zoomcycle
+		self.crop(event)
+
+	def zoomer_mac_out(self,event):
+		if self.zoomcycle != 0: self.zoomcycle -= 1
+		print "zoom : ", self.zoomcycle
 		self.crop(event)
 
 	def crop(self,event):
@@ -206,6 +228,7 @@ class LoadImage:
 				size = 300,300
 		else:
 			size = 300,200
+			#tmp = self.orig_img
 			self.zimg = ImageTk.PhotoImage(tmp.resize(size))
 			self.zimg_id = self.canvas.create_image(x,y,image=self.zimg)
 
@@ -219,6 +242,7 @@ class LoadImage:
 		global bl_corner
 		global bl_text
 		global carre
+
 		if choice == "star":
 			x,y = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y) #to get the real coordinate of the star even after scrolling
 			ali = open(alistars, "a")

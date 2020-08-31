@@ -61,7 +61,7 @@ import numpy as np
 import math
 import scipy.signal as signal
 import scipy.ndimage as ndimage
-import pyfits
+import astropy.io.fits as pyfits
 
 
 
@@ -599,12 +599,13 @@ class cosmicsimage:
 		if self.satlevel > 0 and self.satstars == None:
 			self.findsatstars(verbose=True)
 			
-		print "Starting %i L.A.Cosmic iterations ..." % maxiter
+		if verbose : print "Starting %i L.A.Cosmic iterations ..." % maxiter
 		for i in range(1, maxiter+1):
-			print "Iteration %i" % i
+			if verbose:
+				print "Iteration %i" % i
 			
 			iterres = self.lacosmiciteration(verbose=verbose)
-			print "%i cosmic pixels (%i new)" % (iterres["niter"], iterres["nnew"])
+			if verbose: print "%i cosmic pixels (%i new)" % (iterres["niter"], iterres["nnew"])
 			
 			#self.clean(mask = iterres["mask"]) # No, we want clean to operate on really clean pixels only !
 			# Thus we always apply it on the full mask, as lacosmic does :

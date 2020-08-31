@@ -9,7 +9,7 @@
 #	Viva iraf...
 #
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from pyraf import iraf
 from kirbybase import KirbyBase, KBError
 import shutil
@@ -17,7 +17,7 @@ from variousfct import *
 import time
 
 
-print "combibestname : %s" % combibestname
+print("combibestname : %s" % combibestname)
 proquest(askquestions)
 
 
@@ -90,7 +90,7 @@ iraf.images.immatch.imcombine("@irafinput.txt", output = outputname)
 
 shutil.move(outputname, "../.")
 
-print "Done."
+print("Done.")
 
 
 

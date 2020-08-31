@@ -1,8 +1,5 @@
 execfile("../config.py")
 import os,sys
-import glob
-import pyfits
-import datetime
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from headerstuff import *

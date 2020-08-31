@@ -6,7 +6,7 @@
 #	The combination will be done in the second script.
 
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from pyraf import iraf
 from kirbybase import KirbyBase, KBError
 import shutil
@@ -16,33 +16,42 @@ import time
 
 
 
-print "Name of combination: %s" % combibestname
+print("Name of combination: %s" % combibestname)
 
 combidir = os.path.join(workdir, combibestkey)
+f = open(os.path.join(workdir, combibestkey + '_log.txt'), 'w')
 
 db = KirbyBase()
 if thisisatest:
-	print "This is a test : I will combine the images from the testlist, disregarding your criteria !"
+	print("This is a test : I will combine the images from the testlist, disregarding your criteria !")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 else:
 	images = db.select(imgdb, ['gogogo', 'treatme', 'seeing', 'ell', 'medcoeff', 'stddev'], [True, True, '< %f' % combibestmaxseeing, '< %f' % combibestmaxell, '< %f' % combibestmaxmedcoeff, '< %f' % combibestmaxstddev], returnType='dict', sortFields=['setname', 'mjd'])
 
-print "I have selected", len(images), "images."
+print("I have selected", len(images), "images.")
 proquest(askquestions)
 
 
 if os.path.isdir(combidir):
-	print "There is something to erase..."
+	print("There is something to erase...")
 	proquest(askquestions)
 	shutil.rmtree(combidir)
 os.mkdir(combidir)
-	
+
+f.write('Image combination %s \n'%combibestkey)
+f.write('Number of images : %i \n'%len(images))
+f.write('Max seeing : %2.2f \n'%combibestmaxseeing)
+f.write('Max ellipticity : %2.2f \n'%combibestmaxell)
+f.write('Max medcoeff : %2.2f \n'%combibestmaxmedcoeff)
+f.write('Max sky std : %2.2f \n'%combibestmaxstddev)
+f.close()
+
 	
 combilist = []
-print "Normalizing images ..."
+print("Normalizing images ...")
 
 for i, image in enumerate(images):
-	print i+1, image['imgname'], image['seeing'], image['ell'], image['medcoeff'], image['sigcoeff']
+	print(i+1, image['imgname'], image['seeing'], image['ell'], image['medcoeff'], image['sigcoeff'])
 	
 	ali = os.path.join(alidir, image['imgname'] + "_ali.fits")
 	nonorm = os.path.join(combidir, image['imgname'] + "_ali.fits")
@@ -69,7 +78,7 @@ txt_file.write(inputfiles)
 txt_file.close()
 
 
-print "Done."
+print("Done.")
 
 
 

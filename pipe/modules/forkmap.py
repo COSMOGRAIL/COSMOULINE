@@ -16,6 +16,7 @@ def nprocessors():
     try:
 		import multiprocessing
 		return multiprocessing.cpu_count()
+
       #~ # Mac OS
       #~ libc=ctypes.cdll.LoadLibrary(ctypes.util.find_library('libc'))
       #~ v=ctypes.c_int(0)

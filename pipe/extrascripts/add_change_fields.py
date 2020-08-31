@@ -1,6 +1,7 @@
 execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
+from astropy.time import Time
 
 
 
@@ -23,30 +24,40 @@ db.pack(imgdb) # always a good idea !
 
 #images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict') # selects according to treatme
 #images = db.select(imgdb, ['recno'], ['*'], returnType='dict') # selects all images
-images = db.select(imgdb, ['updating'], [True], returnType='dict') # selects all 3 images
+images = db.select(imgdb, ['gogogo'], [True], returnType='dict') # selects all 3 images
 
 for image in images:
-	print image["rawimg"]
-	seq = image["rawimg"].split('/')
-	print seq
-	newseq = []
-	for elt in seq:
-		if elt == "LENSES":
-			newseq.append("LENSES-2")
-		else:
-			newseq.append(elt)
-	print '/'.join(newseq)
-	db.update(imgdb, ['recno'], [image['recno']], ['/'.join(newseq)], ['rawimg'])
+	name = image["rawimg"][-16:-5]
+	mjd = float(name)
+	print mjd
+	t = Time(mjd, format='mjd')
+	nbupdate = db.update(imgdb, ['recno'], [image['recno']], [mjd,mjd], ['mjd','mhjd'])
+	if nbupdate == 1:
+		print "updated"
+	else :
+		print "failed"
+
+	t.format = "fits"
+	print t.value[:-9]
+	date = t.value[:-9]
+	nbupdate = db.update(imgdb, ['recno'], [image['recno']], [date], ['datet'])
+	if nbupdate == 1:
+		print "updated"
+	else :
+		print "failed"
+
+	t.format = 'jd'
+	print t.value
+	jd = t.value
+	nbupdate = db.update(imgdb, ['recno'], [image['recno']], [str(jd)], ['jd'])
+	if nbupdate == 1:
+		print "updated"
+	else :
+		print "failed"
+
 
 db.pack(imgdb)
 
 sys.exit()
 
-
-nbrofimages = len(images)
-for i,image in enumerate(images):
-	print i, "/", nbrofimages, ":", image['imgname']
-	db.update(imgdb, ['recno'], [image['recno']], [10], ['maxalistars'])
-
-db.pack(imgdb) # always a good idea !
 

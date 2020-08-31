@@ -70,6 +70,18 @@ print "If you want, you could copy and paste this into your mancat (same stars, 
 for s in id["match"] : # We use this id instead of preciserefmanstars to keep them in your order
 	print "%s\t%.2f\t%.2f\t%.2f" % (s.name, s.x, s.y, s.flux)
 
+print "I can copy that in your alistars.cat, photomstars.cat and normstars.cat : "
+proquest(askquestions)
+f = open(configdir + "/alistars.cat", 'w')
+g = open(configdir + "/photomstars.cat", 'w')
+h = open(configdir + "/normstars.cat", 'w')
+for s in id["match"] : # We use this id instead of preciserefmanstars to keep them in your order
+	f.write("%s\t%.2f\t%.2f\t%.2f \n" % (s.name, s.x, s.y, s.flux))
+	g.write("%s\t%.2f\t%.2f\t%.2f \n" % (s.name, s.x, s.y, s.flux))
+	h.write("%s\t%.2f\t%.2f\t%.2f \n" % (s.name, s.x, s.y, s.flux))
+
+f.close()
+
 print "I will now generate a png map."
 proquest(askquestions)
 
@@ -84,7 +96,11 @@ refautostarsasdicts = [{"name":s.name, "x":s.x, "y":s.y} for s in refautostars]
 if defringed:
 	reffitsfile = os.path.join(alidir, refimage['imgname'] + "_defringed.fits")
 else:
-	reffitsfile = os.path.join(alidir, refimage['imgname'] + "_skysub.fits")
+	if os.path.isfile(os.path.join(alidir, refimage['imgname'] + "_skysub.fits")):
+		reffitsfile = os.path.join(alidir, refimage['imgname'] + "_skysub.fits")  # path to the img_skysub.fits you will display
+	else:
+		print "Apparently, you removed your non-ali images, I'll try to find your _ali image."
+		reffitsfile = os.path.join(alidir, refimage['imgname'] + "_ali.fits")
 
 f2nimg = f2n.fromfits(reffitsfile)
 f2nimg.setzscale(z1=0, z2=1000)

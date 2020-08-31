@@ -12,12 +12,28 @@
 #	reference image will be put at first place, i.e. 0001
 #
 #	
+import sys
+if len(sys.argv) == 2:
+	execfile("../config.py")
+	decobjname = sys.argv[1]
+	deckey = "dec_" + decname + "_" + decobjname + "_" + decnormfieldname + "_" + "_".join(decpsfnames)
+	ptsrccat = os.path.join(configdir, deckey + "_ptsrc.cat")
+	decskiplist = os.path.join(configdir,deckey + "_skiplist.txt")
+	deckeyfilenum = "decfilenum_" + deckey
+	deckeypsfused = "decpsf_" + deckey
+	deckeynormused = "decnorm_" + deckey
+	decdir = os.path.join(workdir, deckey)
+	print "You are running the deconvolution on all the stars at once."
+	print "Current star : " + sys.argv[1]
 
+else :
+	execfile("../config.py")
 
-execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 import shutil
 from variousfct import *
+
+
 
 if update:
 	# override config settings...
@@ -253,7 +269,7 @@ for i, image in enumerate(readyimages):
 	imgpsfdir = os.path.join(psfdir, image['imgname'])	# we take the psf from here
 	imgobjdir = os.path.join(objdir, image['imgname'])	# and the g.fits + sig.fits here
 
-	os.symlink(os.path.join(imgpsfdir, "s001.fits") , os.path.join(decdir, "s%s.fits" % decfilenum))
+	os.symlink(os.path.join(imgpsfdir +"/results","s_1.fits") , os.path.join(decdir, "s%s.fits" % decfilenum)) #fix here : go back to the original file instead of the alias that might be corrupted
 	os.symlink(os.path.join(imgobjdir, "g.fits") , os.path.join(decdir, "g%s_notnorm.fits" % decfilenum))
 	os.symlink(os.path.join(imgobjdir, "sig.fits") , os.path.join(decdir, "sig%s_notnorm.fits" % decfilenum))
 

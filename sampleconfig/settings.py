@@ -3,7 +3,7 @@
 
 # The "working" dir where all the pipeline products will be *written*
 # ("big-old-never-backuped-disk")
-workdir = "/run/media/vivien/LENSES/COSMOULINE/data/HE0435_ECAM"
+workdir = "/Users/martin/Desktop/lc_run/run/RXJ1131_ECAM"
 
 
 #------------------------ SWITCHES -----------------------------------------
@@ -41,6 +41,9 @@ silencemcs = True
 # To be set to true ONLY if you work in all_update_scripts !!
 update = False
 
+#If you want only your test sample whan checking the png :
+sample_only = True
+
 
 # Max number of CPU cores to use (0 = automatic, meaning that all available cores will be used) :
 maxcores = 0
@@ -63,7 +66,7 @@ telescopename = "EulerCAM"
 # where skysim is a scecial name to read the header of the simulated images.
 
 # Where are these images ?
-rawdir = "/run/media/vivien/LENSES/PRERED/HE0435-1223_RG_UL_RGUL4"
+rawdir = "/Users/martin/Desktop/lc_run/data_raw/"
 # Remember that these images should be prereduced and have clean borders (cut pre/overscan) !
 # Also they should be in a coherent "orientation" (rotations are ok, but no mirror flips).
 
@@ -105,6 +108,7 @@ rawdir = "/run/media/vivien/LENSES/PRERED/HE0435-1223_RG_UL_RGUL4"
 #xephemlens = "J0832+0404,f|Q,08:32:17.00,+04:04:05.20,20.0,2000"
 #xephemlens = "J1322+1052,f|Q,13:22:36.42,+10:52:39.43,20.0,2000"
 #xephemlens = "HE0435-1223,f|Q,04:38:14.90,-12:17:14.40,19.0,2000"
+# xephemlens = "WFI2026-4536,f|Q,20:26:10.45,-45:36:27.10,15.9,2000"
 xephemlens = "HE1104-1805,f|Q,11:06:33.39,-18:21:23.80,19.0,2000"
 #xephemlens = "Simulation,f|Q,00:00:00.00,+00:00:00.0,20.0,2000"
 
@@ -113,15 +117,22 @@ xephemlens = "HE1104-1805,f|Q,11:06:33.39,-18:21:23.80,19.0,2000"
 #------------------------ ALIGNMENT ----------------------------------------
 
 # do you want to work on defringed images (if they exists ?)
-defringed = False
+if telescopename == "WFI":
+    defringed = True
+else :
+    defringed = False
 
 # reference image name (for alignment and deconvolution) :
 
 refimgname = "3_ECAM.2011-08-31T09:35:49.000"
 
 # dimensions you want for the aligned images (you have to start at pixels (1,1), no choice)
-dimx = 3600
-dimy = 3600
+if telescopename == "WFI":
+    dimx = 2022
+    dimy = 4000
+else :
+    dimx = 3600
+    dimy = 3600
 # currently this is used only in the stupid geomap, to make the transform valid
 # for the full frame.
 
@@ -201,7 +212,7 @@ combinightrenormcoeff = 'medcoeff'	# you can choose which coeff you want to use 
 # put "new" somewhere in the string if you want use the new psf, and "old" otherwise.
 # Suggestion for names : "newabcd1" for your first try using stars a, b, c and d...
 
-psfname = "pyMCSabcdfgh1"
+psfname = "abcdef"
 
 # The otherway round, do not put "new" in that string if you build your PSF with the old codes !
 # This is not used to switch the programs automatically, but to recognize which PSF was used afterwards.
@@ -227,46 +238,64 @@ objname = "a"	# Give a name to the object you want to extract.
 			# is no problem to extract the same object under different
 			# names !
 
-objnames = ["lens", "a", "b", "c", "d", "e", "f", "g", "h", "t", "m1", "m2", "m4", "m5"]
+objnames = ["lens", "a","b","c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o","p", "q", "r", "s", "t", "u", "v", "w","x","y", "z"]
 			# As above, but all extractions are performed in a single scrip
 			# 12_all_extrnancosm.py
 			# More efficient on some configurations (like if IO flow is limited)
 
 #------------------------ DECONVOLUTION ------------------------------------
 
-decname = "back-astrofix-5"		# Choose a name for your deconvolution. No need to reflect the source. Examples : "full", "test"
+decname = "noback"		# Choose a name for your deconvolution. No need to reflect the source. Examples : "full", "test"
 
 decobjname = "lens"		# Select which object you want to deconvolve : give an existing objname.
 				# You don't have to set the objname in the "OBJECT EXTRACTION" section.
 
-decnormfieldname = "renormabcdfhm1m2"	# The normalization coefficient to apply to the image prior to deconv.
+decnormfieldname = "medcoeff"	# The normalization coefficient to apply to the image prior to deconv.
 				# "None" is special, it means a coeff of 1.0 for every image.
 				# The name of the default sextractor photometry is "medcoeff"
 				# If you choose a renormalization, give an existing renormname.
 
 
-decpsfnames = ["pyMCSabcdfgh1"]		# The PSF(s) you want to use : give one or more psfnames in form of a list.
+decpsfnames = ["abcdef"]		# The PSF(s) you want to use : give one or more psfnames in form of a list.
 				# The first psfname has the lowest priority.
 
 makeautoskiplist = True  # Do you want the automatic update scripts to rerun the autoskiplist script or not ?
 
 #------------------------ RENORMALIZATION ----------------------------------
 
-renormname = "renormabcdfhm1m2"	# Choose a name for the new renormalization coefficient
+renormname = "renorm_all"	# Choose a name for the new renormalization coefficient
 				# (something that reflects the sources... like "renormabc")
 				# Make it short ... but start it with the letters renorm
 
 # Which sources do you want to use for the renormalization (give (deckey, sourcename) ):
 # NEW : the FIRST one of the sources below will be used as a reference to scale the coeffs between different telescopes !
 renormsources = [
-('dec_noback_a_medcoeff_pyMCSabcdfgh1', 'a'),
-('dec_noback_b_medcoeff_pyMCSabcdfgh1', 'b'),
-('dec_noback_c_medcoeff_pyMCSabcdfgh1', 'c'),
-('dec_noback_d_medcoeff_pyMCSabcdfgh1', 'd'),
-('dec_noback_f_medcoeff_pyMCSabcdfgh1', 'f'),
-('dec_noback_h_medcoeff_pyMCSabcdfgh1', 'h'),
-('dec_noback_m1_medcoeff_pyMCSabcdfgh1', 'm1'),
-('dec_noback_m2_medcoeff_pyMCSabcdfgh1', 'm2')
+('dec_noback_a_medcoeff_abcdef', 'a'),
+('dec_noback_b_medcoeff_abcdef', 'b'),
+('dec_noback_c_medcoeff_abcdef', 'c'),
+('dec_noback_d_medcoeff_abcdef', 'd'),
+('dec_noback_e_medcoeff_abcdef', 'e'),
+('dec_noback_f_medcoeff_abcdef', 'f'),
+('dec_noback_g_medcoeff_abcdef', 'g'),
+('dec_noback_h_medcoeff_abcdef', 'h'),
+('dec_noback_i_medcoeff_abcdef', 'i'),
+('dec_noback_j_medcoeff_abcdef', 'j'),
+('dec_noback_k_medcoeff_abcdef', 'k'),
+('dec_noback_l_medcoeff_abcdef', 'l'),
+('dec_noback_m_medcoeff_abcdef', 'm'),
+('dec_noback_n_medcoeff_abcdef', 'n'),
+('dec_noback_o_medcoeff_abcdef', 'o'),
+('dec_noback_p_medcoeff_abcdef', 'p'),
+('dec_noback_q_medcoeff_abcdef', 'q'),
+('dec_noback_r_medcoeff_abcdef', 'r'),
+('dec_noback_s_medcoeff_abcdef', 's'),
+('dec_noback_t_medcoeff_abcdef', 't'),
+('dec_noback_u_medcoeff_abcdef', 'u'),
+('dec_noback_v_medcoeff_abcdef', 'v'),
+('dec_noback_w_medcoeff_abcdef', 'w'),
+('dec_noback_x_medcoeff_abcdef', 'x'),
+('dec_noback_y_medcoeff_abcdef', 'y'),
+('dec_noback_z_medcoeff_abcdef', 'z')
 ]
 
 # You can than change these before running 2_plot_star_curves_NU.py, to get curves for other stars.
@@ -278,6 +307,9 @@ plotnormfieldname = None	# Used only for the quicklook plots, after the deconvol
 				# renormname -> we use these coeffs instead. Allows for a first check.
 				# Note that this does NOT affect the content of the database in any way !
 
+lc_to_sum = None #used in quicklooks by night
+                # None --> will plot all the available lightcurves
+                # ['A','D'] --> sum the two entry given in a list
 
 #---------------------------------------------------------------------------
 

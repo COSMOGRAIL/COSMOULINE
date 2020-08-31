@@ -13,7 +13,7 @@ from variousfct import *
 from readandreplace_fct import *
 import shutil
 import progressbar
-import pyfits
+import astropy.io.fits as pyfits
 import cosmics
 
 

@@ -7,7 +7,7 @@
 |Step for coordinates  max et min        |0.01
 |                                        |0.00001
 |----------------------------------------|-------------               
-|Step for the background  max et min     |0.1
+|Step for the background  max et min     |0.0
 |                                        |0.0001
 |----------------------------------------|-------------               
 |Step for z1  max et min                 |0.0                      

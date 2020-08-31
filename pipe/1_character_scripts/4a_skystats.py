@@ -9,7 +9,7 @@ from kirbybase import KirbyBase, KBError
 
 from variousfct import *
 from datetime import datetime, timedelta
-import pyfits
+import astropy.io.fits as pyfits
 import numpy as np
 
 if checkplots :

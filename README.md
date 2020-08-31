@@ -207,36 +207,41 @@ other files
 ###	4_norm_scripts
 
 
-1a  : compute some statistics on the empty region which should have been defined before launching 1a in 3_align_scripts, and add them to the database. Take the time right now to fill in the normstars.cat file in your configdir. These stars can be the same that the one selected for alignment, so you can basically copy your alistars.cat in your normstars.cat. These stars will be used to prenormalize the images.
+1a  : compute some statistics on the empty region which should have been defined before launching 1a in 3_align_scripts, and add them to the database. 
+Take the time right now to fill in the normstars.cat file in your configdir. These stars can be the same that the one selected for alignment, so you can basically copy your alistars.cat 
+in your normstars.cat. These stars will be used to prenormalize the images.
 
 
 1b  : add some noise when columns or row have a 0 value in our images. This may help the next scripts, as sextractor is not fond of 0...
 
-1c  : compute the mean value in the emptysky region and add it to the whole image. It corrects the sky substration from sextractor that is usually a bit too efficient. The efficiency of this step is yet to be tested...
+1c (don't do): compute the mean value in the emptysky region and add it to the whole image. It corrects the sky substration from sextractor that is usually a bit too efficient. 
+The efficiency of this step is yet to be tested...
 
-2a  : run sextractor on the aligned images, and write the aperture photometry (by default for 30, 90 and 'auto' radius in pixels) in an .alicat file in your alidir. This will be used as a normalisation coefficient later on. Note that this is done on all the sextracted objects of your images.
+2a  : run sextractor on the aligned images, and write the aperture photometry (by default for 30, 90 and 'auto' radius in pixels) in an .alicat file in your alidir. 
+This will be used as a normalisation coefficient later on. Note that this is done on all the sextracted objects of your images.
 
-2b  : facultative(needed for the plot), write these apertures photometry in the db. To do so (and to execute the following facult. scripts as well), you need to define on which stars you want to perform the computations. These stars are to be written in photomstars.cat in your configdir, and can once again be the same that in alistars.cat and normstars.cat
+2b (do it) : facultative (but needed for plot, and update photomstar.cat), write these apertures photometry in the db. To do so (and to execute the following facult. scripts as well), you need to define on which stars you want to perform the computations. These stars are to be written in photomstars.cat in your configdir, and can once again be the same that in alistars.cat and normstars.cat
 
-3a  : take all the normstars and their aperture photometry in the database, and compute a first guess normalisation coefficient with it related to the reference image. As normalisation coefficient we take the median value (we call it medcoeff) of the ratios between normstars of the images (one after the other) and the normstars of the refimg.
+2c (do it, for the PSF)  : facultative, write an estimation of the peak values (with the skylevel) of each stars of photomstars.cat in the db.
 
-3c  : plot the aperture photometry of each the stars (for all images), with each aperture, and also show the medcoeff computed above. Assuming the medcoeff should not vary too much, it gives you an idea on the quality of your dataset so far.
+2d (do it, for the PSF) : facultative, plot the peak values histogram for each star. It may help to select some good stars for the PSF later, so have a look at the plots...
 
+2e, 2f : don't do 
 
-5   : make histograms with some statistics of ours plots (ellipticity, seeing, medcoeff and skylevel). It gives also a good idea of the quality of our datasets, but we can disregard the bad images later on...  
-
-
-
-other files
-
-
-2c  : facultative, write an estimation of the peak values (with the skylevel) of each stars of photomstars.cat in the db.
-
-2d  : facultative, plot the peak values histogram for each star. It may help to select some good stars for the PSF later, so have a look at the plots...
+3a  : take all the normstars and their aperture photometry in the database, and compute a first guess normalisation coefficient with it related to the reference image. 
+As normalisation coefficient we take the median value (we call it medcoeff) of the ratios between normstars of the images (one after the other) and the normstars of the refimg.
 
 3b  : write reports of the previous operations in your datadir.
 
+3c  : plot the aperture photometry of each the stars (for all images), with each aperture, and also show the medcoeff computed above. Assuming the medcoeff should not vary too much, 
+it gives you an idea on the quality of your dataset so far.
 
+
+5   : make histograms with some statistics of ours plots (ellipticity, seeing, medcoeff and skylevel). It gives also a good idea of the quality of our datasets, 
+but we can disregard the bad images later on...  
+
+
+#TO MAKE a Deep field image : 
 4a  : prepare images to combine in order to obtain a good deep field image by stacking images. Run 5_histo_multifield before, and have a look at the histograms produced. It will help you select a set of parameters to enter in the Deep Field Combination paragraph of your settings.py. By adding these parameters, we select only a certain number of images to create our deep field image. The present script prepare the images, by normalising them and putting them in a new directory. This step takes really long, but is optional and we can go on with further scripts without any conflicts.
 
 4b  : next step of the previous script : combine the images into one single deep field image. May crash if you use too much images (thks to Iraf)
@@ -249,14 +254,19 @@ default.*      : default parameters used by sextractor. Fine as they are for ECA
 
 
 ###	5_pymcs_psf_scripts
+0 : Create a sub-catalog from alistar.cat with the psf stars that you selected by changing the psfname in setting.py
 
-
-1  : Ok, now the fun begins. You need to select a certain number of stars to build the PSF for each images. You then need to create a .cat file with these stars. In your configdir, create a 'psf_mypsfname.cat' with the stars you want to use for your PSF construction (same format as alistars, normstars,...) In settings.py, under the PSF Construction paragraph, set your psfname as 'mypsfname'. The present script will create a new psfdir in your datadir, with a lot of stuff on it. A good idea may be to select some images to put in your testlist (with the refimg among them), to build different PSF sets (i.e. using different stars), then to choose the best set of stars for PSF construction and finally to compute the PSF on all images. You can perform the steps from 1 to 5 with test images (it is quite fast for only 10 images), and then select the best PSF set according to whatever criterias you like.
+1  : Ok, now the fun begins. You need to select a certain number of stars to build the PSF for each images. You then need to create a .cat file with these stars. 
+In your configdir, create a 'psf_mypsfname.cat' with the stars you want to use for your PSF construction (same format as alistars, normstars,...) 
+In settings.py, under the PSF Construction paragraph, set your psfname as 'mypsfname'. The present script will create a new psfdir in your datadir, with a lot of stuff on it. 
+A good idea may be to select some images to put in your testlist (with the refimg among them), to build different PSF sets (i.e. using different stars), then to choose the best set 
+of stars for PSF construction and finally to compute the PSF on all images. You can perform the steps from 1 to 5 with test images (it is quite fast for only 10 images), and then select 
+the best PSF set according to whatever criterias you like.
 Protip : to build your testlist, you can use report_seeing in your datadir. Do not forget to launch reset_testlist.py and set_testlist.py in extrascripts 
 
 2a  : This script will extract the psf stars for each image, and save them in the corresponding psfdir in your datadir. Also, it gives you instructions to build masks for your psfstars. Look just below to know more about it.-----WARNING : on regor2, remove the modules python 2.6.6 and scisoft/iraf or it will crash -----
 
-2b  : facultative (but recommended). The stars you selected for the psf construction may have a companion star nearby, or be polluted by god knows what. In order to avoid it polluting our psf construction, we can build some masks for our stars. Thus, go into your datadir/psfdir/imgrefdir/results. With ds9, you can plot the so-called star_00*.fits, which are images of your psf stars. Inspect them: if one of it is polluted, select the polluted region and save it (region->save region) under your configdir/mypsfname_mask_#.reg, but WARNING, here the # is not the number of the star, but the name you gave it... for example, if you mask star_002.fits, the mask should be saved as mypsfname_mask_b.reg . Anyway, the script 2a gives you the correct paths to use. However, do not mask cosmics, the following script will do it for you
+2b  : facultative (but recommended and I think it's needed on regor). The stars you selected for the psf construction may have a companion star nearby, or be polluted by god knows what. In order to avoid it polluting our psf construction, we can build some masks for our stars. Thus, go into your datadir/psfdir/imgrefdir/results. With ds9, you can plot the so-called star_00*.fits, which are images of your psf stars. Inspect them: if one of it is polluted, select the polluted region and save it (region->save region) under your configdir/mypsfname_mask_#.reg, but WARNING, here the # is not the number of the star, but the name you gave it... for example, if you mask star_002.fits, the mask should be saved as mypsfname_mask_b.reg . Anyway, the script 2a gives you the correct paths to use. However, do not mask cosmics, the following script will do it for you
 
 3  : facultative (but recommended). Find automatically cosmic rays on your images and mask them. 
 
@@ -264,13 +274,18 @@ Protip : to build your testlist, you can use report_seeing in your datadir. Do n
 
 5  : Build overview images of the psf construction process in your datadir, under mypsfname_png. Look at them, to check that everything went as you wish. As said above, if you observ that some images are troublesome, put them in the corresponding psfkicklist (they will be kicked for the deconvolution with the corresponding psf set, that's why we don't put them in the general kicklist)
 
+6: Don't do. Use 6b instead.
 
+6b : To inspect by eyes the PSF construction. You can add directly to the skiplist the bad images. 
+
+7: To remove images where the PSF is built on saturated stars
  
 COMMENTS 
 
 Knowing which PSF set is the best (or even if a psf set is good enough to be used) is not that simple. There is however a few tricks that may help : 
 
--select enough psf stars per set, let's say 6. No need to take the brightest ones though, but avoid the ones that are too faint. Use the result from 4c in 4_norm_scripts to select your psfstars. Also look at the alistars.png. Avoid the stars that fall on the dead pixels columns as well.
+-select enough psf stars per set, let's say 6. No need to take the brightest ones though, but avoid the ones that are too faint. 
+Use the result from 4c in 4_norm_scripts to select your psfstars. Also look at the alistars.png. Avoid the stars that fall on the dead pixels columns as well.
 	
 -have a look at your numerical psf plot. Also, by looking at your total psf plot, you will see immediately is something went really wrong. 
 	
@@ -287,7 +302,7 @@ Finally, as computing the psf does not modify the db, you can already go on with
 
 12_all : Same as 12 above, but lauch a serial extraction of a whole list of objects. Do not forget to create the obj_name.cat files. Use the objlists field in settings. This is particularly useful if parallell extractions are too slow, for example if the writing disk accesses are slow.
 
-3  : makes pngs of the extracted object, with their mask. Useful if you want to check if an object is too often polluted, but you should already have seen it before when checking your psf...just saying...
+3  : (not used anymore) makes pngs of the extracted object, with their mask. Useful if you want to check if an object is too often polluted, but you should already have seen it before when checking your psf...just saying...
 
 
 
@@ -323,7 +338,7 @@ Practically, it works as follows :
 
 7/5b  : show you more precisely the astrometry of your object (the thing you put at 33,33 above). Modify your corresponding .cat file then, and use it as a reference for the following scripts.
 
-7/6  : write the results (the flux of the deconvolved images?) into the database, mandatory for the 8/ scripts. 
+7/6  : (to do if not a test) write the results (the flux of the deconvolved images?) into the database, mandatory for the 8/ scripts. 
 
 --Perform ALL these steps with every stars you will use to compute your new normalisation coefficient. First on a bunch of test images (thus obtaining the precise astrometry), and then on all the images. Once this is done, go to 8/:
 

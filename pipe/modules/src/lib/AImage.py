@@ -12,7 +12,7 @@ __author__ = "Tewes Malte - EPFL <malte.tewes@epfl.ch>   \
 #import sys
 import os
 #import scipy as sp
-import pyfits
+import astropy.io.fits as pyfits
 #from numpy import *
 import numpy as np
 import utils as fn
@@ -39,7 +39,7 @@ class Image:
         self.pilimage = None
         self.noiseMap = None
         
-        if numpyarray == None:
+        if np.any(numpyarray) == None:
             self.array = np.zeros(shape, dtype=np.float64)
         else:
             if not isinstance(numpyarray, np.ndarray):

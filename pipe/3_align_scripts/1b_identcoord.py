@@ -86,12 +86,12 @@ for i,image in enumerate(images):
 	sexcat = os.path.join(alidir, image['imgname'] + ".cat")
 	autostars = star.readsexcat(sexcat, maxflag = 16, posflux = True)
 	autostars = star.sortstarlistbyflux(autostars) # crucial !
-	
+
 	geomapin = os.path.join(alidir, image['imgname'] + ".geomap")
-	
+
 	
 	trans = star.findtrans(preciserefmanstars, autostars, scalingratio = scalingratio, tolerance = identtolerance, minnbrstars = identminnbrstars, mindist = identfindmindist, nref = 10, nauto = 50, verbose=True)
-	
+
 	if trans["nbrids"] < 0:
 		db.update(imgdb, ['recno'], [image['recno']], {'flagali': 0, 'nbralistars': 0})
 		print "I'll have to skip this one ...\n"

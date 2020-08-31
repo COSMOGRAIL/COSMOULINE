@@ -1,9 +1,11 @@
 execfile("../config.py")
+ 
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import forkmap
 import glob
 import star
+
 
 #import src.lib.utils as fn
 from MCS_interface import MCS_interface
@@ -13,6 +15,7 @@ psfstars = star.readmancat(psfstarcat)
 
 # Select images to treat
 db = KirbyBase()
+
 
 if thisisatest :
 	print "This is a test run."

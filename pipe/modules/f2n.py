@@ -9,7 +9,7 @@ from PIL import Image as im
 from PIL import ImageOps as imop
 from PIL import ImageDraw as imdw
 from PIL import ImageFont as imft
-import pyfits as ft
+import astropy.io.fits as ft
 
 # - - - - - - - - -  Where are my fonts ? - - - - - - - - - - - - 
 # To use the fonts, put the directory containing them (whose name
@@ -57,7 +57,7 @@ class f2nimage:
 		
 		# Now the numpy array to hold the actual data.
 		
-		if numpyarray == None:
+		if np.any(numpyarray) == None:
 
 			self.numpyarray = np.ones(shape, dtype=np.float32)*fill
 
@@ -237,7 +237,7 @@ class f2nimage:
 				# Here we want to reject a percentage of high values...
 				sortedstatsel = np.sort(statsel) 
 				n = round(0.9995 * statsel.size)
-				self.z2 = sortedstatsel[n]
+				self.z2 = sortedstatsel[int(n)]
 				if self.verbose :
 					print "Setting auto z2 to %f" % self.z2 
 				

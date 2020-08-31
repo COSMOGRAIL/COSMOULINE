@@ -48,7 +48,6 @@ for i,image in enumerate(images):
 	else:
 		cmd = "%s %s -c default_see_template.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CATALOG_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, catfilename)
 	os.system(cmd)
-	
 
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)

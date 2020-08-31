@@ -31,8 +31,9 @@ for i, image in enumerate(images):
 	print i+1, "/", len(images), ":", image['imgname']
 
 	
-	fitsfile = os.path.join(alidir, image['imgname'] + ".fits")
+	fitsfile = os.path.join(alidir, image['imgname'] + "_ali.fits")
 	if not os.path.exists(fitsfile):
+		print "You removed the non-aligned images..."
 		continue
 	
 	f2nimg = f2n.fromfits(fitsfile)
