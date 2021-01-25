@@ -75,8 +75,12 @@ def readheader(telescopename, rawimg):
 		dbdict = Maidanak_2_5kheader(rawimg)
 	elif telescopename == "VST":
 		dbdict = VSTheader(rawimg)
+	elif telescopename == "VST_mosaic":
+		dbdict = VST_mosaic_header(rawimg)
 	elif telescopename == "VATT":
 		dbdict = VATTheader(rawimg)
+	elif telescopename == "LCO":
+		dbdict = LCOheader(rawimg)
 	else:
 		raise mterror("Unknown telescope.")	
 

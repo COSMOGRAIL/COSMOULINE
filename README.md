@@ -231,19 +231,14 @@ This will be used as a normalisation coefficient later on. Note that this is don
 3a  : take all the normstars and their aperture photometry in the database, and compute a first guess normalisation coefficient with it related to the reference image. 
 As normalisation coefficient we take the median value (we call it medcoeff) of the ratios between normstars of the images (one after the other) and the normstars of the refimg.
 
+3b  : write reports of the previous operations in your datadir.
+
 3c  : plot the aperture photometry of each the stars (for all images), with each aperture, and also show the medcoeff computed above. Assuming the medcoeff should not vary too much, 
 it gives you an idea on the quality of your dataset so far.
 
 
 5   : make histograms with some statistics of ours plots (ellipticity, seeing, medcoeff and skylevel). It gives also a good idea of the quality of our datasets, 
 but we can disregard the bad images later on...  
-
-
-
-other files
-
-
-3b  : write reports of the previous operations in your datadir.
 
 
 #TO MAKE a Deep field image : 
