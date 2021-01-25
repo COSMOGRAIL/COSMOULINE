@@ -655,19 +655,19 @@ def maidanaksiheader(rawimg):
 
 def maidanak2k2kheader(rawimg):
 	"""
-	Maidanak 2k2k = raw image format 2084 x 2084
-	Written 2012 Malte
+	Maidanak 2k2k = raw image format 2000 x 2000 reduced size image by Ildar
+	Written 2020
 	For image prereduced by pypr in 2010
 	Those show these ugly "fingers" that we could not remove with the prereduction.
 	"""
 	print rawimg
 	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
 	
-	pixsize = 0.4262
-	gain = 1.5
-	readnoise = 10.0
-	scalingfactor = 0.450486 # (with respect to Mercator = 1.0)
-	saturlevel = 65000.0 # arbitrary
+	pixsize = 0.268 #from Otabek and IDlar in 2018
+	gain = 1.45  #
+	readnoise = 4.7 #
+	scalingfactor = 1.0 # measured scalingfactor (with respect to Mercator = 1.0)
+	saturlevel = 65535.0  # arbitrary
 	
 	telescopelongitude = "66:53:47.07"
 	telescopelatitude = "38:40:23.95"
@@ -685,8 +685,9 @@ def maidanak2k2kheader(rawimg):
 	rotator = 0.0
 	
 	# Now the date and time stuff :
-	
-	pythondt = datetime.datetime.strptime(header["DATE-OBS"][0:19], "%Y-%m-%dT%H:%M:%S") # beginning of exposure in UTC
+
+	date_str = header["UTDATE"] + 'T' + header['UTSTART']
+	pythondt = datetime.datetime.strptime(date_str) # beginning of exposure in UTC
 	exptime = float(header['EXPTIME'])
 	pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
 	
@@ -703,10 +704,10 @@ def maidanak2k2kheader(rawimg):
 	mjd = myownmjdfloat
 	
 	# The pre-reduction info :
-	preredcomment1 = str(header["PR_NFLAT"])
-	preredcomment2 = str(header["PR_NIGHT"])
-	preredfloat1 = float(header["PR_FSPAN"])
-	preredfloat2 = float(header["PR_FDISP"])
+	preredcomment1 = None
+	preredcomment2 = None
+	preredfloat1 = None
+	preredfloat2 = None
 	
 	# We return a dictionnary containing all this info, that is ready to be inserted into the database.
 	returndict = {'imgname':imgname, 'treatme':treatme, 'gogogo':gogogo, 'whynot':whynot, 'testlist':testlist,'testcomment':testcomment ,
