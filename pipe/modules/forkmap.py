@@ -13,10 +13,10 @@ builtin_map = map
 
 def nprocessors():
   try:
-    try: 
+    try:
 		import multiprocessing
 		return multiprocessing.cpu_count()
-			
+
       #~ # Mac OS
       #~ libc=ctypes.cdll.LoadLibrary(ctypes.util.find_library('libc'))
       #~ v=ctypes.c_int(0)
