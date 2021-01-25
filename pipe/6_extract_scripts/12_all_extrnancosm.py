@@ -105,7 +105,7 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 		if objkeyflag not in db.getFieldNames(imgdb) :
 			db.addFields(imgdb, ['%s:bool' % objkeyflag, '%s:int' % objcosmicskey])
 		else:
-			raise mterror("... funny : the objkey was in the DB ! Please clean objdir and objkey !")
+			raise mterror("... funny : the objkey was in the DB ! Please clean objdir %s and objkey %s!"%(objdir,objkey))
 		os.mkdir(objdir)
 
 

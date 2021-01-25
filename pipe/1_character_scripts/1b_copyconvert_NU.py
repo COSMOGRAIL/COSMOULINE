@@ -32,6 +32,7 @@ print "I will copy/convert %i images." % (nbrofimages)
 proquest(askquestions)
 
 
+
 for i, image in enumerate(images):
 	
 	# check if file exists

@@ -77,7 +77,10 @@ for i, image in enumerate(images):
             continue
 
         skyimagepath = os.path.join(alidir, image["imgname"] + "_sky.fits")
-        skysubimagepath = os.path.join(alidir, image["imgname"] + "_skysub.fits")
+        if defringed :
+            skysubimagepath = os.path.join(alidir, image["imgname"] + "_defringed.fits")
+        else :
+            skysubimagepath = os.path.join(alidir, image["imgname"] + "_skysub.fits")
 
         skyimage = f2n.fromfits(skyimagepath)
         skyimage.setzscale("ex", "ex")
