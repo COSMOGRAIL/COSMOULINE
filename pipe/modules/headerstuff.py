@@ -752,7 +752,10 @@ def Maidanak_2_5kheader(rawimg):
 	testlist = False
 	testcomment = "na"
 
-	date_str = header["DATE-OBS"] + 'T' + header['TIME-OBS']
+	try :
+		date_str = header["DATE-OBS"] + 'T' + header['TIME-OBS']
+	except :
+		date_str = header["UTDATE"] + 'T' + header['UTSTART']
 
 	pythondt = datetime.datetime.strptime(date_str,
 										  "%Y-%m-%dT%H:%M:%S")  # This is the start of the exposure.
@@ -1862,6 +1865,8 @@ def VSTheader(rawimg):
 	header = pyfits.getheader(rawimg)
 	pixsize = 0.215
 	gain = header['GAIN']
+	if gain == 0.0:
+		gain = 1.9
 	print "image : %s, gain : %2.4f"%(imgname, gain)
 	readnoise = 2.1  # from the Health check report in May 2019
 	scalingfactor = 1.0  # no need for it right now...
@@ -2043,7 +2048,7 @@ def LCOheader(rawimg):
     imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
     hdu = fits.open(rawimg)
     header = hdu[0].header
-    pixsize = 0.152
+    pixsize = header['PIXSCALE']
     gain = header['GAIN']
     print("image : %s, gain : %2.4f"%(imgname, gain))
     readnoise = header['RDNOISE'] # from the Health check report in May 2019
