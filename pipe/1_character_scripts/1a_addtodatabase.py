@@ -81,6 +81,8 @@ def readheader(telescopename, rawimg):
 		dbdict = VATTheader(rawimg)
 	elif telescopename == "LCO":
 		dbdict = LCOheader(rawimg)
+	elif telescopename == "NOT":
+		dbdict = Stancamheader(rawimg)
 	else:
 		raise mterror("Unknown telescope.")	
 
