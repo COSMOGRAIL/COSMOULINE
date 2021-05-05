@@ -2043,7 +2043,7 @@ def LCOheader(rawimg):
     imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
     hdu = fits.open(rawimg)
     header = hdu[0].header
-    pixsize = 0.152
+    pixsize = header['PIXSCALE']
     gain = header['GAIN']
     print("image : %s, gain : %2.4f"%(imgname, gain))
     readnoise = header['RDNOISE'] # from the Health check report in May 2019
