@@ -1933,7 +1933,7 @@ def Stancamheader(rawimg):
 	print "image : %s, gain : %2.4f"%(imgname, gain)
 	readnoise = 6.5
 	scalingfactor = 1.0  # no need for it right now...
-	saturlevel = 65000  # in ADU
+	saturlevel = 65000.0  # in ADU
 	rotator = 0.0  # useless
 
 	telescopelongitude = "-17:53:06.00"
@@ -1946,10 +1946,10 @@ def Stancamheader(rawimg):
 	testlist = False
 	testcomment = "na"
 
-	pythondt = datetime.datetime.strptime(header["DATE-OBS"], "%Y-%m-%dT%H:%M:%S") # This is the start of the exposure.
+	pythondt = datetime.datetime.strptime(header["DATE-AVG"][:-2], "%Y-%m-%dT%H:%M:%S") # This is the middle of the exposure
 	exptime = float(header['EXPTIME']) # in seconds.
 
-	pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
+	# pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
 
 	# Now we produce the date and datet fields, middle of exposure :
 
