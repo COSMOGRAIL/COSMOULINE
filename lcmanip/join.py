@@ -62,29 +62,33 @@ if imgskiplistfilename != None:
         imgskiplist = [item[0] for item in imgskiplist]
         images = [image for image in images if image["imgname"] not in imgskiplist]
 
-print "Number of rejected images : %i." % (ava - len(images))
-print "We keep %i images among %i." % (len(images), ava)
 
 # Ok, the selection is done, we are left with the good images.
 
 # Checking for negative fluxes and normalizations, before combining by nights.
 # We do not crash, just print out info to write on skiplist ...
-for image in images:
+bad_index=[]
+for i, image in enumerate(images):
     for sourcename in sourcenames:
         fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
         if float(image[fluxfieldname]) < 0.0:
             print "%s ERROR, negative flux for source %s" % (image["imgname"], sourcename)
             print "Please, put this image on a skiplist and re-export the database."
-            exit()
+            bad_index.append(i)
 
         # We also check the normalizations :
         if image[normcoeffname] is not None :
             if float(image[normcoeffname]) < 0.0:
                 print "%s ERROR, negative normcoeff %s" % (image["imgname"], normcoeffname)
-                exit()
+                bad_index.append(i)
         else :
             print "%s ERROR, none normcoeff %s" % (image["imgname"], normcoeffname)
             exit()
+
+print "I have %i negative flux or negative normcoeff. I will remove those images."%len(bad_index)
+images = [image for i, image in enumerate(images) if i not in bad_index]
+print "Number of rejected images : %i." % (ava - len(images))
+print "We keep %i images among %i." % (len(images), ava)
 
 # We now add some new fields to each image, in preparation to the errorbar calculation.
 

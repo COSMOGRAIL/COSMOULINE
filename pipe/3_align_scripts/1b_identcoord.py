@@ -16,6 +16,7 @@ execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import star
+import numpy as np
 
 
 # Select images to treat
@@ -69,6 +70,14 @@ if len (id["nomatchnames"]) != 0:
 	
 
 preciserefmanstars = star.sortstarlistbyflux(id["match"])
+minx = np.min([s.x for s in preciserefmanstars]) - 10
+maxx = np.max([s.x for s in preciserefmanstars]) + 10
+miny = np.min([s.y for s in preciserefmanstars]) - 10
+maxy = np.max([s.y for s in preciserefmanstars]) + 10 #add some arbirtray margin
+if limit_to_alistar_region :
+	restrict_region = [minx,miny,maxx,maxy]
+else :
+	restrict_region = None
 maxalistars = len(refmanstars)
 
 print "I've read", len(refmanstars), "stars to use for alignment."
@@ -84,13 +93,13 @@ for i,image in enumerate(images):
 	print "scalingratio :", scalingratio
 	
 	sexcat = os.path.join(alidir, image['imgname'] + ".cat")
-	autostars = star.readsexcat(sexcat, maxflag = 16, posflux = True)
+	autostars = star.readsexcat(sexcat, maxflag = 16, posflux = True, restrict_region = restrict_region)
 	autostars = star.sortstarlistbyflux(autostars) # crucial !
 
 	geomapin = os.path.join(alidir, image['imgname'] + ".geomap")
 
 	
-	trans = star.findtrans(preciserefmanstars, autostars, scalingratio = scalingratio, tolerance = identtolerance, minnbrstars = identminnbrstars, mindist = identfindmindist, nref = 10, nauto = 50, verbose=True)
+	trans = star.findtrans(preciserefmanstars, autostars, scalingratio = scalingratio, tolerance = identtolerance, minnbrstars = identminnbrstars, mindist = identfindmindist, nref = 10, nauto = 100, verbose=True)
 
 	if trans["nbrids"] < 0:
 		db.update(imgdb, ['recno'], [image['recno']], {'flagali': 0, 'nbralistars': 0})
