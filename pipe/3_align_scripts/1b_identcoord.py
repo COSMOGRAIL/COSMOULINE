@@ -70,10 +70,10 @@ if len (id["nomatchnames"]) != 0:
 	
 
 preciserefmanstars = star.sortstarlistbyflux(id["match"])
-minx = np.min([s.x for s in preciserefmanstars]) - 10
-maxx = np.max([s.x for s in preciserefmanstars]) + 10
-miny = np.min([s.y for s in preciserefmanstars]) - 10
-maxy = np.max([s.y for s in preciserefmanstars]) + 10 #add some arbirtray margin
+minx = np.min([s.x for s in preciserefmanstars]) - 50
+maxx = np.max([s.x for s in preciserefmanstars]) + 50
+miny = np.min([s.y for s in preciserefmanstars]) - 50
+maxy = np.max([s.y for s in preciserefmanstars]) + 50 #add some arbirtray margin
 if limit_to_alistar_region :
 	restrict_region = [minx,miny,maxx,maxy]
 else :
