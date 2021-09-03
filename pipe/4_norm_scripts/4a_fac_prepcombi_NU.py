@@ -16,7 +16,7 @@ import time
 
 
 
-print("Name of combination: %s" % combibestname)
+print(("Name of combination: %s" % combibestname))
 
 combidir = os.path.join(workdir, combibestkey)
 f = open(os.path.join(workdir, combibestkey + '_log.txt'), 'w')
@@ -28,7 +28,7 @@ if thisisatest:
 else:
 	images = db.select(imgdb, ['gogogo', 'treatme', 'seeing', 'ell', 'medcoeff', 'stddev'], [True, True, '< %f' % combibestmaxseeing, '< %f' % combibestmaxell, '< %f' % combibestmaxmedcoeff, '< %f' % combibestmaxstddev], returnType='dict', sortFields=['setname', 'mjd'])
 
-print("I have selected", len(images), "images.")
+print(("I have selected", len(images), "images."))
 proquest(askquestions)
 
 
@@ -51,7 +51,7 @@ combilist = []
 print("Normalizing images ...")
 
 for i, image in enumerate(images):
-	print(i+1, image['imgname'], image['seeing'], image['ell'], image['medcoeff'], image['sigcoeff'])
+	print((i+1, image['imgname'], image['seeing'], image['ell'], image['medcoeff'], image['sigcoeff']))
 	
 	ali = os.path.join(alidir, image['imgname'] + "_ali.fits")
 	nonorm = os.path.join(combidir, image['imgname'] + "_ali.fits")

@@ -11,7 +11,7 @@
 #	sumlens : sum of the pixels in the small region around the lens
 #
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from pyraf import iraf
 from kirbybase import KirbyBase, KBError
 from variousfct import *
@@ -23,18 +23,18 @@ backupfile(imgdb, dbbudir, "imstat")
 db = KirbyBase()
 
 if update:
-	print "This is an update."
+	print("This is an update.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
 	askquestions=False
 else:
 	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
 
 
-print "OK, we have", len(images), "images to treat."
+print("OK, we have", len(images), "images to treat.")
 proquest(askquestions)
 
 if "stddev" not in db.getFieldNames(imgdb) or "emptymean" not in db.getFieldNames(imgdb):
-	print "I will add some fields to the database."
+	print("I will add some fields to the database.")
 	proquest(askquestions)
 	#db.addFields(imgdb, ['stddev:float', 'maxlens:float', 'sumlens:float'])
 	db.addFields(imgdb, ['stddev:float', 'emptymean:float'])
@@ -45,7 +45,7 @@ starttime = datetime.now()
 tokicklist = []
 for i, image in enumerate(images):
 	
-	print i+1, "/", len(images), ":", image['imgname']
+	print(i+1, "/", len(images), ":", image['imgname'])
 	
 	# iraf examples that were used :
 	#imstatistics images="@list-qso.txt" fields="npix,mean,stddev" nclip=0 format=no >> stat.qso
@@ -83,7 +83,7 @@ for i, image in enumerate(images):
 		tokicklist.append(image['imgname'])
 	
 	#print image['imgname'], npix, mean, midpt, stddev, minval, maxval
-	print "Empty region stddev : %8.2f, median %8.2f, mean %8.2f" % (stddev, midpt, mean)
+	print("Empty region stddev : %8.2f, median %8.2f, mean %8.2f" % (stddev, midpt, mean))
 	db.update(imgdb, ['recno'], [image['recno']], {'stddev': stddev, 'emptymean': mean})
 
 ##################### qso region ########################
@@ -123,19 +123,19 @@ timetaken = nicetimediff(endtime - starttime)
 
 notify(computer, withsound, "I computed some statistics for %i images. It took %s" %(len(images), timetaken))
 
-print len(tokicklist), 'IRAF crashed on these guys:'
+print(len(tokicklist), 'IRAF crashed on these guys:')
 for imgname in tokicklist:
-	print imgname
+	print(imgname)
 
-print "Copy the names above to your kicklist! (or investigate the problems if half of the images are rejected...)"
-print "I can do it for you if you want"
+print("Copy the names above to your kicklist! (or investigate the problems if half of the images are rejected...)")
+print("I can do it for you if you want")
 proquest(askquestions)
 kicklist = open(imgkicklist, "a")
 for imgname in tokicklist:
 	kicklist.write("\n" + imgname)
 kicklist.close()
-print 'Ok, done.'
-print "Do not forget to update your kicklist manually !"
+print('Ok, done.')
+print("Do not forget to update your kicklist manually !")
 
 
 

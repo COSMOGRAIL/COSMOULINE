@@ -3,7 +3,7 @@
 #
 
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
@@ -16,22 +16,22 @@ import os
 
 db = KirbyBase()
 if update:
-	print "This is an update"
+	print("This is an update")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict')
 	askquestions=False
 else:
 	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 
 nbrofimages = len(images)
-print "I have", nbrofimages, "images to treat."
+print("I have", nbrofimages, "images to treat.")
 proquest(askquestions)
 
 starttime = datetime.now()
 
 for i, image in enumerate(images):
 
-	print " -" * 20
-	print i+1, "/", nbrofimages, ":", image['imgname']	
+	print(" -" * 20)
+	print(i+1, "/", nbrofimages, ":", image['imgname'])	
 	
 	imgpath = os.path.join(alidir, image['imgname'] + "_ali.fits")
 	sexcatpath = os.path.join(alidir, image['imgname'] + ".alicat")
@@ -39,12 +39,12 @@ for i, image in enumerate(images):
 	# We run sextractor on the sky subtracted and aligned image :
 	saturlevel = image["gain"] * image["saturlevel"] # to convert to electrons
 	if image["telescopename"] in ["FORS2"]:
-		print "FORS2 detected, switching to FORS extraction parameters"
+		print("FORS2 detected, switching to FORS extraction parameters")
 		cmd = "%s %s -c default_norm_template_FORS.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CATALOG_NAME %s" % (sex, imgpath, image["pixsize"], saturlevel, sexcatpath)
 	else:
 		cmd = "%s %s -c default_norm_template.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CATALOG_NAME %s" % (sex, imgpath, image["pixsize"], saturlevel, sexcatpath)
 
-	print cmd
+	print(cmd)
 
 	os.system(cmd)
 	

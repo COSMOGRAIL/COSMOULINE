@@ -5,7 +5,7 @@
 #
 
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 #from kirbybase import KirbyBase, KBError
 #from calccoeff_fct import *
 from variousfct import *

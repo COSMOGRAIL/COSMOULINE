@@ -1,5 +1,5 @@
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import star
@@ -14,18 +14,18 @@ images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict'
 if update:
 	askquestions = False
 nbrofimages = len(images)
-print "I respect treatme, and selected only %i images" % (nbrofimages)
+print("I respect treatme, and selected only %i images" % (nbrofimages))
 
 # Read the manual star catalog :
 photomstarscatpath = os.path.join(configdir, "photomstars.cat")
 photomstars = star.readmancat(photomstarscatpath)
-print "Photom stars :"
-print "\n".join(["%s\t%.2f\t%.2f" % (s.name, s.x, s.y) for s in photomstars])
+print("Photom stars :")
+print("\n".join(["%s\t%.2f\t%.2f" % (s.name, s.x, s.y) for s in photomstars]))
 
 
 
 nbrofimages = len(images)
-print "I respect treatme and will treat", nbrofimages, "images."
+print("I respect treatme and will treat", nbrofimages, "images.")
 proquest(askquestions)
 
 
@@ -36,7 +36,7 @@ medcoeffs = np.array([image["medcoeff"] for image in images])
 
 def plotdevs(fluxes, label, color):
 	nonepos = np.isnan(fluxes)
-	print "%i images without flux measure." % (np.sum(nonepos))
+	print("%i images without flux measure." % (np.sum(nonepos)))
 	fluxes[nonepos] = 0.0
 	normflux = np.median(fluxes * medcoeffs)
 	normdevs = (fluxes * medcoeffs) / normflux
@@ -48,7 +48,7 @@ def plotdevs(fluxes, label, color):
 for s in photomstars :
 	
 	
-	print "Star %s" % (s.name)
+	print("Star %s" % (s.name))
 	
 	plt.figure(figsize=(12,8))
 	plt.title("Star %s" % (s.name))
@@ -81,7 +81,7 @@ for s in photomstars :
 	if savefigs:
 		plotfilepath = os.path.join(plotdir, "sexphotom_%s_%s_fluxes.pdf" % (sexphotomname, s.name))
 		plt.savefig(plotfilepath)
-		print "Wrote %s" % (plotfilepath)
+		print("Wrote %s" % (plotfilepath))
 	else:
 		plt.show()
 

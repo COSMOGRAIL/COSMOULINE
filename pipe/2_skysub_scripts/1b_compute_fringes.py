@@ -3,7 +3,7 @@
 #
 
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
@@ -15,10 +15,10 @@ from astropy.time import Time
 
 db = KirbyBase()
 if thisisatest:
-	print "This is a test run."
+	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo','treatme','testlist'], [True, True, True], returnType='dict')
 elif update:
-	print "This is an update."
+	print("This is an update.")
 	images = db.select(imgdb, ['gogogo','treatme','updating'], [True, True, True], returnType='dict')
 	askquestions = False
 else:
@@ -27,11 +27,11 @@ else:
 
 def sigmaclipandreplace(data, sigmas=[0.5, 1.2], nit=2):
 
-	print "="*30
+	print("="*30)
 	for i in np.arange(nit):
 		median = np.nanmedian(data)
 		std = np.nanstd(data)
-		print "Iteration %i: median=%.2f, std=%.2f" % (i+1, median, std)
+		print("Iteration %i: median=%.2f, std=%.2f" % (i+1, median, std))
 		if len(sigmas) == 1:
 			sigma=sigmas[0]
 		else:
@@ -63,7 +63,7 @@ def getobsnight(image):
 	return obsnight
 
 nbrimages = len(images)
-print "Number of images to treat :", nbrimages
+print("Number of images to treat :", nbrimages)
 proquest(False)
 
 starttime = datetime.now()
@@ -73,17 +73,17 @@ for obsnight in obsnights:
 
 	#if obsnight != '2016-11-10':
 		#continue
-	print "="*15, obsnight, "="*15
+	print("="*15, obsnight, "="*15)
 
 	nightimages = [image for image in images if image["obsnight"] == obsnight]
 
 	imageas = []
-	print "I'm working on %i images" % len(nightimages)
+	print("I'm working on %i images" % len(nightimages))
 	for image in nightimages:
 
 		imagepath = os.path.join(alidir, image["imgname"] + "_skysub.fits")
 		(imagea, imageh) = fromfits(imagepath, verbose=False)
-		print imagea.shape
+		print(imagea.shape)
 		clippeda = sigmaclipandreplace(imagea, sigmas=[0.5, 1.2], nit=2)
 		imageas.append(clippeda)
 		#tofits(os.path.join(alidir, image["imgname"] + "_clipped.fits"), clippeda)

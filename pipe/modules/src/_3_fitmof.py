@@ -112,7 +112,7 @@ def fitmof(fit_id, data, params, savedir='results/'):
         p.figure(1)
         trace = array(TRACE)
         X = arange(trace.shape[0])
-        for i in xrange(4):
+        for i in range(4):
             p.subplot(2,2,i+1)
             p.title(['theta','width','e','beta'][i])
             p.plot(X, trace[:,i])
@@ -138,7 +138,7 @@ def main(argv=None):
         out.level = 3
         out(1, '~~~ DEBUG MODE ~~~')
     if 'e' in opt: 
-        import prepare
+        from . import prepare
         prepare.main(['_3_fitmof.py', '-ce', cfg])
     if 'h' in opt:
         out(1, 'No help page yet!')
@@ -149,7 +149,7 @@ def main(argv=None):
     MAX_IT = 0
     SHOW = False
     f = open(cfg, 'r')
-    exec f.read()
+    exec(f.read())
     f.close()
     vars = ['FILENAME', 'NOWRITE', 'STARS','NPIX', 'S_FACT', 
             'G_RES', 'IMG_GAIN', 'SIGMA_SKY', 'SKY_BACKGROUND']
@@ -166,7 +166,7 @@ def main(argv=None):
     data['starnb'] = len(STARS) #@UndefinedVariable
     out(1, 'Begin moffat fit on', FILENAME) #@UndefinedVariable
     mpar = []
-    for i in xrange(fnb):
+    for i in range(fnb):
         out(1, '===============', i+1, '/', fnb,'===============')
         out(1, 'Working on', files[i])
         mofpar, r = fitmof(i, data, locals())

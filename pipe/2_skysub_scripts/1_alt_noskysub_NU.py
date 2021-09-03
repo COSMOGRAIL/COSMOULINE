@@ -3,7 +3,7 @@
 #	we do a copy, as this is the first time we need the actual images.
 #
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
@@ -13,11 +13,11 @@ images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
 
 nbrimages = len(images)
 
-print "I will not change the images, just (link or) copy the files."
-print "uselinks : %s" % (uselinks)
+print("I will not change the images, just (link or) copy the files.")
+print("uselinks : %s" % (uselinks))
 proquest(askquestions)
 
-print "Number of images to treat :", nbrimages
+print("Number of images to treat :", nbrimages)
 proquest(askquestions)
 
 starttime = datetime.now()
@@ -25,7 +25,7 @@ starttime = datetime.now()
 
 for i,image in enumerate(images):
 	justname = image['imgname']
-	print i+1, "/", nbrimages, ":", justname
+	print(i+1, "/", nbrimages, ":", justname)
 	
 	recno = image['recno']
 	withskyfilepath = os.path.join(alidir, image['imgname'] + ".fits")

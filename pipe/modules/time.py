@@ -81,7 +81,7 @@ def test(td):
         fmt = "The train arrives in %s. (%s)"
     else:
         fmt = "%s passes fast. (%s)"
-    print fmt % (stringify(td), str(td))
+    print(fmt % (stringify(td), str(td)))
 
 def main():
     global LANG

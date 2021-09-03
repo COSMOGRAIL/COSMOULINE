@@ -9,7 +9,7 @@ os.chdir(filedir)
 
 inputfiles = sorted(glob("*.jpg"))
 
-print inputfiles
+print(inputfiles)
 
 for i, inputname in enumerate(inputfiles):
 	outputname = "%04i.jpg" % (i+1)

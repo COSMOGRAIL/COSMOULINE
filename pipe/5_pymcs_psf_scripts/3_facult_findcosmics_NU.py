@@ -4,13 +4,14 @@ We do not clean them, but mask them in the corresponding sigma images.
 We do not update the database.
 """
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import forkmap
 #import multiprocessing  # if forkmap doesn't work...
 import cosmics
 import star
+import multiprocess
 #import numpy as np
 
 ###########
@@ -25,24 +26,24 @@ objlim = 1.0 # 5.0 seems good for VLT. 1.0 works fine with Euler. Change with ca
 db = KirbyBase()
 
 if thisisatest :
-	print "This is a test run."
+	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 elif update:
-	print "This is an update."
+	print("This is an update.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'updating',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 	askquestions=False
 else :
 	images = db.select(imgdb, ['gogogo', 'treatme',psfkeyflag], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 
 
-print "I will find cosmics of %i images." % len(images)
+print("I will find cosmics of %i images." % len(images))
 
 ncorestouse = forkmap.nprocessors()
 #ncorestouse = multiprocessing.cpu_count()
 if maxcores > 0 and maxcores < ncorestouse:
 	ncorestouse = maxcores
-	print "maxcores = %i" % maxcores
-print "For this I will run on %i cores." % ncorestouse
+	print("maxcores = %i" % maxcores)
+print("For this I will run on %i cores." % ncorestouse)
 proquest(askquestions)
 
 for i, img in enumerate(images):
@@ -55,7 +56,7 @@ psfstars = star.readmancat(psfstarcat)
 def findcosmics(image):
 
 	imgpsfdir = os.path.join(psfdir, image['imgname'])
-	print "Image %i : %s" % (image["execi"], imgpsfdir)
+	print("Image %i : %s" % (image["execi"], imgpsfdir))
 	
 	os.chdir(os.path.join(imgpsfdir, "results"))
 	
@@ -64,7 +65,7 @@ def findcosmics(image):
 	#satlevel = image['saturlevel']*gain*maxpixelvaluecoeff
 	satlevel = -1.0
 	readnoise = image['readnoise']
-	print "Gain %.2f, PSSL %.2f, Readnoise %.2f" % (gain, pssl, readnoise)
+	print("Gain %.2f, PSSL %.2f, Readnoise %.2f" % (gain, pssl, readnoise))
 
 	for i in range(len(psfstars)):
 		starfilename = "star_%03i.fits" % (i+1)
@@ -96,10 +97,7 @@ def findcosmics(image):
 		c.run(maxiter=3)
 
 		ncosmics = np.sum(c.mask)
-		#print ncosmics
-		#if ncosmics != 0:
-		#	print "--- %i pixels ---" % ncosmics
-		
+
 		# We write the mask :
 		cosmics.tofits(starmaskfilename, c.getdilatedmask(size=5), verbose=False)
 		
@@ -112,8 +110,9 @@ def findcosmics(image):
 		(sigarray, sigheader) = cosmics.fromfits(origsigfilename, verbose=False)
 		sigarray[c.getdilatedmask(size=5)] = 1.0e8
 		cosmics.tofits(sigfilename, sigarray, sigheader, verbose=False)
-	
-	
-forkmap.map(findcosmics, images, n = ncorestouse)
+
+
+pool = multiprocess.Pool(processes=ncorestouse)
+pool.map(findcosmics, images)
 
 notify(computer, withsound, "Cosmics masked for psfname %s." % (psfname))

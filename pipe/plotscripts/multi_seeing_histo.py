@@ -2,7 +2,7 @@
 #	Histogramm of the measured seeings, for each set.
 #
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from pylab import * # matplotlib and NumPy etc
@@ -23,7 +23,7 @@ for i, name in enumerate(usedsetnames):
 
 	# We extract the seeing values for this setname
 	seeingvect = array([image['seeing'] for image in images if image['setname'] == name])
-	print "%20s : %4i" %(name, len(seeingvect))
+	print("%20s : %4i" %(name, len(seeingvect)))
 	
 	sub = 0.06+i*(0.88/nsets ) # relative position of the x axis on the figure.
 	ax = axes([0.08, sub, 0.85, 0.78/nsets])

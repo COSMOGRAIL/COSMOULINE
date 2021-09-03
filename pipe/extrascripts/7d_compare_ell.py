@@ -3,7 +3,7 @@ We plot the evolution of the stuff over stuff for various lenses.
 This works with a cosmouline database only (sorry)
 """
 
-execfile("../config.py")  # probably not needed...
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))  # probably not needed...
 from kirbybase import KirbyBase, KBError
 import numpy as np
 import matplotlib.pyplot as plt

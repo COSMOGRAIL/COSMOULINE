@@ -33,18 +33,18 @@ if 0:
 	D_pix = ((-D[0]*arcsectopix)+Ainit_x, (D[1]*arcsectopix)+Ainit_y)
 	G_pix = ((-G[0]*arcsectopix)+Ainit_x, (G[1]*arcsectopix)+Ainit_y)
 
-	print A_pix[0],'\t',A_pix[1]
-	print B_pix[0],'\t',B_pix[1]
-	print C_pix[0],'\t',C_pix[1]
-	print D_pix[0],'\t',D_pix[1]
-	print G_pix[0],'\t',G_pix[1]
+	print(A_pix[0],'\t',A_pix[1])
+	print(B_pix[0],'\t',B_pix[1])
+	print(C_pix[0],'\t',C_pix[1])
+	print(D_pix[0],'\t',D_pix[1])
+	print(G_pix[0],'\t',G_pix[1])
 	sys.exit()
 
 	# to see if a transformation respects your astrometry
-	print '='*50
-	print "diff_AB = ", np.sqrt((B_pix[0]-A_pix[0])**2 + (B_pix[1]-A_pix[1])**2)
-	print "diff_AC = ", np.sqrt((C_pix[0]-A_pix[0])**2 + (D_pix[1]-A_pix[1])**2)
-	print "diff_AD = ", np.sqrt((C_pix[0]-A_pix[0])**2 + (D_pix[1]-A_pix[1])**2)
+	print('='*50)
+	print("diff_AB = ", np.sqrt((B_pix[0]-A_pix[0])**2 + (B_pix[1]-A_pix[1])**2))
+	print("diff_AC = ", np.sqrt((C_pix[0]-A_pix[0])**2 + (D_pix[1]-A_pix[1])**2))
+	print("diff_AD = ", np.sqrt((C_pix[0]-A_pix[0])**2 + (D_pix[1]-A_pix[1])**2))
 
 
 	A_pix_new = (27.664938 ,      37.176521)
@@ -52,9 +52,9 @@ if 0:
 	C_pix_new = (38.872914 ,      34.300117)
 	D_pix_new = (31.986974 ,      29.892582 )
 
-	print "diff_AB_new = ", np.sqrt((B_pix_new[0]-A_pix_new[0])**2 + (B_pix_new[1]-A_pix_new[1])**2)
-	print "diff_AC_new = ", np.sqrt((C_pix_new[0]-A_pix_new[0])**2 + (D_pix_new[1]-A_pix_new[1])**2)
-	print "diff_AD_new = ", np.sqrt((C_pix_new[0]-A_pix_new[0])**2 + (D_pix_new[1]-A_pix_new[1])**2)
+	print("diff_AB_new = ", np.sqrt((B_pix_new[0]-A_pix_new[0])**2 + (B_pix_new[1]-A_pix_new[1])**2))
+	print("diff_AC_new = ", np.sqrt((C_pix_new[0]-A_pix_new[0])**2 + (D_pix_new[1]-A_pix_new[1])**2))
+	print("diff_AD_new = ", np.sqrt((C_pix_new[0]-A_pix_new[0])**2 + (D_pix_new[1]-A_pix_new[1])**2))
 
 
 # draw a background
@@ -128,7 +128,8 @@ if 1:
 		fitsval = getfitsvalue(fitsdata, xs, ys)
 
 
-		def tominim((vals)):
+		def tominim(xxx_todo_changeme):
+			(vals) = xxx_todo_changeme
 			I0 = vals[0]
 			reff_pix = vals[1]
 			sersic_index = vals[2]
@@ -143,7 +144,8 @@ if 1:
 			return res
 
 
-		def tominimtest((vals)):
+		def tominimtest(xxx_todo_changeme1):
+			(vals) = xxx_todo_changeme1
 			x = vals[0]
 			y = vals[1]
 			return (x-1) **2 + (y-2) **2
@@ -156,8 +158,8 @@ if 1:
 		min = minimize(tominim, ([8000, 0.01, 4.5]), bounds=((2000, 10000), (0.01, 0.3), (3, 5)))
 
 		#min = minimize(tominimtest, ([6,6]), bounds=((2,3), (2,12)))
-		print min.x
-		print min.success
+		print(min.x)
+		print(min.success)
 
 		# OPTIMUM PARAMETERS FROM MINIMIZE :[  9.67585375e+02   9.83258231e-02]
 		# OPTIMUM PARAMETERS FROM MINIMIZE :[  5.00351033e+03   2.84755113e-02]
@@ -195,12 +197,12 @@ if 1:
 							pdata[lind][cind] = getprofilevalue(cind+1, lind+1, I0, reff, sersic)
 					convol = scipy.ndimage.filters.convolve(gdata, pdata)
 					res = leastsq(convol, fitsval)
-					print I0, reff, sersic, res
+					print(I0, reff, sersic, res)
 					if res < resmin:
 						resmin = res
 						I0min = I0
 						reffmin = reff
-		print 'Min results: I0 = ', I0min, ' | reff = ', reffmin
+		print('Min results: I0 = ', I0min, ' | reff = ', reffmin)
 
 		sys.exit()
 

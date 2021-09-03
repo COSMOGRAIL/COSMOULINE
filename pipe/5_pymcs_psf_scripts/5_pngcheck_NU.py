@@ -3,7 +3,7 @@
 #	NEW : add a imgname to jpgnumber report, to help the construction of the skiplist
 #
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 import f2n
 import shutil
 from kirbybase import KirbyBase, KBError
@@ -39,10 +39,10 @@ for i, s in enumerate(psfstars):
 db = KirbyBase()
 
 if thisisatest :
-	print "This is a test run."
+	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 elif update:
-	print "This is an update."
+	print("This is an update.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'updating',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 	askquestions=False
 else :
@@ -50,13 +50,13 @@ else :
 
 
 if update:
-	print "I will complete the existing sky folder. Or recreate it if you deleted it to save space"
+	print("I will complete the existing sky folder. Or recreate it if you deleted it to save space")
 	if not os.path.isdir(pngdir):
 		os.mkdir(pngdir)
 
 else:
 	if os.path.isdir(pngdir):
-		print "I will delete existing stuff."
+		print("I will delete existing stuff.")
 		proquest(askquestions)
 		shutil.rmtree(pngdir)
 	os.mkdir(pngdir)
@@ -65,17 +65,17 @@ else:
 
 
 
-print "Something very special here : I do already look at the psfskiplist, so that I don't crash even if some of your pyMCS PSFs are broken."
+print("Something very special here : I do already look at the psfskiplist, so that I don't crash even if some of your pyMCS PSFs are broken.")
 if os.path.exists(psfkicklist):
 	psfskipimages = [image[0] for image in readimagelist(psfkicklist)] # image[1] would be the comment
-	print "It contains %i images." % len(psfskipimages)
+	print("It contains %i images." % len(psfskipimages))
 
 	images = [image for image in images if image["imgname"] not in psfskipimages]
 else:
-	print "No skiplist."
+	print("No skiplist.")
 
 
-print "Number of images :", len(images)
+print("Number of images :", len(images))
 proquest(askquestions)
 
 
@@ -84,8 +84,8 @@ report = open(reportpath,'w')
 
 for i, image in enumerate(images):
 	
-	print "- " * 30
-	print i+1, image['imgname']
+	print("- " * 30)
+	print(i+1, image['imgname'])
 	toreport = str(image['imgname'])+'\t' + str(i+1)
 	report.write(toreport)
 	
@@ -157,7 +157,7 @@ for i, image in enumerate(images):
 			cosmicslist = readpickle(starcosmicspklfilepath, verbose=False)
 		else:
 			cosmicslist = []
-		
+
 		
 			
 		
@@ -270,21 +270,21 @@ if update:  # remove all the symlink and redo it again with the new images
 			pass
 		os.symlink(pngpath, orderlink)
 
-print "- " * 30
+print("- " * 30)
 if os.path.isfile(psfkicklist):
-	print "The psfkicklist already exists :"
+	print("The psfkicklist already exists :")
 else:
 	cmd = "touch " + psfkicklist
 	os.system(cmd)
-	print "I have just touched the psfkicklist for you :"
+	print("I have just touched the psfkicklist for you :")
 
-print psfkicklist
-print "Once you have checked the PSFs (for instance by looking at the pngs),"
-print "you should append problematic psf constructions to that list."
-print "(Same format as for testlist.txt etc)"
-print ""
+print(psfkicklist)
+print("Once you have checked the PSFs (for instance by looking at the pngs),")
+print("you should append problematic psf constructions to that list.")
+print("(Same format as for testlist.txt etc)")
+print("")
 
-print pngdir
+print(pngdir)
 
 if makejpgarchives :
 	makejpgtgz(pngdir, workdir, askquestions = askquestions)

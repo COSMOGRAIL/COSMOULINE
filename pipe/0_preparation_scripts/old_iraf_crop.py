@@ -17,14 +17,14 @@ region = "[15:1014,14:1015]"
 
 
 if not os.path.isdir(destdir):
-	print "Make destdir !"
+	print("Make destdir !")
 	sys.exit()
 
 
 os.chdir(nowdir)
 filelist = sorted(glob("*.fits"))
 
-print len(filelist), "images found."
+print(len(filelist), "images found.")
 
 iraf.imutil()
 iraf.unlearn(iraf.imutil.imcopy)
@@ -33,7 +33,7 @@ iraf.unlearn(iraf.imgeom.imtranspose)
 
 for i, fitsfile in enumerate(filelist):
 
-	print i+1, fitsfile
+	print(i+1, fitsfile)
 	imgname = os.path.splitext(fitsfile)[0]
 	
 	#iraf.imutil.imcopy(fitsfile+region, destdir+imgname+"_crop.fits")

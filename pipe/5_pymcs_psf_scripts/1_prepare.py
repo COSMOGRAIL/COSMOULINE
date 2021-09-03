@@ -1,5 +1,5 @@
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from readandreplace_fct import *
@@ -9,13 +9,13 @@ import star
 db = KirbyBase()
 
 
-print "psfkey =", psfkey
+print("psfkey =", psfkey)
 
-print "Reading psf star catalog ..."
+print("Reading psf star catalog ...")
 psfstars = star.readmancat(psfstarcat)
-print "You want to use stars :"
+print("You want to use stars :")
 for star in psfstars:
-	print star.name
+	print(star.name)
 
 
 if update:
@@ -29,8 +29,8 @@ backupfile(imgdb, dbbudir, "prepare_" + psfkey)
 # Check if the psfdir already exists
 
 if os.path.isdir(psfdir):
-	print "Ok, this psfdir already exists. I will add or rebuild psfs in this set."
-	print "psfdir :", psfdir
+	print("Ok, this psfdir already exists. I will add or rebuild psfs in this set.")
+	print("psfdir :", psfdir)
 	proquest(askquestions)
 	
 	# Check if the psfkeyflag is in the database, to be sure it exists.
@@ -38,13 +38,13 @@ if os.path.isdir(psfdir):
 		raise mterror("... but your corresponding psfkey is not in the database !")
 	
 	if thisisatest:
-		print "This is a test !"
-		print "So you want to combine/replace an existing psf with a test-run."
+		print("This is a test !")
+		print("So you want to combine/replace an existing psf with a test-run.")
 		proquest(askquestions)
 		
 else :
-	print "I will create a NEW psf."
-	print "psfdir :", psfdir
+	print("I will create a NEW psf.")
+	print("psfdir :", psfdir)
 	proquest(askquestions)
 	if psfkeyflag not in db.getFieldNames(imgdb) :
 		db.addFields(imgdb, ['%s:bool' % psfkeyflag])
@@ -57,16 +57,16 @@ else :
 # look for the psfkeyflag in the database !
 
 if thisisatest :
-	print "This is a test run."
+	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict')
 elif update:
-	print "This is an update."
+	print("This is an update.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict')
 else :
 	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 
 
-print "I will treat %i images." % len(images)
+print("I will treat %i images." % len(images))
 proquest(askquestions)
 
 
@@ -79,13 +79,13 @@ starscouplelist = repr([(int(s.x), int(s.y)) for s in psfstars])
 
 for i,image in enumerate(images):
 
-	print "- " * 40
-	print "%i / %i : %s" % (i+1, len(images), image['imgname'])
+	print("- " * 40)
+	print("%i / %i : %s" % (i+1, len(images), image['imgname']))
 	
 	# we clean the imgpsfdir :
 	imgpsfdir = os.path.join(psfdir, image['imgname'])
 	if os.path.isdir(imgpsfdir):
-		print "Deleting existing stuff."
+		print("Deleting existing stuff.")
 		shutil.rmtree(imgpsfdir)
 	os.mkdir(imgpsfdir)
 	
@@ -119,9 +119,9 @@ for i,image in enumerate(images):
 	
 
 
-print "- " * 40
+print("- " * 40)
 
 db.pack(imgdb)
 	
-print "Done."
+print("Done.")
 

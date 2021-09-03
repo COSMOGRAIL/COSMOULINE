@@ -109,7 +109,7 @@ class Param():
         tab = np.array(param)
         self.cons = np.append(self.cons, tab).reshape(self.consnb, len(param))
         tot = np.zeros(len(param), dtype = np.float64)
-        for i in xrange(self.consnb):
+        for i in range(self.consnb):
             tot += self.cons[i]
         tot = tot / self.consnb
         k = self.mofnb*self.moflen

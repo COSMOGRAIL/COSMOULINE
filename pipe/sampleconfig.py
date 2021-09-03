@@ -36,8 +36,8 @@ import sys
 sys.path.append(os.path.join(pipedir, "modules"))
 
 # Read "global parameters" of the lens / deconvolution :
-print os.path.join(configdir, "settings.py")
-execfile(os.path.join(configdir, "settings.py"))
+print(os.path.join(configdir, "settings.py"))
+exec(compile(open(os.path.join(configdir, "settings.py"), "rb").read(), os.path.join(configdir, "settings.py"), 'exec'))
 
 #----------------------- COMPUTER SETUP -----------------------------
 if computer=="vivien":
@@ -208,13 +208,13 @@ deconv_template_filename = os.path.join(configdir, "template_deconv.txt")
 # check for some general dirs
 
 if not os.path.isdir(pipedir):
-	print pipedir
+	print(pipedir)
 	sys.exit("Your pipedir does not exist !")
 if not os.path.isdir(configdir):
-	print configdir
+	print(configdir)
 	sys.exit("Your configdir does not exist !")
 if not os.path.isdir(workdir):
-	print workdir
+	print(workdir)
 	sys.exit("Your workdir does not exist !")
 
 if not os.path.isdir(alidir): 
@@ -232,7 +232,7 @@ if not os.path.isdir(dbbudir):
 
 #---------------------------------------------------------------------------
 
-print "    ### Working in %s ###" % os.path.split(configdir)[-1]
+print("    ### Working in %s ###" % os.path.split(configdir)[-1])
 
 #---------------------------------------------------------------------------
 

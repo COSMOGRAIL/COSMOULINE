@@ -8,7 +8,7 @@
 #	 We do not update the database
 
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 redofromscratch = False
 
 from kirbybase import KirbyBase, KBError
@@ -17,10 +17,10 @@ from variousfct import *
 db = KirbyBase()
 
 if thisisatest:
-	print "This is a test run!"
+	print("This is a test run!")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict')
 elif update:
-	print "This is an update."
+	print("This is an update.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict')
 	askquestions = False
 else:
@@ -28,7 +28,7 @@ else:
 
 nbrofimages = len(images)
 
-print "I will copy/convert %i images." % (nbrofimages)
+print("I will copy/convert %i images." % (nbrofimages))
 proquest(askquestions)
 
 
@@ -36,12 +36,12 @@ proquest(askquestions)
 for i, image in enumerate(images):
 	
 	# check if file exists
-	print image['imgname']
+	print(image['imgname'])
 	outfilename = os.path.join(alidir, image['imgname'] + ".fits")
-	print i+1, "/", nbrofimages, " : ", image['imgname'], ", gain = %.3f" % (image['gain'])
+	print(i+1, "/", nbrofimages, " : ", image['imgname'], ", gain = %.3f" % (image['gain']))
 	if not redofromscratch:
 		if os.path.isfile(outfilename):
-			print "Image already exists. I skip..."
+			print("Image already exists. I skip...")
 			#pass
 			continue
 	
@@ -53,6 +53,6 @@ for i, image in enumerate(images):
 
 #db.pack(imgdb)
 
-print "Done with copy/conversion."
+print("Done with copy/conversion.")
 
 

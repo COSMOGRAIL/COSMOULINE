@@ -3,7 +3,7 @@
 #
 import sys
 if len(sys.argv) == 2:
-	execfile("../config.py")
+	exec (open("../config.py").read())
 	decobjname = sys.argv[1]
 	deckey = "dec_" + decname + "_" + decobjname + "_" + decnormfieldname + "_" + "_".join(decpsfnames)
 	ptsrccat = os.path.join(configdir, deckey + "_ptsrc.cat")
@@ -12,12 +12,12 @@ if len(sys.argv) == 2:
 	deckeypsfused = "decpsf_" + deckey
 	deckeynormused = "decnorm_" + deckey
 	decdir = os.path.join(workdir, deckey)
-	print "You are running the deconvolution on all the stars at once."
-	print "Current star : " + sys.argv[1]
+	print("You are running the deconvolution on all the stars at once.")
+	print("Current star : " + sys.argv[1])
 
 
 else:
-	execfile("../config.py")
+	exec (open("../config.py").read())
 import shutil
 import f2n
 from kirbybase import KirbyBase, KBError
@@ -32,7 +32,7 @@ deconvonly = False  # If set to True, I will make pngs only for the deconvolutio
 
 if update:
 	# override config settings...
-	execfile(os.path.join(configdir, 'deconv_config_update.py'))
+	exec (open(os.path.join(configdir, 'deconv_config_update.py')).read())
 	askquestions=False
 	#print "It takes too long, I skip this step..."
 	#sys.exit()
@@ -42,7 +42,7 @@ pngkey = deckey + "_png"
 pngdir = os.path.join(workdir, pngkey)
 
 if os.path.isdir(pngdir):
-	print "Deleting existing stuff."
+	print("Deleting existing stuff.")
 	proquest(askquestions)
 	shutil.rmtree(pngdir)
 	
@@ -54,20 +54,20 @@ os.mkdir(pngdir)
 
 # Read input positions of point sources, to draw a legend.
 ptsrcs = star.readmancat(ptsrccat)
-print "Number of point sources :", len(ptsrcs)
+print("Number of point sources :", len(ptsrcs))
 
 
 
 db = KirbyBase()
 if sample_only :
-	print "I will draw the png only for your test sample."
+	print("I will draw the png only for your test sample.")
 	images = db.select(imgdb, [deckeyfilenum,'testlist'], ['\d\d*',True], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum])
 else :
 	images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum])
 
 
 # This time we do not include the duplicated reference !
-print "Number of images (we disregard the duplicated reference) : %i" % (len(images))
+print("Number of images (we disregard the duplicated reference) : %i" % (len(images)))
 
 # Now, just for these pngs, lets put the unique ref image into the first position :
 # We select the reference image
@@ -83,9 +83,9 @@ images.insert(0, refimage)
 
 for i, image in enumerate(images):
 	
-	print "- " * 40
+	print("- " * 40)
 	code = image[deckeyfilenum]
-	print i+1, "/", len(images), ":", image['imgname'], code
+	print(i+1, "/", len(images), ":", image['imgname'], code)
 	
 	# We want to look for cosmics. Not that obvious, as we have left all the cosmic detections into the objdirs...
 	# We do this in a robust way, i.e. only if we find the required files...
@@ -170,7 +170,7 @@ for i, image in enumerate(images):
 	badpsf, h = fromfits(os.path.join(decdir, "s" +code+".fits"), verbose=False)
 	goodpsf = np.zeros(badpsf.shape)
 	psfsize = 128
-	h = psfsize/2
+	h = int(psfsize/2)
 	goodpsf[:h,:h] = badpsf[h:,h:]
 	goodpsf[:h,h:] = badpsf[h:,:h]
 	goodpsf[h:,:h] = badpsf[:h,h:]
@@ -191,7 +191,7 @@ for i, image in enumerate(images):
 	legend.makepilimage(scale = "lin", negative = False)
 	legend.upsample(4)
 	for ptsrc in ptsrcs:
-		print ptsrc.name
+		print(ptsrc.name)
 		#legend.drawcircle(ptsrc.x, ptsrc.y, r=0.5, colour=255, label=ptsrc.name)
 		legend.drawcircle(ptsrc.x, ptsrc.y, r=0.5, colour=255, label=str(ptsrc.name))
 	legend.writeinfo(["Legend"])
@@ -242,13 +242,13 @@ for i, image in enumerate(images):
 	# Before going on with the next image, we build a special link for the ref image (i.e. the first one, in this case) :
 	
 	if image["imgname"] == refimgname:
-		print "This was the reference image."
+		print("This was the reference image.")
 		sourcepath = pngpath
 		destpath = os.path.join(workdir, deckey + "_ref.png")
 		copyorlink(sourcepath, destpath, uselinks)
-		print "For this special image I made a link into the workdir :"
-		print destpath
-		print "I would now continue for all the other images."
+		print("For this special image I made a link into the workdir :")
+		print(destpath)
+		print("I would now continue for all the other images.")
 		
 		# We do something similar with the background image as fits :
 		copyorlink(os.path.join(decdir, "back0001.fits"), os.path.join(workdir, deckey + "_back.fits"), uselinks)
@@ -256,14 +256,14 @@ for i, image in enumerate(images):
 		
 		proquest(askquestions)
 	
-print "- " * 40
+print("- " * 40)
 
 
 notify(computer, withsound, "Done.")
 
-print "I've made deconvolution pngs for", deckey
-print "Note : for these pngs, the filenames of the links"
-print "refer to decfilenums, not to a chronological order ! "
+print("I've made deconvolution pngs for", deckey)
+print("Note : for these pngs, the filenames of the links")
+print("refer to decfilenums, not to a chronological order ! ")
 
 if makejpgarchives :
 	makejpgtgz(pngdir, workdir, askquestions = askquestions)

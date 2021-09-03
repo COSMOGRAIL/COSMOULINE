@@ -4,12 +4,12 @@
 #	Example: if setname = 1 then set treatme to false.
 #
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 
 
-print "This script is to change the treatme flags... adapt the source !"
+print("This script is to change the treatme flags... adapt the source !")
 proquest(askquestions)
 
 
@@ -33,7 +33,7 @@ n = db.update(imgdb, ['imgname'], ['1_ogg2m001-fs02-20200419-0080-e91'], [True],
 #n = db.update(imgdb, ['imgname'], [refimgname], [True], ['treatme'])
 
 
-print "Number of updates : %i" % n
+print("Number of updates : %i" % n)
 
 # And do not forget to pack afterwards.
 db.pack(imgdb)

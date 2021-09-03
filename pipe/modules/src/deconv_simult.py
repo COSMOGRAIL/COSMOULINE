@@ -33,17 +33,17 @@ def deconv(data, params, savedir='results/'):
 
     out(2, 'Initialization')
     nimg = params['filenb']
-    objs = [data['objs'][i][0].astype('float64') for i in xrange(nimg)]
-    sigmas = [data['objssigs'][i][0].astype('float64') for i in xrange(nimg)]
-    masks = [data['objsmasks'][i][0].astype('float64') for i in xrange(nimg)]
-    psfs = [data['psfs'][i][0].astype('float64') for i in xrange(nimg)]
+    objs = [data['objs'][i][0].astype('float64') for i in range(nimg)]
+    sigmas = [data['objssigs'][i][0].astype('float64') for i in range(nimg)]
+    masks = [data['objsmasks'][i][0].astype('float64') for i in range(nimg)]
+    psfs = [data['psfs'][i][0].astype('float64') for i in range(nimg)]
     dev = stddev[0]
     mpar = mpar[0]
     gpar = gpar[0]
     gpos = gpos[0]
     bshape = objs[0].shape
     sshape = (int(bshape[0]*sfact), int(bshape[1]*sfact))
-    sources = [PSF(sshape, (sshape[0]/2., sshape[1]/2.)) for i in xrange(nimg)]
+    sources = [PSF(sshape, (sshape[0]/2., sshape[1]/2.)) for i in range(nimg)]
     
     ############### Prepare the gaussian PSF ###############
     r_len = sshape[0]
@@ -88,7 +88,7 @@ def deconv(data, params, savedir='results/'):
     imgs += [bak, dec.ini]
     names += ['background', 'bkg_ini']   
     dec.set_sources(src_par, bak)
-    for i in xrange(len(objs)):        
+    for i in range(len(objs)):        
         bak_conv = conv(dec.psfs[i], bak+dec.sources[i].array)
         resi = dec.get_im_resi(bak_conv, i)
         imgs += [objs[i], resi, dec.sources[i].array, bak+dec.sources[i].array]
@@ -143,10 +143,10 @@ def main(argv=None):
         out.level = 3
         out(1, '~~~ DEBUG MODE ~~~')
     if 'b' in opt: 
-        import prepare
+        from . import prepare
         prepare.main(['deconv.py', '-b', cfg])
     if 'e' in opt: 
-        import prepare
+        from . import prepare
         prepare.main(['deconv.py', '-ce', cfg])
     if 'i' in opt: 
         FORCE_INI = True
@@ -157,7 +157,7 @@ def main(argv=None):
     
     #TODO: check workspace
     f = open(cfg, 'r')
-    exec f.read()
+    exec(f.read())
     f.close()
     vars = ['FILENAME', 'MAX_IT_D', 'S_FACT', 'G_RES', 'SIGMA_SKY',
             'MOF_PARAMS', 'G_STRAT', 'G_PARAMS', 'G_POS', 'CENTER']

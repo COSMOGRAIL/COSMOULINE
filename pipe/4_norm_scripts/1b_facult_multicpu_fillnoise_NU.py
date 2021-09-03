@@ -6,7 +6,7 @@ It seems to work.
 
 """
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import numpy as np
@@ -14,7 +14,7 @@ import cosmics # used to read and write the fits files
 import multiprocessing
 
 def fillnoise(n, image, n_im_tot): 
-	print n+1, "/", n_im_tot, ":", image['imgname']
+	print(n+1, "/", n_im_tot, ":", image['imgname'])
 	
 	aliimg = os.path.join(alidir, image['imgname'] + "_ali.fits")
 	
@@ -37,23 +37,22 @@ def fillnoise_aux(args):
 
 db = KirbyBase()
 if update:
-	print "This is an update."
+	print("This is an update.")
 	images = db.select(imgdb, ['flagali','gogogo','treatme', 'updating'], ['==1',True, True, True], ['recno','imgname', 'stddev'], sortFields=['imgname'], returnType='dict')
 	askquestions=False
 else:
 	images = db.select(imgdb, ['flagali','gogogo','treatme'], ['==1',True, True], ['recno','imgname', 'stddev'], sortFields=['imgname'], returnType='dict')
 
-print "I will treat %i images." % len(images)
+print("I will treat %i images." % len(images))
 proquest(askquestions)
 
 n_im_tot = len(images)
 
 ncorestouse = multiprocessing.cpu_count()
-#~ ncorestouse = forkmap.nprocessors()
 if maxcores > 0 and maxcores < ncorestouse:
 	ncorestouse = maxcores
-	print "maxcores = %i" % maxcores
-print "For this I will run on %i cores." % ncorestouse
+	print("maxcores = %i" % maxcores)
+print("For this I will run on %i cores." % ncorestouse)
 
 pool = multiprocessing.Pool(processes = ncorestouse)
 job_args = [(n, image, n_im_tot) for n, image in enumerate(images)]

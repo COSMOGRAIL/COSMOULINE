@@ -17,7 +17,7 @@ from variousfct import *
 import time
 
 
-print("combibestname : %s" % combibestname)
+print(("combibestname : %s" % combibestname))
 proquest(askquestions)
 
 

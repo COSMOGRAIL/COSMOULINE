@@ -2,7 +2,7 @@
 We color points according to airmass.
 """
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 import variousfct
 import headerstuff
@@ -12,21 +12,21 @@ import matplotlib.pyplot as plt
 import matplotlib.dates
 
 
-print "You want to analyze the deconvolution %s" %deckey
-print "Deconvolved object : %s" % decobjname
+print("You want to analyze the deconvolution %s" %deckey)
+print("Deconvolved object : %s" % decobjname)
 if plotnormfieldname == None:
-	print "I will use the normalization coeffs used for the deconvolution."
+	print("I will use the normalization coeffs used for the deconvolution.")
 else:
-	print "Using %s for the normalization." % (plotnormfieldname)
+	print("Using %s for the normalization." % (plotnormfieldname))
 	deckeynormused = plotnormfieldname
 
 ptsources = star.readmancat(ptsrccat)
-print "Number of point sources : %i" % len(ptsources)
-print "Names of sources : %s" % ", ".join([s.name for s in ptsources])
+print("Number of point sources : %i" % len(ptsources))
+print("Names of sources : %s" % ", ".join([s.name for s in ptsources]))
 
 db = KirbyBase()
 images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=['mjd'])
-print "%i images" % len(images)
+print("%i images" % len(images))
 
 fieldnames = db.getFieldNames(imgdb)
 
@@ -86,7 +86,7 @@ if savefigs:
 	else :
 		plotfilepath = os.path.join(plotdir, "%s_lc_by_airmass.pdf" % (deckey))
 	plt.savefig(plotfilepath)
-	print "Wrote %s" % (plotfilepath)
+	print("Wrote %s" % (plotfilepath))
 else:
 	plt.show()
 

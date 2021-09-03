@@ -3,11 +3,11 @@
 #
 
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 
-print "I will set medcoeff to 1 for all images."
+print("I will set medcoeff to 1 for all images.")
 # print imgkicklist
 
 # imagestokick = readimagelist(imgkicklist)
@@ -20,15 +20,15 @@ backupfile(imgdb, dbbudir, "setmedcoeff")
 
 db = KirbyBase()
 images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict') # selects according to treatme
-print "I will treat " + str(len(images)) + " images."
+print("I will treat " + str(len(images)) + " images.")
 for image in images:
-    print image['imgname']
+    print(image['imgname'])
     nbupdate = db.update(imgdb, ['gogogo','treatme'], [True, True], [1.0], ['medcoeff'])
     if nbupdate == 1:
-        print "updated"
+        print("updated")
     else:
-        print "# # # WARNING # # #"
-        print "Image could not be updated. Perhaps not in database ?"
+        print("# # # WARNING # # #")
+        print("Image could not be updated. Perhaps not in database ?")
 
 # images = db.select(imgdb, ['recno'], ['*'], returnType='dict')
 # for image in images:

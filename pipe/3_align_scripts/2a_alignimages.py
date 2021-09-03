@@ -4,7 +4,7 @@
 #
 
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 
 from kirbybase import KirbyBase, KBError
 import math
@@ -17,10 +17,10 @@ backupfile(imgdb, dbbudir, "alignimages")
 
 db = KirbyBase()
 if thisisatest:
-	print "This is a test."
+	print("This is a test.")
 	images = db.select(imgdb, ['flagali','gogogo','treatme', 'testlist'], ['==1',True, True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
 elif update:
-	print "This is an update."
+	print("This is an update.")
 	images = db.select(imgdb, ['flagali','gogogo','treatme', 'updating'], ['==1',True, True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
 	askquestions = False
 else:
@@ -40,20 +40,20 @@ else:
 
 
 if "geomapangle" not in db.getFieldNames(imgdb) :
-	print "I will add some fields to the database."
+	print("I will add some fields to the database.")
 	proquest(askquestions)
 	db.addFields(imgdb, ['geomapangle:float', 'geomaprms:float', 'geomapscale:float'])
 
 nbrofimages = len(images)
-print "Number of images to treat :", nbrofimages
+print("Number of images to treat :", nbrofimages)
 proquest(askquestions)
 
 starttime = datetime.now()
 
 for i,image in enumerate(images):
 
-	print "--------------------"
-	print i+1, "/", nbrofimages, image['imgname']
+	print("--------------------")
+	print(i+1, "/", nbrofimages, image['imgname'])
 	
 	imgtorotate = os.path.join(alidir, image['imgname'] + "_skysub.fits")
 	geomapin = os.path.join(alidir, image['imgname'] + ".geomap")
@@ -96,13 +96,13 @@ for i,image in enumerate(images):
 	if mapscale[0] != mapscale[1]:
 		raise mterror("Error reading geomap scale")
 	
-	print "Scale :", geomapscale
-	print "Angle :", geomapangle
-	print "RMS   :", geomaprms
+	print("Scale :", geomapscale)
+	print("Angle :", geomapangle)
+	print("RMS   :", geomaprms)
 	
 	db.update(imgdb, ['recno'], [image['recno']], {'geomapangle': geomapangle, 'geomaprms': geomaprms, 'geomapscale': geomapscale})
 
-	print "geomap done"
+	print("geomap done")
 
 	iraf.unlearn(iraf.gregister)
 	iraf.gregister.geometry = "geometric"	# linear, distortion, geometric
@@ -113,7 +113,7 @@ for i,image in enumerate(images):
 
 	regblabla = iraf.gregister(input = imgtorotate, output = aliimg, database = databasename, transform = "broccoli", xmin = 1, xmax = dimx, ymin = 1, ymax = dimy, Stdout=1)
 
-	print "gregister done"
+	print("gregister done")
 
 if os.path.isfile(databasename):
 	os.remove(databasename)

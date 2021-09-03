@@ -3,23 +3,21 @@ Joins images by night, automatically splitting according to different telescope 
 and exports the resulting lightcurves as plain rdb lists.
 """
 
-execfile("config.py")
+exec(compile(open("config.py", "rb").read(), "config.py", 'exec'))
 import matplotlib.pyplot as plt
 import matplotlib.dates
 
 # Reading the db :
 images = variousfct.readpickle(dbfilepath, verbose=True)
-print "%i images in db." % (len(images))
-print(images[0].keys())
+print("%i images in db." % (len(images)))
 
 # Selecting the right telescopes and setnames :
-images = [image for image in images if
-          (image["telescopename"] in telescopenames) and (image["setname"] in setnames) and (image["gogogo"] == True)]
-print "%i images have the chosen telescope- and set- names." % (len(images))
+images = [image for image in images if (image["telescopename"] in telescopenames) and (image["setname"] in setnames) and (image["gogogo"] == True) ]
+print("%i images have the chosen telescope- and set- names." % (len(images)))
 
 # Selecting the right deconvolution :
-images = [image for image in images if image["decfilenum_" + deconvname] != None]
-print "%i images are deconvolved (among the latter)." % (len(images))
+images = [image for image in images if image["decfilenum_" + deconvname] != None] 
+print("%i images are deconvolved (among the latter)." % (len(images)))
 ava = len(images)
 
 # Special tweak if you request medcoeff ...
@@ -33,60 +31,64 @@ if normcoeffname == "medcoeff":
 
 before = len(images)
 images = [image for image in images if image["seeing"] <= imgmaxseeing]
-print "Rejected because seeing > %.2f : %i" % (imgmaxseeing, before - len(images))
+print("Rejected because seeing > %.2f : %i" % (imgmaxseeing, before-len(images)))
 
 before = len(images)
 images = [image for image in images if image["ell"] <= imgmaxell]
-print "Rejected because ell > %.2f : %i" % (imgmaxell, before - len(images))
+print("Rejected because ell > %.2f : %i" % (imgmaxell, before-len(images)))
 
 before = len(images)
-images = [image for image in images if image["skylevel"] * image[
-    "medcoeff"] <= imgmaxrelskylevel]  # We rescale the sky level in the same way as for source fluxes.
-print "Rejected because relskylevel > %.2f : %i" % (imgmaxrelskylevel, before - len(images))
+images = [image for image in images if image["skylevel"]*image["medcoeff"] <= imgmaxrelskylevel] # We rescale the sky level in the same way as for source fluxes.
+print("Rejected because relskylevel > %.2f : %i" % (imgmaxrelskylevel, before-len(images)))
 
 before = len(images)
 images = [image for image in images if image["medcoeff"] <= imgmaxmedcoeff]
-print "Rejected because medcoeff > %.2f : %i" % (imgmaxmedcoeff, before - len(images))
+print("Rejected because medcoeff > %.2f : %i" % (imgmaxmedcoeff, before-len(images)))
 
 # Rejecting according to an eventual skiplist :
 if imgskiplistfilename != None:
-    if isinstance(imgskiplistfilename, (list,)):
-        for skip in imgskiplistfilename:
-            imgskiplist = variousfct.readimagelist(os.path.join(lcmanipdir, skip))
-            # Getting the image names, disregarding the comments :
-            imgskiplist = [item[0] for item in imgskiplist]
-            images = [image for image in images if image["imgname"] not in imgskiplist]
-    else:
-        imgskiplist = variousfct.readimagelist(os.path.join(lcmanipdir, imgskiplistfilename))
-        # Getting the image names, disregarding the comments :
-        imgskiplist = [item[0] for item in imgskiplist]
-        images = [image for image in images if image["imgname"] not in imgskiplist]
+	if isinstance(imgskiplistfilename, list):
+		for skip in imgskiplistfilename:
+			imgskiplist = variousfct.readimagelist(os.path.join(lcmanipdir, skip))
+			# Getting the image names, disregarding the comments :
+			imgskiplist = [item[0] for item in imgskiplist]
+			images = [image for image in images if image["imgname"] not in imgskiplist]
+	else :
+		imgskiplist = variousfct.readimagelist(os.path.join(lcmanipdir, imgskiplistfilename))
+		# Getting the image names, disregarding the comments :
+		imgskiplist = [item[0] for item in imgskiplist]
+		images = [image for image in images if image["imgname"] not in imgskiplist]
 
-print "Number of rejected images : %i." % (ava - len(images))
-print "We keep %i images among %i." % (len(images), ava)
+print("Number of rejected images : %i." % (ava - len(images)))
+print("We keep %i images among %i." % (len(images), ava))
 
 # Ok, the selection is done, we are left with the good images.
 
 # Checking for negative fluxes and normalizations, before combining by nights.
 # We do not crash, just print out info to write on skiplist ...
+bad_index=[]
 for image in images:
     for sourcename in sourcenames:
         fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
         if float(image[fluxfieldname]) < 0.0:
-            print "%s ERROR, negative flux for source %s" % (image["imgname"], sourcename)
-            print "Please, put this image on a skiplist and re-export the database."
-            exit()
+            print("%s ERROR, negative flux for source %s" % (image["imgname"], sourcename))
+            print("Please, put this image on a skiplist and re-export the database.")
+            bad_index.append(i)
 
         # We also check the normalizations :
         if image[normcoeffname] is not None :
             if float(image[normcoeffname]) < 0.0:
-                print "%s ERROR, negative normcoeff %s" % (image["imgname"], normcoeffname)
-                exit()
+                print("%s ERROR, negative normcoeff %s" % (image["imgname"], normcoeffname))
+                bad_index.append(i)
         else :
-            print "%s ERROR, none normcoeff %s" % (image["imgname"], normcoeffname)
+            print("%s ERROR, none normcoeff %s" % (image["imgname"], normcoeffname))
             exit()
 
 # We now add some new fields to each image, in preparation to the errorbar calculation.
+print("I have %i negative flux or negative normcoeff. I will remove those images."%len(bad_index))
+images = [image for i, image in enumerate(images) if i not in bad_index]
+print("Number of rejected images : %i." % (ava - len(images)))
+print("We keep %i images among %i." % (len(images), ava))
 
 for image in images:
 
@@ -111,14 +113,16 @@ for image in images:
 # At this point we group the images by nights, all the individual computations are done.
 
 nights = groupfct.groupbynights(images, separatesetnames=False)
-print "This gives me %i nights." % len(nights)
+print("This gives me %i nights." % len(nights))
 
-nbimgs = map(len, nights)  # The number of images in each night, as floats
+nbimgs = list(map(len, nights)) # The number of images in each night, as floats
 
-print "Histogram of number of images per night :"
+
+print("Histogram of number of images per night :")
 h = ["%4i nights with %i images" % (nbimgs.count(c), c) for c in sorted(list(set(nbimgs)))]
 for l in h:
-    print l
+	print(l)
+
 
 sqrtnbimgs = np.sqrt(np.array(nbimgs) + 0.0)  # This is the numpy array used for computations
 
@@ -141,9 +145,9 @@ mednormcoeffsigmas = np.fabs(np.array(
 medrelnormcoeffsigmas = mednormcoeffsigmas / mednormcoeffs  # relative errors on the norm coeffs
 
 import numpy as np
+print("Median seeing: ", np.median([img["seeing"] for img in images]))
+print("Median sampling: ", (np.max(mhjds)-np.min(mhjds))/len(nights))
 
-print "Median seeing: ", np.median([img["seeing"] for img in images])
-print "Median sampling: ", (np.max(mhjds) - np.min(mhjds)) / len(nights)
 fig1 = plt.figure(figsize=(6, 4))
 fig1.subplots_adjust(left=0.1, right=0.97, bottom=0.15, top=0.98, wspace=0.01)
 plt.subplot(1, 2, 1)
@@ -169,36 +173,34 @@ plt.show()
 fig1.savefig(os.path.join(lcmanipdir, outputname + "_median_seeing.png"))
 
 if min(mednormcoeffsigmas) <= 0.0001:
-    print "####### WARNING : some normcoefferrs seem to be zero ! #############"
-    print "Check/redo the normalization (with more stars ?), otherwise some of my error bars might be too small."
-
-meannormcoeffnbs = np.fabs(np.array(groupfct.values(nights, normcoeffname + "_comment", normkey=None)[
-                                        'mean']))  # Number of stars for coeff (mean -> float !)
-print "Histogram of mean number of normalization stars per night :"
-h = ["%4i nights with %i stars" % (list(meannormcoeffnbs).count(c), c) for c in
-     sorted(list(set(list(meannormcoeffnbs))))]
+	print("####### WARNING : some normcoefferrs seem to be zero ! #############")
+	print("Check/redo the normalization (with more stars ?), otherwise some of my error bars might be too small.")
+	
+meannormcoeffnbs = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_comment", normkey=None)['mean'])) # Number of stars for coeff (mean -> float !)
+print("Histogram of mean number of normalization stars per night :")
+h = ["%4i nights with %i stars" % (list(meannormcoeffnbs).count(c), c) for c in sorted(list(set(list(meannormcoeffnbs))))]
 for l in h:
-    print l
+	print(l)
 
 # We rescale the sky level in the same way as for source fluxes :
 medrelskylevels = np.asarray(medskylevels) * np.asarray(mednormcoeffs)
 
 # The flags for nights (True if the night is OK) :
 nightseeingbad = np.asarray(medseeings) < nightmaxseeing
-print "Night seeing > %.2f : %i" % (nightmaxseeing, np.sum(nightseeingbad == False))
+print("Night seeing > %.2f : %i" % (nightmaxseeing, np.sum(nightseeingbad == False)))
 nightellbad = np.asarray(medells) < nightmaxell
-print "Night ell > %.2f : %i" % (nightmaxell, np.sum(nightellbad == False))
+print("Night ell > %.2f : %i" % (nightmaxell, np.sum(nightellbad == False)))
 nightskylevelbad = medrelskylevels < nightmaxrelskylevel
-print "Night relskylevel > %.2f : %i" % (nightmaxrelskylevel, np.sum(nightskylevelbad == False))
+print("Night relskylevel > %.2f : %i" % (nightmaxrelskylevel, np.sum(nightskylevelbad == False)))
 nightnormcoeffbad = np.asarray(mednormcoeffs) < nightmaxnormcoeff
-print "Night normcoeff > %.2f : %i" % (nightmaxnormcoeff, np.sum(nightnormcoeffbad == False))
+print("Night normcoeff > %.2f : %i" % (nightmaxnormcoeff, np.sum(nightnormcoeffbad == False)))
 nightnbimgbad = np.asarray(nbimgs) >= nightminnbimg
-print "Night nbimg < %i : %i" % (nightminnbimg, np.sum(nightnbimgbad == False))
+print("Night nbimg < %i : %i" % (nightminnbimg, np.sum(nightnbimgbad == False)))
 
 flags = np.logical_and(np.logical_and(nightseeingbad, nightellbad), np.logical_and(nightskylevelbad, nightnormcoeffbad))
 flags = np.logical_and(flags, nightnbimgbad)
 
-print "%i nights are flagged as bad (i.e., they have flag = False)." % (np.sum(flags == False))
+print("%i nights are flagged as bad (i.e., they have flag = False)." % (np.sum(flags == False)))
 
 # We prepare a structure for the rdb file. It is an ordered list of dicts, each dict has two keys : column name and the data.
 exportcols = [
@@ -347,7 +349,7 @@ for i, sourcename in enumerate(sourcenames):
     plt.plot(np.asarray(mhjds)[flags == False], np.asarray(mags)[flags == False], linestyle="None", marker="o",
              markersize=8., markeredgecolor="black", markerfacecolor="None", color="black")
     rms, mean_error = variousfct.measure_rms_scatter(mhjds, mags, magerrs, time_chunk=20)
-    print "Image %s :  rms scatter %2.4f mag, mean photometric error : %2.4f mag"%(sourcename, np.median(rms), np.median(mean_error))
+    print ("Image %s :  rms scatter %2.4f mag, mean photometric error : %2.4f mag"%(sourcename, np.median(rms), np.median(mean_error)))
 
 
 # reverse y axis for magnitudes :
@@ -378,12 +380,13 @@ yearx.xaxis.tick_top()
 yearx.set_xlabel("Date")
 
 if showplots == True:
-    plt.show()
-    fig2.savefig(os.path.join(lcmanipdir, outputname + "_plot.pdf"))
-    print "Wrote plot."
+	plt.show()
+	fig2.savefig(os.path.join(lcmanipdir, outputname + "_plot.pdf"))
+	print("Wrote plot.")
 else:
-    fig2.savefig(os.path.join(lcmanipdir, outputname + "_plot.pdf"))
-    print "Wrote plot."
+	fig2.savefig(os.path.join(lcmanipdir, outputname + "_plot.pdf"))
+	print("Wrote plot.")
+
 
 plt.clf()
 
@@ -405,7 +408,7 @@ ax.legend()
 if showplots == True:
     plt.show()
 else:
-    fig3.savefig(os.path.join(lcmanipdir, outputname + "_plot_magerrs.pdf"))
-    print "Wrote plot."
+	fig3.savefig(os.path.join(lcmanipdir, outputname + "_plot_magerrs.pdf"))
+	print("Wrote plot.")
 
-print "Done."
+print("Done.")

@@ -25,14 +25,14 @@ flip = "[*,-*]"
 
 
 if not os.path.isdir(destdir):
-	print "Make destdir !"
+	print("Make destdir !")
 	sys.exit()
 
 
 os.chdir(nowdir)
 filelist = sorted(glob("*.fits"))
 
-print len(filelist), "images found."
+print(len(filelist), "images found.")
 
 
 iraf.imutil()
@@ -42,7 +42,7 @@ iraf.unlearn(iraf.imgeom.imtranspose)
 
 for i, fitsfile in enumerate(filelist):
 
-	print i+1, fitsfile
+	print(i+1, fitsfile)
 	imgname = fitsfile.split(".")[0]
 	#iraf.imutil.imcopy(fitsfile+region, destdir+imgname+"_crop.fits")
 	#iraf.imutil.imcopy(destdir+imgname+"_crop.fits"+rotation, destdir+imgname+"_flip.fits")

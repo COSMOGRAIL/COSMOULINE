@@ -18,21 +18,21 @@ def writerdb(columns, filename, writeheader=True):
 	import os
 	
 	# Just to be sure, we stat by checking if the columns all have the same length.
-	lengths = map(lambda x : len(x["data"]), columns)
+	lengths = [len(x["data"]) for x in columns]
 	if len(set(lengths)) != 1:
 		raise mterror("Columns must all have the same length !")
 	
 	colnames = [column["name"] for column in columns]
 	
-	if 0 in map(len, colnames):
+	if 0 in list(map(len, colnames)):
 		raise mterror("C'mon, give a name to that poor column !")
 	
 	
 	underline = ["="*n for n in map(len, colnames)]	
-	data = zip(*[column["data"] for column in columns])
+	data = list(zip(*[column["data"] for column in columns]))
 	
 	if os.path.isfile(filename):
-		print "File exists. If you go on I will overwrite it."
+		print("File exists. If you go on I will overwrite it.")
 		proquest(True)
 	
 	outfile = open(filename, "wb") # b needed for csv

@@ -12,8 +12,8 @@ for line in liste[1:]:
 	found_obj.add(elements[1])
 	
 
-print "Objects I've found :"
-print found_obj
+print("Objects I've found :")
+print(found_obj)
 
 
 for obj in found_obj:

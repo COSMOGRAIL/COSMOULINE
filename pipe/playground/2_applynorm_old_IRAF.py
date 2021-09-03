@@ -5,21 +5,21 @@
 #	future suggestion : use pyfits ...	
 #
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from pyraf import iraf
 from variousfct import *
 
-print "deckey :", deckey # this is a code that idendtifies this particular deconvolution.
+print("deckey :", deckey) # this is a code that idendtifies this particular deconvolution.
 
-print "You want to normalize using :", decnormfieldname
+print("You want to normalize using :", decnormfieldname)
 
 db = KirbyBase()
 
 images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=['setname', 'mjd']) # the \d\d* is a trick to select both 0000-like and 000-like
 # we select all images that have a deckeyfilenum
 
-print "I've selected", len(images), "images."
+print("I've selected", len(images), "images.")
 proquest(askquestions)
 
 iraf.imutil()
@@ -27,7 +27,7 @@ iraf.unlearn(iraf.imutil.imarith)
 
 for image in images:
 		
-	print image[deckeyfilenum], image['imgname']
+	print(image[deckeyfilenum], image['imgname'])
 	
 	
 	if decnormfieldname == "None":
@@ -35,9 +35,9 @@ for image in images:
 	else :
 		mycoeff = image[decnormfieldname]
 		if mycoeff == None:
-			print "WARNING : no coeff available, using 1.0"
+			print("WARNING : no coeff available, using 1.0")
 			mycoeff = 1.0
-	print mycoeff
+	print(mycoeff)
 	
 	inname = decdir + "g" + image[deckeyfilenum] + "_notnorm.fits"
 	outname = decdir + "g" + image[deckeyfilenum] + ".fits"

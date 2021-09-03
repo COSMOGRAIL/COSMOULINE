@@ -3,7 +3,7 @@ Some plots are created in the plotdir, they should allow to check for instance t
 
 """
 
-execfile("../config.py")
+exec (open("../config.py").read())
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import star
@@ -19,9 +19,9 @@ images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegE
 
 ptsrcs = star.readmancat(ptsrccat)
 nbptsrcs = len(ptsrcs)
-print "Number of point sources :", nbptsrcs
-print "Names of sources : "
-for src in ptsrcs: print src.name
+print("Number of point sources :", nbptsrcs)
+print("Names of sources : ")
+for src in ptsrcs: print(src.name)
 
 
 # The parameters common to all sources
@@ -44,7 +44,7 @@ plt.title("Delta scatter : %s" % (deckey))
 if savefigs:
 	plotfilepath = os.path.join(plotdir, "%s_check_delta.pdf" % figbase)
 	plt.savefig(plotfilepath)
-	print "Wrote %s" % (plotfilepath)
+	print("Wrote %s" % (plotfilepath))
 else:
 	plt.show()
 
@@ -62,7 +62,7 @@ plt.title("Z scatter : %s" % (deckey))
 if savefigs:
 	plotfilepath = os.path.join(plotdir, "%s_check_z.pdf" % figbase)
 	plt.savefig(plotfilepath)
-	print "Wrote %s" % (plotfilepath)
+	print("Wrote %s" % (plotfilepath))
 else:
 	plt.show()
 
@@ -90,8 +90,8 @@ for src in ptsrcs:
 		percentborderdiffs = borderdiffs/np.median(normfluxes)*100.0
 		lowflux  = "Low  : + " + " / ".join(["%.3f" % (bd) for bd in percentborderdiffs[:5]]) + " %"
 		highflux = "High : + " + " / ".join(["%.3f" % (bd) for bd in percentborderdiffs[5:]]) + " %"
-		print lowflux
-		print highflux
+		print(lowflux)
+		print(highflux)
 	
 	plt.figure(figsize=(12, 12))
 	
@@ -109,7 +109,7 @@ for src in ptsrcs:
 	if savefigs:
 		plotfilepath = os.path.join(plotdir, "%s_check_fluxhist_%s.pdf" % (figbase, src.name))
 		plt.savefig(plotfilepath)
-		print "Wrote %s" % (plotfilepath)
+		print("Wrote %s" % (plotfilepath))
 	else:
 		plt.show()
 
@@ -120,7 +120,7 @@ for src in ptsrcs:
 	
 	plt.figure(figsize=(15, 8))
 	
-	decfilenums = np.array(map(int, [image[deckeyfilenum] for image in images]))
+	decfilenums = np.array(list(map(int, [image[deckeyfilenum] for image in images])))
 	
 	(xmi, xma) = (np.min(decfilenums), np.max(decfilenums))
 	(ymi, yma) = (np.min(normfluxes) - 0.5*np.std(normfluxes), np.max(normfluxes) + 0.5*np.std(normfluxes))
@@ -143,7 +143,7 @@ for src in ptsrcs:
 	if savefigs:
 		plotfilepath = os.path.join(plotdir, "%s_check_fluxlc_%s.pdf" % (figbase, src.name))
 		plt.savefig(plotfilepath)
-		print "Wrote %s" % (plotfilepath)
+		print("Wrote %s" % (plotfilepath))
 	else:
 		plt.show()
 

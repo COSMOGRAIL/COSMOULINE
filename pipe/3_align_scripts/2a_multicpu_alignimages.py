@@ -4,46 +4,44 @@
 #
 import os, sys
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 import math
 from pyraf import iraf
 from variousfct import *
 from datetime import datetime, timedelta
-#import multiprocessing NO, NOT AVAILABLE WITH SCISOFT IRAF ... 
-import forkmap
 import progressbar
+import multiprocess
 
 redofromscratch = True
 updatedbonly = False # and this should stay False unless you really know what you do.
-print "WARNING !! I broke something and don't know what yet. Run this script once with updatedbonly set to False, the once again with set to True..."
 
 # We will tweak the db only at the end of this script.
 
 db = KirbyBase()
 if thisisatest:
-	print "This is a test."
+	print("This is a test.")
 	images = db.select(imgdb, ['flagali','gogogo','treatme', 'testlist'], ['==1',True, True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
 elif update:
-	print "This is an update."
+	print("This is an update.")
 	images = db.select(imgdb, ['flagali','gogogo','treatme', 'updating'], ['==1',True, True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
 	askquestions = False
 else:
 	images = db.select(imgdb, ['flagali','gogogo','treatme'], ['==1',True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
 
-print "redofromscratch = %s \n updatedbonly = %s" % (str(redofromscratch), str(updatedbonly))
+print("redofromscratch = %s \n updatedbonly = %s" % (str(redofromscratch), str(updatedbonly)))
 proquest(askquestions)
 
-print "I will run the actual alignment (on several cpus), and wait until this is done to update the database."
+print("I will run the actual alignment (on several cpus), and wait until this is done to update the database.")
 nbrofimages = len(images)
-print "Number of images to treat :", nbrofimages
+print("Number of images to treat :", nbrofimages)
 
-#ncorestouse = multiprocessing.cpucount()
-ncorestouse = forkmap.nprocessors()
+ncorestouse = multiprocess.cpu_count()
+# ncorestouse = forkmap.nprocessors()
 if maxcores > 0 and maxcores < ncorestouse:
 	ncorestouse = maxcores
-	print "maxcores = %i" % maxcores
-print "For this I will run on %i cores." % ncorestouse
+	print("maxcores = %i" % maxcores)
+print("For this I will run on %i cores." % ncorestouse)
 proquest(askquestions)
 
 
@@ -52,7 +50,7 @@ for i, img in enumerate(images):
 
 def aliimage(image):
 
-	print "Image %i : %s" % (image["execi"], image["imgname"])
+	print("Image %i : %s" % (image["execi"], image["imgname"]))
 
 	if os.path.isfile(os.path.join(alidir, image["imgname"] + "_defringed.fits")) and defringed:
 		imgtorotate = os.path.join(alidir, image['imgname'] + "_defringed.fits")
@@ -69,7 +67,7 @@ def aliimage(image):
 
 		else:
 			if os.path.isfile(aliimg):
-				print "Image already aligned - redofromscratch set to False - I skip"
+				print("Image already aligned - redofromscratch set to False - I skip")
 				return None
 	
 	databasename = os.path.join(alidir, image["imgname"] + ".geodatabase")
@@ -129,9 +127,9 @@ def aliimage(image):
 	if mapscale[0] != mapscale[1]:
 		raise mterror("Error reading geomap scale")
 	
-	print "%i Scale : %f" % (image["execi"], geomapscale)
-	print "%i Angle : %f" % (image["execi"], geomapangle)
-	print "%i RMS   : %f" % (image["execi"], geomaprms)
+	print("%i Scale : %f" % (image["execi"], geomapscale))
+	print("%i Angle : %f" % (image["execi"], geomapangle))
+	print("%i RMS   : %f" % (image["execi"], geomaprms))
 	
 	retdict = {}
 	retdict["geomapscale"] = geomapscale
@@ -149,7 +147,7 @@ def aliimage(image):
 	#image["geomapangle"] = geomapangle
 	#image["geomaprms"] = geomaprms
 	
-	print "%i geomap done" % (image["execi"])
+	print("%i geomap done" % (image["execi"]))
 
 	#input   =                       Input data
 	#output  =                       Output data
@@ -187,16 +185,16 @@ def aliimage(image):
 	if os.path.isfile(databasename):
 		os.remove(databasename)
 
-	print "%i gregister done" % (image["execi"])
+	print("%i gregister done" % (image["execi"]))
 	
 	return retdict
 
 
 
 starttime = datetime.now()
-retdicts = forkmap.map(aliimage, images, n = ncorestouse)
-#pool = multiprocessing.Pool(processes=ncorestouse)
-#pool.map(aliimage, images)
+# retdicts = forkmap.map(aliimage, images, n = ncorestouse)
+pool = multiprocess.Pool(processes=ncorestouse)
+retdicts = pool.map(aliimage, images)
 
 
 endtime = datetime.now()

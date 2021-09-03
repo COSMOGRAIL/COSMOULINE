@@ -13,9 +13,9 @@ import variousfct
 import datetime
 
 
-print "I am a special version, if you just want to translate an old db into a pkl."
-print "I write my files in the current directory."
-print "You have to configure me..."
+print("I am a special version, if you just want to translate an old db into a pkl.")
+print("I write my files in the current directory.")
+print("You have to configure me...")
 
 
 
@@ -34,7 +34,7 @@ configdir = "."
 readmefilepath = os.path.join(configdir, filename + "_readme.txt")
 pklfilepath = os.path.join(configdir, filename + "_db.pkl")
 
-print "My basename : %s" % (filename)
+print("My basename : %s" % (filename))
 
 
 
@@ -87,9 +87,9 @@ readme.extend(renorms)
 
 
 readmetxt = "\n".join(readme)
-print "Here is the readme text : \n\n%s\n\n" % (readmetxt)
+print("Here is the readme text : \n\n%s\n\n" % (readmetxt))
 
-print "I will now write the files."
+print("I will now write the files.")
 #variousfct.proquest(askquestions)
 
 readme.append("\nThe full list of fields :")
@@ -99,7 +99,7 @@ readmetxt = "\n".join(readme)
 
 
 if os.path.exists(readmefilepath) or os.path.exists(pklfilepath):
-	print "The files exist. I will overwrite them."
+	print("The files exist. I will overwrite them.")
 	variousfct.proquest(askquestions)
 	if os.path.exists(readmefilepath):
 		os.remove(readmefilepath)
@@ -111,7 +111,7 @@ if os.path.exists(readmefilepath) or os.path.exists(pklfilepath):
 out_file = open(readmefilepath, "w")
 out_file.write(readmetxt)
 out_file.close()
-print "Wrote %s" % readmefilepath
+print("Wrote %s" % readmefilepath)
 
 variousfct.writepickle(images, pklfilepath, verbose=True)
 

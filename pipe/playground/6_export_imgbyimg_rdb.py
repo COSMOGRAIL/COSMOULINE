@@ -2,7 +2,7 @@
 #	We export some fields from the database into a tab separated rdb file, line by line, as simple as possible.
 #	Can be used for further processing by third party software
 #
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 
 # - - - - - - - - - - - - - - - - - - - - - - -
 #	OPTIONAL CONFIGURATION
@@ -34,12 +34,12 @@ db = KirbyBase()
 
 images = db.select(imgdb, ["gogogo", "treatme", "decfilenum_" + selectiondeckey], [True, True, '\d\d*'], returnType='dict', useRegExp=True)
 
-print "I will export the deconvolution %s" % selectiondeckey
-print "This corresponds to ", len(images), "images."
+print("I will export the deconvolution %s" % selectiondeckey)
+print("This corresponds to ", len(images), "images.")
 
 # We extend these general fields by the flux measurements for the selected deconvolution.
 ptsrc = star.readmancat(os.path.join(configdir, selectiondeckey + "_ptsrc.cat"))
-print "Sources : " + ", ".join([src.name for src in ptsrc])
+print("Sources : " + ", ".join([src.name for src in ptsrc]))
 proquest(askquestions)
 
 
@@ -53,4 +53,4 @@ specialcolumns.extend([{"name": "normflux_" + src.name, "data":[image['out_' + s
 
 writerdb(generalcolumns + specialcolumns, outputfilename, writeheader)
 
-print "Wrote %s" % outputfilename	
+print("Wrote %s" % outputfilename)	

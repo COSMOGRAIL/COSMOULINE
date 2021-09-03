@@ -1,6 +1,6 @@
-from Tkinter import *
-execfile("../config.py")
-from tkMessageBox import * 
+from tkinter import *
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+from tkinter.messagebox import * 
 from PIL import ImageTk
 from PIL import Image
 import os
@@ -13,8 +13,6 @@ from itertools import count, product, islice
 from string import ascii_lowercase
 
 import numpy as np
-#~ import matplotlib.pyplot
-#~ matplotlib.use('TkAgg')
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib import pyplot
@@ -25,12 +23,6 @@ Script that allow to pick the good stars by clicking on the image. Still work in
 Written by Eric Paic, early 2017 version. Modified by Vivien Bonvin to fit smoothly (and with less bugs...) into the cosmouline pipeline.
 """
 
-from numpy import arange, sin, pi
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
-# implement the default mpl key bindings
-#from matplotlib.backend_bases import key_press_handler
-
-
 from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -39,7 +31,7 @@ import sys
 if os.path.isfile(os.path.join(alidir, refimgname + "_skysub.fits")):
 	fitsfile = os.path.join(alidir, refimgname + "_skysub.fits") #path to the img_skysub.fits you will display
 else :
-	print "Apparently, you removed your non-ali images, I'll try to find your _ali image."
+	print("Apparently, you removed your non-ali images, I'll try to find your _ali image.")
 	fitsfile = os.path.join(alidir, refimgname + "_ali.fits")
 
 image = os.path.join(workdir, "refimg_skysub.fits") #path to the png that will be created from the img_skysub.fits
@@ -112,12 +104,12 @@ width,height = im.size
 #
 
 if os.path.isfile(alistars):
-	print "The alistars catalogue already exists :"
+	print("The alistars catalogue already exists :")
 else:
 	cmd = "touch " + alistars
 	os.system(cmd)
-	print "I have just touched the alistars.cat for you :"
-print alistars
+	print("I have just touched the alistars.cat for you :")
+print(alistars)
 
 class LoadImage:
 	def __init__(self,root):
@@ -202,12 +194,12 @@ class LoadImage:
 
 	def zoomer_mac_in(self,event):
 		if self.zoomcycle != 5: self.zoomcycle += 1
-		print "zoom : ", self.zoomcycle
+		print("zoom : ", self.zoomcycle)
 		self.crop(event)
 
 	def zoomer_mac_out(self,event):
 		if self.zoomcycle != 0: self.zoomcycle -= 1
-		print "zoom : ", self.zoomcycle
+		print("zoom : ", self.zoomcycle)
 		self.crop(event)
 
 	def crop(self,event):
@@ -293,7 +285,7 @@ class LoadImage:
 
 		elif choice == "empty":
 			x,y = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y)#to get the real coordinate of the star even after scrolling
-			print "selection of the empty region"
+			print("selection of the empty region")
 			compteurs[2] +=1
 			if compteurs[2]%3 ==1:
 				bl_corner = self.canvas.create_oval(x+1, y-1, x-1,y+1,outline = "red")
@@ -331,22 +323,22 @@ class LoadImage:
 def Stars():
 	global choice
 	choice = "star"
-	print "star"
+	print("star")
 	
 def Lense():
 	global choice
 	choice = "lense"
-	print "lense"
+	print("lense")
 
 def Empty():
 	global choice
 	choice = "empty"
-	print "empty"
+	print("empty")
 
 def Nothing():
 	global choice
 	choice = "nothing"
-	print "nothing"
+	print("nothing")
 
 def openali():
 	global alistars

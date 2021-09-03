@@ -2,7 +2,7 @@
 #	generates pngs of the extracted stuff.
 #
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 import shutil
 from kirbybase import KirbyBase, KBError
 from variousfct import *
@@ -16,7 +16,7 @@ z2 =  10000
 
 # - - - - - - - - - - - - -
 
-print "You might want to configure the cuts in this script."
+print("You might want to configure the cuts in this script.")
 proquest(askquestions)
 
 pngkey = objkey + "_png"
@@ -24,7 +24,7 @@ pngdir = os.path.join(workdir, pngkey)
 
 # Check for former png creation :
 if os.path.isdir(pngdir):
-	print "Deleting existing stuff."
+	print("Deleting existing stuff.")
 	proquest(askquestions)
 	shutil.rmtree(pngdir)
 os.mkdir(pngdir)
@@ -33,19 +33,19 @@ os.mkdir(pngdir)
 # Select images to treat
 db = KirbyBase()
 if thisisatest :
-	print "This is a test run."
+	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo','treatme',objkeyflag,'testlist'], [True,True,True,True], returnType='dict', sortFields=['setname', 'mjd'])
 else :
 	images = db.select(imgdb, ['gogogo','treatme',objkeyflag], [True,True,True], returnType='dict', sortFields=['setname', 'mjd'])
 
-print "I will treat %i images." % len(images)
+print("I will treat %i images." % len(images))
 proquest(askquestions)
 
 
 for i, image in enumerate(images):
 
-	print "- "*40
-	print i+1, "/", len(images), ":", image['imgname']
+	print("- "*40)
+	print(i+1, "/", len(images), ":", image['imgname'])
 	
 	
 	# If cosmics are detected, we want to know where :
@@ -97,7 +97,7 @@ for i, image in enumerate(images):
 	os.symlink(pngpath, orderlink)
 
 
-print "- "*40
+print("- "*40)
 notify(computer, withsound, "I made PNGs for %s." % objkey)
 
 if makejpgarchives :

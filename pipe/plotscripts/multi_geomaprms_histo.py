@@ -2,7 +2,7 @@
 #	Histogramm of the measured seeings, for each set.
 #
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from pylab import * # matplotlib and NumPy etc
@@ -20,14 +20,14 @@ nsets = len(usedsetnames)
 figure(figsize=(6,1.4*nsets))	# set figure size
 
 maxval = max(array([image['geomaprms'] for image in images]))
-print "maximum value is :", maxval
+print("maximum value is :", maxval)
 maxrange = 1.2
 
 for i, name in enumerate(usedsetnames):
 
 	# We extract the seeing values for this setname
 	vect = array([image['geomaprms'] for image in images if image['setname'] == name])
-	print "%20s : %4i" %(name, len(vect))
+	print("%20s : %4i" %(name, len(vect)))
 	
 	sub = 0.06+i*(0.88/nsets ) # relative position of the x axis on the figure.
 	ax = axes([0.08, sub, 0.85, 0.78/nsets])

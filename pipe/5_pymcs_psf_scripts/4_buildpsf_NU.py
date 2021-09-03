@@ -1,9 +1,8 @@
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
-import forkmap
-#import multiprocessing  # if forkmap fails...
+import multiprocess # if forkmap fails...
 import star
 from readandreplace_fct import *
 
@@ -26,32 +25,32 @@ if rewriteconfig == True:
 db = KirbyBase()
 
 if thisisatest :
-	print "This is a test run."
+	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 elif update:
-	print "This is an update."
+	print("This is an update.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'updating', psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 	askquestions=False
 else :
 	images = db.select(imgdb, ['gogogo', 'treatme',psfkeyflag], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 
-print "I will build the PSF of %i images." % len(images)
+print("I will build the PSF of %i images." % len(images))
 
-ncorestouse = forkmap.nprocessors()
-#ncorestouse = multiprocessing.cpu_count()
+# ncorestouse = forkmap.nprocessors()
+ncorestouse = multiprocess.cpu_count()
 
 if computer == "martin": #patch to fix the the forkmap bug (crash under macOSX)
 	maxcores = 1
 
 if maxcores > 0 and maxcores < ncorestouse:
 	ncorestouse = maxcores
-	print "maxcores = %i" % maxcores
-print "For this I will run on %i cores." % ncorestouse
+	print("maxcores = %i" % maxcores)
+print("For this I will run on %i cores." % ncorestouse)
 proquest(askquestions)
 
 
 psfstars = star.readmancat(psfstarcat)  # this is only used if nofitnum
-print "We have %i stars" % (len(psfstars))
+print("We have %i stars" % (len(psfstars)))
 #for star in psfstars:
 #	print star.name
 
@@ -64,13 +63,13 @@ def buildpsf(image):
 
 	imgpsfdir = os.path.join(psfdir, image['imgname'])
 	if os.path.isfile(os.path.join(imgpsfdir, "results", "psf_1.fits")) and not redofromscratch:
-		print "Image %i : %s" % (image["execi"], imgpsfdir)
-		print "Already done ! I skip this one"
+		print("Image %i : %s" % (image["execi"], imgpsfdir))
+		print("Already done ! I skip this one")
 		return
 	else:
 
 
-		print "Image %i : %s" % (image["execi"], imgpsfdir)
+		print("Image %i : %s" % (image["execi"], imgpsfdir))
 
 		os.chdir(imgpsfdir)
 
@@ -89,12 +88,12 @@ def buildpsf(image):
 			extractfile.write(pyMCS_config)
 			extractfile.close()
 
-			print "I rewrote the config file."
+			print("I rewrote the config file.")
 
 		mcs = MCS_interface("pyMCS_psf_config.py")
 
 		try:
-			print "I'll try this one."
+			print("I'll try this one.")
 			mcs.fitmof()
 			if nofitnum:
 				mcs.psf_gen()
@@ -109,11 +108,11 @@ def buildpsf(image):
 				mcs.fitnum()
 
 		except (IndexError):
-			print "WTF, an IndexError ! "
+			print("WTF, an IndexError ! ")
 			errorimglist.append(image)
 
 		else:
-			print "It worked !"
+			print("It worked !")
 
 		psffilepath = os.path.join(imgpsfdir, "s001.fits")
 		if os.path.islink(psffilepath):
@@ -122,26 +121,26 @@ def buildpsf(image):
 	
 	
 starttime = datetime.now()
-#pool = multiprocessing.Pool(processes=ncorestouse)
-#pool.map(buildpsf, images)
-forkmap.map(buildpsf, images, n = ncorestouse)
+pool = multiprocess.Pool(processes=ncorestouse)
+pool.map(buildpsf, images)
+# forkmap.map(buildpsf, images, n = ncorestouse)
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
 
 if os.path.isfile(psfkicklist):
-	print "The psfkicklist already exists :"
+	print("The psfkicklist already exists :")
 else:
 	cmd = "touch " + psfkicklist
 	os.system(cmd)
-	print "I have just touched the psfkicklist for you :"
-print psfkicklist
+	print("I have just touched the psfkicklist for you :")
+print(psfkicklist)
 
 if len(errorimglist) != 0:
-	print "pyMCS raised an IndexError on the following images :"
-	print "(Add them to the psfkicklist, retry them with a testlist, ...)"
-	print "\n".join(["%s\t%s" % (image['imgname'], "pyMCS IndexError") for image in errorimglist])
+	print("pyMCS raised an IndexError on the following images :")
+	print("(Add them to the psfkicklist, retry them with a testlist, ...)")
+	print("\n".join(["%s\t%s" % (image['imgname'], "pyMCS IndexError") for image in errorimglist]))
 else:
-	print "I could build the PSF of all images."
+	print("I could build the PSF of all images.")
 
 notify(computer, withsound, "PSF construction for psfname: %s using %i cores. It took me %s ." % (psfname, ncorestouse, timetaken))
 

@@ -2,7 +2,7 @@
 Again very similar, but different colours for different setnames
 """
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 import variousfct
 import headerstuff
@@ -12,21 +12,21 @@ import matplotlib.pyplot as plt
 import matplotlib.dates
 
 
-print "You want to analyze the deconvolution %s" %deckey
-print "Deconvolved object : %s" % decobjname
+print("You want to analyze the deconvolution %s" %deckey)
+print("Deconvolved object : %s" % decobjname)
 if plotnormfieldname == None:
-	print "I will use the normalization coeffs used for the deconvolution."
+	print("I will use the normalization coeffs used for the deconvolution.")
 else:
-	print "Using %s for the normalization." % (plotnormfieldname)
+	print("Using %s for the normalization." % (plotnormfieldname))
 	deckeynormused = plotnormfieldname
 
 ptsources = star.readmancat(ptsrccat)
-print "Number of point sources : %i" % len(ptsources)
-print "Names of sources : %s" % ", ".join([s.name for s in ptsources])
+print("Number of point sources : %i" % len(ptsources))
+print("Names of sources : %s" % ", ".join([s.name for s in ptsources]))
 
 db = KirbyBase()
 allimages = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=['mjd'])
-print "%i images" % len(allimages)
+print("%i images" % len(allimages))
 
 fieldnames = db.getFieldNames(imgdb)
 setnames = sorted(list(set([image["setname"] for image in allimages])))
@@ -35,7 +35,7 @@ plt.figure(figsize=(15,15))
 
 for setname in setnames:
 
-	print setname
+	print(setname)
 	images = [image for image in allimages if image["setname"] == setname]
 	
 	magarraylist = []
@@ -103,7 +103,7 @@ if savefigs:
 	else :
 		plotfilepath = os.path.join(plotdir, "%s_lc_by_set.pdf" % (deckey))
 	plt.savefig(plotfilepath)
-	print "Wrote %s" % (plotfilepath)
+	print("Wrote %s" % (plotfilepath))
 else:
 	plt.show()
 

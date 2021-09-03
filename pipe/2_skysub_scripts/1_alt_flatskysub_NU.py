@@ -3,7 +3,7 @@
 #
 
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
@@ -14,27 +14,27 @@ import numpy as np
 
 db = KirbyBase()
 if thisisatest:
-	print "This is a test run."
+	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo','treatme','testlist'], [True, True, True], returnType='dict')
 else:
 	images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
 	
 	
 nbrimages = len(images)
-print "Number of images to treat :", nbrimages
+print("Number of images to treat :", nbrimages)
 proquest(askquestions)
 
 starttime = datetime.now()
 
 for i,image in enumerate(images):
 	
-	print "+ " * 30
-	print "%5i/%i : %s" % (i+1, nbrimages, image["imgname"])
+	print("+ " * 30)
+	print("%5i/%i : %s" % (i+1, nbrimages, image["imgname"]))
 	
 	imagepath = os.path.join(alidir, image["imgname"] + ".fits")
 	
 	skylevel = image["skylevel"]
-	print "Skylevel to be subtracted : %.3f" % skylevel
+	print("Skylevel to be subtracted : %.3f" % skylevel)
 	
 	(imagea, imageh) = fromfits(os.path.join(alidir, image["imgname"] + ".fits"), verbose = False)
 	skya = np.ones(imagea.shape) * skylevel

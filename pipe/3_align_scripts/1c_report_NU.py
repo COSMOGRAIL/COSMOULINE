@@ -3,7 +3,7 @@
 #	This report is written for ALL imagesets, independent of current "treatme" flag.
 #	But results are present one imageset after the other.
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from star import *
@@ -12,7 +12,7 @@ db = KirbyBase()
 
 fields = ['imgname', 'seeing', 'goodstars', 'nbralistars', 'maxalistars', 'flagali', 'angle', 'alicomment']
 
-usedsetnames = set(map(lambda x : x[0], db.select(imgdb, ['recno'], ['*'], ['setname'])))
+usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], ['*'], ['setname'])])
 
 reporttxt = ""
 

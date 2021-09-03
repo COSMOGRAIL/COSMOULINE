@@ -5,7 +5,7 @@ and save it in a numpy file. To be used in COSMOULINE/9_quicklook/7b and 7c, to
 correlate with 
 the ellipticity and position angle.
 """
-execfile("../config.py")  # probably not needed...
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))  # probably not needed...
 from kirbybase import KirbyBase, KBError
 import numpy as np
 import glob, sys, os
@@ -19,7 +19,7 @@ filepaths = glob.glob(os.path.join(folderpath, "*.fits"))
 lens_set = workdir.split('/')[-1]
 
 for i, f in enumerate(filepaths):
-	print i+1, "/", len(filepaths)
+	print(i+1, "/", len(filepaths))
 	header = pyfits.getheader(f)
 	vals.append({
 	"derot": header["HIERARCH OGE ADA ROTMEASURED"],

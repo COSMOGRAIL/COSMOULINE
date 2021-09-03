@@ -3,7 +3,7 @@
 #
 
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
@@ -15,10 +15,10 @@ import os
 
 db = KirbyBase()
 if thisisatest:
-	print "This is a test run."
+	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo','treatme','testlist'], [True, True, True], returnType='dict')
 elif update:
-	print "This is an update."
+	print("This is an update.")
 	images = db.select(imgdb, ['gogogo','treatme','updating'], [True, True, True], returnType='dict')
 	askquestions = False
 else:
@@ -26,7 +26,7 @@ else:
 
 
 nbrofimages = len(images)
-print "Number of images to treat :", nbrofimages
+print("Number of images to treat :", nbrofimages)
 proquest(askquestions)
 
 starttime = datetime.now()
@@ -34,15 +34,15 @@ starttime = datetime.now()
 
 for i,image in enumerate(images):
 
-	print "- " * 30
-	print i+1, "/", nbrofimages, ":", image['imgname']
+	print("- " * 30)
+	print(i+1, "/", nbrofimages, ":", image['imgname'])
 	
 	imagepath = os.path.join(alidir, image['imgname']+".fits")
 	catfilename = os.path.join(alidir, image['imgname']+".cat")
 
 	saturlevel = image["gain"] * image["saturlevel"] # to convert to electrons
 	if image["telescopename"] in ["FORS2"]:
-		print "FORS2 detected, switch to fors2 extraction parameters:"
+		print("FORS2 detected, switch to fors2 extraction parameters:")
 		cmd = "%s %s -c default_see_template_FORS.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CATALOG_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, catfilename)
 
 	else:

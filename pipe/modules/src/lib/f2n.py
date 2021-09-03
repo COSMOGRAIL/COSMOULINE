@@ -129,11 +129,11 @@ class f2nimage:
 		else:
 			if not isinstance(numpyarray, np.ndarray):
 
-				raise RuntimeError, "Please give me numpy arrays."
+				raise RuntimeError("Please give me numpy arrays.")
 
 			if numpyarray.ndim != 2:
 
-				raise RuntimeError, "Your array must be 2D."
+				raise RuntimeError("Your array must be 2D.")
 
 			self.numpyarray = numpyarray.astype(np.float32)
 		
@@ -188,41 +188,41 @@ class f2nimage:
 		"""
 		
 		if self.pilimage != None:
-			raise RuntimeError, "Cannot set z scale anymore, PIL image already exists !"
+			raise RuntimeError("Cannot set z scale anymore, PIL image already exists !")
 		
 		if self.numpyarray.shape[0] > 3 * border and self.numpyarray.shape[1] > 3 * border:
 			if border > 0:
 				if self.verbose :
-					print "For the stats I will leave a border of %i pixels" % border
+					print("For the stats I will leave a border of %i pixels" % border)
 				calcarray = self.numpyarray[border:-border, border:-border].copy()
 			else:
 				calcarray = self.numpyarray.copy()
 		else:
 			calcarray = self.numpyarray.copy()
 			if self.verbose:
-				print "Image is too small for a border of %i" % (border)
+				print("Image is too small for a border of %i" % (border))
 		
 		
 		# Starting with the simple possibilities :
 		if z1 == "ex" :
 			self.z1 = np.min(calcarray)
 			if self.verbose:
-				print "Setting ex z1 to %f" % self.z1
+				print("Setting ex z1 to %f" % self.z1)
 			
 		if z2 == "ex":
 			self.z2 = np.max(calcarray)
 			if self.verbose:
-				print "Setting ex z2 to %f" % self.z2
+				print("Setting ex z2 to %f" % self.z2)
 			
 		if type(z1) == type(0) or type(z1) == type(0.0):
 			self.z1 = z1
 			if self.verbose:
-				print "Setting z1 to %f" % self.z1
+				print("Setting z1 to %f" % self.z1)
 			
 		if type(z2) == type(0) or type(z2) == type(0.0):
 			self.z2 = z2
 			if self.verbose:
-				print "Setting z2 to %f" % self.z2
+				print("Setting z2 to %f" % self.z2)
 		
 		# Now it gets a little more sophisticated.
 		if z1 == "auto" or z2 == "auto" or z1 == "flat" or z2 == "flat":
@@ -256,11 +256,11 @@ class f2nimage:
 				secondstd = np.std(nearskypixvals)
 				
 				if self.verbose :
-					print "Sky level at %f +/- %f" % (skylevel, secondstd)
+					print("Sky level at %f +/- %f" % (skylevel, secondstd))
 				
 				self.z1 = skylevel - nsig*secondstd
 				if self.verbose :
-					print "Setting auto z1 to %f, nsig = %i" % (self.z1, nsig)
+					print("Setting auto z1 to %f, nsig = %i" % (self.z1, nsig))
 								
 				
 				
@@ -270,7 +270,7 @@ class f2nimage:
 				n = round(0.9995 * statsel.size)
 				self.z2 = sortedstatsel[n]
 				if self.verbose :
-					print "Setting auto z2 to %f" % self.z2 
+					print("Setting auto z2 to %f" % self.z2) 
 				
 			if z1 == "flat" :
 				
@@ -284,7 +284,7 @@ class f2nimage:
 				self.z1 = flatlevel - nsig*flatstd
 	
 				if self.verbose :
-					print "Setting flat z1 : %f, nsig = %i" % (self.z1, nsig)
+					print("Setting flat z1 : %f, nsig = %i" % (self.z1, nsig))
 
 			if z2 == "flat" : # symmetric to z1
 				
@@ -298,7 +298,7 @@ class f2nimage:
 				self.z2 = flatlevel + nsig*flatstd
 	
 				if self.verbose :
-					print "Setting flat z2 : %f, nsig = %i" % (self.z2, nsig)
+					print("Setting flat z2 : %f, nsig = %i" % (self.z2, nsig))
 				
 				
 				
@@ -347,10 +347,10 @@ class f2nimage:
 		"""
 		
 		if self.pilimage != None:
-			raise RuntimeError, "Cannot crop anymore, PIL image already exists !"
+			raise RuntimeError("Cannot crop anymore, PIL image already exists !")
 		
 		if self.verbose:
-			print "Cropping : [%i:%i, %i:%i]" % (xa, xb, ya, yb)
+			print("Cropping : [%i:%i, %i:%i]" % (xa, xb, ya, yb))
 		self.numpyarray = self.numpyarray[xa:xb, ya:yb]
 		
 		self.xa += xa
@@ -390,10 +390,10 @@ class f2nimage:
 		"""
 		
 		if self.pilimage != None:
-			raise RuntimeError, "Cannot rebin anymore, PIL image already exists !"
+			raise RuntimeError("Cannot rebin anymore, PIL image already exists !")
 		
 		if type(factor) != type(0):
-			raise RuntimeError, "Rebin factor must be an integer !"
+			raise RuntimeError("Rebin factor must be an integer !")
 		
 		if factor < 1:
 			return
@@ -402,11 +402,11 @@ class f2nimage:
 		neededshape = origshape - (origshape % factor)
 		if not (origshape == neededshape).all():
 			if self.verbose :
-				print "Rebinning %ix%i : I have to crop from %s to %s" % (factor, factor, origshape, neededshape)
+				print("Rebinning %ix%i : I have to crop from %s to %s" % (factor, factor, origshape, neededshape))
 			self.crop(0, neededshape[0], 0, neededshape[1])
 		else:
 			if self.verbose :
-				print "Rebinning %ix%i : I do not need to crop" % (factor, factor)
+				print("Rebinning %ix%i : I do not need to crop" % (factor, factor))
 				
 		self.numpyarray = rebin(self.numpyarray, neededshape/factor) # we call the rebin function defined below
 		# The integer division neededshape/factor is ok, we checked for this above.
@@ -429,9 +429,9 @@ class f2nimage:
 			calcarray = calcarray.clip(min = self.z1, max = self.z2)
 			
 			if scale == "log":
-				calcarray = np.array(map(lambda x: loggray(x, self.z1, self.z2), calcarray))
+				calcarray = np.array([loggray(x, self.z1, self.z2) for x in calcarray])
 			else :
-				calcarray = np.array(map(lambda x: lingray(x, self.z1, self.z2), calcarray))
+				calcarray = np.array([lingray(x, self.z1, self.z2) for x in calcarray])
 			
 			
 			calcarray.shape = numpyarrayshape
@@ -439,18 +439,18 @@ class f2nimage:
 			calcarray.round(out=bwarray)
 			if negative:
 				if self.verbose:
-					print "Using negative scale"
+					print("Using negative scale")
 				bwarray = 255 - bwarray
 			
 			if self.verbose:
-				print "PIL range : [%i, %i]" % (np.min(bwarray), np.max(bwarray))
+				print("PIL range : [%i, %i]" % (np.min(bwarray), np.max(bwarray)))
 			
 			# We flip it so that (0, 0) is back in the bottom left corner as in ds9
 			# We do this here, so that you can write on the image from left to right :-)	
 
 			self.pilimage = imop.flip(im.fromarray(bwarray.transpose()))
 			if self.verbose:
-					print "PIL image made with scale : %s" % scale
+					print("PIL image made with scale : %s" % scale)
 			return 0
 	
 		if scale == "clog" or scale == "clin":
@@ -541,10 +541,10 @@ class f2nimage:
 			
 			self.pilimage = imop.flip(im.fromarray(carray, "RGB"))
 			if self.verbose:
-					print "PIL image made with scale : %s" % scale
+					print("PIL image made with scale : %s" % scale)
 			return 0
 	
-		raise RuntimeError, "I don't know your colourscale, choose lin log clin or clog !"
+		raise RuntimeError("I don't know your colourscale, choose lin log clin or clog !")
 	
 	def drawmask(self, maskarray, colour = 128):
 		"""
@@ -560,7 +560,7 @@ class f2nimage:
 		
 		# Checking size of maskarray :
 		if maskarray.shape[0] != self.pilimage.size[0] or maskarray.shape[1] != self.pilimage.size[1]:
-			raise RuntimeError, "Mask and image must have the same size !"
+			raise RuntimeError("Mask and image must have the same size !")
 		
 		# We make an "L" mode image out of the mask :
 		tmparray = np.zeros(maskarray.shape, dtype=np.uint8)
@@ -611,7 +611,7 @@ class f2nimage:
 		"""Auxiliary method to check if the PIL image was already made."""
 		if self.pilimage == None:
 
-			raise RuntimeError, "No PIL image : call makepilimage first !"
+			raise RuntimeError("No PIL image : call makepilimage first !")
 			
 	def makedraw(self):
 		"""Auxiliary method to make a draw object if not yet done.
@@ -665,7 +665,7 @@ class f2nimage:
 		"""
 		if type(newcolour) != type(0) and self.pilimage.mode != "RGB":
 			if self.verbose :
-				print "Switching to RGB !"
+				print("Switching to RGB !")
 			self.pilimage = self.pilimage.convert("RGB")
 			self.draw = None # important, we have to bebuild the draw object.
 			self.makedraw() 
@@ -681,17 +681,17 @@ class f2nimage:
 		self.checkforpilimage()
 		
 		if type(factor) != type(0):
-			raise RuntimeError, "Upsample factor must be an integer !"
+			raise RuntimeError("Upsample factor must be an integer !")
 		
 		if self.verbose:
-			print "Upsampling by a factor of %i" % factor
+			print("Upsampling by a factor of %i" % factor)
 		self.pilimage = self.pilimage.resize((self.pilimage.size[0] * factor, self.pilimage.size[1] * factor))
 		self.upsamplefactor = factor
 		
 		self.draw = None
 	
 	
-	def pilcoords(self, (x,y)):
+	def pilcoords(self, xxx_todo_changeme):
 		"""
 		Converts the coordinates (x,y) of the original array or FITS file to the current coordinates of the PIL image,
 		respecting cropping, rebinning, and upsampling.
@@ -699,7 +699,7 @@ class f2nimage:
 		Note that we also have to take care about the different origin conventions here !
 		For PIL, (0,0) is top left, so the y axis needs to be inverted.
 		"""
-		
+		(x,y) = xxx_todo_changeme
 		pilx = int((x - 1 - self.xa) * float(self.upsamplefactor) / float(self.binfactor))
 		pily = int((self.yb - y) * float(self.upsamplefactor) / float(self.binfactor))
 		
@@ -820,7 +820,7 @@ class f2nimage:
 		self.draw.text((textxpos, textypos), titlestring, fill = colour, font = self.titlefont)
 		
 		if self.verbose :
-			print "I've written a title on the image."
+			print("I've written a title on the image.")
 
 
 
@@ -844,7 +844,7 @@ class f2nimage:
 		
 		
 		if self.verbose :
-			print "I've written some info on the image."
+			print("I've written some info on the image.")
 
 
 		
@@ -866,7 +866,7 @@ class f2nimage:
 			#self.writelabel(star["x"], star["y"], star["name"], r = r, colour = colour)
 		
 		if self.verbose :
-			print "I've drawn %i stars." % len(dictlist)
+			print("I've drawn %i stars." % len(dictlist))
 
 		
 	def drawstarsfile(self, filename, r = 10, colour = None):
@@ -878,10 +878,10 @@ class f2nimage:
 		Then we pass this to drawstarlist, 
 		"""
 		if not os.path.isfile(filename):
-			print "File does not exist :"
-			print filename
-			print "Line format to write : name x y [other stuff ...]"
-			raise RuntimeError, "Cannot read star catalog."
+			print("File does not exist :")
+			print(filename)
+			print("Line format to write : name x y [other stuff ...]")
+			raise RuntimeError("Cannot read star catalog.")
 	
 		catfile = open(filename, "r")
 		lines = catfile.readlines()
@@ -893,10 +893,10 @@ class f2nimage:
 			elements = line.split()
 			nbelements = len(elements)
 			if nbelements < 3:
-				print "Format error on line", i+1, "of :"
-				print filename
-				print "We want : name x y [other stuff ...]"
-				raise RuntimeError, "Cannot read star catalog."
+				print("Format error on line", i+1, "of :")
+				print(filename)
+				print("We want : name x y [other stuff ...]")
+				raise RuntimeError("Cannot read star catalog.")
 	
 			name = elements[0]
 			x = float(elements[1])
@@ -904,8 +904,8 @@ class f2nimage:
 			dictlist.append({"name":name, "x":x, "y":y})
 	
 		if self.verbose :
-			print "I've read %i stars from :"
-			print os.path.split(filename)[1]
+			print("I've read %i stars from :")
+			print(os.path.split(filename)[1])
 		
 		
 		self.drawstarslist(dictlist, r = r, colour = colour)
@@ -919,7 +919,7 @@ class f2nimage:
 		
 		self.checkforpilimage()
 		if self.verbose :
-			print "Writing image to %s...\n%i x %i pixels, mode %s" % (outfile, self.pilimage.size[0], self.pilimage.size[1], self.pilimage.mode)
+			print("Writing image to %s...\n%i x %i pixels, mode %s" % (outfile, self.pilimage.size[0], self.pilimage.size[1], self.pilimage.mode))
 		self.pilimage.save(outfile, "PNG")
 		
 	
@@ -949,11 +949,11 @@ def fromfits(infile, hdu = 0, verbose = True):
 	
 	pixelarrayshape = pixelarray.shape
 	if verbose :
-		print "Input shape : (%i, %i)" % (pixelarrayshape[0], pixelarrayshape[1])
-		print "Input file BITPIX : %s" % (hdr["BITPIX"])
+		print("Input shape : (%i, %i)" % (pixelarrayshape[0], pixelarrayshape[1]))
+		print("Input file BITPIX : %s" % (hdr["BITPIX"]))
 	pixelarrayshape = np.asarray(pixelarrayshape)
 	if verbose :
-		print "Internal array type :", pixelarray.dtype.name
+		print("Internal array type :", pixelarray.dtype.name)
 	
 	return f2nimage(pixelarray, verbose = verbose)
 
@@ -976,9 +976,9 @@ def rebin(a, newshape):
         #print factor
 
         evList = ['a.reshape('] + \
-                 ['newshape[%d],factor[%d],'%(i,i) for i in xrange(lenShape)] + \
-                 [')'] + ['.sum(%d)'%(i+1) for i in xrange(lenShape)] + \
-                 ['/factor[%d]'%i for i in xrange(lenShape)]
+                 ['int(newshape[%d]),int(factor[%d]),'%(i,i) for i in range(lenShape)] + \
+                 [')'] + ['.sum(%d)'%(i+1) for i in range(lenShape)] + \
+                 ['/factor[%d]'%i for i in range(lenShape)]
 
         return eval(''.join(evList))
 
@@ -1004,7 +1004,7 @@ def compose(f2nimages, outfile):
 	for i, line in enumerate(f2nimages):
 		for j, img in enumerate(line):
 			if img.verbose:
-				print "Checking line %i, image %i (verbose)..." % (i+1, j+1)
+				print("Checking line %i, image %i (verbose)..." % (i+1, j+1))
 			img.checkforpilimage()
 			verbosity.append(img.verbose)
 			colourmodes.append(img.pilimage.mode)
@@ -1015,33 +1015,33 @@ def compose(f2nimages, outfile):
 	# We check if the widths are compatible :
 	widths = [np.sum(np.array([img.pilimage.size[0] for img in line])) for line in f2nimages]
 	if len(set(widths)) != 1 :
-		print "Total widths of the lines :"
-		print widths
-		raise RuntimeError, "The total widths of your lines are not compatible !"
+		print("Total widths of the lines :")
+		print(widths)
+		raise RuntimeError("The total widths of your lines are not compatible !")
 	totwidth = widths[0]
 	
 	# Similar for the heights :
 	for i, line in enumerate(f2nimages):
 		heights = [img.pilimage.size[1] for img in line]
 		if len(set(heights)) != 1 :
-			print "Heights of the images in line %i :" % (i + 1)
-			print heights
-			raise RuntimeError, "Heights of the images in line %i are not compatible." % (i + 1)
+			print("Heights of the images in line %i :" % (i + 1))
+			print(heights)
+			raise RuntimeError("Heights of the images in line %i are not compatible." % (i + 1))
 	
 	totheight = np.sum(np.array([line[0].pilimage.size[1] for line in f2nimages]))
 	# Ok, now it should be safe to go for the composition :
 	if verbose:
-		print "Composition size : %i x %i" % (totwidth, totheight)
+		print("Composition size : %i x %i" % (totwidth, totheight))
 	
 	if verbose:
-		print "Colour modes of input : %s" % colours
+		print("Colour modes of input : %s" % colours)
 	if len(colours) == 1 and colours[0] == "L" :
 		if verbose :
-			print "Builing graylevel composition"
+			print("Builing graylevel composition")
 		compoimg = im.new("L", (totwidth, totheight), 128)
 	else:
 		if verbose :
-			print "Building RGB composition"
+			print("Building RGB composition")
 		compoimg = im.new("RGB", (totwidth, totheight), (255, 0, 0))
 		
 	y = 0
@@ -1056,7 +1056,7 @@ def compose(f2nimages, outfile):
 	
 	
 	if verbose:
-		print "Writing compositions to %s...\n%i x %i pixels, mode %s" % (outfile, compoimg.size[0], compoimg.size[1], compoimg.mode)
+		print("Writing compositions to %s...\n%i x %i pixels, mode %s" % (outfile, compoimg.size[0], compoimg.size[1], compoimg.mode))
 	compoimg.save(outfile, "PNG")
 	
 def isnumeric(value):
@@ -1105,14 +1105,14 @@ if __name__ == "__main__":
 	args = sys.argv[1:]
 	
 	if len(args) != 4 and len(args) != 6:
-		print """
+		print("""
 usage : python f2n.py in.fits 1 log out.png [auto auto]
 The 1 is the binning factor
 Put a negative value and you get upsampled
 Then, log can be one of log, lin, clog or clin
 You can optionally add z1 and z2 cutoffs : auto, ex, flat, or 12.3
 Enjoy !
-"""
+""")
 		sys.exit(1)
 	
 	else:

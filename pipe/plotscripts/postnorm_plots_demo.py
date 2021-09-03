@@ -2,7 +2,7 @@
 #	Some plots, for the fun of it. Illustrates how nice the database is :-)
 #
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from pylab import * # matplotlib and NumPy etc
 #from numpy import *
@@ -13,9 +13,9 @@ data = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 
 hold(False)
 
-medcoeff = asarray(map(lambda x:float(x['medcoeff']), data))
-medcoefferr = 10*asarray(map(lambda x:10*float(x['spancoeff']), data))
-jd = asarray(map(lambda x:float(x['jd']), data))
+medcoeff = asarray([float(x['medcoeff']) for x in data])
+medcoefferr = 10*asarray([10*float(x['spancoeff']) for x in data])
+jd = asarray([float(x['jd']) for x in data])
 
 #print medcoefferr
 
@@ -52,26 +52,26 @@ savefig(plotdir + "normcoeff.png")
 
 #histos
 
-seeing = asarray(map(lambda x:float(x['seeing']), data))
+seeing = asarray([float(x['seeing']) for x in data])
 hist(seeing, 25)
 title('Seeing [arcsec]')
 savefig(plotdir + "seeing.png")
 
-medcoeff = asarray(map(lambda x:float(x['medcoeff']), data))
+medcoeff = asarray([float(x['medcoeff']) for x in data])
 hist(medcoeff, 25)
 title('medcoeff')
 savefig(plotdir + "medcoeff.png")
 
-spancoeff = asarray(map(lambda x:float(x['spancoeff']), data))
+spancoeff = asarray([float(x['spancoeff']) for x in data])
 hist(spancoeff, 25)
 title('spancoeff')
 savefig(plotdir + "spancoeff.png")
 
-geomaprms = asarray(map(lambda x:float(x['geomaprms']), data))
+geomaprms = asarray([float(x['geomaprms']) for x in data])
 hist(geomaprms, 25)
 title('geomaprms')
 savefig(plotdir + "geomaprms.png")
 
-print "Done."
+print("Done.")
 	
 	

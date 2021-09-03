@@ -24,8 +24,8 @@ def posplotbydate(images, image, deckey, ptsrc, filename, maglims = None):
 	
 		fluxfieldname = 'out_'+deckey+'_'+ source +'_flux'
 	
-		mags = -2.5 * log10(clip(asarray(map(lambda x: x[fluxfieldname], images)), 1.0, 1.0e18))
-		mhjds = asarray(map(lambda x: x["mhjd"], images))
+		mags = -2.5 * log10(clip(asarray([x[fluxfieldname] for x in images]), 1.0, 1.0e18))
+		mhjds = asarray([x["mhjd"] for x in images])
 	
 		maglist.append(mags)
 		mhjdlist.append(mhjds)
@@ -43,8 +43,8 @@ def posplotbydate(images, image, deckey, ptsrc, filename, maglims = None):
 	
 		fluxfieldname = 'out_'+deckey+'_'+ source +'_flux'
 	
-		mags = -2.5 * log10(clip(asarray(map(lambda x: x[fluxfieldname], [x for x in images if x["setname"] == image["setname"]])), 1.0, 1.0e18))
-		mhjds = asarray(map(lambda x: x["mhjd"], [x for x in images if x["setname"] == image["setname"]]))
+		mags = -2.5 * log10(clip(asarray([x[fluxfieldname] for x in [x for x in images if x["setname"] == image["setname"]]]), 1.0, 1.0e18))
+		mhjds = asarray([x["mhjd"] for x in [x for x in images if x["setname"] == image["setname"]]])
 	
 		maglist.append(mags)
 		mhjdlist.append(mhjds)
@@ -114,7 +114,7 @@ def posplotbyimg(images, nightlims, image, deckey, ptsrc, filename, maglims = No
 
 		fluxfieldname = 'out_'+deckey+'_'+ source +'_flux'
 	
-		mags = -2.5 * log10(clip(asarray(map(lambda x: x[fluxfieldname], images)), 1.0, 1.0e18))
+		mags = -2.5 * log10(clip(asarray([x[fluxfieldname] for x in images]), 1.0, 1.0e18))
 		nums = arange(len(mags)) +1
 	
 		maglist.append(mags)
@@ -139,7 +139,7 @@ def posplotbyimg(images, nightlims, image, deckey, ptsrc, filename, maglims = No
 		fluxfieldname = 'out_'+deckey+'_'+ source +'_flux'
 		
 		mag = -2.5 * log10(clip(asarray([image[fluxfieldname]]), 1.0, 1.0e18))
-		imagepos = map(lambda x: x["imgname"], images).index(image["imgname"]) +1
+		imagepos = [x["imgname"] for x in images].index(image["imgname"]) +1
 		num = array([imagepos])
 		
 		plt.plot(num, mag, marker=".", linestyle="None", color="red", markersize = 15)
