@@ -5,12 +5,18 @@
 
 
 exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+import numpy as np
+from astropy.io import fits
+import astroalign as aa
+
 
 from kirbybase import KirbyBase, KBError
 import math
-from pyraf import iraf
+# from pyraf import iraf
 from variousfct import *
 from datetime import datetime, timedelta
+
+from star import readgeomap
 
 # As we will tweak the database, let's do a backup
 backupfile(imgdb, dbbudir, "alignimages")
@@ -50,73 +56,57 @@ proquest(askquestions)
 
 starttime = datetime.now()
 
+# we'll still need the reference image, see below.
+refimage = fits.getdata(db.select(imgdb, ['imgname'], [refimgname], returnType='dict')[0]['rawimg'])
+
 for i,image in enumerate(images):
 
-	print("--------------------")
-	print(i+1, "/", nbrofimages, image['imgname'])
+    print("--------------------")
+    print(i+1, "/", nbrofimages, image['imgname'])
 	
-	imgtorotate = os.path.join(alidir, image['imgname'] + "_skysub.fits")
-	geomapin = os.path.join(alidir, image['imgname'] + ".geomap")
+    imgtorotate = os.path.join(alidir, image['imgname'] + "_skysub.fits")
+    geomapin = os.path.join(alidir, image['imgname'] + ".geomap")
 	
-	aliimg = os.path.join(alidir, image['imgname'] + "_ali.fits")
+    aliimg = os.path.join(alidir, image['imgname'] + "_ali.fits")
 	
-	if os.path.isfile(aliimg):
-		"Removing existing aligned image."
-		os.remove(aliimg)
-	
-	#databasename = "geodatabase"
-	databasename = os.path.join(workdir, "geodatabase") # better, it prevents pbs when doing simultaneous alignments with same pipe.
-	if os.path.isfile(databasename):
-		os.remove(databasename)
+    if os.path.isfile(aliimg):
+        "Removing existing aligned image."
+        os.remove(aliimg)
 
-	iraf.unlearn(iraf.geomap)
-	iraf.geomap.fitgeom = "rscale"		# shift, xyscale, rotate, rscale
-	iraf.geomap.function = "polynomial"
-	iraf.geomap.transfo = "broccoli"
-	iraf.geomap.interac = "no"
-	#iraf.geomap.verbose="no"
 
-	mapblabla = iraf.geomap(input = geomapin, database = databasename, xmin = 1, xmax = dimx, ymin = 1, ymax = dimy, Stdout=1)
+    # so, we aim to replace IRAF with astroalign. First, let us
+    # recover the mapped stars obtained in 1b_identcoord.py :
+    referenceset, targetset = readgeomap(geomapin)
+    transform, _ = aa.find_transform(referenceset, targetset)
 	
+	# assign the different parts of the transformation:
+    geomapscale = transform.scale
+    geomaprms = np.sqrt( np.sum(transform.residuals(referenceset, targetset)) / len(referenceset) )
+    geomapangle = transform.rotation
+    mapshifts = transform.translation
+    
 	
-	for line in mapblabla:
-		if "X and Y scale:" in line:
-			mapscale = line.split()[4:6]
-		if "Xin and Yin fit rms:" in line:
-			maprmss = line.split()[-2:]
-		if "X and Y axis rotation:" in line:
-			mapangles = line.split()[-4:-2]
-		if "X and Y shift:" in line:
-			mapshifts = line.split()[-4:-2]
+    print("Scale :", geomapscale)
+    print("Angle :", geomapangle)
+    print("RMS   :", geomaprms)
 	
-	geomaprms = math.sqrt(float(maprmss[0])*float(maprmss[0]) + float(maprmss[1])*float(maprmss[1]))
-	geomapangle = float(mapangles[0])
-	geomapscale = float(mapscale[0])
-	
-	if mapscale[0] != mapscale[1]:
-		raise mterror("Error reading geomap scale")
-	
-	print("Scale :", geomapscale)
-	print("Angle :", geomapangle)
-	print("RMS   :", geomaprms)
-	
-	db.update(imgdb, ['recno'], [image['recno']], {'geomapangle': geomapangle, 'geomaprms': geomaprms, 'geomapscale': geomapscale})
+    db.update(imgdb, ['recno'], [image['recno']], {'geomapangle': geomapangle, 'geomaprms':float(geomaprms), 'geomapscale': float(geomapscale)})
+    
+    # apply the said transformation to the image.
+    # astroalign still wants a reference to the target image: that is in case
+    # it has a different shape. Thus we provide it for generality.
+    
+    
+    
+    imgtorotatedata = fits.getdata(imgtorotate)
+    # aaand for some reason, this doesn't work with 32 bits data.
+    aligned_image, _ = aa.apply_transform(transform, source=imgtorotatedata.astype(np.float64), 
+                                                  target=refimage)
+    # thus we convert it before applying the transformation, and now we
+    # go back as we write the result:
+    fits.writeto(aliimg, aligned_image.astype(np.float32))
 
-	print("geomap done")
 
-	iraf.unlearn(iraf.gregister)
-	iraf.gregister.geometry = "geometric"	# linear, distortion, geometric
-	iraf.gregister.interpo = "spline3"	# linear, spline3
-	iraf.gregister.boundary = "constant"	# padding with zero
-	iraf.gregister.constant = 0.0
-	iraf.gregister.fluxconserve = "yes"
-
-	regblabla = iraf.gregister(input = imgtorotate, output = aliimg, database = databasename, transform = "broccoli", xmin = 1, xmax = dimx, ymin = 1, ymax = dimy, Stdout=1)
-
-	print("gregister done")
-
-if os.path.isfile(databasename):
-	os.remove(databasename)
 
 db.pack(imgdb)
 

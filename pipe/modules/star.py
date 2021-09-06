@@ -562,3 +562,18 @@ def writeforgeomap(filename, pairs):
     writer = csv.writer(geomap, delimiter="\t")
     writer.writerows(table)
     geomap.close()
+    
+    
+def readgeomap(filename):
+    """
+     Reads a catalog as produced by writeforgeomap above. Yields two lists
+     of tuples of coordinates. 
+
+    """
+    coords1, coords2 = [], []
+    for line in open(filename, 'r').readlines():
+        x1,y1, x2,y2 = [float(e.strip()) for e in line.split()]
+        coords1.append((x1, y1))
+        coords2.append((x2, y2))
+    return coords1, coords2
+    
