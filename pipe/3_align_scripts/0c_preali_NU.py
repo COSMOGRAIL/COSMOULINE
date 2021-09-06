@@ -37,7 +37,7 @@ for n, (image, x, y) in enumerate(zip(images, xpattern, ypattern)):
 
 	(img, hdr) = fromfits(skysubimg, verbose=True)
 
-	maxext = max(len(img), len(img[0]))/2
+	maxext = max(len(img), len(img[0]))//2
 	newarray = np.zeros((2*maxext+len(img), 2*maxext+len(img[0])))
 
 

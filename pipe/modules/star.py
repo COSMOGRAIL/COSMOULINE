@@ -59,6 +59,8 @@ class Star:
     def __str__(self):
         return "%10s : (%8.2f,%8.2f) | %12.2f | %5.2f %5.2f" % (
         self.name, self.x, self.y, self.flux, self.fwhm, self.ell)
+    def __repr__(self):
+        return self.__str__()
 
     def shift(self, shift):
         """

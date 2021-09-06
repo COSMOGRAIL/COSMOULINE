@@ -54,16 +54,16 @@ refscalingfactor = refimage['scalingfactor']
 
 # read and identify the manual reference catalog
 refmanstars = star.readmancat(alistarscat)  # So these are the "manual" star coordinates
-id = star.listidentify(refmanstars, refautostars, tolerance=identtolerance, onlysingle=True,
+idstars = star.listidentify(refmanstars, refautostars, tolerance=identtolerance, onlysingle=True,
                        verbose=True)  # We find the corresponding precise sextractor coordinates
 
-if len(id["nomatchnames"]) != 0:
+if len(idstars["nomatchnames"]) != 0:
     print("Warning : the following stars could not be identified in the sextractor catalog :")
-    print("\n".join(id["nomatchnames"]))
+    print("\n".join(idstars["nomatchnames"]))
     print("You should correct this, I stop here.")
     sys.exit()
 
-preciserefmanstars = star.sortstarlistbyflux(id["match"])
+preciserefmanstars = star.sortstarlistbyflux(idstars["match"])
 maxalistars = len(refmanstars)
 
 print("I've read", len(refmanstars), "stars to use for alignment.")
