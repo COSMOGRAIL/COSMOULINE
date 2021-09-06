@@ -16,7 +16,7 @@ __version__ = "Version 1.1 $LastChangedRevision: 329 $"
 import string
 import re
 
-from .asciiutils  import *
+from asciidata.asciiutils  import *
 
 class Header(object):
     """
@@ -159,7 +159,7 @@ class Header(object):
         for line in self.hdata:
             if len(line) > 0:
                 hstring += self._comment_char + line
-    	    else:
+            else:
                 hstring += self._comment_char + '\n'
 
         # return the string
@@ -204,8 +204,8 @@ class Header(object):
 
         # for each line
         for item in hitems:
-	    # append the new content
-	    # to the header content
+        # append the new content
+        # to the header content
             self.hdata.append(item+'\n')
             self._nentry += 1
 
@@ -229,7 +229,7 @@ class Header(object):
         commentpattern = re.compile(comment_char)
         sextractor_header = re.compile('^#\s*(\d+)\s+([+*-/()\w]+)([^\[]*)(\[\w+\])?(.*)\n')
         # open the data file and go over its rows
-        for line in file(filename, 'r'):
+        for line in open(filename, 'r'):
             if commentpattern.match(line):
                 #append everything after the comment_char separator to Fullhdata
                 line_with_comment_char_stripped_off = commentpattern.sub('',line,count=1)
@@ -279,7 +279,7 @@ class Header(object):
 
     def reset(self):
         """
-    	Reset the header
+        Reset the header
         """
         self.hdata   = []
         self._nentry = 0
