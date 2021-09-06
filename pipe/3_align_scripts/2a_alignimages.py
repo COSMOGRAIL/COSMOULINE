@@ -76,12 +76,12 @@ for i,image in enumerate(images):
 
     # so, we aim to replace IRAF with astroalign. First, let us
     # recover the mapped stars obtained in 1b_identcoord.py :
-    referenceset, targetset = readgeomap(geomapin)
-    transform, _ = aa.find_transform(referenceset, targetset)
+    referenceset, toalignset = readgeomap(geomapin)
+    transform, _ = aa.find_transform(toalignset, referenceset)
 	
 	# assign the different parts of the transformation:
     geomapscale = transform.scale
-    geomaprms = np.sqrt( np.sum(transform.residuals(referenceset, targetset)) / len(referenceset) )
+    geomaprms = np.sqrt( np.sum(transform.residuals(toalignset, referenceset)) / len(referenceset) )
     geomapangle = transform.rotation
     mapshifts = transform.translation
     
