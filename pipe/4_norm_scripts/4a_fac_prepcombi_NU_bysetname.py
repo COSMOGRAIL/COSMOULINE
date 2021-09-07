@@ -5,9 +5,10 @@
 #	In this first part, we will put normalized images in a new directory
 #	The combination will be done in the second script.
 
+from astropy.io import fits
+
 
 exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from pyraf import iraf
 from kirbybase import KirbyBase, KBError
 import shutil
 from variousfct import *
@@ -54,7 +55,13 @@ for i, image in enumerate(images):
     mycoeff = image['medcoeff']
     if os.path.isfile(norm):
         os.remove(norm)
-    iraf.imutil.imarith(operand1=nonorm, op="*", operand2=mycoeff, result=norm)
+        
+        
+    # here we replace the iraf operation with a numpy operation:
+    # iraf.imutil.imarith(operand1=nonorm, op="*", operand2=mycoeff, result=norm)
+    # becomes:
+    result = mycoeff * fits.getdata(nonorm)
+    fits.writeto(norm, result)
 
     combilist.append(image['imgname'] + "_alinorm.fits")
 # Attention : we only append image names, not full paths !

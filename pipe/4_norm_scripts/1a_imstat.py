@@ -12,10 +12,12 @@
 #
 
 exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from pyraf import iraf
+# from pyraf import iraf
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
+
+from astropy.io import fits
 
 # As we will tweak the database, do a backup first
 backupfile(imgdb, dbbudir, "imstat")
@@ -39,10 +41,20 @@ if "stddev" not in db.getFieldNames(imgdb) or "emptymean" not in db.getFieldName
 	#db.addFields(imgdb, ['stddev:float', 'maxlens:float', 'sumlens:float'])
 	db.addFields(imgdb, ['stddev:float', 'emptymean:float'])
 
-iraf.imutil()
+# iraf.imutil()
 
 starttime = datetime.now()
 tokicklist = []
+
+
+### before we start, a utility function that clips data:
+def clipData(image, nsigma=3):
+    m = np.nanmean(image)
+    s = np.nanstd(image)
+    image[image>m+3*s] = np.nan 
+    image[image<m-3*s] = np.nan
+    
+    
 for i, image in enumerate(images):
 	
 	print(i+1, "/", len(images), ":", image['imgname'])
@@ -54,33 +66,20 @@ for i, image in enumerate(images):
 	#
 	
 	filename = alidir + image['imgname'] + "_ali.fits"
-##################### empty region ########################
-
-	iraf.unlearn(iraf.imutil.imstat)	
-	iraf.imutil.imstat.fields = "image,npix,mean,midpt,stddev,min,max" # Fields to be printed
-	iraf.imutil.imstat.lower = "INDEF" # Lower limit for pixel values
-	iraf.imutil.imstat.upper = "INDEF" # Upper limit for pixel values
-	iraf.imutil.imstat.nclip = 2 # nbr of clipping iterations
-	iraf.imutil.imstat.lsigma = 3. # Lower side clipping factor in sigma
-	iraf.imutil.imstat.usigma = 3. # Upper side clipping factor in sigma
-	iraf.imutil.imstat.binwidt = 0.1 # Bin width of histogram in sigma
-	iraf.imutil.imstat.format = "yes" # Format output and print column labels ?
-	iraf.imutil.imstat.cache = "no" # Cache image in memory ?
-	
-	imstatblabla = iraf.imutil.imstat(images = filename + emptyregion, Stdout=1)
-	
-	#for line in imstatblabla:
-	#	print line
-	try:
-		elements = imstatblabla[-1].split()
-		npix = int(elements[1])
-		mean = float(elements[2])
-		midpt = float(elements[3])
-		stddev = float(elements[4])
-		minval = float(elements[5])
-		maxval = float(elements[6])
-	except:
-		tokicklist.append(image['imgname'])
+	data = fits.getdata(filename)
+    # unpack the coordinates of "emptyregion" found in the settings:
+	coords = emptyregion.replace('[', '').replace(']', '').split(',')
+	xrange = [int(e.strip()) for e in coords[0].split(':')]
+	yrange = [int(e.strip()) for e in coords[1].split(':')]
+    # single out the empty region:
+	emptyregiondata = data[yrange[0]:yrange[1],xrange[0]:xrange[1]]
+    
+    # now we calculate. 
+	clipData(emptyregiondata)
+	mean = float(np.nanmean(emptyregiondata))
+	midpt = float(np.nanmedian(emptyregiondata))
+	stddev = float(np.nanstd(emptyregiondata))
+    
 	
 	#print image['imgname'], npix, mean, midpt, stddev, minval, maxval
 	print("Empty region stddev : %8.2f, median %8.2f, mean %8.2f" % (stddev, midpt, mean))
@@ -136,6 +135,3 @@ for imgname in tokicklist:
 kicklist.close()
 print('Ok, done.')
 print("Do not forget to update your kicklist manually !")
-
-
-
