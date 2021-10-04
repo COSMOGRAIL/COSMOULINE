@@ -7,10 +7,7 @@ try:
 except:
     pass
 
-try:
-    import numdisplay
-except:
-    import stsci.numdisplay # for usage with anaconda
+import imexam
  
 INF = float("infinity")
 
@@ -429,6 +426,13 @@ def array2fits(array, filename, header = None):
     hdu.writeto(filename)
     
 def array2ds9(array, frame=1, name=None, zscale=False):
+    viewer = imexam.connect()
+    viewer.view(array)
+            
+####### version using numdisplay, don't see how to make this work in python3.
+####### thus I replace it with the above, using imexam
+def array2ds9numdisplay(array, frame=1, name=None, zscale=False):
+    import numdisplay
     ds9frame = frame%16
     try:
         numdisplay.display(array.transpose(), z1=array.min(), z2=array.min(), 

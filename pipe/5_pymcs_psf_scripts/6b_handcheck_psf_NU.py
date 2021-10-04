@@ -64,7 +64,7 @@ nb= eval(input("Which image do you want to start from ? (For the first image wri
 i = int(nb)
 
 
-resize = eval(input("Do you want to resize ? (yes/no) This is useful if your PSF uses over 6 stars otherwise it just slows the program "))
+resize = input("Do you want to resize ? (yes/no) This is useful if your PSF uses over 6 stars otherwise it just slows the program ")
 
 #Dimension of the window if you decide to resize
 if resize == 'yes':

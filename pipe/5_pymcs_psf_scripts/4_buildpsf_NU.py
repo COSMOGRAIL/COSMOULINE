@@ -2,7 +2,7 @@ exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
-import multiprocess # if forkmap fails...
+import multiprocessing as multiprocess # if forkmap fails...
 import star
 from readandreplace_fct import *
 
@@ -37,7 +37,7 @@ else :
 print("I will build the PSF of %i images." % len(images))
 
 # ncorestouse = forkmap.nprocessors()
-ncorestouse = multiprocess.cpu_count()
+ncorestouse = 1#multiprocess.cpu_count()
 
 if computer == "martin": #patch to fix the the forkmap bug (crash under macOSX)
 	maxcores = 1
@@ -122,7 +122,9 @@ def buildpsf(image):
 	
 starttime = datetime.now()
 pool = multiprocess.Pool(processes=ncorestouse)
-pool.map(buildpsf, images)
+# pool.map(buildpsf, images)
+for image in images:
+    buildpsf(image)
 # forkmap.map(buildpsf, images, n = ncorestouse)
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)

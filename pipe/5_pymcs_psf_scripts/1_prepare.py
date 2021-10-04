@@ -70,10 +70,10 @@ print("I will treat %i images." % len(images))
 proquest(askquestions)
 
 
-	# Read the config template
+# Read the config template
 config_template = justread(os.path.join(configdir, "template_pyMCS_psf_config.py"))
 
-	# Format the psf stars catalog
+# Format the psf stars catalog
 nbrpsf = len(psfstars)
 starscouplelist = repr([(int(s.x), int(s.y)) for s in psfstars])
 

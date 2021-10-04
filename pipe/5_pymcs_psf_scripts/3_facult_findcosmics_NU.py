@@ -11,7 +11,7 @@ import forkmap
 #import multiprocessing  # if forkmap doesn't work...
 import cosmics
 import star
-import multiprocess
+import multiprocessing as multiprocess
 #import numpy as np
 
 ###########
