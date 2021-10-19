@@ -51,7 +51,7 @@ def extractpsf(image):
 
 
 for image in images :
-	extractpsf(image)
+ 	extractpsf(image)
 # forkmap.map(extractpsf, images, n = 1)
 
 notify(computer, withsound, "PSF extraction done for psfname %s." % (psfname))

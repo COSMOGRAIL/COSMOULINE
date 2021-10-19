@@ -50,7 +50,7 @@ for s in normstars:
 print("Checking reference image ...")
 refsexcat = os.path.join(alidir, refimgname + ".alicat")
 refcatstars = star.readsexcat(refsexcat, propfields=["FLUX_APER", "FLUX_APER1", "FLUX_APER2", "FLUX_APER3", "FLUX_APER4"])
-id = star.listidentify(normstars, refcatstars, tolerance = identtolerance)
+id = star.listidentify(normstars, refcatstars, tolerance=identtolerance)
 refidentstars = id["match"]
 # now refidentstars contains the same stars as normstars, but with sex fluxes.
 
