@@ -38,7 +38,6 @@ def backupfile(filepath, backupdir, code=""):
 	
 	print("Backup of %s : %s (%.1f kB)" % (filename, backupfilename, filesize/1024.0))
 
-    now = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
 def proquest(askquestions):
     """

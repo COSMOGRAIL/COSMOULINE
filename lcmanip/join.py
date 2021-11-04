@@ -47,17 +47,17 @@ print("Rejected because medcoeff > %.2f : %i" % (imgmaxmedcoeff, before-len(imag
 
 # Rejecting according to an eventual skiplist :
 if imgskiplistfilename != None:
-	if isinstance(imgskiplistfilename, list):
-		for skip in imgskiplistfilename:
-			imgskiplist = variousfct.readimagelist(os.path.join(lcmanipdir, skip))
-			# Getting the image names, disregarding the comments :
-			imgskiplist = [item[0] for item in imgskiplist]
-			images = [image for image in images if image["imgname"] not in imgskiplist]
-	else :
-		imgskiplist = variousfct.readimagelist(os.path.join(lcmanipdir, imgskiplistfilename))
-		# Getting the image names, disregarding the comments :
-		imgskiplist = [item[0] for item in imgskiplist]
-		images = [image for image in images if image["imgname"] not in imgskiplist]
+    if isinstance(imgskiplistfilename, list):
+        for skip in imgskiplistfilename:
+            imgskiplist = variousfct.readimagelist(os.path.join(lcmanipdir, skip))
+            # Getting the image names, disregarding the comments :
+            imgskiplist = [item[0] for item in imgskiplist]
+            images = [image for image in images if image["imgname"] not in imgskiplist]
+    else :
+        imgskiplist = variousfct.readimagelist(os.path.join(lcmanipdir, imgskiplistfilename))
+        # Getting the image names, disregarding the comments :
+        imgskiplist = [item[0] for item in imgskiplist]
+        images = [image for image in images if image["imgname"] not in imgskiplist]
 
 print("Number of rejected images : %i." % (ava - len(images)))
 print("We keep %i images among %i." % (len(images), ava))
@@ -93,7 +93,7 @@ print("We keep %i images among %i." % (len(images), ava))
 for image in images:
 
     # - the field normcoeffname+"_err" contains the dispersion of the coeffs from the different stars, not the error !
-    #	-> we divide this by sqrt(nstars) to get the actual error on each normcoeff.
+    #    -> we divide this by sqrt(nstars) to get the actual error on each normcoeff.
     image[normcoeffname + "_sigma"] = image[normcoeffname + "_err"] / np.sqrt(float(image[normcoeffname + "_comment"]))
 
     # - Combining shotnoise and renormsigma *per image*, in preparation for later calculations
@@ -121,7 +121,7 @@ nbimgs = list(map(len, nights)) # The number of images in each night, as floats
 print("Histogram of number of images per night :")
 h = ["%4i nights with %i images" % (nbimgs.count(c), c) for c in sorted(list(set(nbimgs)))]
 for l in h:
-	print(l)
+    print(l)
 
 
 sqrtnbimgs = np.sqrt(np.array(nbimgs) + 0.0)  # This is the numpy array used for computations
@@ -173,14 +173,14 @@ plt.show()
 fig1.savefig(os.path.join(lcmanipdir, outputname + "_median_seeing.png"))
 
 if min(mednormcoeffsigmas) <= 0.0001:
-	print("####### WARNING : some normcoefferrs seem to be zero ! #############")
-	print("Check/redo the normalization (with more stars ?), otherwise some of my error bars might be too small.")
-	
+    print("####### WARNING : some normcoefferrs seem to be zero ! #############")
+    print("Check/redo the normalization (with more stars ?), otherwise some of my error bars might be too small.")
+    
 meannormcoeffnbs = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_comment", normkey=None)['mean'])) # Number of stars for coeff (mean -> float !)
 print("Histogram of mean number of normalization stars per night :")
 h = ["%4i nights with %i stars" % (list(meannormcoeffnbs).count(c), c) for c in sorted(list(set(list(meannormcoeffnbs))))]
 for l in h:
-	print(l)
+    print(l)
 
 # We rescale the sky level in the same way as for source fluxes :
 medrelskylevels = np.asarray(medskylevels) * np.asarray(mednormcoeffs)
@@ -228,11 +228,11 @@ All errors are computed for the *mean/median* of a night's measurements (i.e. "d
 0 : theoretical shotnoise error only, (i.e. we assume there is no normalization error)
 
 1 : combination of theoretical shotnoise and empirical normalization error. So this error is larger than error 0.
-	(Malte : medians taken "where they should")
+    (Malte : medians taken "where they should")
 2 : like 1 (same ingredients), but the medians are taken before the normalisation
-	(Malte : finds this strange)
+    (Malte : finds this strange)
 3 : like 1 (same ingredients), but the medians are taken "later"
-	(Malte : potentially less robust if many outliers).
+    (Malte : potentially less robust if many outliers).
 
 4 : empirical error based on the MAD of the measurements within a night
 
@@ -380,12 +380,12 @@ yearx.xaxis.tick_top()
 yearx.set_xlabel("Date")
 
 if showplots == True:
-	plt.show()
-	fig2.savefig(os.path.join(lcmanipdir, outputname + "_plot.pdf"))
-	print("Wrote plot.")
+    plt.show()
+    fig2.savefig(os.path.join(lcmanipdir, outputname + "_plot.pdf"))
+    print("Wrote plot.")
 else:
-	fig2.savefig(os.path.join(lcmanipdir, outputname + "_plot.pdf"))
-	print("Wrote plot.")
+    fig2.savefig(os.path.join(lcmanipdir, outputname + "_plot.pdf"))
+    print("Wrote plot.")
 
 
 plt.clf()
@@ -408,7 +408,7 @@ ax.legend()
 if showplots == True:
     plt.show()
 else:
-	fig3.savefig(os.path.join(lcmanipdir, outputname + "_plot_magerrs.pdf"))
-	print("Wrote plot.")
+    fig3.savefig(os.path.join(lcmanipdir, outputname + "_plot_magerrs.pdf"))
+    print("Wrote plot.")
 
 print("Done.")

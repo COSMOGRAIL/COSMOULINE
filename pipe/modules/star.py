@@ -240,6 +240,10 @@ def readsexcat(sexcatfilepath, verbose=True, maxflag=2, posflux=True, propfields
 
     mycat = asciidata.open(sexcatfilepath)
 
+    if mycat.nrows == 0:
+        if verbose:
+            print("No stars in the catalog :-(")
+        return returnlist
     # We check for the presence of required fields :
     minimalfields = ["NUMBER", "X_IMAGE", "Y_IMAGE", "FWHM_IMAGE", "ELLIPTICITY", "FLUX_AUTO", "FLAGS"]
     minimalfields.extend(propfields)
@@ -255,23 +259,20 @@ def readsexcat(sexcatfilepath, verbose=True, maxflag=2, posflux=True, propfields
     propfields.append("FLAGS")
     propfields = list(set(propfields))
 
-    if mycat.nrows == 0:
-        if verbose:
-            print("No stars in the catalog :-(")
-    else:
-        for i, num in enumerate(mycat['NUMBER']):
-            if mycat['FLAGS'][i] > maxflag:
-                continue
-            flux = mycat['FLUX_AUTO'][i]
-            if posflux and (flux < 0.0):
-                continue
 
-            props = dict([[propfield, mycat[propfield][i]] for propfield in propfields])
+    for i, num in enumerate(mycat['NUMBER']):
+        if mycat['FLAGS'][i] > maxflag:
+            continue
+        flux = mycat['FLUX_AUTO'][i]
+        if posflux and (flux < 0.0):
+            continue
 
-            newstar = Star(x=mycat['X_IMAGE'][i], y=mycat['Y_IMAGE'][i], name=str(num), flux=flux,
-                           props=props, fwhm=mycat['FWHM_IMAGE'][i], ell=mycat['ELLIPTICITY'][i])
+        props = dict([[propfield, mycat[propfield][i]] for propfield in propfields])
 
-            returnlist.append(newstar)
+        newstar = Star(x=mycat['X_IMAGE'][i], y=mycat['Y_IMAGE'][i], name=str(num), flux=flux,
+                       props=props, fwhm=mycat['FWHM_IMAGE'][i], ell=mycat['ELLIPTICITY'][i])
+
+        returnlist.append(newstar)
 
     if verbose:
         print(("I've selected %i sources" % (len(returnlist))))

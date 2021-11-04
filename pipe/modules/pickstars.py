@@ -155,7 +155,15 @@ class LoadImage:
             self.zimg_id = self.canvas.create_image(x,y,image=self.zimg)
 
     def select(self,event):
-
+        global compteurs
+        global choice
+        global fact
+        global height
+        global lenscoord
+        global emptycoord
+        global bl_corner
+        global bl_text
+        global carre
         if choice == "star":
             x,y = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y) #to get the real coordinate of the star even after scrolling
             ali = open(self.alistars, "a")
@@ -213,6 +221,7 @@ class LoadImage:
                 bl_text = self.canvas.create_text(x+6,y+6,text="Bottom left corner",fill="green")
                 emptycoord.append(x)
                 emptycoord.append(y)
+                print(bl_corner, bl_text, emptycoord)
 
 
 
@@ -222,7 +231,7 @@ class LoadImage:
                 emptycoord.append(x)
                 emptycoord.append(y)
                 carre=self.canvas.create_rectangle(emptycoord[0],emptycoord[3], emptycoord[2], emptycoord[1],outline="green")
-                if askyesno("Satisfied ?", "I can write the coordinates of the lensregion in settings.py if you wish"):
+                if askyesno("Satisfied ?", "I can write the coordinates of the emptyregion in settings.py if you wish"):
                     #settings = "/home/epfl/paic/Desktop/alistar_maker/"+dir+"/settings.py"
                     settings = os.path.join(configdir, "settings.py")
                     set = open(settings,"r")
@@ -277,6 +286,11 @@ def main(starcatalogue):
     global bl_corner
     global bl_text
     global carre
+    
+    lenscoord = [] # at the end it will contain the coordinates of the bottom left corner and the top right corner of the lense region in the following order [x_bl, y_bl, x_tr, y_tr] 
+    
+    emptycoord = [] # at the end it will contain the coordinates of the bottom left corner and the top right corner of the empty region in the following order [x_bl, y_bl, x_tr, y_tr]
+    
 
     if os.path.isfile(os.path.join(alidir, refimgname + "_skysub.fits")):
         fitsfile = os.path.join(alidir, refimgname + "_skysub.fits") #path to the img_skysub.fits you will display
@@ -299,11 +313,7 @@ def main(starcatalogue):
     alphabet.append('staaaaaaaaaaaaaaaaaaaaaaaaaaaaars')
     
     compteurs= [1,0,0] # first term counts the number of stars selected the second one the number of clicks you did to select the lens region and the third the same number for the empty region
-    
-    lenscoord = [] # at the end it will contain the coordinates of the botom left corner and the top right corner of the lense region in the following order [x_bl, y_bl, x_tr, y_tr] 
-    
-    emptycoord = [] # at the end it will contain the coordinates of the botom left corner and the top right corner of the empty region in the following order [x_bl, y_bl, x_tr, y_tr]
-    
+
     #if os.path.isfile(alistars):
      #    ali_f = open(alistars, "r")
         #ali_l = ali_f.read()

@@ -51,7 +51,7 @@ def extractpsf(image):
 
 
 for image in images :
- 	extractpsf(image)
+    extractpsf(image)
 # forkmap.map(extractpsf, images, n = 1)
 
 notify(computer, withsound, "PSF extraction done for psfname %s." % (psfname))
@@ -80,3 +80,18 @@ else:
 		print("By the way, the reference image was not among these images !")
 		print("You should always have the reference image in your selection.")
 
+#%%
+############################ view each starfile in ds9
+if input('want me to open ds9 on each star for you? (y/n)') != 'y':
+    sys.exit()
+
+import pyperclip 
+from subprocess import call
+for starfile, maskfile in zip(starfiles, maskfilepaths):
+    # copy the mask file to the clipboard:
+    pyperclip.copy(maskfile)
+    print(f'save your region file to \n{maskfile}')
+    # open with ds9
+    call(['ds9', starfile])
+    # now mask the companion stars in ds9, and save the regions
+    # to the file copied in the cilpboard.

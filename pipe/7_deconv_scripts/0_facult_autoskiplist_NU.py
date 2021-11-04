@@ -19,6 +19,15 @@ if 1:
 	maxell = 0.25
 	maxmedcoeff = 3.0
 	maxsky = 8000.0
+ 
+if 0:
+	# strict rejection stuff :
+	maxseeing = 1.
+	maxell = 0.2
+	maxmedcoeff = 3.0
+	maxsky = 8000.0 
+    
+    
 
 
 if 0:

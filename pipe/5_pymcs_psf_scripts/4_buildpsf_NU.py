@@ -121,10 +121,10 @@ def buildpsf(image):
 	
 	
 starttime = datetime.now()
-pool = multiprocess.Pool(processes=ncorestouse)
-# pool.map(buildpsf, images)
-for image in images:
-    buildpsf(image)
+pool = multiprocess.Pool(processes=8)
+pool.map(buildpsf, images)
+# for image in images:
+    # buildpsf(image)
 # forkmap.map(buildpsf, images, n = ncorestouse)
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
