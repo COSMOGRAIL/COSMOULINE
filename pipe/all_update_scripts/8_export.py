@@ -14,6 +14,6 @@ print("I now export the database")
 proquest(askquestions)
 
 os.chdir('../9_export_scripts')
-os.system('python export_NU.py')
+os.system(f'{python} export_NU.py')
 
 print("That was easy.")

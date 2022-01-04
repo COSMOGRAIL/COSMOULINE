@@ -16,21 +16,21 @@ proquest(askquestions)
 
 os.chdir('../2_skysub_scripts')
 try:
-	os.system('python 1_skysub_NU.py')
+	os.system(f'{python} 1_skysub_NU.py')
 except:
 	print("Problem with script 1")
 	sys.exit()
 
 if defringed:
-	os.system('python 1b_compute_fringes.py')
+	os.system(f'{python} 1b_compute_fringes.py')
 
 try:
-	os.system('python 2_skypng_NU.py')
+	os.system(f'{python} 2_skypng_NU.py')
 except:
 	print("Problem with script 2")
 	sys.exit()
 # try:
-# 	os.system('python 3_facult_rm_electrons_NU.py')
+# 	os.system(f'{python} 3_facult_rm_electrons_NU.py')
 # except:
 # 	print "Problem with script 3"
 # 	sys.exit()

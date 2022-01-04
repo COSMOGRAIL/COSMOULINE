@@ -22,7 +22,7 @@ nbrofimages = len(images)
 print("Number of images to treat :", nbrofimages)
 
 # lensdecpaths = None
-lensdecpaths = ["dec_backfull6sources_lens_renorm_abdefgknps_abdekn"] # put here the name of the lens deconvolutions you want to update
+lensdecpaths = ["dec_noback_lens_medcoeff_abdehi"] # put here the name of the lens deconvolutions you want to update
 
 if not lensdecpaths == None:
 	print("You want to update the following lens deconvolutions:")
@@ -80,8 +80,8 @@ if 1:
 
 		# I could save some time running 1 and 2 only on the updating images but the gain is 1-2 min. per star -- don't care
 		# Note that we don't run 0 on stars - we want to compute the coeff for all the images !
-		os.system('python 1_prepfiles.py')
-		os.system('python 2_applynorm_NU.py')
+		os.system(f'{python} 1_prepfiles.py')
+		os.system(f'{python} 2_applynorm_NU.py')
 
 		# Instead of 3, I simply move back or change wisely the config files previously backuped:
 		exec(compile(open(os.path.join(configdir, 'deconv_config_update.py'), "rb").read(), os.path.join(configdir, 'deconv_config_update.py'), 'exec'))
@@ -157,18 +157,18 @@ if 1:
 
 
 		# And now the rest of the deconv procedure
-		os.system('python 4_deconv_NU.py')
-		os.system('python 5a_decpngcheck_NU.py')
-		os.system('python 6_readout.py')
+		os.system(f'{python} 4_deconv_NU.py')
+		os.system(f'{python} 5a_decpngcheck_NU.py')
+		os.system(f'{python} 6_readout.py')
 
 
 
 	# I need to recompute the normalisation coefficient with these new values:
 	os.chdir('../8_renorm_scripts')
-	os.system('python 1a_renormalize.py')
-	os.system('python 1b_report_NU.py')
-	os.system('python 2_plot_star_curves_NU.py')
-	os.system('python 4_fac_merge_pdf_NU.py')
+	os.system(f'{python} 1a_renormalize.py')
+	os.system(f'{python} 1b_report_NU.py')
+	os.system(f'{python} 2_plot_star_curves_NU.py')
+	os.system(f'{python} 4_fac_merge_pdf_NU.py')
 
 
 # That being done, I can get back to the lens now
@@ -273,10 +273,10 @@ if 1:
 
 		# I could save some time running 1 and 2 only on the updating images but the gain is 1-2 min. per star -- don't care
 		if 0: #makeautoskiplist
-			os.system('python 0_facult_autoskiplist_NU.py')
+			os.system(f'{python} 0_facult_autoskiplist_NU.py')
 
-		os.system('python 1_prepfiles.py')
-		os.system('python 2_applynorm_NU.py')
+		os.system(f'{python} 1_prepfiles.py')
+		os.system(f'{python} 2_applynorm_NU.py')
 
 		# Instead of 3, I simply move back or change wisely the config files previously backuped:
 		exec(compile(open(os.path.join(configdir, 'deconv_config_update.py'), "rb").read(), os.path.join(configdir, 'deconv_config_update.py'), 'exec'))
@@ -353,9 +353,9 @@ if 1:
 
 
 		# And now the rest of the deconv procedure
-		os.system('python 4_deconv_NU.py')
-		os.system('python 5a_decpngcheck_NU.py')
-		os.system('python 6_readout.py')
+		os.system(f'{python} 4_deconv_NU.py')
+		os.system(f'{python} 5a_decpngcheck_NU.py')
+		os.system(f'{python} 6_readout.py')
 
 
 	print("Finally done...ugh...")

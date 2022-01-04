@@ -15,4 +15,4 @@ proquest(askquestions)
 
 
 os.chdir('../6_extract_scripts')
-os.system('python 12_all_extrnancosm.py')
+os.system(f'{python} 12_all_extrnancosm.py')

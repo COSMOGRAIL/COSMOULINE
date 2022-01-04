@@ -15,14 +15,15 @@ if thisisatest == False:
     print("Warning : This is NOT a test !")
     print("You did not forget to update your photomstar.cat with only the good stars, right ?")
     proquest(True)
+    
 
 for star in photomstars :
-    os.system("python3 1_prepfiles.py " + star.name)
-    os.system("python3 2_applynorm_NU.py " + star.name)
-    os.system("python3 3_fillinfile_NU.py "+ star.name)
-    os.system("python3 4_deconv_NU.py "+ star.name)
-    os.system("python3 5b_showptsrc_NU.py " + star.name)
-    os.system("python3 5a_decpngcheck_NU.py "+ star.name)
+    os.system(f"{python} 1_prepfiles.py " + star.name)
+    os.system(f"{python} 2_applynorm_NU.py " + star.name)
+    os.system(f"{python} 3_fillinfile_NU.py "+ star.name)
+    os.system(f"{python} 4_deconv_NU.py "+ star.name)
+    os.system(f"{python} 5b_showptsrc_NU.py " + star.name)
+    os.system(f"{python} 5a_decpngcheck_NU.py "+ star.name)
     
     if computer == "regor4" :
         if not os.path.exists(visudir + "/dec_psf_" + decpsfnames[0] + "/dec_" + star.name):

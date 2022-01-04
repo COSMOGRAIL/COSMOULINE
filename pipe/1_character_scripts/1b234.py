@@ -1,5 +1,4 @@
 import os
-python = "/home/fred/anaconda3/bin/python"
 exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 os.system(f"{python} 1b_copyconvert_NU.py")
 os.system(f"{python} 1c_report_NU.py")

@@ -11,5 +11,6 @@ print("I will readout the following stars:")
 print([star.name for star in photomstars])
 proquest(True)
 
+
 for star in photomstars :
-    os.system("python3 6_readout.py " + star.name)
+    os.system(f"{python} 6_readout.py " + star.name)

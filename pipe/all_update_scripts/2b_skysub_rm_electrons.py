@@ -16,7 +16,7 @@ proquest(askquestions)
 os.chdir('../2_skysub_scripts')
 
 try:
-	os.system('python 3_facult_rm_electrons_NU.py')
+	os.system(f'{python} 3_facult_rm_electrons_NU.py')
 except:
 	print("Problem with script 3")
 	sys.exit()

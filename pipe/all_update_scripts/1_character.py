@@ -30,52 +30,52 @@ proquest(True)
 
 os.chdir('../1_character_scripts')
 try:
-	os.system('python 1a_addtodatabase.py')
+	os.system(f'{python} 1a_addtodatabase.py')
 except:
 	print("Problem with script 1a")
 	sys.exit()
 try:
-	os.system('python 1b_copyconvert_NU.py')
+	os.system(f'{python} 1b_copyconvert_NU.py')
 except:
 	print("Problem with script 1b ")
 	sys.exit()
 try:
-	os.system('python 1c_report_NU.py')
+	os.system(f'{python} 1c_report_NU.py')
 except:
 	print("Problem with script 1c")
 	sys.exit()
 try:
-	os.system('python 2a_astrocalc.py')
+	os.system(f'{python} 2a_astrocalc.py')
 except:
 	print("Problem with script 2a")
 	sys.exit()
 try:
-	os.system('python 2b_report_NU.py')
+	os.system(f'{python} 2b_report_NU.py')
 except:
 	print("Problem with script 2b")
 	sys.exit()
 try:
-	os.system('python 3a_runsex_NU.py')
+	os.system(f'{python} 3a_runsex_NU.py')
 except:
 	print("Problem with script 3a")
 	sys.exit()
 try:
-	os.system('python 3b_measureseeing.py')
+	os.system(f'{python} 3b_measureseeing.py')
 except:
 	print("Problem with script 3b")
 	sys.exit()
 try:
-	os.system('python 3c_report_NU.py')
+	os.system(f'{python} 3c_report_NU.py')
 except:
 	print("Problem with script 3c")
 	sys.exit()
 try:
-	os.system('python 4a_skystats.py')
+	os.system(f'{python} 4a_skystats.py')
 except:
 	print("Problem with script 4a")
 	sys.exit()
 try:
-	os.system('python 4b_report_NU.py')
+	os.system(f'{python} 4b_report_NU.py')
 except:
 	print("Problem with script 4b")
 	sys.exit()

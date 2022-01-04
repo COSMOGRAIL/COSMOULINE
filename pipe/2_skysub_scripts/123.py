@@ -1,5 +1,4 @@
 import os
-python = "/home/fred/anaconda3/bin/python"
 
 exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from variousfct import *

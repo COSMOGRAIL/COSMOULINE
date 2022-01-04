@@ -16,4 +16,4 @@ print("Number of images to treat :", nbrofimages)
 proquest(askquestions)
 
 os.chdir('../3_align_scripts')
-os.system('python 5_facult_rm_nonalifits_NU.py')
+os.system(f'{python} 5_facult_rm_nonalifits_NU.py')

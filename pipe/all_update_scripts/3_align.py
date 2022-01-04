@@ -16,11 +16,11 @@ proquest(askquestions)
 
 
 os.chdir('../3_align_scripts')
-os.system('python 1b_identcoord.py')
-os.system('python 1c_report_NU.py')
-os.system('python 2a_multicpu_alignimages.py')
-os.system('python 2b_report_NU.py')
-os.system('python 3_updateflags.py')
-os.system('python 4_pngcheck_NU.py')
+# os.system(f'{python} 1b_identcoord.py')
+# os.system(f'{python} 1c_report_NU.py')
+os.system(f'{python} 2a_alignimages.py')
+os.system(f'{python} 2b_report_NU.py')
+os.system(f'{python} 3_updateflags.py')
+os.system(f'{python} 4_pngcheck_NU.py')
 
 print("Alignment done!")
