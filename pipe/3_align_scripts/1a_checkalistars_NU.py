@@ -35,7 +35,9 @@ os.symlink(refimgpath, linkpath)
 
 print("I made an alias to this reference image here :")
 print(linkpath)
-print("Saturation level (in e-) of ref image : %.2f" % (refimage["saturlevel"] * refimage["gain"]))
+
+saturlevel = refimage["saturlevel"] * refimage["gain"]
+print(f"Saturation level (in e-) of ref image : {saturlevel:.2f}")
 
 
 print("Now I will need some alignment stars (write them into configdir/alistars.cat).")
@@ -49,7 +51,12 @@ refscalingfactor = refimage['scalingfactor']
 
 # read and identify the manual reference catalog
 refmanstars = star.readmancat(alistarscat) # So these are the "manual" star coordinates
-id = star.listidentify(refmanstars, refautostars, tolerance = identtolerance, onlysingle = True, verbose = True) # We find the corresponding precise sextractor coordinates
+id = star.listidentify(refmanstars, refautostars, 
+                       tolerance=identtolerance, 
+                       onlysingle=True, 
+                       verbose=True) 
+# We find the corresponding precise sextractor coordinates
+
 
 if len (id["nomatchnames"]) != 0:
 	print("Warning : the following stars could not be identified in the sextractor catalog :")
@@ -91,7 +98,6 @@ refmanstarsasdicts = [{"name":s.name, "x":s.x, "y":s.y} for s in refmanstars]
 preciserefmanstarsasdicts = [{"name":s.name, "x":s.x, "y":s.y} for s in preciserefmanstars]
 refautostarsasdicts = [{"name":s.name, "x":s.x, "y":s.y} for s in refautostars]
 
-#print refmanstarsasdicts
 
 if defringed:
 	reffitsfile = os.path.join(alidir, refimage['imgname'] + "_defringed.fits")
@@ -113,18 +119,23 @@ f2nimg.drawstarlist(refautostarsasdicts, r = 30, colour = (150, 150, 150))
 f2nimg.drawstarlist(preciserefmanstarsasdicts, r = 5, colour = (255, 0, 0))
 
 
-f2nimg.writeinfo(["Sextractor stars (flag-filtered) : %i" % len(refautostarsasdicts)], colour = (150, 150, 150))
-#f2nimg.writeinfo(["", "Stars that you dutifully wrote in the alignment star catalog : %i" % len(refmanstarsasdicts)], colour = (0, 0, 255))
-f2nimg.writeinfo(["","Identified alignment stars with corrected sextractor coordinates : %i" % len(preciserefmanstarsasdicts)], colour = (255, 0, 0))
+f2nimg.writeinfo(["Sextractor stars (flag-filtered) : %i" % len(refautostarsasdicts)], 
+                 colour = (150, 150, 150))
+f2nimg.writeinfo(["","Identified alignment stars with corrected sextractor coordinates : %i" % len(preciserefmanstarsasdicts)], 
+                 colour = (255, 0, 0))
 
 
 # We draw the rectangles around qso and empty region :
 
 lims = [list(map(int,x.split(':'))) for x in lensregion[1:-1].split(',')]
-f2nimg.drawrectangle(lims[0][0], lims[0][1], lims[1][0], lims[1][1], colour=(0,255,0), label = "Lens")
+f2nimg.drawrectangle(lims[0][0], lims[0][1], lims[1][0], lims[1][1], 
+                     colour=(0,255,0), 
+                     label = "Lens")
 
 lims = [list(map(int,x.split(':'))) for x in emptyregion[1:-1].split(',')]
-f2nimg.drawrectangle(lims[0][0], lims[0][1], lims[1][0], lims[1][1], colour=(0,255,0), label = "Empty")
+f2nimg.drawrectangle(lims[0][0], lims[0][1], lims[1][0], lims[1][1], 
+                     colour=(0,255,0), 
+                     label = "Empty")
 
 
 f2nimg.writetitle("Ref : " + refimage['imgname'])

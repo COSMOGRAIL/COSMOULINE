@@ -21,10 +21,14 @@ import star
 db = KirbyBase()
 if update:
     print("This is an update.")
-    images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict')
+    images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], 
+                              [ True,     True,      True], 
+                              returnType='dict')
     askquestions = False
 else:
-    images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
+    images = db.select(imgdb, ['gogogo', 'treatme'], 
+                              [ True,     True], 
+                              returnType='dict')
 
 nbrofimages = len(images)
 print("Number of images to treat :", nbrofimages)
@@ -37,7 +41,8 @@ backupfile(imgdb, dbbudir, "identcoord")
 if "flagali" not in db.getFieldNames(imgdb):
     print("I will add some fields to the database.")
     proquest(askquestions)
-    db.addFields(imgdb, ['flagali:int', 'nbralistars:int', 'maxalistars:int', 'angle:float', 'alicomment:str'])
+    db.addFields(imgdb, ['flagali:int', 'nbralistars:int', 'maxalistars:int', 
+                         'angle:float', 'alicomment:str'])
 
 # get the info from the reference frame
 refimage = db.select(imgdb, ['imgname'], [refimgname], returnType='dict')
@@ -54,8 +59,13 @@ refscalingfactor = refimage['scalingfactor']
 
 # read and identify the manual reference catalog
 refmanstars = star.readmancat(alistarscat)  # So these are the "manual" star coordinates
-idstars = star.listidentify(refmanstars, refautostars, tolerance=identtolerance, onlysingle=True,
-                       verbose=True)  # We find the corresponding precise sextractor coordinates
+idstars = star.listidentify(refmanstars, refautostars, 
+                            tolerance=identtolerance, 
+                            onlysingle=True,
+                            verbose=True)  
+# We find the corresponding precise sextractor coordinates
+
+
 
 if len(idstars["nomatchnames"]) != 0:
     print("Warning : the following stars could not be identified in the sextractor catalog :")
@@ -83,16 +93,25 @@ for i, image in enumerate(images):
 
     geomapin = os.path.join(alidir, image['imgname'] + ".geomap")
 
-    trans = star.findtrans(preciserefmanstars, autostars, scalingratio=scalingratio, tolerance=identtolerance,
-                           minnbrstars=identminnbrstars, mindist=identfindmindist, nref=10, nauto=50, verbose=True)
+    trans = star.findtrans(preciserefmanstars, autostars, 
+                           scalingratio=scalingratio, 
+                           tolerance=identtolerance,
+                           minnbrstars=identminnbrstars, 
+                           mindist=identfindmindist, 
+                           nref=10, 
+                           nauto=50, verbose=True)
 
     if trans["nbrids"] < 0:
-        db.update(imgdb, ['recno'], [image['recno']], {'flagali': 0, 'nbralistars': 0})
+        db.update(imgdb, ['recno'], [image['recno']], 
+                  {'flagali': 0, 'nbralistars': 0})
         print("I'll have to skip this one ...\n")
         continue
 
-    pairs = star.formpairs(preciserefmanstars, autostars, tolerance=identtolerance, onlysingle=True, transform=True,
-                           scalingratio=scalingratio, angle=trans["angle"], shift=trans["shift"], verbose=True)
+    pairs = star.formpairs(preciserefmanstars, autostars, 
+                           tolerance=identtolerance, 
+                           onlysingle=True, transform=True,
+                           scalingratio=scalingratio, angle=trans["angle"], 
+                           shift=trans["shift"], verbose=True)
 
     # We build a comment string about the non matching stars :
     comment = []
@@ -111,7 +130,10 @@ for i, image in enumerate(images):
     nbralistars = len(pairs["idlist1"])
     print("nbralistars :", nbralistars)
     db.update(imgdb, ['recno'], [image['recno']],
-              {'flagali': 1, 'nbralistars': nbralistars, 'maxalistars': maxalistars, 'alicomment': comment,
+              {'flagali': 1, 
+               'nbralistars': nbralistars, 
+               'maxalistars': maxalistars, 
+               'alicomment': comment,
                'angle': trans["angle"]})
 
     # We write the input file for the iraf geomap task
