@@ -116,7 +116,7 @@ if os.path.isfile(imgdb):
 	currentfields = db.getFieldNames(imgdb)
 	if not 'updating' in currentfields:
 		db.addFields(imgdb, ['updating:bool'])
-		images = images = db.select(imgdb, ['recno'], ['*'], returnType='dict') # selects all images
+		images = db.select(imgdb, ['recno'], ['*'], returnType='dict') # selects all images
 		for image in images:
 			db.update(imgdb, ['recno'], [image['recno']], [False], ['updating'])
 		db.pack(imgdb) # always a good idea !
