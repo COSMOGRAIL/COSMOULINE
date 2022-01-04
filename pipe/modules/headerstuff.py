@@ -1443,7 +1443,8 @@ def LCOheader(rawimg):
     pythondt = datetime.datetime.strptime(header["DATE-OBS"][:-4],
                                           "%Y-%m-%dT%H:%M:%S")  # This is the start of the exposure.
     exptime = float(header['EXPTIME'])  # in seconds.
-
+    Filter  = header['filter']
+    
     pythondt = pythondt + datetime.timedelta(seconds=exptime / 2.0)  # This is the middle of the exposure.
 
     # Now we produce the date and datet fields, middle of exposure :
@@ -1474,7 +1475,8 @@ def LCOheader(rawimg):
                   'exptime': exptime, 'gain': gain, 'readnoise': readnoise, 'rotator': rotator,
                   'saturlevel': saturlevel,
                   'preredcomment1': preredcomment1, 'preredcomment2': preredcomment2, 'preredfloat1': preredfloat1,
-                  'preredfloat2': preredfloat2
+                  'preredfloat2': preredfloat2,
+                  'filter': Filter
                   }
 
     return returndict
