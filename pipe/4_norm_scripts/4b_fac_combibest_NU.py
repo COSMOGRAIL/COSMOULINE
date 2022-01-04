@@ -104,7 +104,7 @@ with open('irafinput.txt', 'r') as f:
         combinearray.append(fits.getdata(line.strip()))
 
 resultimage = np.median(combinearray, axis=0)
-fits.writeto(outputname, resultimage)
+fits.writeto(outputname, resultimage, overwrite=1)
     
 # iraf.images.immatch.imcombine("@irafinput.txt", output = outputname)
 
