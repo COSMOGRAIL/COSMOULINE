@@ -48,9 +48,9 @@ from astropy.io import fits
 
 
 
-indir = '202108'
+indir  = '/obs/lenses_EPFL/PRERED/LCO/J2305+3714'
 
-outdir = 'raw_files'
+outdir = '/obs/lenses_EPFL/PRERED/LCO/J2305+3714/raw_files'
 
 # First, recursively find all the fits and fits.fz files:
         
