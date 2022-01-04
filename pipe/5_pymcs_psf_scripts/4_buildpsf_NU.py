@@ -36,15 +36,9 @@ else :
 
 print("I will build the PSF of %i images." % len(images))
 
-# ncorestouse = forkmap.nprocessors()
-ncorestouse = 1#multiprocess.cpu_count()
 
-if computer == "martin": #patch to fix the the forkmap bug (crash under macOSX)
-	maxcores = 1
+ncorestouse = maxcores
 
-if maxcores > 0 and maxcores < ncorestouse:
-	ncorestouse = maxcores
-	print("maxcores = %i" % maxcores)
 print("For this I will run on %i cores." % ncorestouse)
 proquest(askquestions)
 
@@ -121,7 +115,7 @@ def buildpsf(image):
 	
 	
 starttime = datetime.now()
-pool = multiprocess.Pool(processes=8)
+pool = multiprocess.Pool(processes=ncorestouse)
 pool.map(buildpsf, images)
 # for image in images:
     # buildpsf(image)
