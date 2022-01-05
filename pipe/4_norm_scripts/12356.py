@@ -1,5 +1,4 @@
 import os
-
 exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 
 os.system(f"{python} 1a_imstat.py")

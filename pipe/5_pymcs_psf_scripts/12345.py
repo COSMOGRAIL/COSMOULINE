@@ -1,4 +1,5 @@
 import os
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 
 os.system(f'{python} 1_prepare.py')
 os.system(f'{python} 2a_extract_NU.py')
