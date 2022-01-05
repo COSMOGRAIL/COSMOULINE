@@ -82,7 +82,7 @@ else:
 
 #%%
 ############################ view each starfile in ds9
-if input('want me to open ds9 on each star for you? (y/n)') != 'y':
+if input('want me to open ds9 on each star for you? (yes/no)') != 'yes':
     sys.exit()
 
 import pyperclip 
