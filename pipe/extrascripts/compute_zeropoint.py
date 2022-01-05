@@ -1,6 +1,6 @@
 import os
 import numpy as np
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 import combibynight_fct
 
@@ -23,9 +23,9 @@ zp_vect = []
 
 db = KirbyBase()
 images = db.select(imgdb, [deckeyfilenum,'gogogo'], ['\d\d*', True], returnType='dict', useRegExp=True, sortFields=['mjd'])
-print "%i images" % len(images)
+print(f"{len(images)} images")
 groupedimages = combibynight_fct.groupbynights(images)
-print "%i nights" % len(groupedimages)
+print(f"{len(groupedimages)} nights")
 
 for j, s in enumerate(ref_star):
     fluxfieldname = "out_%s_%s_%s_%s_%s_flux" % (star_deckey[j], s, norm_field[j], decpsfnames[0],s)
@@ -34,8 +34,8 @@ for j, s in enumerate(ref_star):
     mags = combibynight_fct.mags(groupedimages, fluxfieldname, normkey=norm_field[j])['median']
     zp = panstarr_mag[j] - mags
 
-    print 'Star %s, mean mag : '%s, np.median(mags)
-    print 'Star %s, zeropoint : '%s, np.median(zp)
+    print('Star %s, mean mag : '%s, np.median(mags))
+    print('Star %s, zeropoint : '%s, np.median(zp))
 
     f.write('Star %s, PanSTARRS Mag :%2.5f \n'%(s, panstarr_mag[j]))
     f.write('Star %s, median mag : %2.5f \n'%(s, np.median(mags)))
