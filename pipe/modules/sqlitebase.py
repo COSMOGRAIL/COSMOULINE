@@ -29,21 +29,37 @@ typeToSQLiteType = {"str":"text",
 # and reverse:
 SQLiteTypeTotype = {v:k for k,v in typeToSQLiteType.items()}
 
-DEBUG = False
+DEBUG = 1
 
-class SQLInterface():
-    def __init__(self, path):
-        self.path = path
-        self.defaulttable = "imgdb"
+class KirbyBase():
+    def __init__(self):
+        # unlike KirbyBase, can store multilpe tables in an SQlite base.
+        # thus give a default one:
+        self.defaulttable = "images"
         
     def __str__(self):
-        return f"sqlite3 database at {self.path}"
+        return "sqlite3 database interface"
     
-    def execute(self, sqlstatements):
+    def __repr__(self):
+        return self.__str__()
+    
+    def execute(self, dbname, sqlstatements):
+        """
+        name: path to the database
+        sqlstatements: list of string or string containing sql commands. 
+        
+        Normally we would pass an extra tuple of parameters and let
+        the python sqlite3 library to handle the injection into the sql
+        command strings. (security to avoid sql injections).
+        But pretty useless here imo, not a database to a website.
+        
+        So we just pass a list of strings that are executed one by one.
+        (Or just a string, which is then executed the same way.)
+        """
         if not (type(sqlstatements) is list):
             sqlstatements = [sqlstatements]
         
-        conn = sq.connect(self.path)
+        conn = sq.connect(dbname)
         results = []
         for sqlstatement in sqlstatements:
             if DEBUG:
@@ -53,10 +69,11 @@ class SQLInterface():
                 conn.create_function("REGEXP", 2, regexp)
             with conn:
                 cur = conn.cursor()
-
+                # execute and fetch the result:
                 cur.execute(sqlstatement)
                 result = cur.fetchall()
             results.append(result)
+        # at the end, commit our changes and close the connection:
         conn.commit()
         conn.close()
         if len(results) == 1:
@@ -81,44 +98,49 @@ class SQLInterface():
     
     
     def _typeToSQLiteType(self, typ):
+        """
+        just a wrapper around accessing the dictionary typeToSQLiteType
+        defined at the top of this file.
+        """
         try:
             typ = typeToSQLiteType[typ]
         except KeyError:
-            msg = f"Uknown type encountered while creating db: {typ}"
+            msg = f"Unknown type encountered while creating db: {typ}"
             raise NotImplementedError(msg)
         return typ
 
 
-    def getTableNames(self):
-        tabs = self.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    def getTableNames(self, dbname):
+        # pretty self exlpanatory: get the names of all the tables in our database.
+        tabs = self.execute(dbname, "SELECT name FROM sqlite_master WHERE type='table';")
         return [t[0] for t in tabs]
     
-    def getColumns(self, tablename=None):
+    def getColumns(self, dbname, tablename=None):
         if not tablename:
             tablename = self.defaulttable
-        return self.execute(f"select name,type from pragma_table_info('{tablename}')")
+        return self.execute(dbname, f"select name,type from pragma_table_info('{tablename}')")
     
-    def getFieldNames(self, tablename=None):
+    def getFieldNames(self, dbname, tablename=None):
         if not tablename:
             tablename = self.defaulttable 
-        return [c[0] for c in self.getColumns(tablename)]
+        return [c[0] for c in self.getColumns(dbname, tablename)]
 
-    def getFieldTypes(self, tablename=None):
+    def getFieldTypes(self, dbname, tablename=None):
         if not tablename:
             tablename = self.defaulttable 
-        return [SQLiteTypeTotype[c[1].lower()] for c in self.getColumns(tablename)]
+        return [SQLiteTypeTotype[c[1].lower()] for c in self.getColumns(dbname, tablename)]
     
-    def getColumnType(self, field, tablename=None):
+    def getColumnType(self, dbname, field, tablename=None):
         if not tablename:
             tablename = self.defaulttable 
-        fields = self.getFieldNames(tablename)
-        types = self.getFieldTypes(tablename)
+        fields = self.getFieldNames(dbname, tablename)
+        types = self.getFieldTypes(dbname, tablename)
         if not field in fields:
             raise AssertionError(f"no such field ({field}) in table {tablename}")
         matchindex = fields.index(field)
         return types[matchindex]
 
-    def create(self, fields, tablename=None, exist_ok=True):
+    def create(self, dbname, fields, tablename=None, exist_ok=True):
         """
         creates a table in the database.
         In our context, usually we create only one table 
@@ -146,10 +168,10 @@ class SQLInterface():
         if not tablename:
             tablename = self.defaulttable
             
-        if tablename in self.getTableNames():
+        if tablename in self.getTableNames(dbname):
             if exist_ok:
                 for field in fields:
-                    self.addFields(fields, tablename=tablename)
+                    self.addFields(dbname, fields, tablename=tablename)
                 return []
             else:
                 raise RuntimeError(f"table {tablename} already exists!")
@@ -159,16 +181,16 @@ class SQLInterface():
         
         cmd += self._formatFields(fields)
         cmd = cmd[:-1] + ")"
-        return self.execute(cmd)
+        return self.execute(dbname, cmd)
     
-    def addFields(self, listoffields, tablename=None, exist_ok=True):
+    def addFields(self, dbname, listoffields, tablename=None, exist_ok=True):
         if not tablename:
             tablename = self.defaulttable
             
-        if not tablename in self.getTableNames():
+        if not tablename in self.getTableNames(dbname):
             raise RuntimeError(f"table {tablename} does not exists!")
             
-        alreadytherecols = self.getColumns(tablename)
+        alreadytherecols = self.getColumns(dbname, tablename)
         colnames = [c[0] for c in alreadytherecols]
         coltypes = [c[1] for c in alreadytherecols]
         
@@ -187,9 +209,9 @@ class SQLInterface():
                 else:
                     raise RuntimeError(f"column {col} already exists!")
             else:
-                self.execute(f"alter table {tablename} add {name} {typ}")
+                self.execute(dbname, f"alter table {tablename} add {name} {typ}")
                 
-    def dropFields(self, fields, talbename=None):
+    def dropFields(self, dbname, fields, talbename=None):
         """
         soooo sqlite 3.35 can do this. But not sure we'll  have it on everyone's computer ...
         hence we copy the table without those columns, destroy the old table
@@ -198,8 +220,8 @@ class SQLInterface():
         if not talbename:
             tablename = self.defaulttable
         tmptable = tablename+"___tmp___"
-        allfields = self.getFieldNames(tablename)
-        alltypes  = [typeToSQLiteType[t] for t in self.getFieldTypes(tablename)]
+        allfields = self.getFieldNames(dbname, tablename)
+        alltypes  = [typeToSQLiteType[t] for t in self.getFieldTypes(dbname, tablename)]
         transferfields = [f"{f} {t}" for f, t in zip(allfields,alltypes) if not f in fields]
         # prepare the transfer of the columns:
         transfieldstr = ','.join(transferfields)
@@ -213,33 +235,33 @@ class SQLInterface():
         
         req3 = f'drop table {tablename}'
         req4 = f'alter table {tmptable} rename to {tablename}'
-        self.execute([req1, req2, req3, req4])
+        self.execute(dbname, [req1, req2, req3, req4])
         
         
                 
-    def insertBatch(self, listOfDics, tablename=None):
+    def insertBatch(self, dbname, listOfDics, tablename=None):
         if not tablename:
             tablename = self.defaulttable
             
         for dic in listOfDics:
-            self.insert(dic, tablename=tablename)
+            self.insert(dbname, dic, tablename=tablename)
         
-    def insert(self, dic, tablename=None):
+    def insert(self, dbname, dic, tablename=None):
         if not tablename:
             tablename = self.defaulttable
         colnames, colvals = "(", "("
         for name, val in dic.items():
             colnames += f"{name},"
-            if self.getColumnType(name, tablename) == 'str':
+            if self.getColumnType(dbname, field=name, tablename=tablename) == 'str':
                 colvals += f"'{val}',"
             else:
                 colvals += f"{val},"
         colnames, colvals = colnames[:-1]+")", colvals[:-1]+")"
         cmd = f"insert into {tablename} {colnames} values {colvals}"
-        return self.execute(cmd)
+        return self.execute(dbname, cmd)
 
 
-    def select(self, fields, searchData, filter=None, useRegExp=False, 
+    def select(self, dbname, fields, searchData, filter=None, useRegExp=False, 
                sortFields=[], sortDesc=[], returnType="list", tablename=None):
         if not tablename:
             tablename = self.defaulttable
@@ -253,11 +275,11 @@ class SQLInterface():
             if str(searchstr).strip() == "*":
                 #joker, skip this condition.
                 continue
-            if not str(searchstr).strip()[0] in ["=", "<", ">", "=="]:
-                if useRegExp and self.getColumnType(field, tablename) == "str":
+            if not str(searchstr).strip()[0] in ["=", "<", ">", "==", "!"]:
+                if useRegExp and self.getColumnType(dbname, field, tablename) == "str":
                     searchstr = f" REGEXP '{searchstr}'"
                 else:
-                    if self.getColumnType(field, tablename) == "str":
+                    if self.getColumnType(dbname, field, tablename) == "str":
                         searchstr = f"=='{searchstr}'"
                     else:
                         searchstr = f"=={searchstr}"
@@ -275,12 +297,12 @@ class SQLInterface():
         orders = ",".join(orders)
         if len(orders) > 0:
             req += f"order by {orders} "
-        result = self.execute(req)
+        result = self.execute(dbname, req)
         
 
         if returnType == "dict":
             if not filter:
-                names = self.getFieldNames(tablename=tablename) 
+                names = self.getFieldNames(dbname, tablename=tablename) 
             else:
                 names = filter
             
@@ -298,7 +320,7 @@ class SQLInterface():
             delim = ' | '
             
             if not filter:
-                filter = self.getFieldNames(tablename=tablename) 
+                filter = self.getFieldNames(dbname, tablename=tablename) 
             # columns of physical rows
             columns = list(zip(*[filter] + result))
 
@@ -318,7 +340,7 @@ class SQLInterface():
             # Create a string that holds the header that will print.
             headerLine = delim.join([justifyDict[fieldType](item,width) 
              for item,width,fieldType in zip(filter,maxWidths,
-            self.getFieldTypes(tablename))])
+            self.getFieldTypes(dbname, tablename))])
 
             # Create a StringIO to hold the print out.
             output=io.StringIO()
@@ -337,7 +359,7 @@ class SQLInterface():
                 # Print a record.
                 print(delim.join([justifyDict[fieldType](
                  str(item),width) for item,width,fieldType in 
-                 zip(row,maxWidths,self.getFieldTypes())]), file=output)
+                 zip(row,maxWidths,self.getFieldTypes(dbname))]), file=output)
 
                 # If rowSeparator is True, print a dashed line.
                 if rowSeparator: print(rowDashes, file=output)
@@ -359,18 +381,30 @@ class SQLInterface():
         return result
     
     
-    def update(self, fields, searchData, updates, filter=None, 
+    def update(self, dbname, fields, searchData, updates, filter=None, 
                useRegExp=False, tablename=None):
         if not tablename:
             tablename = self.defaulttable
 
         req = f"update {tablename} "
         if type(updates) is dict:
-            sets = ','.join([f"{k}={v}" for k,v in updates.items()])
+            sets = []
+            for k, v in updates.items():
+                if self.getColumnType(dbname, k, tablename) == "str":
+                    sets.append(f"{k}='{v}'")
+                else:
+                    sets.append(f"{k}={v}")
+            sets = ','.join(sets)
         elif type(updates) is list:
             assert type(filter) is list 
             assert len(filter) == len(updates)
-            sets = ','.join([f"{k}={v}" for k,v in zip(filter, updates)])
+            sets = []
+            for k, v in zip(filter, updates):
+                if self.getColumnType(dbname, k, tablename) == "str":
+                    sets.append(f"{k}='{v}'")
+                else:
+                    sets.append(f"{k}={v}")
+            sets = ','.join(sets)
         
         req += f"set {sets} "
         conditions = []
@@ -378,11 +412,11 @@ class SQLInterface():
             if str(searchstr).strip() == "*":
                 #joker, skip this condition.
                 continue
-            if not str(searchstr).strip()[0] in ["=", "<", ">", "=="]:
-                if useRegExp and self.getColumnType(field, tablename) == "str":
+            if not str(searchstr).strip()[0] in ["=", "<", ">", "==", "!"]:
+                if useRegExp and self.getColumnType(dbname, field, tablename) == "str":
                     searchstr = f" REGEXP '{searchstr}'"
                 else:
-                    if self.getColumnType(field, tablename) == "str":
+                    if self.getColumnType(dbname, field, tablename) == "str":
                         searchstr = f"=='{searchstr}'"
                     else:
                         searchstr = f"=={searchstr}"
@@ -390,38 +424,52 @@ class SQLInterface():
         conditions = " and ".join(conditions)
         if len(conditions) > 0:
             req += f"where {conditions} "
-        
-        result = self.execute(req)
-        return result
+        # also, kirbybase gives us the number of affected rows when 
+        # doing an update. Let's do this as well:
+        reqs = [req, "select total_changes()"]
+        result = self.execute(dbname, reqs)
+        return result[-1][0][0]
     
     
-    def _convertInput(self, values):
-        """If values is a dictionary or an object, we are going to convert 
-        it into a list.  That way, we can use the same validation and 
-        updating routines regardless of whether the user passed in a 
-        dictionary, an object, or a list.
+    def pack(self, dbname):
         """
-        # If values is a list, make a copy of it.
-        if isinstance(values, list): record = list(values)
-        # If values is a dictionary, convert its values into a list
-        # corresponding to the table's field names.  If there is not
-        # a key in the dictionary corresponding to a field name, place a
-        # '' in the list for that field name's value.
-        elif isinstance(values, dict):
-            record = [values.get(k,'') for k in self.getFieldNames()]        
-        # If values is a record object, then do the same thing for it as
-        # you would do for a dictionary above.
-        else:
-            record = [getattr(values,a,'') for a in self.getFieldNames()]
-        # Return the new list with all items == None replaced by ''.
-        new_rec = []
-        for r in record:
-            if r == None:
-                new_rec.append('')
-            else:
-                new_rec.append(r)
-        return new_rec   
+        A KirbyBase method to remove the black lines from the text file.
+        In the case fo an SQLite database this is not needed, but we keep it
+        for retro-compatibility with the KirbyBase backend.
+
+        """
+        pass
+    def validate(self, dbname):
+        """
+        same as the "pack" method above. 
+        """
+        pass
     
+    
+# KBError Class -- copying from KirbyBase.
+class KBError(Exception):
+    """Exception class for Database Management System.
+
+    Public Methods:
+        __init__ - Create an instance of exception.
+    """
+    #----------------------------------------------------------------------
+    # init
+    #----------------------------------------------------------------------
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
+
+    # I overrode repr so I could pass error objects from the server to the
+    # client across the network.
+    def __repr__(self):
+        format = """KBError("%s")"""
+        return format % (self.value)
+    
+    
+
 if __name__ == "__main__":
     minimaldbfields = ['imgname:str', 'treatme:bool', 'gogogo:bool', 'whynot:str', 'testlist:bool', 'testcomment:str',
 'telescopename:str', 'setname:str', 'rawimg:str',
@@ -429,9 +477,37 @@ if __name__ == "__main__":
 'telescopelongitude:str', 'telescopelatitude:str', 'telescopeelevation:float',
 'exptime:float','gain:float', 'readnoise:float', 'rotator:float', 'saturlevel:float',
 'preredcomment1:str', 'preredcomment2:str', 'preredfloat1:float', 'preredfloat2:float']
-    db = SQLInterface("test.db")
-    db.create(minimaldbfields)
-    db.addFields(["imgname:str"])
+    dbname = "toast2.db"
+    db = KirbyBase()
+    db.create(dbname, minimaldbfields)
+    db.addFields(dbname, ["imgname:str"])
     
-    db.insert({'imgname':'wow'})
+    db.insert(dbname, {'imgname':'wow', 'gogogo':True, 'pixsize':0.25})
     
+    print(db.select(dbname, ["recno"], ["*"], 
+                    filter=["recno", "imgname", "gogogo", "pixsize"], returnType='report'))
+    # db.dropFields(dbname, ["pixsize"])
+    # print(db.select(dbname, ["recno"], ["*"], 
+                    # filter=["recno", "imgname", "gogogo"], returnType='report'))
+    # assert "pixsize" not in db.getFieldNames(dbname)
+    # db.create(dbname, minimaldbfields)
+    # assert "pixsize" in db.getFieldNames(dbname)
+    # print(db.select(dbname, ["recno"], ["*"], 
+    #                 filter=["recno", "imgname", "gogogo", "pixsize"], returnType='report'))
+    # db.insertBatch(dbname, [
+    #     {'imgname':'wow', 'gogogo':True, 'pixsize':0.25},
+    #     {'imgname':'wow2', 'gogogo':True, 'pixsize':0.25},
+    #     {'imgname':'wow3', 'gogogo':True, 'pixsize':0.25},
+    #     {'imgname':'wow4', 'gogogo':True, 'pixsize':0.25},
+    #     {'imgname':'wow5', 'gogogo':True, 'pixsize':0.25},
+    #     {'imgname':'wow', 'gogogo':True, 'pixsize':0.25},
+    #     {'imgname':'wow', 'gogogo':True, 'pixsize':0.25},
+    #     {'imgname':'wow', 'gogogo':True, 'pixsize':0.25},
+    #     {'imgname':'wow', 'gogogo':True, 'pixsize':0.25},
+    #     ])
+    print(db.select(dbname, ["recno"], ["*"], 
+                    filter=["recno", "imgname", "gogogo", "gain"], returnType='report'))
+    db.update(dbname, ["recno"], [5], {'gain':0.2})
+    #%%
+    print(db.select(dbname, ["recno"], ["*"], 
+                    filter=["recno", "imgname", "gogogo", "gain"], returnType='report'))
