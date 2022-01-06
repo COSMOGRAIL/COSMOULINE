@@ -47,7 +47,7 @@ only those used in the pipe:
 
 import sqlite3 as sq
 
-import re
+import re, datetime, io
 
 def regexp(expr, item):
     if not item:
@@ -60,7 +60,8 @@ typeToSQLiteType = {"str":"text",
                     "int":"integer",
                     "bool":"bool"}
 SQLiteTypeTotype = {v:k for k,v in typeToSQLiteType.items()}
-DEBUG = True
+
+DEBUG = False
 
 class SQLInterface():
     def __init__(self, path):
@@ -70,22 +71,29 @@ class SQLInterface():
     def __str__(self):
         return f"sqlite3 database at {self.path}"
     
-    def execute(self, sqlstatement, params=None):
-        if DEBUG:
-            print(sqlstatement)
+    def execute(self, sqlstatements):
+        if not (type(sqlstatements) is list):
+            sqlstatements = [sqlstatements]
+        
         conn = sq.connect(self.path)
-        # in case there is reg exprs, must add a function to the connection:
-        if 'regexp' in sqlstatement.lower():
-            conn.create_function("REGEXP", 2, regexp)
-        with conn:
-            cur = conn.cursor()
-            if params:
-                cur.execute(sqlstatement, params)
-            else:
+        results = []
+        for sqlstatement in sqlstatements:
+            if DEBUG:
+                print(sqlstatement)
+            # in case there is reg exprs, must add a function to the connection:
+            if 'regexp' in sqlstatement.lower():
+                conn.create_function("REGEXP", 2, regexp)
+            with conn:
+                cur = conn.cursor()
+
                 cur.execute(sqlstatement)
-            result = cur.fetchall()
+                result = cur.fetchall()
+            results.append(result)
+        conn.commit()
         conn.close()
-        return result
+        if len(results) == 1:
+            return results[0]
+        return results
     
     
     def _formatFields(self, fields):
@@ -200,6 +208,8 @@ class SQLInterface():
             
         if tablename in self.getTableNames():
             if exist_ok:
+                for field in fields:
+                    self.addFields(fields, tablename=tablename)
                 return []
             else:
                 raise RuntimeError(f"table {tablename} already exists!")
@@ -238,6 +248,28 @@ class SQLInterface():
                     raise RuntimeError(f"column {col} already exists!")
             else:
                 self.execute(f"alter table {tablename} add {name} {typ}")
+                
+    def dropFields(self, fields, talbename=None):
+        """
+        soooo sqlite 3.35 can do this. But not sure we'll  have it on everyone's computer ...
+        hence we copy the table without those columns, destroy the old table
+        and rename the new one to the old name.
+        """
+        if not talbename:
+            tablename = self.defaulttable
+        tmptable = tablename+"___tmp___"
+        allfields = self.getFieldNames(tablename)
+        alltypes  = [typeToSQLiteType[t] for t in self.getFieldTypes(tablename)]
+        transferfields = [f"{f} {t}" for f, t in zip(allfields,alltypes) if not f in fields]
+        
+        transfieldstr = ','.join(transferfields)
+        req1 = f'create table {tmptable}({transfieldstr})'
+        req2 = f'insert into {tmptable} select {transfieldstr} from {tablename}'
+        req3 = f'drop table {tablename}'
+        req4 = f'alter table {tmptable} rename to {tablename}'
+        self.execute([req1, req2, req3, req4])
+        
+        
                 
     def insertBatch(self, listOfDics, tablename=None):
         if not tablename:
@@ -283,7 +315,17 @@ class SQLInterface():
             conditions.append( f"{field}{searchstr}")
         conditions = " and ".join(conditions)
         if len(conditions) > 0:
-            req += f"where {conditions}"
+            req += f"where {conditions} "
+        
+        orders = []
+        for field in sortFields:
+            if field in sortDesc: 
+                orders.append(f"{field} DESC")
+            else:
+                orders.append(f"{field} ASC")
+        orders = ",".join(orders)
+        if len(orders) > 0:
+            req += f"order by {orders} "
         result = self.execute(req)
         
 
@@ -295,8 +337,75 @@ class SQLInterface():
             
             resultdic = [{name:val for name,val in zip(names, res)} for res in result]
             return resultdic
-        elif returnType == "report":
-            pass
+        
+        elif returnType == 'report':
+            """
+            this part was adaped 99.9% from the KirbyBase code 
+            """
+            # How many records before a formfeed.
+            numRecsPerPage = 0
+            # Put a line of dashes between each record?
+            rowSeparator = False
+            delim = ' | '
+            
+            if not filter:
+                filter = self.getFieldNames(tablename=tablename) 
+            # columns of physical rows
+            columns = list(zip(*[filter] + result))
+
+            # get the maximum of each column by the string length of its 
+            # items
+            maxWidths = [max([len(str(item)) for item in column]) 
+             for column in columns]
+            # Create a string of dashes the width of the print out.
+            rowDashes = '-' * (sum(maxWidths) + len(delim)*
+             (len(maxWidths)-1))
+
+            # select the appropriate justify method
+            justifyDict = {'str':str.ljust,'int':str.rjust,'float':str.rjust,
+             'bool':str.ljust,datetime.date:str.ljust,
+             datetime.datetime:str.ljust}
+
+            # Create a string that holds the header that will print.
+            headerLine = delim.join([justifyDict[fieldType](item,width) 
+             for item,width,fieldType in zip(filter,maxWidths,
+            self.getFieldTypes(tablename))])
+
+            # Create a StringIO to hold the print out.
+            output=io.StringIO()
+
+            # Variable to hold how many records have been printed on the
+            # current page.
+            recsOnPageCount = 0
+
+            # For each row of the result set, print that row.
+            for row in result:
+                # If top of page, print the header and a dashed line.
+                if recsOnPageCount == 0:
+                    print(headerLine, file=output)
+                    print(rowDashes, file=output)
+
+                # Print a record.
+                print(delim.join([justifyDict[fieldType](
+                 str(item),width) for item,width,fieldType in 
+                 zip(row,maxWidths,self.getFieldTypes())]), file=output)
+
+                # If rowSeparator is True, print a dashed line.
+                if rowSeparator: print(rowDashes, file=output)
+
+                # Add one to the number of records printed so far on
+                # the current page.
+                recsOnPageCount += 1
+
+                # If the user wants page breaks and you have printed 
+                # enough records on this page, print a form feed and
+                # reset records printed variable.
+                if numRecsPerPage > 0 and (recsOnPageCount ==
+                 numRecsPerPage):
+                    print('\f', end=' ', file=output)
+                    recsOnPageCount = 0
+            # Return the contents of the StringIO.
+            return output.getvalue()
         
         return result
     
