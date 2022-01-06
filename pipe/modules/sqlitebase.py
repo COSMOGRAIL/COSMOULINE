@@ -7,41 +7,6 @@ So I'll try to translate everything so that the database
 commands throughout the pipeline need not be changed.
 
 
-all functions in kirbybase:
-['db.insertBatch',
- 'db.close',
- 'db.delete',
- 'db.dropFields',
- 'db.getFieldNames',
- 'db.select',
- 'db.drop',
- 'db.addFields',
- 'db.create',
- 'db.append',
- 'db.update',
- 'db.len',
- 'db.validate',
- 'db.insert',
- 'db.pack',
- 'db.getFieldTypes']
-
-
-only those used in the pipe:
-
-['db.insertBatch',
- 'db.dropFields',
- 'db.getFieldNames',
- 'db.select',
- 'db.create',
- 'db.addFields',
- 'db.append',
- 'db.validate',
- 'db.update',
- 'db.insert',
- 'db.pack',
- 'db.getFieldTypes']
-
-
 @author: frederic dux
 """
 
@@ -49,16 +14,19 @@ import sqlite3 as sq
 
 import re, datetime, io
 
+# used to test columns against regexprs:
 def regexp(expr, item):
     if not item:
         item = ""
     reg = re.compile(expr)
     return reg.search(item) is not None
 
+# converting between python types and sqlite types:
 typeToSQLiteType = {"str":"text",
                     "float":"real",
                     "int":"integer",
                     "bool":"bool"}
+# and reverse:
 SQLiteTypeTotype = {v:k for k,v in typeToSQLiteType.items()}
 
 DEBUG = False
@@ -119,34 +87,6 @@ class SQLInterface():
             msg = f"Uknown type encountered while creating db: {typ}"
             raise NotImplementedError(msg)
         return typ
-
-
-    def _convertInput(self, values):
-        """If values is a dictionary or an object, we are going to convert 
-        it into a list.  That way, we can use the same validation and 
-        updating routines regardless of whether the user passed in a 
-        dictionary, an object, or a list.
-        """
-        # If values is a list, make a copy of it.
-        if isinstance(values, list): record = list(values)
-        # If values is a dictionary, convert its values into a list
-        # corresponding to the table's field names.  If there is not
-        # a key in the dictionary corresponding to a field name, place a
-        # '' in the list for that field name's value.
-        elif isinstance(values, dict):
-            record = [values.get(k,'') for k in self.getFieldNames()]        
-        # If values is a record object, then do the same thing for it as
-        # you would do for a dictionary above.
-        else:
-            record = [getattr(values,a,'') for a in self.getFieldNames()]
-        # Return the new list with all items == None replaced by ''.
-        new_rec = []
-        for r in record:
-            if r == None:
-                new_rec.append('')
-            else:
-                new_rec.append(r)
-        return new_rec   
 
 
     def getTableNames(self):
@@ -261,10 +201,16 @@ class SQLInterface():
         allfields = self.getFieldNames(tablename)
         alltypes  = [typeToSQLiteType[t] for t in self.getFieldTypes(tablename)]
         transferfields = [f"{f} {t}" for f, t in zip(allfields,alltypes) if not f in fields]
-        
+        # prepare the transfer of the columns:
+        transfieldstr = ','.join(transferfields)
+        req2 = f'insert into {tmptable} select {transfieldstr} from {tablename}'
+        # now just modify the one with the recno
+        for i in range(len(transferfields)):
+            if 'recno' in transferfields[i].lower():
+                transferfields[i] += " NOT NULL PRIMARY KEY"
         transfieldstr = ','.join(transferfields)
         req1 = f'create table {tmptable}({transfieldstr})'
-        req2 = f'insert into {tmptable} select {transfieldstr} from {tablename}'
+        
         req3 = f'drop table {tablename}'
         req4 = f'alter table {tmptable} rename to {tablename}'
         self.execute([req1, req2, req3, req4])
@@ -284,7 +230,10 @@ class SQLInterface():
         colnames, colvals = "(", "("
         for name, val in dic.items():
             colnames += f"{name},"
-            colvals += f"{val},"
+            if self.getColumnType(name, tablename) == 'str':
+                colvals += f"'{val}',"
+            else:
+                colvals += f"{val},"
         colnames, colvals = colnames[:-1]+")", colvals[:-1]+")"
         cmd = f"insert into {tablename} {colnames} values {colvals}"
         return self.execute(cmd)
@@ -409,6 +358,70 @@ class SQLInterface():
         
         return result
     
+    
+    def update(self, fields, searchData, updates, filter=None, 
+               useRegExp=False, tablename=None):
+        if not tablename:
+            tablename = self.defaulttable
+
+        req = f"update {tablename} "
+        if type(updates) is dict:
+            sets = ','.join([f"{k}={v}" for k,v in updates.items()])
+        elif type(updates) is list:
+            assert type(filter) is list 
+            assert len(filter) == len(updates)
+            sets = ','.join([f"{k}={v}" for k,v in zip(filter, updates)])
+        
+        req += f"set {sets} "
+        conditions = []
+        for searchstr, field in zip(searchData, fields):
+            if str(searchstr).strip() == "*":
+                #joker, skip this condition.
+                continue
+            if not str(searchstr).strip()[0] in ["=", "<", ">", "=="]:
+                if useRegExp and self.getColumnType(field, tablename) == "str":
+                    searchstr = f" REGEXP '{searchstr}'"
+                else:
+                    if self.getColumnType(field, tablename) == "str":
+                        searchstr = f"=='{searchstr}'"
+                    else:
+                        searchstr = f"=={searchstr}"
+            conditions.append( f"{field}{searchstr}")
+        conditions = " and ".join(conditions)
+        if len(conditions) > 0:
+            req += f"where {conditions} "
+        
+        result = self.execute(req)
+        return result
+    
+    
+    def _convertInput(self, values):
+        """If values is a dictionary or an object, we are going to convert 
+        it into a list.  That way, we can use the same validation and 
+        updating routines regardless of whether the user passed in a 
+        dictionary, an object, or a list.
+        """
+        # If values is a list, make a copy of it.
+        if isinstance(values, list): record = list(values)
+        # If values is a dictionary, convert its values into a list
+        # corresponding to the table's field names.  If there is not
+        # a key in the dictionary corresponding to a field name, place a
+        # '' in the list for that field name's value.
+        elif isinstance(values, dict):
+            record = [values.get(k,'') for k in self.getFieldNames()]        
+        # If values is a record object, then do the same thing for it as
+        # you would do for a dictionary above.
+        else:
+            record = [getattr(values,a,'') for a in self.getFieldNames()]
+        # Return the new list with all items == None replaced by ''.
+        new_rec = []
+        for r in record:
+            if r == None:
+                new_rec.append('')
+            else:
+                new_rec.append(r)
+        return new_rec   
+    
 if __name__ == "__main__":
     minimaldbfields = ['imgname:str', 'treatme:bool', 'gogogo:bool', 'whynot:str', 'testlist:bool', 'testcomment:str',
 'telescopename:str', 'setname:str', 'rawimg:str',
@@ -419,4 +432,6 @@ if __name__ == "__main__":
     db = SQLInterface("test.db")
     db.create(minimaldbfields)
     db.addFields(["imgname:str"])
+    
+    db.insert({'imgname':'wow'})
     
