@@ -5,7 +5,7 @@ import variousfct
 import datetime
 
 
-print("I am the only scirpt that writes into your configdir.")
+print("I am the only script that writes into your configdir.")
 print("But I will try to be careful.")
 
 

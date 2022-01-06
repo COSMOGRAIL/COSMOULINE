@@ -81,6 +81,19 @@ refimage = fits.getdata(db.select(imgdb, ['imgname'], [refimgname],
                                   returnType='dict')[0]['rawimg'])
 
 
+def updateDB(retdict, image):
+    if 'geomapscale' in retdict:
+        db.update(imgdb, ['recno'], [image['recno']], 
+                  {'geomapangle': retdict["geomapangle"], 
+                   'geomaprms'  : retdict["geomaprms"], 
+                   'geomapscale': retdict["geomapscale"],
+                   'maxalistars': retdict['maxalistars'],
+                   'nbralistars': retdict['nbralistars'],
+                   'flagali' : 1})
+    else:
+        db.update(imgdb, ['recno'], [image['recno']], {'flagali': 0})
+
+
 def alignImage(image):
     """
         input: database row, "image"
@@ -151,23 +164,10 @@ retdicts = pool.map(alignImage, images)
 
 
 
-# now we update the database with the result:
-widgets = [progressbar.Bar('>'), ' ', progressbar.ETA(), ' ', progressbar.ReverseBar('<')]
-pbar = progressbar.ProgressBar(widgets=widgets, maxval=len(images)).start()
 for i, (retdict,image) in enumerate(zip(retdicts,images)):
-    if not retdict == None:
-        if 'geomapscale' in retdict:
-            db.update(imgdb, ['recno'], [image['recno']], 
-                      {'geomapangle': retdict["geomapangle"], 
-                       'geomaprms'  : retdict["geomaprms"], 
-                       'geomapscale': retdict["geomapscale"],
-                       'maxalistars': retdict['maxalistars'],
-                       'nbralistars': retdict['nbralistars'],
-                       'flagali' : 1})
-        else:
-            db.update(imgdb, ['recno'], [image['recno']], {'flagali': 0})
-    pbar.update(i)
-pbar.finish()    
+    updateDB(retdict, image)
+    
+
 
 
 db.pack(imgdb)

@@ -82,16 +82,17 @@ else:
 
 #%%
 ############################ view each starfile in ds9
-if input('want me to open ds9 on each star for you? (yes/no)') != 'yes':
-    sys.exit()
-
-import pyperclip 
-from subprocess import call
-for starfile, maskfile in zip(starfiles, maskfilepaths):
-    # copy the mask file to the clipboard:
-    pyperclip.copy(maskfile)
-    print(f'save your region file to \n{maskfile}')
-    # open with ds9
-    call(['ds9', starfile])
-    # now mask the companion stars in ds9, and save the regions
-    # to the file copied in the cilpboard.
+if not update:
+    if input('want me to open ds9 on each star for you? (yes/no)') != 'yes':
+        sys.exit()
+    
+    import pyperclip 
+    from subprocess import call
+    for starfile, maskfile in zip(starfiles, maskfilepaths):
+        # copy the mask file to the clipboard:
+        pyperclip.copy(maskfile)
+        print(f'save your region file to \n{maskfile}')
+        # open with ds9
+        call(['ds9', starfile])
+        # now mask the companion stars in ds9, and save the regions
+        # to the file copied in the cilpboard.

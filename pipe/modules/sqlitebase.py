@@ -29,7 +29,7 @@ typeToSQLiteType = {"str":"text",
 # and reverse:
 SQLiteTypeTotype = {v:k for k,v in typeToSQLiteType.items()}
 
-DEBUG = 1
+DEBUG = False
 
 class KirbyBase():
     def __init__(self):
