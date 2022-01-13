@@ -5,15 +5,15 @@
 #---------------------------------------------------------------------------
 
 # Choose a computer :
-computer = "fred"
+computer = "martin"
 
 # The pipeline dir that contains all the scripts (and this "config.Spy" ) :
-pipedir = "/home/fred/Documents/COSMOULINE/pipe/"
+pipedir =  "/Users/martin/Desktop/COSMO3b/pipe"
 
 # The configuration directory that contains the configuration files :
 # ("small-precious-frequently-backuped-disk")
 # The scripts do only read, but never write, from here !
-configdir = "/run/media/fred/backup_storage/PSJ0147+4630/CONFIG/rp/"
+configdir =  "/Users/martin/Desktop/COSMO3b/config/DES2038_WFI"
 
 #---------------------------------------------------------------------------
 # All further settings are made into the configdir.
