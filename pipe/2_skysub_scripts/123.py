@@ -12,6 +12,9 @@ if sample_only :
 else:
     os.system("python 2_skypng_NU.py")
 
+if computer=='martin':
+    os.system('say "Cosmouline scripts finished')
+
 print "I can remove the electron images."
 proquest(True)
 os.system("python 3_facult_rm_electrons_NU.py")

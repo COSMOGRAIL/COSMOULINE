@@ -13,3 +13,6 @@ os.system("python 3b_report_NU.py")
 os.system("python 3c_plotphotomstars_NU.py")
 os.system("python 5_histo_multifield_NU.py")
 os.system("python 6_facult_merge_pdf_NU.py")
+
+if computer=='martin':
+    os.system('say "Cosmouline scripts finished')
