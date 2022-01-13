@@ -54,8 +54,11 @@ for i,image in enumerate(images):
 
 	print "--------------------"
 	print i+1, "/", nbrofimages, image['imgname']
-	
-	imgtorotate = os.path.join(alidir, image['imgname'] + "_skysub.fits")
+
+	if defringed:
+		imgtorotate = os.path.join(alidir, image['imgname'] + "_skysub.fits")
+	else :
+		imgtorotate = os.path.join(alidir, image['imgname'] + "_defringed.fits")
 	geomapin = os.path.join(alidir, image['imgname'] + ".geomap")
 	
 	aliimg = os.path.join(alidir, image['imgname'] + "_ali.fits")
