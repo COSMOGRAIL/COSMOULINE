@@ -81,7 +81,7 @@ def multi_alignImage(args):
    
    
 
-def updateDB(retdict, image):
+def updateDB(db, retdict, image):
     if 'geomapscale' in retdict:
         db.update(imgdb, ['recno'], [image['recno']], 
                   {'geomapangle': retdict["geomapangle"], 
@@ -180,8 +180,8 @@ def main():
 
 
 
-	for i, (retdict,image) in enumerate(zip(retdicts,images)):
-		updateDB(retdict, image)
+    for i, (retdict,image) in enumerate(zip(retdicts,images)):
+        updateDB(db, retdict, image)
 
     db.pack(imgdb)
 
