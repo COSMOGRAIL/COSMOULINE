@@ -49,12 +49,12 @@ f2nimg.setzscale(z1=-5, z2=1000)
 f2nimg.makepilimage(scale = "log", negative = False)
 
 
-f2nimg.drawstarlist(refautostarsasdicts, r = 30, colour = (150, 150, 150))
-f2nimg.drawstarlist(preciserefmanstarsasdicts, r = 7, colour = (255, 0, 0))
+# f2nimg.drawstarlist(refautostarsasdicts, r = 30, colour = (150, 150, 150))
+# f2nimg.drawstarlist(preciserefmanstarsasdicts, r = 7, colour = (255, 0, 0))
 
 
-f2nimg.writeinfo(["Sextractor stars (flag-filtered) : %i" % len(refautostarsasdicts)], colour = (150, 150, 150))
-f2nimg.writeinfo(["","Identified alignment stars with corrected sextractor coordinates : %i" % len(preciserefmanstarsasdicts)], colour = (255, 0, 0))
+# f2nimg.writeinfo(["Sextractor stars (flag-filtered) : %i" % len(refautostarsasdicts)], colour = (150, 150, 150))
+# f2nimg.writeinfo(["","Identified alignment stars with corrected sextractor coordinates : %i" % len(preciserefmanstarsasdicts)], colour = (255, 0, 0))
 
 
 # We draw the rectangles around qso and empty region :
