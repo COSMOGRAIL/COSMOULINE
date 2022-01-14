@@ -275,7 +275,7 @@ def opencat(starcatalogue):
     os.system(cmd)
 
 
-def main(starcatalogue):
+def main(starcatalogue, workonali=False, z2=1000):
     
     global compteurs
     global choice
@@ -291,12 +291,14 @@ def main(starcatalogue):
     
     emptycoord = [] # at the end it will contain the coordinates of the bottom left corner and the top right corner of the empty region in the following order [x_bl, y_bl, x_tr, y_tr]
     
-
-    if os.path.isfile(os.path.join(alidir, refimgname + "_skysub.fits")):
-        fitsfile = os.path.join(alidir, refimgname + "_skysub.fits") #path to the img_skysub.fits you will display
-    else :
-        print("Apparently, you removed your non-ali images, I'll try to find your _ali image.")
+    if workonali:
         fitsfile = os.path.join(alidir, refimgname + "_ali.fits")
+    else:
+        if os.path.isfile(os.path.join(alidir, refimgname + "_skysub.fits")):
+            fitsfile = os.path.join(alidir, refimgname + "_skysub.fits") #path to the img_skysub.fits you will display
+        else :
+            print("Apparently, you removed your non-ali images, I'll try to find your _ali image.")
+            fitsfile = os.path.join(alidir, refimgname + "_ali.fits")
     
     image = os.path.join(workdir, "refimg_skysub.fits") #path to the png that will be created from the img_skysub.fits
     alistars = starcatalogue #path to the alistars catalogue
@@ -336,7 +338,6 @@ def main(starcatalogue):
     
     
     z1 = 0    
-    z2 = 1000
     f2nimg = f2n.fromfits(fitsfile)
     f2nimg.setzscale(z1, z2)
     f2nimg.makepilimage(scale = "log", negative = False)

@@ -55,16 +55,6 @@ refidentstars = id["match"]
 # now refidentstars contains the same stars as normstars, but with sex fluxes.
 
 
-'''
-print "="*25
-
-print refcatstars[0].props
-print refcatstars[0].flux
-
-
-import sys
-sys.exit()
-'''
 
 if len(refidentstars) != len(normstars):
 	print("Not all normstars identified in sextractor cat of reference image !")

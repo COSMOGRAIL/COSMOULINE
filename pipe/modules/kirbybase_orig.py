@@ -1745,7 +1745,6 @@ class KirbyBase:
                                 else:
                                     if record[fieldPos] != pattern:
                                         raise 'No Match'
-					print("Yes, even Malte says there is no match !")       
                             except Exception:
                                 raise KBError(
                                  'Invalid match expression for %s'
