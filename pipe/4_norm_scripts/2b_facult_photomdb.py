@@ -58,12 +58,6 @@ for i, image in enumerate(images):
 	# We identify these sextractor stars with the handwritten selection
 	id = star.listidentify(photomstars, sexstars, tolerance = identtolerance, onlysingle = True, verbose = True)
 	
-	# This is already printed by listidentify
-	#if len(id["nomatchnames"]) > 0:
-	#	print "No match for " + ", ".join([n for n in id["nomatchnames"]])
-	#if len(id["notsurenames"]) > 0:
-	#	print "Not sure for " + ", ".join([n for n in id["notsurenames"]])
-	
 	if len(id["match"]) == 0:
 		print("No stars identified, skipping this image.")
 		continue
