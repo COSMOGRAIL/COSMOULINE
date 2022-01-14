@@ -128,7 +128,8 @@ for i, image in enumerate(images):
 	"Nbr alistars : " + "%2i / %2i = "%(image['nbralistars'], image['maxalistars']) + "|"*image['nbralistars'],
 	"Actual geomap rms : %4.2f [pixel]" % image['geomaprms'],
 	"Rotator (header) : %7.2f [deg]" % image['rotator'],
-	"Actual geomap angle : %9.4f [deg]" % image['geomapangle']
+	"Actual geomap angle : %9.4f [deg]" % image['geomapangle'],
+	"Alignment info : %s" % image['alicomment']
 	]
 	
 	f2nimg.drawstarlist(preciserefmanstarsasdicts, r = 20, colour = None)

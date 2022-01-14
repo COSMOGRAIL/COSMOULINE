@@ -1,9 +1,3 @@
-#---------------------------------------------------------------------------
-# Sample configuration file for cosmouline.
-# This file is under version control, don't tweak your settings here !
-# Instead, copy me to config.py, and then edit config.py.
-# config.py is excluded from svn.
-#---------------------------------------------------------------------------
 
 
 #---------------------------------------------------------------------------
@@ -11,15 +5,15 @@
 #---------------------------------------------------------------------------
 
 # Choose a computer :
-computer = "martin"
+computer = "fred"
 
 # The pipeline dir that contains all the scripts (and this "config.Spy" ) :
-pipedir = "/Users/martin/Desktop/COSMOULINE/pipe/"
+pipedir = "/home/fred/Documents/COSMOULINE/pipe/"
 
 # The configuration directory that contains the configuration files :
 # ("small-precious-frequently-backuped-disk")
 # The scripts do only read, but never write, from here !
-configdir = "/Users/martin/Desktop/COSMOULINE/config/HE0435_ECAM/"
+configdir = "/run/media/fred/backup_storage/PSJ0147+4630/CONFIG/rp/"
 
 #---------------------------------------------------------------------------
 # All further settings are made into the configdir.
@@ -38,6 +32,7 @@ sys.path.append(os.path.join(pipedir, "modules"))
 # Read "global parameters" of the lens / deconvolution :
 print(os.path.join(configdir, "settings.py"))
 exec(compile(open(os.path.join(configdir, "settings.py"), "rb").read(), os.path.join(configdir, "settings.py"), 'exec'))
+
 # sometimes we call python from inside the scripts.
 python = "python"
 #----------------------- COMPUTER SETUP -----------------------------
@@ -70,7 +65,7 @@ if computer=="martin":
 if computer=="fred":
     sex = "/usr/bin/sex"
     python = "/home/fred/anaconda3/bin/python"
-#---------------------------------------------------------------------------
+
 
 # Path to compiled programs :
 
@@ -79,20 +74,16 @@ mcsf77dir = os.path.join(pipedir, "progs", "MCSf77")
 if computer=="vivien":
     mcsf77dir = '/home/vivien/modules/MCSf77'
 
-
-extractexe = "sudo nice -n 19 " + os.path.join(mcsf77dir, "extract.exe")
-psfexe = "sudo nice -n 19 " + os.path.join(mcsf77dir, "psf.exe")
-deconvexe = "sudo nice -n 19 " + os.path.join(mcsf77dir, "deconv.exe")
+#prefix = "sudo nice -n 19"
+prefix = ""
+extractexe = prefix + os.path.join(mcsf77dir, "extract.exe")
+psfexe = prefix + os.path.join(mcsf77dir, "psf.exe")
+deconvexe = prefix + os.path.join(mcsf77dir, "deconv.exe")
 if silencemcs == True:
-    psfexe = "sudo nice -n 19 " + os.path.join(mcsf77dir, "psf_silence.exe")
-    deconvexe = "sudo nice -n 19 " + os.path.join(mcsf77dir, "deconv_silence.exe")
+    psfexe = prefix + os.path.join(mcsf77dir, "psf_silence.exe")
+    deconvexe = prefix + os.path.join(mcsf77dir, "deconv_silence.exe")
 
-"""
-oldpsfmcsf77dir = os.path.join(pipedir, "progs", "oldpsfMCSf77")
-oldextractexe = "nice -n 19 " + os.path.join(oldpsfmcsf77dir, "extract.exe") 
-oldpsfmexe = "nice -n 19 " + os.path.join(oldpsfmcsf77dir, "psfm.exe") 
-oldpsfexe = "nice -n 19 " + os.path.join(oldpsfmcsf77dir, "psf-auto.exe") 
-"""
+
 
 #---------------------------------------------------------------------------
 
@@ -118,6 +109,7 @@ testlist = os.path.join(configdir, "testlist.txt")            # This is a "white
                             # Write images + comments on this list, and use the extrascript "set_testlist.py" to
                             # set the "testlist" and "testcomment" flags in the database.
                             # This list is also handy if you want to rebuild some handpicked psfs after 
+
                             # a change of some parameters for instance !
 
 # File with the alignment stars
@@ -222,11 +214,12 @@ if not os.path.isdir(workdir):
     print(workdir)
     sys.exit("Your workdir does not exist !")
 
-if not os.path.isdir(alidir): 
+
+if not os.path.isdir(alidir):
     os.mkdir(alidir)
-if not os.path.isdir(plotdir): 
+if not os.path.isdir(plotdir):
     os.mkdir(plotdir)
-if not os.path.isdir(dbbudir): 
+if not os.path.isdir(dbbudir):
     os.mkdir(dbbudir)
 
 # not needed anymore since I tweaked KirbyBase :
@@ -237,7 +230,7 @@ if not os.path.isdir(dbbudir):
 
 #---------------------------------------------------------------------------
 
-print("    ### Working in %s ###" % os.path.split(configdir)[-1])
+print(f"### Config dir: {configdir} ###")
 
 #---------------------------------------------------------------------------
 

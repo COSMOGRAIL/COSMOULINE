@@ -1754,6 +1754,7 @@ class KirbyBase:
                                         raise KBnomatch('No Match : line 1747')       
                             except KBnomatch:
                                 raise # we raise the same KBnomatch again
+
                             except Exception:
                                 raise KBError(
                                  'Invalid match expression for %s'
