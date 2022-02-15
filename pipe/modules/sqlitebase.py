@@ -36,6 +36,7 @@ class KirbyBase():
         # unlike KirbyBase, can store multilpe tables in an SQlite base.
         # thus give a default one:
         self.defaulttable = "images"
+        self.debug = DEBUG 
         
     def __str__(self):
         return "sqlite3 database interface"
@@ -62,7 +63,7 @@ class KirbyBase():
         conn = sq.connect(dbname)
         results = []
         for sqlstatement in sqlstatements:
-            if DEBUG:
+            if self.debug:
                 print(sqlstatement)
             # in case there is reg exprs, must add a function to the connection:
             if 'regexp' in sqlstatement.lower():
@@ -252,6 +253,9 @@ class KirbyBase():
         colnames, colvals = "(", "("
         for name, val in dic.items():
             colnames += f"{name},"
+            # if val is None, call it NULL:
+            if val is None:
+                val = "NULL"
             if self.getColumnType(dbname, field=name, tablename=tablename) == 'str':
                 colvals += f"'{val}',"
             else:
