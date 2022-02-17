@@ -157,8 +157,8 @@ def main():
     # we'll still need the reference image: astroalign needs it only to
     # get the dimension of the target. Could pass the image to align itself
     # if everything has the same shape.
-    refimage = fits.getdata(db.select(imgdb, ['imgname'], [refimgname],
-                                      returnType='dict')[0]['rawimg'])
+    refimage = os.path.join(alidir, refimgname + "_skysub.fits")
+    refimage = fits.getdata(refimage)
 
 
     ### here we do the alignment in parallel.

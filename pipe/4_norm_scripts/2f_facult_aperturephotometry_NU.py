@@ -272,7 +272,7 @@ if 1:
             plt.errorbar(medmjds, medmags, yerr=[medmagerrtops, medmagerrbottoms], label=s.name, color=colors[ind],
                          linewidth=2, fmt='o')
 
-            plt.axis([57432, 57450, min(lc["magnitude"]) + 1.2 * max(lc["magerrbottom"]),
+            plt.axis([np.min(medmjds), np.max(medmjds), min(lc["magnitude"]) + 1.2 * max(lc["magerrbottom"]),
                       max(lc["magnitude"]) - 1.2 * max(lc["magerrtop"])])
 
             plt.legend()
