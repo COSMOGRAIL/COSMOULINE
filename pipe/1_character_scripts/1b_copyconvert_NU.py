@@ -1,25 +1,36 @@
-# 
-#    This script will copy the actual images, and convert them from ADU to electrons
-#    You should use it right after the import of the images into the database.
-#    Also we completely empty the header
 #
+#  This script will copy the actual images, and convert them from ADU to electrons
+#  You should use it right after the import of the images into the database.
+#  Also we completely empty the header
+
+#  We do not update the database
 
 
-#     We do not update the database
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+
+from config import imgdb, settings, alidir
+
+from modules.kirbybase import KirbyBase
+from modules.variousfct import proquest, fromfits, tofits
 
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 redofromscratch = False
-
-from kirbybase import KirbyBase, KBError
-from variousfct import *
+askquestions = settings["askquestions"]
 
 db = KirbyBase()
 
-if thisisatest:
+if settings['thisisatest']:
     print("This is a test run!")
     images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict')
-elif update:
+elif settings['update']:
     print("This is an update.")
     images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict')
     askquestions = False
@@ -52,7 +63,6 @@ for i, image in enumerate(images):
         
     tofits(outfilename, pixelarray)    # we clean the header to avoid dangerous behaviors from iraf or sextractor
 
-#db.pack(imgdb)
 
 print("Done with copy/conversion.")
 

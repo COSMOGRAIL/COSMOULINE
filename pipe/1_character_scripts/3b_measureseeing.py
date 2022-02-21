@@ -4,23 +4,38 @@
 #	In this case I will not update the database.
 #
 
+
+import numpy as np
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+
+from config import alidir, dbbudir, imgdb, settings
+from modules.kirbybase import KirbyBase
+from modules.variousfct import backupfile, proquest
+from modules import star
+
+
+askquestions = settings['askquestions']
+
+
 forceseeingpixels = True
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
 
-from variousfct import *
-import star
-import numpy as np
-
-if checkplots:
+if settings['checkplots']:
     import matplotlib.pyplot as plt
 
 db = KirbyBase()
-if thisisatest:
+if settings['thisisatest']:
     print("This is a test !")
     images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict')
-elif update:
+elif settings['update']:
     print("This is an update !")
     images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict')
     askquestions = False
@@ -31,7 +46,7 @@ nbrofimages = len(images)
 print("Number of images to treat :", nbrofimages)
 proquest(askquestions)
 
-if not checkplots:
+if not settings['checkplots']:
     # We make a backup copy of our database.
     backupfile(imgdb, dbbudir, "seeing")
 
@@ -164,7 +179,7 @@ for i, image in enumerate(images):
     print("Measured seeing [pixels] :", seeingpixels)
     print("Measured seeing [arcsec] :", seeing)
 
-    if checkplots:
+    if settings['checkplots']:
         # plt.hist(fwhms, bins=np.linspace(0,10,50), facecolor='green')
         plt.hist(fwhms, bins=np.linspace(np.min(fwhms), np.max(fwhms), 50), facecolor='green')
         plt.axvline(x=seeingpixels, linewidth=2, color='red')
@@ -190,7 +205,7 @@ for i, image in enumerate(images):
         ell = -1.0
 
     print("Measured ellipticity :", ell)
-    if checkplots:
+    if settings['checkplots']:
         plt.hist(ells, bins=np.linspace(0, 1, 50), facecolor='grey')
         plt.hist(starells, bins=np.linspace(0, 1, 50), facecolor='green')
         plt.axvline(x=ell, linewidth=2, color='red')
@@ -231,7 +246,7 @@ for i, image in enumerate(images):
         aimage = -1
     print("Measured major axis :", aimage)
 
-    if not checkplots:
+    if not settings['checkplots']:
         db.update(imgdb, ['recno'], [image['recno']],
                   {'seeing': float(seeing), 'ell': float(ell), 'goodstars': nbrstars,
                    'seeingpixels': float(seeingpixels), 'pa': float(pa), 'pastd': float(pastd), 'bimage': float(bimage),
@@ -239,7 +254,7 @@ for i, image in enumerate(images):
 
 print("- " * 40)
 
-if not checkplots:
+if not settings['checkplots']:
     db.pack(imgdb)
 
 print("Done with seeing determination.")

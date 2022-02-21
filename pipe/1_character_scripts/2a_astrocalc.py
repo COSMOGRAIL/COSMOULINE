@@ -3,19 +3,31 @@
 #	Adds a lot of not-that-important entries to the database :-)
 #
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-
-import ephem # this is pyephem...
+import ephem 
 import math
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
 
-# Something not included in pyephem : airmass estimation :
+from config import imgdb, dbbudir, settings
+from modules.kirbybase import KirbyBase
+from modules.variousfct import proquest, backupfile
+
+askquestions = settings['askquestions']
+xephemlens = settings['xephemlens']
+
 def airmass(radalt):
-#	We calculate the airmass (radalt is altitude in radians)
-#	Rozenberg's empirical relation :
-#	X = 1 / [sin ho + 0.025 exp(-11 sin ho)]
-#	where ho is the apparent altitude of the object. This formula can be used all down to the horizon (where it gives X = 40).
+    # We calculate the airmass (radalt is altitude in radians)
+    # Rozenberg's empirical relation :
+    # X = 1 / [sin ho + 0.025 exp(-11 sin ho)]
+    # where ho is the apparent altitude of the object. 
+    # This formula can be used all down to the horizon (where it gives X = 40).
 
 	if radalt < 0.0:
 		return -1.0
@@ -24,18 +36,10 @@ def airmass(radalt):
 	else :
 		return 1.0 / (math.sin(radalt) + 0.025*math.exp(-11.0*math.sin(radalt)))
 
-#	A plot to test :
-#n = 100
-#alts = [(float(i)/float(n)) *math.pi/2.0 for i in range(n+1)]
-#ams = [airmass(alt) for alt in alts]
-#degs = [alt*180.0/math.pi for alt in alts]
-#plt.plot(degs, ams)
-#plt.show()
-
-
 
 db = KirbyBase()
-if update:
+
+if settings['update']:
 	images = db.select(imgdb, ['gogogo','treatme', 'updating'], [True, True, True], returnType='dict')
 	askquestions = False
 else:
@@ -54,14 +58,20 @@ backupfile(imgdb, dbbudir, "astrocalc")
 
 # We add some new fields into the holy database.
 if "hjd" not in db.getFieldNames(imgdb) :
-	db.addFields(imgdb, ['hjd:str', 'mhjd:float', 'calctime:str', "alt:float", "az:float", 'airmass:float', 'moonpercent:float', 'moondist:float', 'moonalt:float', 'sundist:float', 'sunalt:float', 'astrofishy:bool', 'astrocomment:str'])
+	db.addFields(imgdb, ['hjd:str', 'mhjd:float', 'calctime:str', "alt:float", \
+                         'az:float', 'airmass:float', 'moonpercent:float', \
+                         'moondist:float', 'moonalt:float', 'sundist:float', \
+                         'sunalt:float', 'astrofishy:bool', 'astrocomment:str'])
 
 for i,image in enumerate(images):
 
 	print("- " * 30)
 	print(i+1, "/", nbrofimages, ":", image['imgname'])
 	
-	astrofishy = False # this is a flag we set if we find something fishy... like observation in daylight etc...
+    # this is a flag we set if we find something fishy...
+    # like observation in daylight etc...
+	astrofishy = False 
+    
 	astrocomment = ""
 	
 	telescope = ephem.Observer()
@@ -122,7 +132,8 @@ for i,image in enumerate(images):
 
 	print("Separation to the Sun is %.2f degrees." % sundist)
 
-	hjd = float(image['jd']) - dc * (math.sin(declens)*math.sin(decsun) + math.cos(declens)*math.cos(decsun)*math.cos(ralens-rasun))
+	hjd = float(image['jd']) - dc * (math.sin(declens)*math.sin(decsun) \
+                             + math.cos(declens)*math.cos(decsun)*math.cos(ralens-rasun))
 	# So we calculate hjd based on the julian date that we got somehow from the header.
 	
 	mhjd = hjd - 2400000.5
@@ -141,20 +152,26 @@ for i,image in enumerate(images):
 	transfcalctime = transfcalctimelist[0] + "-" + transfcalctimelist[1] + "-" + transfcalctimelist[2]
 	transfdatelist = image['date'].split()[0].split("-")
 	
-	if (int(transfcalctimelist[0]) != int(transfdatelist[0])) or (int(transfcalctimelist[1]) != int(transfdatelist[1])) or (int(transfcalctimelist[2]) != int(transfdatelist[2])) :
+	if (int(transfcalctimelist[0]) != int(transfdatelist[0])) \
+        or (int(transfcalctimelist[1]) != int(transfdatelist[1])) \
+            or (int(transfcalctimelist[2]) != int(transfdatelist[2])):
 		astrofishy = True
-		astrocomment = astrocomment + "FITS date is %s, but calctime is %s !?" %(image['date'], calctime)
+		astrocomment += f"FITS date is {image['date']}, but calctime is {calctime}!?"
 		
 	# We update the data
-	db.update(imgdb, ['recno'], [image['recno']], {'hjd': hjd, 'mhjd':mhjd, 'calctime':calctime, 'alt':lensalt, 'az':lensaz, 'airmass':airmassvalue, 'moonpercent':moonpercent, 'moondist':moondist, 'moonalt':moonalt, 'sundist':sundist, 'sunalt':sunalt, 'astrofishy':astrofishy, 'astrocomment':astrocomment})
+	db.update(imgdb, ['recno'], [image['recno']], \
+              {'hjd': hjd, 'mhjd':mhjd, 'calctime':calctime, 'alt':lensalt,\
+               'az':lensaz, 'airmass':airmassvalue, 'moonpercent':moonpercent,\
+               'moondist':moondist, 'moonalt':moonalt, 'sundist':sundist,\
+               'sunalt':sunalt, 'astrofishy':astrofishy,\
+               'astrocomment':astrocomment})
 	
 	
 db.pack(imgdb) # to erase the blank lines
 
 
 print("Ok, done.")
-
-print("By the way, did you know that %s is located in the constellation %s ?"%(lens.name, ephem.constellation(lens)[1]))
+print("By the way, did you know that {lens.name} is located in the constellation {ephem.constellation(lens)[1]}?")
 
 
 

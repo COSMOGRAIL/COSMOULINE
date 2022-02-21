@@ -1,24 +1,29 @@
-# 
-#	This is the first script.
-#	We add images to the database, read their headers, etc.
-#	If no database exists, we create one. If not we add the images, after some test.
-#
+# This is the first script.
+# We add images to the database, read their headers, etc.
+# If no database exists, we create one. If not we add the images, after some test.
 
-
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
 
 import glob
-import astropy.io.fits as pyfits
-import datetime
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-from headerstuff import *
 
-#	We define some mandatory fields in the database :
+from config import imgdb, dbbudir, settings
+from modules.variousfct import backupfile
+from modules.kirbybase import KirbyBase
+from modules.variousfct import mterror, proquest
+import modules.headerstuff as headfuncs
 
-minimaldbfields = ['imgname:str', 'treatme:bool', 'gogogo:bool', 'whynot:str', 'testlist:bool', 'testcomment:str',
-'telescopename:str', 'setname:str', 'rawimg:str',
+# We define some mandatory fields in the database :
+
+minimaldbfields = ['imgname:str', 'treatme:bool', 'gogogo:bool', 'whynot:str', 
+'testlist:bool', 'testcomment:str', 'telescopename:str', 'setname:str', 'rawimg:str',
 'scalingfactor:float', 'pixsize:float','date:str','datet:str','jd:str','mjd:float',
 'telescopelongitude:str', 'telescopelatitude:str', 'telescopeelevation:float',
 'exptime:float','gain:float', 'readnoise:float', 'rotator:float', 'saturlevel:float',
@@ -26,92 +31,91 @@ minimaldbfields = ['imgname:str', 'treatme:bool', 'gogogo:bool', 'whynot:str', '
 'filter:str', 'updating:bool']
 
 
-
 # Function that selects the one that reads the header, according to telescopename
 
 def readheader(telescopename, rawimg):
 	if telescopename == "EulerC2":
-		dbdict = eulerc2header(rawimg)
+		dbdictread = headfuncs.eulerc2header(rawimg)
 	elif telescopename == "EulerCAM":
-		dbdict = eulercamheader(rawimg)
+		dbdictread = headfuncs.eulercamheader(rawimg)
 	elif telescopename == "Mercator":
-		dbdict = mercatorheader(rawimg)
+		dbdictread = headfuncs.mercatorheader(rawimg)
 	elif telescopename == "Liverpool":
-		dbdict = liverpoolheader(rawimg)
+		dbdictread = headfuncs.liverpoolheader(rawimg)
 	elif telescopename == "MaidanakSITE":
-		dbdict = maidanaksiteheader(rawimg)
+		dbdictread = headfuncs.maidanaksiteheader(rawimg)
 	elif telescopename == "MaidanakSI":
-		dbdict = maidanaksiheader(rawimg)
+		dbdictread = headfuncs.maidanaksiheader(rawimg)
 	elif telescopename == "Maidanak2k2k":
-		dbdict = maidanak2k2kheader(rawimg)
+		dbdictread = headfuncs.maidanak2k2kheader(rawimg)
 	elif telescopename == "HCT":
-		dbdict = hctheader(rawimg)
+		dbdictread = headfuncs.hctheader(rawimg)
 	elif telescopename == "HoLi":
-		dbdict = holiheader(rawimg)
+		dbdictread = headfuncs.holiheader(rawimg)
 	elif telescopename == "SMARTSandicam":
-		dbdict = smartsandicamheader(rawimg)
+		dbdictread = headfuncs.smartsandicamheader(rawimg)
 	elif telescopename == 'skysim':
-		dbdict = skysimheader(rawimg)
-	elif telescopename == 'FORS2':
-		dbdict = fors2header(rawimg)
-	elif telescopename == 'EFOSC2':
-		dbdict = efosc2header(rawimg)
-	elif telescopename == "WFI":
-		dbdict = wfiheader(rawimg)
-	elif telescopename == "GROND":
-		dbdict = grondheader(rawimg)
-	elif telescopename == "SDSS":
-		dbdict = sdssheader(rawimg)
-	elif telescopename == "GMOS":
-		dbdict = gmosheader(rawimg)
-	elif telescopename == "NOHEADER":
-		dbdict = noheader(rawimg)
-	elif telescopename == "PANSTARRS":
-		dbdict = PANSTARRSheader(rawimg)
-	elif telescopename == "SPECULOOS":
-		dbdict = SPECULOOSheader(rawimg)
-	elif telescopename == "UH2m2":
-		dbdict = UH2m2header(rawimg)
+		dbdictread = headfuncs.skysimheader(rawimg)
 	elif telescopename == "Maidanak_2.5k":
-		dbdict = Maidanak_2_5kheader(rawimg)
+		dbdictread = headfuncs.Maidanak_2_5kheader(rawimg)
 	elif telescopename == "VST":
-		dbdict = VSTheader(rawimg)
+		dbdictread = headfuncs.VSTheader(rawimg)
 	elif telescopename == "VST_mosaic":
-		dbdict = VST_mosaic_header(rawimg)
+		dbdictread = headfuncs.VST_mosaic_header(rawimg)
 	elif telescopename == "VATT":
-		dbdict = VATTheader(rawimg)
+		dbdictread = headfuncs.VATTheader(rawimg)
 	elif telescopename == "LCO":
-		dbdict = LCOheader(rawimg)
+		dbdictread = headfuncs.LCOheader(rawimg)
 	elif telescopename == "NOT":
-		dbdict = Stancamheader(rawimg)
+		dbdictread = headfuncs.Stancamheader(rawimg)
+	# from here ... not sure these headers are defined anymore.
+	elif telescopename == 'FORS2':
+		dbdictread = headfuncs.fors2header(rawimg)
+	elif telescopename == 'EFOSC2':
+		dbdictread = headfuncs.efosc2header(rawimg)
+	elif telescopename == "WFI":
+		dbdictread = headfuncs.wfiheader(rawimg)
+	elif telescopename == "GROND":
+		dbdictread = headfuncs.grondheader(rawimg)
+	elif telescopename == "SDSS":
+		dbdictread = headfuncs.sdssheader(rawimg)
+	elif telescopename == "GMOS":
+		dbdictread = headfuncs.gmosheader(rawimg)
+	elif telescopename == "NOHEADER":
+		dbdictread = headfuncs.noheader(rawimg)
+	elif telescopename == "PANSTARRS":
+		dbdictread = headfuncs.PANSTARRSheader(rawimg)
+	elif telescopename == "SPECULOOS":
+		dbdictread = headfuncs.SPECULOOSheader(rawimg)
+	elif telescopename == "UH2m2":
+		dbdictread = headfuncs.UH2m2header(rawimg)
 	else:
 		raise mterror("Unknown telescope.")	
 
-	return dbdict
+	return dbdictread
 
 
 print("Here we go !")
-print("You want to add/update the set " + setname + " to the database.")
-print(rawdir)
-if not os.path.isdir(rawdir):
+print("You want to add/update the set " + settings['setname'] + " to the database.")
+print(settings['rawdir'])
+if not os.path.isdir(settings['rawdir']):
 	raise mterror("This directory does not exist!")
-fitsfiles = glob.glob(os.path.join(rawdir, "*.fits"))
+fitsfiles = glob.glob(os.path.join(settings['rawdir'], "*.fits"))
 print("Number of images :", len(fitsfiles))
-#fitslist = sorted(map((lambda x: x.split("/")[-1]), fitsfiles))
 fitslist = sorted([os.path.basename(filepath) for filepath in fitsfiles])
 
-proquest(askquestions)
+proquest(settings['askquestions'])
 
 print("You did not forget to flip these images (if needed), right ?")
-proquest(askquestions)
+proquest(settings['askquestions'])
 
 db = KirbyBase()
 
 if os.path.isfile(imgdb):
 
 	print("Database exists ! I will ADD these new images.")
-	proquest(askquestions)
-	backupfile(imgdb, dbbudir, "adding"+setname)
+	proquest(settings['askquestions'])
+	backupfile(imgdb, dbbudir, "adding"+settings['setname'])
 
 	# Add the updating field and set it to False, if not existing yet in the actual db
 	currentfields = db.getFieldNames(imgdb)
@@ -132,14 +136,12 @@ if os.path.isfile(imgdb):
 	# We check if the setname is already used
 	usedsetnames = [x[0] for x in db.select(imgdb, ['recno'], ['*'], ['setname'])]
 	usedsetnameshisto = "".join(["%10s : %4i\n"%(item, usedsetnames.count(item)) for item in set(usedsetnames)])
-	#usedsetnameshisto = usedsetnames
 	print("In the database, we already have :")
 	print(usedsetnameshisto)
-	proquest(askquestions)
-	if setname in usedsetnames:
-		#raise mterror("Your new setname is already used !")  # let's add the option to update a given setname, will we ?
+	proquest(settings['askquestions'])
+	if settings['setname'] in usedsetnames:
 		print("Your setname is already used. Would you like to update it ?")
-		proquest(askquestions)
+		proquest(settings['askquestions'])
 	
 	# We get a list of the rawimg we have already in the db :
 	knownrawimgs = [x[0] for x in db.select(imgdb, ['recno'], ['*'], ['rawimg'])]
@@ -148,9 +150,9 @@ if os.path.isfile(imgdb):
 	# Ok, if we are here then we can insert our new images into the database.
 	for i, fitsfile in enumerate(fitslist):
 		print(i+1, fitsfile)
-		rawimg = os.path.join(rawdir, fitsfile)
+		rawimg = os.path.join(settings['rawdir'], fitsfile)
 		
-		dbdict = readheader(telescopename, rawimg)
+		dbdict = readheader(settings['telescopename'], rawimg)
 		
 		# We check if this image already exists in the db. If yes, we just skip it.
 		# For this we compare the "rawimg", that is the path of the image file and the "imgname", that contains the setname
@@ -159,40 +161,38 @@ if os.path.isfile(imgdb):
 			print("I already have this one ! (-> I skip it without updating anything)")
 			continue
 
-		if update:
+		if settings['update']:
 			dbdict["updating"] = True  # specially for updating databases
 		else:
 			dbdict["updating"] = False
 
 		# We have to insert image by image into our database.
 		db.insert(imgdb, dbdict)
-	
-	#sys.exit()
-	#os.remove(imgdb)
 
-else :
+
+else:
 	print("A NEW database will be created.")
-	proquest(askquestions)
+	proquest(settings['askquestions'])
 	db.create(imgdb, minimaldbfields)
 
 	table = []
 	for i, fitsfile in enumerate(fitslist):
 		print(i+1, "/", len(fitslist), " : ", fitsfile)
-		rawimg = os.path.join(rawdir, fitsfile)	
+		rawimg = os.path.join(settings['rawdir'], fitsfile)	
 		
-		dbdict = readheader(telescopename, rawimg)
+		dbdict = readheader(settings['telescopename'], rawimg)
 		dbdict["updating"] = False  # always False when the database does not exists yet...
 		
-		table.append(dbdict) # In this case we build a big list for batch insertion.
+		table.append(dbdict)  # In this case we build a big list for batch insertion.
 
 	# Here we do a "batch-insert" of a list of dictionnaries
-	db.insertBatch(imgdb,table)
+	db.insertBatch(imgdb, table)
 
-db.pack(imgdb) # to erase the blank lines
+db.pack(imgdb)  # to erase the blank lines
 
 print("Ok, Done.")
 print("If you work with several telescopes or sets you might want to change the treatme-flags at this point.")
-print("Or, more likely : update the settings and run this script again, to add further images from another directory/telescope.")
+print("Or more likely: update the settings and run this again, to add further images from another directory/telescope.")
 
 
 

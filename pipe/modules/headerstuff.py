@@ -17,18 +17,20 @@
 # readnoise is in electrons ("per pixel"). At least this is how cosmic.py will use it...
 
 # saturlevel is in ADU (so usually 65000). All scripts that use it will convert it to electrons if required.
-
-import sys
+import os
 import datetime
 import astropy.io.fits as pyfits
 import math
 import astropy.io.fits as fits
 
-from variousfct import *
+import sys; sys.path.append('..')
 
-print("Re-exec config :")
-exec(compile(open("../config.py", "rb").read(), "../config.py",
-             'exec'))  # yes, this line is required so that settings.py are available within the functions below.
+from config import settings
+setname = settings['setname']
+workdir = settings['workdir']
+telescopename = settings['telescopename']
+
+from modules.variousfct import mterror
 
 
 def juliandate(pythondt):
@@ -88,7 +90,6 @@ def DateFromJulianDay(JD):
     if JD < 0:
         raise ValueError('Julian Day must be positive')
 
-    dayofwk = int(math.fmod(int(JD + 1.5), 7))
     (F, Z) = math.modf(JD + 0.5)
     Z = int(Z)
 
@@ -229,6 +230,7 @@ def maidanak2k2kheader(rawimg):
     testcomment = "na"
 
     rotator = 0.0
+    
 
     # Now the date and time stuff :
 

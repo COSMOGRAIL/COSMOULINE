@@ -2,12 +2,24 @@
 #	write a report about the fishy things discovered in the analysis
 #
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+    
+from config import imgdb, settings
+from modules.kirbybase import KirbyBase
 
 
-fields = ['imgname', 'datet','calctime', 'mhjd', 'airmass', 'moonpercent', 'moondist', 'moonalt', 'sunalt', 'sundist']
+workdir = settings['workdir']
+
+fields = ['imgname', 'datet','calctime', 'mhjd', 'airmass', 'moonpercent', \
+          'moondist', 'moonalt', 'sunalt', 'sundist']
 
 
 db = KirbyBase()
@@ -24,7 +36,7 @@ for setname in usedsetnames:
 	setreport = db.select(imgdb, ['astrofishy','setname','gogogo'], [True, setname, 'True'], fields + ['astrocomment'], sortFields=['mhjd'], returnType='report')
 	reporttxt += "\n  Something fishy with %i images :\n\n"% nbr
 	reporttxt += setreport
-	print("Setname %10s : %3i fishy images." %(setname, nbr))
+	print("setname %10s : %3i fishy images." %(setname, nbr))
 	
 	nbr = len(db.select(imgdb, ['astrofishy','setname','gogogo'], [False, setname, 'True'], returnType='dict'))
 	setreport = db.select(imgdb, ['astrofishy','setname','gogogo'], [False, setname, 'True'], fields, sortFields=['airmass'], returnType='report')

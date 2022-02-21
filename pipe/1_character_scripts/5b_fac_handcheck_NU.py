@@ -1,36 +1,44 @@
-from tkinter import *            
-from tkinter.messagebox import *
+from tkinter import Tk, Frame, Label, Button  
+from tkinter.messagebox import askyesno, showwarning
 try:
 	import ImageTk
 	import Image
 except:
 	from PIL import ImageTk
 	from PIL import Image
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError 
-from variousfct import * 
-from readandreplace_fct import *
 import matplotlib.pyplot as plt
-import star
+import sys
 import os
-import shutil
-import glob
-import astropy.io.fits as pyfits
-import datetime
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+
+from config import computer, imgdb, imgkicklist, settings
+from modules.kirbybase import KirbyBase
+from modules.variousfct import notify
+
+askquestions = settings['askquestions']
+
+
 
 
 """
 Put the images you don't like in the skiplist
 """
 
+pngdir = os.path.join(settings['workdir'], 'imgpngs')
 
 db = KirbyBase()
 
 
-if thisisatest:
+if settings['thisisatest']:
 	print("This is a test run.")
 	imagesdict = db.select(imgdb, ['gogogo','treatme','testlist'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
-if update:
+if settings['update']:
 	print("This is an update.")
 	imagesdict = db.select(imgdb, ['gogogo','treatme','updating'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 	plt.figure(figsize=(8,5))
@@ -40,7 +48,7 @@ if update:
 	plt.legend(loc=6, fontsize=50)
 	plt.suptitle('COUCOU !!')
 	plt.show()
-	notify(computer, withsound, "Hey Ho ! I need your input here. Look at the PSF of your new images and add the ones you don't like to your skiplist !")
+	notify(computer, settings['withsound'], "Hey Ho ! I need your input here. Look at the PSF of your new images and add the ones you don't like to your skiplist !")
 
 else:
 	imagesdict = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict', sortFields=['setname', 'mjd'])
@@ -75,11 +83,11 @@ t = Tk()
 
 
 if os.path.isfile(imgkicklist):
-	print("The imgkicklist already exists :")
+	print("The imgkicklist already exists:")
 else:
 	cmd = "touch " + imgkicklist
 	os.system(cmd)
-	print("I have just touched the imgkicklist for you :")
+	print("I have just touched the imgkicklist for you:")
 print(imgkicklist)
 
 # Functions to increase or decrease i
@@ -117,12 +125,12 @@ def skip():
 		
 		incri()	
 		if resize == "yes":
-			im4= Image.open(workdir+'/imgpngs/'+str(images[i])+".png")
+			im4= Image.open(os.path.join(pngdir, str(images[i]))+".png")
 			im4=im4.resize((width,height), Image.ANTIALIAS)
-			im4.save(workdir+'/imgpngs/'+str(images[i])+".png")
-			myimg = workdir+'/imgpngs/'+str(images[i])+".png"
+			im4.save(os.path.join(pngdir, str(images[i]))+".png")
+			myimg = os.path.join(pngdir, str(images[i]))+".png"
 		else:
-			myimg = workdir+'/imgpngs/'+str(images[i])+".png"
+			myimg = os.path.join(pngdir, str(images[i]))+".png"
 		new_photoimage = ImageTk.PhotoImage(file=myimg)
 		image = myimg
 		w.config(image = new_photoimage)
@@ -139,12 +147,12 @@ def keep():
 	incri()
 	
 	if resize == "yes":
-		im3= Image.open(workdir+'/imgpngs/'+str(images[i])+".png")
+		im3= Image.open(os.path.join(pngdir, str(images[i]))+".png")
 		im3=im3.resize((width,height), Image.ANTIALIAS)
-		im3.save(workdir+'/imgpngs/'+str(images[i])+".png")
-		myimg = workdir+'/imgpngs/'+str(images[i])+".png"
+		im3.save(os.path.join(pngdir, str(images[i]))+".png")
+		myimg = os.path.join(pngdir, str(images[i]))+".png"
 	else:
-		myimg = workdir+'/imgpngs/'+str(images[i])+".png"
+		myimg = os.path.join(pngdir, str(images[i]))+".png"
 			
 	
 	new_photoimage = ImageTk.PhotoImage(file=myimg)
@@ -166,7 +174,7 @@ def previous():
 	#	im2.save("/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+str(images[i])+".png")
 	#	myimg = "/home/epfl/paic/Desktop/cosmouline/data/"+psfkey+"_png/"+images[i]+".png"		
 	#else:
-	myimg = workdir+'/imgpngs/'+str(images[i])+".png"
+	myimg = os.path.join(pngdir, str(images[i]))+".png"
 	
 		
 	new_photoimage = ImageTk.PhotoImage(file=myimg)
@@ -187,7 +195,7 @@ def quit():
 	skiplist.close()
 	
 	for i,elem in enumerate(images):
-		im=Image.open(workdir+'/imgpngs/'+str(images[i])+".png")
+		im=Image.open(os.path.join(pngdir, str(images[i]))+".png")
 		liste2.append(im.size)
 	for i in range(1,783):
 		if liste2[i]!=liste2[0]:
@@ -204,12 +212,12 @@ def quit():
 	
 	
 if resize == "yes":
-	im1= Image.open(workdir+'/imgpngs/'+str(images[i])+".png")
+	im1= Image.open(os.path.join(pngdir, str(images[i]))+".png")
 	im1=im1.resize((width,height), Image.ANTIALIAS)
-	im1.save(workdir+'/imgpngs/'+str(images[i])+".png")
-	image = workdir+'/imgpngs/'+str(images[i])+".png"
+	im1.save(os.path.join(pngdir, str(images[i]))+".png")
+	image = os.path.join(pngdir, str(images[i]))+".png"
 else:
-	image = workdir+'/imgpngs/'+str(images[i])+".png"
+	image = os.path.join(pngdir, str(images[i]))+".png"
 
 
 

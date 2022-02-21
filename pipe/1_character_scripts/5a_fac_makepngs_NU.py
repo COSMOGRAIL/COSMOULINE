@@ -1,20 +1,33 @@
 #
-#	generates pngs from the aligned fits files
+#	generates pngs from the fits files
 #	do not forget to
 #	- change the pngkey, 
 #	- the region and cutoffs
 #	- the resizing
 #	- the sorting and naming of the images
 #
-
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-import star
 import shutil
-import f2n
-from datetime import datetime, timedelta
-import os, sys
+from datetime import datetime
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+
+from config import alidir, computer, imgdb, settings
+from modules.kirbybase import KirbyBase
+from modules.variousfct import proquest, nicetimediff, notify
+from modules import f2n
+
+
+
+askquestions = settings['askquestions']
+
+
 
 # - - - CONFIGURATION - - -
 
@@ -38,9 +51,9 @@ print("I respect thisisatest, so you can use this to try your settings...")
 
 #proquest(askquestions)
 
-pngdir = os.path.join(workdir, "imgpngs")
+pngdir = os.path.join(settings['workdir'], "imgpngs")
 
-if update:
+if settings['update']:
 	print("I will complete the existing sky folder. Or create it if you deleted it to save space")
 	if not os.path.isdir(pngdir):
 		os.mkdir(pngdir)
@@ -54,36 +67,26 @@ else:
 
 # We select the images to treat :
 db = KirbyBase()
-if thisisatest :
+if settings['thisisatest'] :
 	print("This is a test run.")
-	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict', sortFields=['setname','mjd'])
-elif update:
+	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], 
+                              [True, True, True], 
+                              returnType='dict', sortFields=['setname','mjd'])
+elif settings['update']:
 	print("This is an update.")
-	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict', sortFields=['setname','mjd'])
+	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], 
+                              [True, True, True], 
+                              returnType='dict', sortFields=['setname','mjd'])
 	askquestions=False
 else :
-	#images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['mjd'])
-	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname','mjd'])
+	images = db.select(imgdb, ['gogogo', 'treatme'], 
+                              [True, True], 
+                              returnType='dict', sortFields=['setname','mjd'])
 
-#images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['date'])
-#images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['seeing'])
-#images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['mjd'])
-#images = db.select(imgdb, ['gogogo', 'ell'], [True, ">0.65"], returnType='dict', sortFields=['mjd'])
-#images = db.select(imgdb, ['recno'], ['*'], returnType='dict', sortFields=['mjd'])
 
 print("I will treat", len(images), "images.")
 proquest(askquestions)
 
-# We get the ref image to draw the ali stars, as for 1a_checkalistars.py etc :
-# refimage = db.select(imgdb, ['imgname'], [refimgname], returnType='dict')
-# refimage = refimage[0]
-# refsexcat = os.path.join(alidir, refimage['imgname'] + ".cat")
-# refautostars = star.readsexcat(refsexcat)
-# refautostars = star.sortstarlistbyflux(refautostars)
-# refmanstars = star.readmancat(alistarscat) # So these are the "manual" star coordinates
-# id = star.listidentify(refmanstars, refautostars, tolerance = identtolerance) # We find the corresponding precise sextractor coordinates
-# preciserefmanstars = star.sortstarlistbyflux(id["match"])
-# preciserefmanstarsasdicts = [{"name":star.name, "x":star.x, "y":star.y} for star in preciserefmanstars]
 
 starttime = datetime.now()
 
@@ -130,11 +133,11 @@ for i, image in enumerate(images):
 	pngpath = os.path.join(pngdir, pngname)
 	f2nimg.tonet(pngpath)
 
-	if not update:
+	if not settings['update']:
 		orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
 		os.symlink(pngpath, orderlink)
 
-if update:  # remove all the symlink and redo it again with the new images
+if settings['update']:  # remove all the symlink and redo it again with the new images
 	allimages = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname','mjd'])
 	for i, image in enumerate(allimages):
 		pngpath = os.path.join(pngdir, image['imgname'] + ".png")
@@ -145,20 +148,9 @@ if update:  # remove all the symlink and redo it again with the new images
 			pass
 		os.symlink(pngpath, orderlink)
 
-	
-#origdir = os.getcwd()
-#os.chdir(alidir)
-#cmd = "tar cvf " + pngkey + ".tar " + pngkey + "/"
-#os.system(cmd)
-#cmd = "mv " + pngkey + ".tar ../."
-#os.system(cmd)
-#os.chdir(origdir)
 
-endtime = datetime.now()
-timetaken = nicetimediff(endtime - starttime)
-notify(computer, withsound, "I'm done. %s ." % timetaken)
-print("PNGs are written into")
+
+timetaken = nicetimediff(datetime.now() - starttime)
+notify(computer, settings['withsound'], "I'm done. %s ." % timetaken)
+print("PNGs were written into")
 print(pngdir)
-
-
-
