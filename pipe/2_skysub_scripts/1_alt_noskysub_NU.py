@@ -2,11 +2,23 @@
 #	mimics the sky subtraction without doing anything to the images
 #	we do a copy, as this is the first time we need the actual images.
 #
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-from datetime import datetime, timedelta
+from config import alidir, computer, imgdb, settings
+from modules.kirbybase import KirbyBase
+from modules.variousfct import copyorlink, proquest, nicetimediff, notify
+from datetime import datetime
+
+askquestions = settings['askquestions']
+uselinks = settings['uselinks']
 
 db = KirbyBase()
 images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
@@ -32,11 +44,11 @@ for i,image in enumerate(images):
 	
 	noskyfilepath = os.path.join(alidir, image['imgname'] + "_skysub.fits")
 	
-	copyorlink(withskyfilepath, noskyfilepath, uselinks = uselinks)
+	copyorlink(withskyfilepath, noskyfilepath, uselinks=uselinks)
 	
 
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
-notify(computer, withsound, "Files copyorlinked. It took %s" % timetaken)
+notify(computer, settings['withsound'], "Files copyorlinked. It took %s" % timetaken)
 
 

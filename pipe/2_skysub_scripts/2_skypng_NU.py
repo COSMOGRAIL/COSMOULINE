@@ -1,23 +1,37 @@
 #
 #	Control png of the image and sky
 #
-
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-from datetime import datetime, timedelta
+from datetime import datetime
 import shutil
+import sys
 import os
-import f2n
-import star
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+
+from config import alidir, computer, imgdb, settings
+from modules.kirbybase import KirbyBase
+from modules.variousfct import proquest, nicetimediff, notify, makejpgtgz
+from modules import  f2n
+from modules import  star
+
+askquestions = settings['askquestions']
+workdir = settings['workdir']
+update = settings['update']
+
+
 
 redofromscratch = True
 
 db = KirbyBase()
-if thisisatest:
+if settings['thisisatest']:
 	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo','treatme','testlist'], [True, True, True], returnType='dict', sortFields=['setname','mjd'])
-elif update:
+elif settings['update']:
 	print("This is an update.")
 	images = db.select(imgdb, ['gogogo','treatme','updating'], [True, True, True], returnType='dict', sortFields=['setname','mjd'])
 	askquestions=False
@@ -32,7 +46,7 @@ proquest(askquestions)
 
 pngdirpath = os.path.join(workdir, "sky_png")  # this is where you will put the png images (maybe move the whole name architecture into a single parameterfile ?)
 
-if update:
+if settings['update']:
 	print("I will complete the existing sky folder. Or create it if you deleted it to save space")
 	if not os.path.isdir(pngdirpath):
 		os.mkdir(pngdirpath)
@@ -120,7 +134,7 @@ if errmsg != '':
 	print("Check the fits !!")
 
 
-if update:  # remove all the symlink and redo it again with the new images
+if settings['update']:  # remove all the symlink and redo it again with the new images
 	allimages = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict', sortFields=['setname','mjd'])
 	for i, image in enumerate(allimages):
 		pngpath = os.path.join(pngdirpath, "%s_sky.png" % image['imgname'])
@@ -133,9 +147,9 @@ if update:  # remove all the symlink and redo it again with the new images
 
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
-notify(computer, withsound, "PNGs written in %s I took %s" % (pngdirpath, timetaken))
+notify(computer, settings['withsound'], "PNGs written in %s I took %s" % (pngdirpath, timetaken))
 
-if makejpgarchives :
+if settings['makejpgarchives']:
 	makejpgtgz(pngdirpath, workdir, askquestions = askquestions)
 
 

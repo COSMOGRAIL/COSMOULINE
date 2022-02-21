@@ -1,19 +1,27 @@
 #
 #	We subtract a flat value (skylevel from the database)	
 #
-
-
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-from datetime import datetime, timedelta
-import shutil
-import os
 import numpy as np
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+
+from config import alidir, computer, imgdb, settings
+from modules.kirbybase import KirbyBase
+from modules.variousfct import fromfits, proquest, nicetimediff, notify, tofits
+from datetime import datetime
+
+askquestions = settings['askquestions']
 
 
 db = KirbyBase()
-if thisisatest:
+if settings['thisisatest']:
 	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo','treatme','testlist'], [True, True, True], returnType='dict')
 else:
@@ -55,9 +63,8 @@ for i,image in enumerate(images):
 	tofits(skyimagepath, skya, hdr = None, verbose = True)
 	
 	
-endtime = datetime.now()
-timetaken = nicetimediff(endtime - starttime)
+timetaken = nicetimediff(datetime.now() - starttime)
 
-notify(computer, withsound, "The sky is no longer the limit. I took %s" % timetaken)
+notify(computer, settings['withsound'], "The sky is no longer the limit. I took %s" % timetaken)
 
 

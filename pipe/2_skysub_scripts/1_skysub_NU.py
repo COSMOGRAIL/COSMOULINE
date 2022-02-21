@@ -3,21 +3,29 @@
 #	We save the sky image into a file, then subtract it.
 #	This has a large footprint on diskspace, but you can delete some afterwards.
 #
-
-
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-from datetime import datetime, timedelta
-import shutil
+import sys
 import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+
+from config import alidir, computer, imgdb, settings, sex
+from modules.kirbybase import KirbyBase
+from modules.variousfct import fromfits, proquest, nicetimediff, notify, tofits
+from datetime import datetime
+
+askquestions = settings['askquestions']
 
 
 db = KirbyBase()
-if thisisatest:
+if settings['thisisatest']:
 	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo','treatme','testlist'], [True, True, True], returnType='dict')
-elif update:
+elif settings['update']:
 	print("This is an update.")
 	images = db.select(imgdb, ['gogogo','treatme','updating'], [True, True, True], returnType='dict')
 	askquestions = False
@@ -81,6 +89,6 @@ for i,image in enumerate(images):
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
 
-notify(computer, withsound, "The sky is no longer the limit. I took %s" % timetaken)
+notify(computer, settings['withsound'], "The sky is no longer the limit. I took %s" % timetaken)
 
 

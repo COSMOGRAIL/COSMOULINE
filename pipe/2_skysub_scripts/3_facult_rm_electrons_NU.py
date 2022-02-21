@@ -1,11 +1,22 @@
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-import glob
+from config import alidir, imgdb, settings
+from modules.kirbybase import KirbyBase
+from modules.variousfct import proquest
 
-# We select the images to treat :
-db = KirbyBase()
+
+askquestions = settings['askquestions']
+
+
+
 
 print('I will simply remove all the orignial images (converted to electrons and hence copied) from the alidir.')
 print('This will save some disk space, now that images are skysubtracted...')
