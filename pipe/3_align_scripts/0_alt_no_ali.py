@@ -3,14 +3,25 @@
 #	indeed, we simply make renamed copies but we also update the database with the fields expected.
 #	Warning: we have to copy the skysubtracted images (_skysub.fits) otherwise sextractor will crash in the next scripts!!!
 #
+from datetime import datetime
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+
+from config import alidir, dbbudir, computer, imgdb, settings
+from modules.kirbybase import KirbyBase
+from modules.variousfct import proquest, backupfile, copyorlink, nicetimediff,\
+                               notify
 
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-
-from kirbybase import KirbyBase, KBError
-import math
-from variousfct import *
-from datetime import datetime, timedelta
+askquestions = settings['askquestions']
+uselinks = settings['uselinks']
 
 
 # As we will tweak the database, let's do a backup
@@ -64,5 +75,5 @@ endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
 
 
-notify(computer, withsound, "Dear user, I'm done with the pseudoalignment. I did it in %s." % timetaken)
+notify(computer, settings["withsound"], "Dear user, I'm done with the pseudoalignment. I did it in %s." % timetaken)
 

@@ -1,16 +1,29 @@
+import multiprocessing
 import numpy as np
 from astropy.io import fits
 import astroalign as aa
-
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase
-from variousfct import *
-import progressbar
-import star
-
 from datetime import datetime
-import multiprocessing
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
 
+from config import alidir, dbbudir, computer, imgdb, settings, defringed
+from modules.kirbybase import KirbyBase
+from modules.variousfct import proquest, backupfile, nicetimediff, notify
+
+
+from modules import star
+
+
+askquestions = settings['askquestions']
+refimgname = settings['refimgname']
+maxcores = settings['maxcores']
 
 
         
@@ -100,14 +113,14 @@ def main():
     backupfile(imgdb, dbbudir, "before_alignimages_onestep")
 
     db = KirbyBase()
-    if thisisatest:
+    if settings['thisisatest']:
         print("This is a test.")
         images = db.select(imgdb, ['gogogo','treatme', 'testlist'],
                                   [ True,    True,      True],
                                   ['recno','imgname'],
                                   sortFields=['imgname'],
                                   returnType='dict')
-    elif update:
+    elif settings['update']:
         print("This is an update.")
         images = db.select(imgdb, ['gogogo','treatme', 'updating'],
                                   [ True,    True,      True],
@@ -189,7 +202,7 @@ def main():
     timetaken = nicetimediff(endtime - starttime)
 
 
-    notify(computer, withsound,
+    notify(computer, settings['withsound'],
            f"Dear user, I'm done with the alignment. I did it in {timetaken}.")
 
 

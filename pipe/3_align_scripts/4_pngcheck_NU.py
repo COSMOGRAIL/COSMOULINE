@@ -6,15 +6,30 @@
 #	- the resizing
 #	- the sorting and naming of the images
 #
-
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-import star
 import shutil
-import f2n
-from datetime import datetime, timedelta
-import os, sys
+from datetime import datetime
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+
+from config import alidir, alistarscat, computer, imgdb, settings
+from modules.kirbybase import KirbyBase
+from modules.variousfct import proquest, nicetimediff, notify, makejpgtgz
+
+
+from modules import star, f2n
+
+workdir = settings['workdir']
+askquestions = settings['askquestions']
+refimgname = settings['refimgname']
+identtolerance = settings['identtolerance']
+update = settings['update']
 
 # - - - CONFIGURATION - - -
 
@@ -45,7 +60,7 @@ print("I respect thisisatest, so you can use this to try your settings...")
 
 pngdir = os.path.join(workdir, "ali_" + pngkey + "_png")
 
-if update:
+if settings['update']:
 	print("I will complete the existing sky folder. Or create it if you deleted it to save space")
 	if not os.path.isdir(pngdir):
 		os.mkdir(pngdir)
@@ -59,10 +74,10 @@ else:
 
 # We select the images to treat :
 db = KirbyBase()
-if thisisatest :
+if settings['thisisatest'] :
 	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict', sortFields=['setname','mjd'])
-elif update:
+elif settings['update']:
 	print("This is an update.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict', sortFields=['setname','mjd'])
 	askquestions=False
@@ -86,7 +101,7 @@ refsexcat = os.path.join(alidir, refimage['imgname'] + ".cat")
 refautostars = star.readsexcat(refsexcat)
 refautostars = star.sortstarlistbyflux(refautostars)
 refmanstars = star.readmancat(alistarscat) # So these are the "manual" star coordinates
-id = star.listidentify(refmanstars, refautostars, tolerance = identtolerance) # We find the corresponding precise sextractor coordinates
+id = star.listidentify(refmanstars, refautostars, tolerance=identtolerance) # We find the corresponding precise sextractor coordinates
 preciserefmanstars = star.sortstarlistbyflux(id["match"])
 preciserefmanstarsasdicts = [{"name":star.name, "x":star.x, "y":star.y} for star in preciserefmanstars]
 
@@ -128,9 +143,7 @@ for i, image in enumerate(images):
 	"Nbr alistars : " + "%2i / %2i = "%(image['nbralistars'], image['maxalistars']) + "|"*image['nbralistars'],
 	"Actual geomap rms : %4.2f [pixel]" % image['geomaprms'],
 	"Rotator (header) : %7.2f [deg]" % image['rotator'],
-	"Actual geomap angle : %9.4f [deg]" % image['geomapangle'],
-	"Alignment info : %s" % image['alicomment']
-	]
+	"Actual geomap angle : %9.4f [deg]" % image['geomapangle']]
 	
 	f2nimg.drawstarlist(preciserefmanstarsasdicts, r = 20, colour = None)
 
@@ -146,7 +159,7 @@ for i, image in enumerate(images):
 		orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
 		os.symlink(pngpath, orderlink)
 
-if update:  # remove all the symlink and redo it again with the new images
+if settings['update']:  # remove all the symlink and redo it again with the new images
 	allimages = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname','mjd'])
 	for i, image in enumerate(allimages):
 		pngpath = os.path.join(pngdir, image['imgname'] + ".png")
@@ -168,11 +181,11 @@ if update:  # remove all the symlink and redo it again with the new images
 
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
-notify(computer, withsound, "I'm done. %s ." % timetaken)
+notify(computer, settings['withsound'], "I'm done. %s ." % timetaken)
 print("PNGs are written into")
 print(pngdir)
 
-if makejpgarchives :
+if settings['makejpgarchives'] :
 	makejpgtgz(pngdir, workdir, askquestions = askquestions)
 
 
