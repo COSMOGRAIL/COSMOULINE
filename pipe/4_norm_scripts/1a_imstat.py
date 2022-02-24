@@ -10,21 +10,32 @@
 #	maxlens : peak pixel in the small region around the lens
 #	sumlens : sum of the pixels in the small region around the lens
 #
-
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-# from pyraf import iraf
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-from datetime import datetime, timedelta
-
+from datetime import datetime
 from astropy.io import fits
+import numpy as np
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import alidir, computer, imgdb, imgkicklist, dbbudir, settings
+from modules.kirbybase import KirbyBase
+from variousfct import notify, backupfile, proquest, nicetimediff
+
+askquestions = settings['askquestions']
+emptyregion = settings['emptyregion']
+
 
 # As we will tweak the database, do a backup first
 backupfile(imgdb, dbbudir, "imstat")
 
 db = KirbyBase()
 
-if update:
+if settings['update']:
 	print("This is an update.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], 
                               [ True,     True,      True], 
@@ -92,7 +103,7 @@ db.pack(imgdb) # to erase the blank lines
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
 
-notify(computer, withsound, "I computed some statistics for %i images. It took %s" %(len(images), timetaken))
+notify(computer, settings['withsound'], "I computed some statistics for %i images. It took %s" %(len(images), timetaken))
 
 print(len(tokicklist), 'IRAF crashed on these guys:')
 for imgname in tokicklist:

@@ -17,19 +17,32 @@ Index of different plots:
 
 """
 
-
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-import star
 import numpy as np
-import os,sys
-import f2n
 import datetime
-from headerstuff import juliandate
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import alidir, configdir, imgdb, settings, plotdir
+from modules.kirbybase import KirbyBase
+from modules.variousfct import readimagelist, writepickle
+from modules.headerstuff import juliandate
+from modules import star, f2n
+
+askquestions = settings['askquestions']
+sexphotomname = settings['sexphotomname']
+refimgname = settings['refimgname']
+workdir = settings['workdir']
+sexphotomfields = settings['sexphotomfields']
+emptyregion = settings['emptyregion']
+lensregion = settings['lensregion']
 
 import matplotlib.pyplot as plt
-
 db = KirbyBase()
 images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 
@@ -510,15 +523,15 @@ if 1:
 		nightinfo = {}
 		nightinfo["date"] = date
 
-		for star in photomstars: # loop on stars
-			photomimages = [image for image in images if image["%s_%s_%s_flux" % (sexphotomname, star.name, aperture)] != None and image["date"] == date]	 # get the images with flux
+		for star_ in photomstars: # loop on stars
+			photomimages = [image for image in images if image["%s_%s_%s_flux" % (sexphotomname, star_.name, aperture)] != None and image["date"] == date]	 # get the images with flux
 			#starfluxpernight = 0 # if no flux available during the given night
 			try:
-				starfluxpernight = (sum([float(image["%s_%s_%s_flux" % (sexphotomname, star.name, aperture)]) for image in photomimages]) / sum([float(image["exptime"]) for image in photomimages])) # this is the flux per night
+				starfluxpernight = (sum([float(image["%s_%s_%s_flux" % (sexphotomname, star_.name, aperture)]) for image in photomimages]) / sum([float(image["exptime"]) for image in photomimages])) # this is the flux per night
 			except ZeroDivisionError:
 				starfluxpernight = 0.
 
-			nightinfo["%s" %star.name] = (star.name, starfluxpernight)
+			nightinfo["%s" %star_.name] = (star_.name, starfluxpernight)
 
 		nightinfos.append(nightinfo)
 
@@ -531,14 +544,14 @@ if 1:
 	for nightinfo in nightinfos[1:]:
 		#print "==== ",nightinfo["date"]," ===="
 		fluxratios = []
-		for star in photomstars:
+		for star_ in photomstars:
 			#print nightinfo[star.name], refnight[star.name], nightinfo[star.name][1] / refnight[star.name][1]
 			try:
-				fluxratios.append(nightinfo[star.name][1] / refnight[star.name][1])
+				fluxratios.append(nightinfo[star_.name][1] / refnight[star_.name][1])
 			except ZeroDivisionError:
-				print("No flux for star %s at night %s." %(star.name, nightinfo["date"]))
+				print("No flux for star %s at night %s." %(star_.name, nightinfo["date"]))
 			except:
-				print("Error with star %s" % star.name)
+				print("Error with star %s" % star_.name)
 				sys.exit()
 		#print "nightmeancoeff : ", np.mean(fluxratios)
 		#print "nightmedcoeff : ", np.median(fluxratios)
@@ -687,8 +700,8 @@ if 0:
 	# initialise the dicts
 	for refpos in refposlist:
 		mydict = {"pos": refpos}
-		for star in starstoplot:
-			mydict["star_%s" % str(star)] = []
+		for star_ in starstoplot:
+			mydict["star_%s" % str(star_)] = []
 
 		poses.append(mydict)
 
@@ -696,17 +709,17 @@ if 0:
 	for date in dates:
 		subimgs = [image for image in images if image["date"] == date]
 
-		for star in starstoplot:
+		for star_ in starstoplot:
 
 			# discard images without flux
-			photomimages = [image for image in subimgs if image["%s_%s_%s_flux" % (sexphotomname, star, aperture)] != None]
+			photomimages = [image for image in subimgs if image["%s_%s_%s_flux" % (sexphotomname, star_, aperture)] != None]
 			# do not compute if less than 5 images (to avoid biasing the scatter)
 			if len(photomimages) > 5:
-				median = np.median([float(image["%s_%s_%s_flux" % (sexphotomname, star, aperture)]) / float(image["exptime"]) for image in photomimages])
-				std = np.std([float(image["%s_%s_%s_flux" % (sexphotomname, star, aperture)]) / float(image["exptime"]) for image in photomimages])
+				median = np.median([float(image["%s_%s_%s_flux" % (sexphotomname, star_, aperture)]) / float(image["exptime"]) for image in photomimages])
+				std = np.std([float(image["%s_%s_%s_flux" % (sexphotomname, star_, aperture)]) / float(image["exptime"]) for image in photomimages])
 
 				for image in photomimages:
-					flux = float(image["%s_%s_%s_flux" % (sexphotomname, star, aperture)]) / float(image["exptime"])
+					flux = float(image["%s_%s_%s_flux" % (sexphotomname, star_, aperture)]) / float(image["exptime"])
 					if nonabs:
 						scatter = (flux - median) / std
 					else:
@@ -714,30 +727,30 @@ if 0:
 					pos = image["refpos"]
 					for d in poses:
 						if d["pos"] == pos:
-							d["star_%s" % str(star)].append(scatter)
+							d["star_%s" % str(star_)].append(scatter)
 
 
 	# and plot
 	colors = ['crimson', 'chartreuse', 'purple', 'cyan', 'gold', 'black', 'blue', 'magenta', 'brown', 'green', 'silver', 'yellow', 'red', 'white', 'skyblue', 'violet']
 
 
-	for star in starstoplot:
+	for star_ in starstoplot:
 		medscat = []
 		stdscat = []
 		occs = []
 		plt.figure(figsize=(10, 8.3))
 		for ind, d in enumerate(poses[1:]):
 			#plt.hist(d["star_%s" %star], 50)
-			medscat.append(np.median(d["star_%s" %star]))
-			stdscat.append(np.std(d["star_%s" %star]))
-			occs.append(len(d["star_%s" %star]))
+			medscat.append(np.median(d["star_%s" %star_]))
+			stdscat.append(np.std(d["star_%s" %star_]))
+			occs.append(len(d["star_%s" %star_]))
 
-			plt.scatter(np.median(d["star_%s" %star]), np.std(d["star_%s" %star]), s=len(d["star_%s" %star]), c=colors[ind], label=str(ind + 1) + ' | x%i' % len(d["star_%s" % star]))
+			plt.scatter(np.median(d["star_%s" %star_]), np.std(d["star_%s" %star_]), s=len(d["star_%s" %star_]), c=colors[ind], label=str(ind + 1) + ' | x%i' % len(d["star_%s" % star_]))
 
 		#plt.scatter(ra, decs[ind], s=occs[ind]*3, c=colors[ind], marker='o', label=str(ind+1)+' | x%s' % occs[ind])
 		leg = plt.legend(scatterpoints=1)
 		leg.get_frame().set_alpha(1.0)
-		plt.suptitle('Star %s - aperture %s' % (star, aperture), fontsize=25)
+		plt.suptitle('Star %s - aperture %s' % (star_, aperture), fontsize=25)
 		if nonabs:
 			plt.xlabel(r'median$(\frac{flux-median(nightflux)}{std(nightflux)})$', fontsize=20)
 			plt.ylabel(r'std$(\frac{flux-median(nightflux)}{std(nightflux)})$', fontsize=20)
@@ -749,7 +762,7 @@ if 0:
 
 		if min(medscat) < xmin or max(medscat) > xmax or min(stdscat) < ymin or max(stdscat) > ymax:
 			print("points are out of plot axis !")
-			print("for star %s" % star)
+			print("for star %s" % star_)
 			#sys.exit()
 
 		plt.axis([xmin, xmax, ymin, ymax])
@@ -770,10 +783,10 @@ if 0:
 		medscat = []
 		stdscat = []
 		occs = []
-		for star in starstoplot:
-			medscat.append(d["star_%s" % star])
-			stdscat.append(d["star_%s" % star])
-			occs.append(len(d["star_%s" % star]))
+		for star_ in starstoplot:
+			medscat.append(d["star_%s" % star_])
+			stdscat.append(d["star_%s" % star_])
+			occs.append(len(d["star_%s" % star_]))
 
 		plt.scatter(np.median(conc(medscat)), np.std(conc(stdscat)), s=sum(occs), c=colors[ind], label=str(ind + 1) + ' | x%i' % sum(occs))
 

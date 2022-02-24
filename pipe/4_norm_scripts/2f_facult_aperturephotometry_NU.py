@@ -2,16 +2,23 @@
 New version of the aperture photometry ONLY
 multiplot + information to help discarding some images.
 """
-
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-import star
 import numpy as np
-import os, sys
-import f2n
-import datetime
-from headerstuff import juliandate
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import configdir, imgdb, settings
+from modules.kirbybase import KirbyBase
+from modules.variousfct import readimagelist
+from modules import star
+
+sexphotomname = settings['sexphotomname']
+workdir = settings['workdir']
 
 import matplotlib.pyplot as plt
 
@@ -272,8 +279,8 @@ if 1:
             plt.errorbar(medmjds, medmags, yerr=[medmagerrtops, medmagerrbottoms], label=s.name, color=colors[ind],
                          linewidth=2, fmt='o')
 
-            plt.axis([np.min(medmjds), np.max(medmjds), min(lc["magnitude"]) + 1.2 * max(lc["magerrbottom"]),
-                      max(lc["magnitude"]) - 1.2 * max(lc["magerrtop"])])
+            plt.axis([np.nanmin(medmjds), np.nanmax(medmjds), np.nanmin(lc["magnitude"]) + 1.2 * np.nanmax(lc["magerrbottom"]),
+                      np.nanmax(lc["magnitude"]) - 1.2 * np.nanmax(lc["magerrtop"])])
 
             plt.legend()
             if ind == 0:

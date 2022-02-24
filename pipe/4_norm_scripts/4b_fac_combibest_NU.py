@@ -8,36 +8,68 @@
 #	in fact this is not true, it still crashes if combining many images.
 #	Viva iraf...
 #
-from astropy.io import fits
-
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-# from pyraf import iraf
-from kirbybase import KirbyBase, KBError
+import numpy as np
 import shutil
-from variousfct import *
-import time
+from astropy.io import fits
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import settings, combibestkey, imgdb
+from modules.variousfct import proquest, mterror
+from modules.kirbybase import KirbyBase
+db = KirbyBase()
+
+
+askquestions = settings['askquestions']
+combibestname = settings['combibestname']
+workdir = settings['workdir']
 
 
 print(("combibestname : %s" % combibestname))
 proquest(askquestions)
 
+usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], ['*'], ['setname'])])
 
-combidir = os.path.join(workdir, combibestkey)
+for setname in usedsetnames:
+    print(f"Making image for band {setname}")
+    combidir = os.path.join(workdir, f"{setname}_{combibestkey}")
+    
+    
+    
+    if not os.path.isdir(combidir):
+    	raise mterror("I cannot find the images ... check the combination name !")
+    
+    os.chdir(combidir)
+    
+    
+    outputname = f"{setname}_{combibestkey}.fits"
+    if os.path.isfile(outputname):
+    	os.remove(outputname)
+    
+    
+    combinearray = []
+    with open('irafinput.txt', 'r') as f:
+        for line in f.readlines():
+            combinearray.append(fits.getdata(line.strip()))
+    combinearray = np.array(combinearray)
+    resultimage = np.median(combinearray, axis=0)
+    fits.writeto(outputname, resultimage, overwrite=1)
+        
+    # iraf.images.immatch.imcombine("@irafinput.txt", output = outputname)
+    
+    shutil.move(outputname, "../.")
 
-
-
-if not os.path.isdir(combidir):
-	raise mterror("I cannot find the images ... check the combination name !")
-	
-
-
-#^we try to replace IRAF with some numpy operations.
-# from the parameters below, it seems that no rejection method is used.
-# this makes our life very simple. 
+print("Done.")
 
 
 ###############################################################################
-############################### old iraf parameters ###########################
+############################### old iraf parameters ########################### 
 ###############################################################################
 # iraf.unlearn(iraf.images.immatch.imcombine)
 # iraf.images.immatch.imcombine.combine = "median"
@@ -89,28 +121,4 @@ output  =                       List of output images
 ###############################################################################
 ###############################################################################
 ###############################################################################
-
-os.chdir(combidir)
-
-
-outputname = "%s.fits" % combibestkey
-if os.path.isfile(outputname):
-	os.remove(outputname)
-
-
-combinearray = []
-with open('irafinput.txt', 'r') as f:
-    for line in f.readlines():
-        combinearray.append(fits.getdata(line.strip()))
-combinearray = np.array(combinearray)
-resultimage = np.median(combinearray, axis=0)
-fits.writeto(outputname, resultimage, overwrite=1)
-    
-# iraf.images.immatch.imcombine("@irafinput.txt", output = outputname)
-
-shutil.move(outputname, "../.")
-
-print("Done.")
-
-
 

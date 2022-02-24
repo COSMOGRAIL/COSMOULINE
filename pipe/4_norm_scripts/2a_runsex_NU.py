@@ -3,24 +3,32 @@
 #
 
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-from datetime import datetime, timedelta
-#from readandreplace_fct import *
-import shutil
+from datetime import datetime
+import sys
 import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import alidir, computer, imgdb, settings, sex
+from modules.kirbybase import KirbyBase
+from variousfct import notify, proquest, nicetimediff
 
-
+askquestions = settings['askquestions']
 # We select the images to treat
 
 db = KirbyBase()
-if update:
+if settings['update']:
 	print("This is an update")
-	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict')
+	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], 
+                              [True, True, True], returnType='dict')
 	askquestions=False
 else:
-	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
+	images = db.select(imgdb, ['gogogo', 'treatme'], 
+                              [True, True], returnType='dict')
 
 nbrofimages = len(images)
 print("I have", nbrofimages, "images to treat.")
@@ -52,5 +60,5 @@ for i, image in enumerate(images):
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
 
-notify(computer, withsound, "Aperture photometry done in %s" % timetaken)
+notify(computer, settings['withsound'], "Aperture photometry done in %s" % timetaken)
 	

@@ -6,15 +6,22 @@ We do not look at the treatme flag, but instead of this we use all images that h
 we respect gogogo
 
 """
-
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-#import variousfct
-#import headerstuff
-#import star
 import numpy as np
 import matplotlib.pyplot as plt
-#import matplotlib.dates
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import imgdb, settings, plotdir
+from modules.kirbybase import KirbyBase
+
+savefigs = settings['savefigs']
+
 
 db = KirbyBase()
 allimages = db.select(imgdb, ["gogogo"], [True], returnType='dict', sortFields=['mjd'])
@@ -50,7 +57,7 @@ for (fieldname, plotrange) in [("medcoeff", [0.5, 3.0]), ("skylevel", [0.0, 1000
 		plt.xlim(plotrange[0], plotrange[1])
 		
 		plt.xlabel("Field : %s       (%s)" % (fieldname, setminmaxtext))
-		plt.title("Setname : %s (Telescopes : %s), %i images." % (usedsetname, "+".join(telescopenames), len(setimages)))
+		plt.title("setname : %s (Telescopes : %s), %i images." % (usedsetname, "+".join(telescopenames), len(setimages)))
 	
 		if savefigs:
 			plotfilepath = os.path.join(plotdir, "histo_%s_%s.pdf" % (fieldname, usedsetname))

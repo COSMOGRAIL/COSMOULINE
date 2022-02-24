@@ -5,16 +5,27 @@ For this we have to open each image ... this is a bit slow.
 """
 
 
-
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-import star
 import numpy as np
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import alidir, configdir, dbbudir, imgdb, settings
+from modules.kirbybase import KirbyBase
+from variousfct import proquest, backupfile, fromfits
+from modules import star
+
+askquestions = settings['askquestions']
+sexphotomname = settings['sexphotomname']
 
 # Selecting the images
 db = KirbyBase()
-if update:
+if settings['update']:
 	print("This is an update.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict')
 	askquestions = False

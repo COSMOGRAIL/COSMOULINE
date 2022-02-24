@@ -6,13 +6,25 @@ It seems to work.
 
 """
 
-exec (compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-import numpy as np
-import cosmics  # used to read and write the fits files
 import multiprocessing
+import numpy as np
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import alidir, computer, imgdb, settings
+from modules.kirbybase import KirbyBase
+from modules import cosmics
+from variousfct import notify, proquest
 
+askquestions = settings['askquestions']
+emptyregion = settings['emptyregion']
+maxcores = settings['maxcores']
 
 def fillnoise(n, image, n_im_tot):
     print(n + 1, "/", n_im_tot, ":", image['imgname'])
@@ -30,6 +42,13 @@ def fillnoise(n, image, n_im_tot):
 
     linsshape = a[lins, :].shape
     a[lins, :] = (np.random.randn(linsshape[0] * linsshape[1]) * image["stddev"]).reshape(linsshape)
+    
+    # second step. 
+    # in some cases we'll have regions with no data (NaNs).
+    # fill these with noise as well. 
+    mask = np.where(np.isnan(a))
+    npix = len(mask[0])
+    a[mask] = np.random.randn(npix) * image["stddev"]
 
     cosmics.tofits(aliimg, a, verbose=False)
 
@@ -40,7 +59,7 @@ def fillnoise_aux(args):
 
 def main():
     db = KirbyBase()
-    if update:
+    if settings['update']:
         print("This is an update.")
         images = db.select(imgdb, ['flagali', 'gogogo', 'treatme', 'updating'], ['==1', True, True, True],
                            ['recno', 'imgname', 'stddev'], sortFields=['imgname'], returnType='dict')
@@ -66,7 +85,7 @@ def main():
     pool.close()
     pool.join()
 
-    notify(computer, withsound, "Done.")
+    notify(computer, settings['withsound'], "Done.")
 
 
 if __name__ == '__main__':
