@@ -10,15 +10,6 @@ Created on Tue Oct 19 12:09:41 2021
 
 
 
-
-
-
-
-
-
-
-
-
 RUNNING THIS SCRIPT IS NOT NECESSARILY NEEDED
 
 Most likely, you will want to take 6 stable stars from your normstars.cat file, 
@@ -30,12 +21,20 @@ be a PSF model.
 
 """
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
 
-from os.path import join
+from config import configdir
+from modules import pickstars
 
-psfcat = join(configdir, 'psfstars.cat')
+psfcat = os.path.join(configdir, 'psfstars.cat')
 
 
-import pickstars
 pickstars.main(psfcat)

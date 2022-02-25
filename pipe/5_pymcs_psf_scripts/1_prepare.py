@@ -1,9 +1,22 @@
+import shutil
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import configdir, settings, psfkey, psfstarcat, imgdb, dbbudir,\
+                   psfdir, psfkeyflag, alidir
+from modules.variousfct import proquest, backupfile, mterror
+from modules import star
+from modules.kirbybase import KirbyBase
+from readandreplace_fct import justread, justreplace
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-from readandreplace_fct import *
-import star
+
+askquestions = settings['askquestions']
 
 
 db = KirbyBase()
@@ -14,11 +27,11 @@ print("psfkey =", psfkey)
 print("Reading psf star catalog ...")
 psfstars = star.readmancat(psfstarcat)
 print("You want to use stars :")
-for star in psfstars:
-	print(star.name)
+for s in psfstars:
+	print(s.name)
 
 
-if update:
+if settings['update']:
 	askquestions = False
 
 proquest(askquestions)
@@ -37,7 +50,7 @@ if os.path.isdir(psfdir):
 	if psfkeyflag not in db.getFieldNames(imgdb) :
 		raise mterror("... but your corresponding psfkey is not in the database !")
 	
-	if thisisatest:
+	if settings['thisisatest']:
 		print("This is a test !")
 		print("So you want to combine/replace an existing psf with a test-run.")
 		proquest(askquestions)
@@ -53,17 +66,21 @@ else :
 	os.mkdir(psfdir)
 
 
-# We select the images, according to "thisisatest". Note that only this first script of the psf construction looks at this : the next ones will simply 
-# look for the psfkeyflag in the database !
+# We select the images, according to "thisisatest".
+# Note that only this first script of the psf construction looks at this :
+# the next ones will simply  look for the psfkeyflag in the database !
 
-if thisisatest :
+if settings['thisisatest'] :
 	print("This is a test run.")
-	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict')
-elif update:
+	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], 
+                              [True, True, True], returnType='dict')
+elif settings['update']:
 	print("This is an update.")
-	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict')
+	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], 
+                              [True, True, True], returnType='dict')
 else :
-	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
+	images = db.select(imgdb, ['gogogo', 'treatme'], 
+                              [True, True], returnType='dict')
 
 
 print("I will treat %i images." % len(images))
@@ -96,7 +113,8 @@ for i,image in enumerate(images):
 	# we put in the input image :
 	if os.path.exists(os.path.join(imgpsfdir, "images", "in.fits")):
 		os.remove(os.path.join(imgpsfdir, "images", "in.fits"))
-	os.symlink(os.path.join(alidir, image['imgname'] + "_ali.fits") , os.path.join(imgpsfdir, "images", "in.fits"))
+	os.symlink(os.path.join(alidir, image['imgname'] + "_ali.fits") , \
+               os.path.join(imgpsfdir, "images", "in.fits"))
 	
 	
 	# we prepare the config :
@@ -106,7 +124,9 @@ for i,image in enumerate(images):
 	numpsfrad = "%f" % (6.0 * float(image["seeing"]))
 	lambdanum = "%f" % (0.001) # image["seeing"]
 	
-	repdict = {'$gain$':gain, '$sigmasky$':stddev, '$starscouplelist$':starscouplelist, '$numpsfrad$':numpsfrad, '$lambdanum$' : lambdanum}	
+	repdict = {'$gain$':gain, '$sigmasky$':stddev, \
+              '$starscouplelist$':starscouplelist, '$numpsfrad$':numpsfrad,\
+              '$lambdanum$' : lambdanum}	
 	
 	pyMCS_config = justreplace(config_template, repdict)
 	extractfile = open(os.path.join(imgpsfdir, "pyMCS_psf_config.py"), "w")
