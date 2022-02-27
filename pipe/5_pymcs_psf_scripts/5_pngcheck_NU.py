@@ -321,5 +321,5 @@ print("(Same format as for testlist.txt etc)")
 print("")
 print(pngdir)
 
-if settings['makejpgarchives ']:
+if settings['makejpgarchives']:
     makejpgtgz(pngdir, workdir, askquestions=askquestions)

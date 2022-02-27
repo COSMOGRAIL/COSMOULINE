@@ -24,8 +24,9 @@ askquestions = settings['askquestions']
 # Read the manual star catalog :
 alistarscatpath = os.path.join(configdir, "psfstars.cat")
 alistars = star.readmancat(alistarscatpath)
-
-psfnamestars = [e for e in psfname] # we assume psfname is only the list of stars, named with only 1 letter (no aa or other funny stuff)
+# we assume psfname is only the list of stars, named with only 1 letter 
+# (no aa or other funny stuff)
+psfnamestars = [e for e in psfname] 
 
 mystars = [s for s in alistars if s.name in psfnamestars]
 
@@ -35,10 +36,10 @@ proquest(askquestions)
 
 # the stars
 if os.path.isfile(os.path.join(configdir, "psf_%s.cat" % psfname)):
-	print("The psf catalog already exists ! I stop here.")
-	sys.exit()
+    print("The psf catalog already exists ! I stop here.")
+    sys.exit()
 else:
-	file = open(os.path.join(configdir, "psf_%s.cat" % psfname), 'w')
-	for s in mystars:
-		file.write(s.name + '\t' + str(s.x) + '\t' + str(s.y) + '\t' + str(s.flux)+'\n')
-	file.close()
+    file = open(os.path.join(configdir, "psf_%s.cat" % psfname), 'w')
+    for s in mystars:
+        file.write(f"{s.name}\t{s.x}\t{s.y}\t{s.flux}\n")
+    file.close()

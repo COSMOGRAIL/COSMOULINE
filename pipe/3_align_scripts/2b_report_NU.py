@@ -17,13 +17,16 @@ from modules.kirbybase import KirbyBase
 
 workdir = settings['workdir']
 
-fields = ['imgname', 'seeingpixels', 'seeing', 'nbralistars', 'maxalistars', 'geomaprms', 'rotator', 'geomapangle', 'geomapscale']
+fields = ['imgname', 'seeingpixels', 'seeing', 'nbralistars', 
+          'maxalistars', 'geomaprms', 'rotator', 
+          'geomapangle', 'geomapscale']
 
 
 db = KirbyBase()
 reporttxt = ""
 
-usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], ['*'], ['setname'])])
+usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], 
+                                            ['*'], ['setname'])])
 
 
 for setname in sorted(list(usedsetnames)):

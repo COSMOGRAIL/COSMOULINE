@@ -42,13 +42,13 @@ backupfile(imgdb, dbbudir, "prepare_" + psfkey)
 # Check if the psfdir already exists
 
 if os.path.isdir(psfdir):
-	print("Ok, this psfdir already exists. I will add or rebuild psfs in this set.")
+	print("This psfdir already exists. I will add or rebuild psfs in this set.")
 	print("psfdir :", psfdir)
 	proquest(askquestions)
 	
 	# Check if the psfkeyflag is in the database, to be sure it exists.
 	if psfkeyflag not in db.getFieldNames(imgdb) :
-		raise mterror("... but your corresponding psfkey is not in the database !")
+		raise mterror("...but your corresponding psfkey is not in the database!")
 	
 	if settings['thisisatest']:
 		print("This is a test !")
@@ -62,7 +62,7 @@ else :
 	if psfkeyflag not in db.getFieldNames(imgdb) :
 		db.addFields(imgdb, ['%s:bool' % psfkeyflag])
 	else:
-		raise mterror("... funny : the psfkey was in the DB ! Please clean psfdir and psfkey !")
+		raise mterror("...funny: the psfkey was in the DB! Please clean psfdir and psfkey!")
 	os.mkdir(psfdir)
 
 

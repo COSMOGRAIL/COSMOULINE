@@ -1,12 +1,27 @@
 #
 #	generates pngs of the extracted stuff.
 #
-
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 import shutil
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-import f2n
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import imgdb, settings, objkey, objkeyflag, computer, objdir,\
+                   objcosmicskey
+from modules.variousfct import proquest, notify, readpickle, makejpgtgz
+from modules.kirbybase import KirbyBase
+from modules import f2n
+
+
+askquestions = settings['askquestions']
+workdir = settings['workdir']
+makejpgarchives = settings['makejpgarchives']
+withsound = settings['withsound']
 
 
 # - - - CONFIGURATION - - -
@@ -32,11 +47,17 @@ os.mkdir(pngdir)
 
 # Select images to treat
 db = KirbyBase()
-if thisisatest :
+if settings['thisisatest'] :
 	print("This is a test run.")
-	images = db.select(imgdb, ['gogogo','treatme',objkeyflag,'testlist'], [True,True,True,True], returnType='dict', sortFields=['setname', 'mjd'])
+	images = db.select(imgdb, ['gogogo', 'treatme', objkeyflag, 'testlist'], 
+                              [True, True, True, True], 
+                              returnType='dict', 
+                              sortFields=['setname', 'mjd'])
 else :
-	images = db.select(imgdb, ['gogogo','treatme',objkeyflag], [True,True,True], returnType='dict', sortFields=['setname', 'mjd'])
+	images = db.select(imgdb, ['gogogo', 'treatme', objkeyflag], 
+                              [True, True, True], 
+                              returnType='dict', 
+                              sortFields=['setname', 'mjd'])
 
 print("I will treat %i images." % len(images))
 proquest(askquestions)
@@ -101,6 +122,6 @@ print("- "*40)
 notify(computer, withsound, "I made PNGs for %s." % objkey)
 
 if makejpgarchives :
-	makejpgtgz(pngdir, workdir, askquestions = askquestions)
+	makejpgtgz(pngdir, workdir, askquestions=askquestions)
 
 

@@ -1,13 +1,24 @@
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-from readandreplace_fct import *
-import star
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import settings, psfkeyflag, imgdb, psfkicklist, psfdir, psfkey,\
+                   psfstarcat
+from modules.kirbybase import KirbyBase
+from modules import star
+from modules.variousfct import proquest, fromfits
 
 """
 This script can be used anytime during the PSF
 """
 
+maxpixelvaluecoeff = settings['maxpixelvaluecoeff']
+askquestions = settings['askquestions']
 
 db = KirbyBase()
 
@@ -24,15 +35,21 @@ for i, s in enumerate(psfstars):
 	s.filenumber = (i+1)
 
 
-if thisisatest :
+if settings['thisisatest'] :
 	print("This is a test run.")
-	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
-if update:
+	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], 
+                              [True, True, True, True], 
+                              returnType='dict', sortFields=['setname', 'mjd'])
+if settings['update']:
 	print("This is an update.")
-	images = db.select(imgdb, ['gogogo', 'treatme', 'updating',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+	images = db.select(imgdb, ['gogogo', 'treatme', 'updating',psfkeyflag], 
+                              [True, True, True, True], 
+                              returnType='dict', sortFields=['setname', 'mjd'])
 	askquestions=False
 else :
-	images = db.select(imgdb, ['gogogo', 'treatme',psfkeyflag], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
+	images = db.select(imgdb, ['gogogo', 'treatme',psfkeyflag], 
+                              [True, True, True], 
+                              returnType='dict', sortFields=['setname', 'mjd'])
 
 
 
@@ -55,7 +72,9 @@ for i, image in enumerate(images):
 		starfilename = "star_%03i.fits" % s.filenumber
 		(stararray, starheader) = fromfits(starfilename, verbose=False)
 
-		if max([max(starline) for starline in stararray]) > image["saturlevel"]*image["gain"]*maxpixelvaluecoeff:
+		if (max([max(starline) for starline in stararray]) >  \
+                        image["saturlevel"]*image["gain"]*maxpixelvaluecoeff):
+                            
 			print(image["imgname"] , ' is saturated ! ')
 			kicklist.append(image["imgname"])
 			break
