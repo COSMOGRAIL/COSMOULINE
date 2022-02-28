@@ -14,10 +14,13 @@ from modules.kirbybase import KirbyBase
 
 db = KirbyBase()
 fields = ['datet', 'mjd', 'imgname', 'telescopename', 'gain', 'gogogo']
-reporttxt = db.select(imgdb, ['recno'], ['*'], fields, sortFields=['mjd'], returnType='report')
+reporttxt = db.select(imgdb, ['recno'], 
+                             ['*'], fields, 
+                             sortFields=['mjd'], returnType='report')
 
 
-reporttxtfile = open(os.path.join(settings['workdir'], "report_chronocontent.txt"), "w")
+reporttxtfile = open(os.path.join(settings['workdir'], 
+                                  "report_chronocontent.txt"), "w")
 reporttxtfile.write(reporttxt)
 reporttxtfile.close()
 

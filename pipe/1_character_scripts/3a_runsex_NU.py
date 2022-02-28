@@ -1,5 +1,6 @@
 #
-#	Runs sextractor on the input images. Next script will measure seeing + ellipticity.
+#    Runs sextractor on the input images. 
+#    Next script will measure seeing + ellipticity.
 #
 
 import sys
@@ -22,16 +23,16 @@ askquestions = settings['askquestions']
 
 db = KirbyBase()
 if settings['thisisatest']:
-	print("This is a test run.")
-	images = db.select(imgdb, ['gogogo','treatme','testlist'], 
+    print("This is a test run.")
+    images = db.select(imgdb, ['gogogo','treatme','testlist'], 
                               [True, True, True], returnType='dict')
 elif settings['update']:
-	print("This is an update.")
-	images = db.select(imgdb, ['gogogo','treatme','updating'], 
+    print("This is an update.")
+    images = db.select(imgdb, ['gogogo','treatme','updating'], 
                               [True, True, True], returnType='dict')
-	askquestions = False
+    askquestions = False
 else:
-	images = db.select(imgdb, ['gogogo','treatme'], 
+    images = db.select(imgdb, ['gogogo','treatme'], 
                               [True, True], returnType='dict')
 
 
@@ -44,20 +45,26 @@ starttime = datetime.now()
 
 for i,image in enumerate(images):
 
-	print("- " * 30)
-	print(i+1, "/", nbrofimages, ":", image['imgname'])
-	
-	imagepath = os.path.join(alidir, image['imgname']+".fits")
-	catfilename = os.path.join(alidir, image['imgname']+".cat")
+    print("- " * 30)
+    print(i+1, "/", nbrofimages, ":", image['imgname'])
+    
+    imagepath = os.path.join(alidir, image['imgname']+".fits")
+    catfilename = os.path.join(alidir, image['imgname']+".cat")
 
-	saturlevel = image["gain"] * image["saturlevel"] # to convert to electrons
-	if image["telescopename"] in ["FORS2"]:
-		print("FORS2 detected, switch to fors2 extraction parameters:")
-		cmd = "%s %s -c default_see_template_FORS.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CATALOG_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, catfilename)
+    saturlevel = image["gain"] * image["saturlevel"] # to convert to electrons
+    if image["telescopename"] in ["FORS2"]:
+        print("FORS2 detected, switch to fors2 extraction parameters:")
+        cmd = f"{sex} {imagepath} -c default_see_template_FORS.sex "
+        cmd += f"-PIXEL_SCALE {image['pixsize']:.3f} "
+        cmd += f"-SATUR_LEVEL {saturlevel:.3f} "
+        cmd += f"-CATALOG_NAME {catfilename}"
 
-	else:
-		cmd = "%s %s -c default_see_template.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CATALOG_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, catfilename)
-	os.system(cmd)
+    else:
+        cmd = f"{sex} {imagepath} -c default_see_template.sex"
+        cmd += f" -PIXEL_SCALE {image['pixsize']:.3f} "
+        cmd += f"-SATUR_LEVEL {saturlevel:.3f} "
+        cmd += f"-CATALOG_NAME {catfilename}"
+    os.system(cmd)
 
 timetaken = nicetimediff(datetime.now() - starttime)
 

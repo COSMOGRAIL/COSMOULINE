@@ -1,10 +1,10 @@
 #
-#	generates pngs from the fits files
-#	do not forget to
-#	- change the pngkey, 
-#	- the region and cutoffs
-#	- the resizing
-#	- the sorting and naming of the images
+#    generates pngs from the fits files
+#    do not forget to
+#    - change the pngkey, 
+#    - the region and cutoffs
+#    - the resizing
+#    - the sorting and naming of the images
 #
 import shutil
 from datetime import datetime
@@ -54,32 +54,33 @@ print("I respect thisisatest, so you can use this to try your settings...")
 pngdir = os.path.join(settings['workdir'], "imgpngs")
 
 if settings['update']:
-	print("I will complete the existing sky folder. Or create it if you deleted it to save space")
-	if not os.path.isdir(pngdir):
-		os.mkdir(pngdir)
+    print("I will complete the existing sky folder.",
+          "Or create it if you deleted it to save space")
+    if not os.path.isdir(pngdir):
+        os.mkdir(pngdir)
 
 else:
-	if os.path.isdir(pngdir):
-		print("I will delete existing stuff.")
-		proquest(askquestions)
-		shutil.rmtree(pngdir)
-	os.mkdir(pngdir)
+    if os.path.isdir(pngdir):
+        print("I will delete existing stuff.")
+        proquest(askquestions)
+        shutil.rmtree(pngdir)
+    os.mkdir(pngdir)
 
 # We select the images to treat :
 db = KirbyBase()
 if settings['thisisatest'] :
-	print("This is a test run.")
-	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], 
+    print("This is a test run.")
+    images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], 
                               [True, True, True], 
                               returnType='dict', sortFields=['setname','mjd'])
 elif settings['update']:
-	print("This is an update.")
-	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], 
+    print("This is an update.")
+    images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], 
                               [True, True, True], 
                               returnType='dict', sortFields=['setname','mjd'])
-	askquestions=False
+    askquestions=False
 else :
-	images = db.select(imgdb, ['gogogo', 'treatme'], 
+    images = db.select(imgdb, ['gogogo', 'treatme'], 
                               [True, True], 
                               returnType='dict', sortFields=['setname','mjd'])
 
@@ -92,65 +93,72 @@ starttime = datetime.now()
 
 
 for i, image in enumerate(images):
-	
-	print("- " * 40)
-	print(i+1, "/", len(images), ":", image['imgname'])
+    
+    print("- " * 40)
+    print(i+1, "/", len(images), ":", image['imgname'])
 
-	
-	fitsfile = os.path.join(alidir, image['imgname'] + ".fits")
-	
-	f2nimg = f2n.fromfits(fitsfile)
-	if crop :
-		f2nimg.irafcrop(cropregion)
-	f2nimg.setzscale(z1, z2)
-	
-	if rebin == "auto":
-		if f2nimg.numpyarray.shape[0] > 3000:
-			f2nimg.rebin(4)
-		else:
-			f2nimg.rebin(2)
-	else:
-		f2nimg.rebin(rebin)
-		
-	f2nimg.makepilimage(scale = "log", negative = False)
-	f2nimg.writetitle(image['imgname'] + ".fits")
-	
-	infotextlist = [
-	"%s UTC" % image['datet'],
-	image['telescopename'] + " - " + image['setname'],
-	"Seeing : %4.2f [arcsec]" % image['seeing'],
-	"Ellipticity : %4.2f" % image['ell'],
-	"Airmass : %4.2f" % image['airmass'],
-	"Sky level : %.1f" % image['skylevel'],
-	"Sky stddev : %.1f" % image['prealistddev']
-	]
+    
+    fitsfile = os.path.join(alidir, image['imgname'] + ".fits")
+    
+    f2nimg = f2n.fromfits(fitsfile)
+    if crop :
+        f2nimg.irafcrop(cropregion)
+    f2nimg.setzscale(z1, z2)
+    
+    if rebin == "auto":
+        if f2nimg.numpyarray.shape[0] > 3000:
+            f2nimg.rebin(4)
+        else:
+            f2nimg.rebin(2)
+    else:
+        f2nimg.rebin(rebin)
+        
+    f2nimg.makepilimage(scale = "log", negative = False)
+    f2nimg.writetitle(image['imgname'] + ".fits")
+    
+    infotextlist = [
+    f"{image['datet']} UTC",
+    image['telescopename'] + " - " + image['setname'],
+    f"Seeing : {image['seeing']:4.2f} [arcsec]",
+    f"Ellipticity : {image['ell']:4.2f}",
+    f"Airmass : {image['airmass']:4.2f}",
+    f"Sky level : {image['skylevel']:.1f}",
+    f"Sky stddev : {image['prealistddev']:.1f}"
+    ]
 
-	
-	f2nimg.writeinfo(infotextlist)
+    
+    f2nimg.writeinfo(infotextlist)
 
-	#pngname = "%04d.png" % (i+1)
-	pngname = image['imgname'] + ".png"
-	pngpath = os.path.join(pngdir, pngname)
-	f2nimg.tonet(pngpath)
+    #pngname = "%04d.png" % (i+1)
+    pngname = image['imgname'] + ".png"
+    pngpath = os.path.join(pngdir, pngname)
+    f2nimg.tonet(pngpath)
 
-	if not settings['update']:
-		orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
-		os.symlink(pngpath, orderlink)
+    if not settings['update']:
+        # a link to get the images sorted for the movies etc.
+        orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) 
+        os.symlink(pngpath, orderlink)
 
-if settings['update']:  # remove all the symlink and redo it again with the new images
-	allimages = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname','mjd'])
-	for i, image in enumerate(allimages):
-		pngpath = os.path.join(pngdir, image['imgname'] + ".png")
-		orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
-		try:
-			os.unlink(orderlink)
-		except:
-			pass
-		os.symlink(pngpath, orderlink)
+if settings['update']:  
+    # remove all the symlink and redo it again with the new images:
+    allimages = db.select(imgdb, ['gogogo', 'treatme'], 
+                                 [True, True], 
+                                 returnType='dict', 
+                                 sortFields=['setname','mjd'])
+    
+    for i, image in enumerate(allimages):
+        pngpath = os.path.join(pngdir, image['imgname'] + ".png")
+        # a link to get the images sorted for the movies etc.:
+        orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) 
+        try:
+            os.unlink(orderlink)
+        except:
+            pass
+        os.symlink(pngpath, orderlink)
 
 
 
 timetaken = nicetimediff(datetime.now() - starttime)
-notify(computer, settings['withsound'], "I'm done. %s ." % timetaken)
+notify(computer, settings['withsound'], f"I'm done. {timetaken} .")
 print("PNGs were written into")
 print(pngdir)

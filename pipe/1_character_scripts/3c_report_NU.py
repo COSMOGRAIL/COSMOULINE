@@ -20,20 +20,19 @@ fields = ['imgname', 'seeingpixels', 'seeing', 'ell', 'goodstars']
 db = KirbyBase()
 reporttxt = ""
 
-usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], ['*'], ['setname'])])
+usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], 
+                                                   ['*'], 
+                                                   ['setname'])])
 
 
 for setname in usedsetnames:
-	
-	reporttxt += "\n\n      ########### %10s    ########\n\n"%setname
-		
-	setreport = db.select(imgdb, ['gogogo','setname'], ['True', setname], 
+    
+    reporttxt += f"\n\n      ########### {setname:10}    ########\n\n"
+        
+    setreport = db.select(imgdb, ['gogogo','setname'], ['True', setname], 
                           fields, sortFields=['seeing'], returnType='report')
-	reporttxt += setreport
+    reporttxt += setreport
 
 
-reporttxtfile = open(os.path.join(settings['workdir'], "report_seeing.txt"), "w")
-reporttxtfile.write(reporttxt)
-reporttxtfile.close()
-
-
+with open(os.path.join(settings['workdir'], "report_seeing.txt"), "w") as ftxt:
+    ftxt.write(reporttxt)
