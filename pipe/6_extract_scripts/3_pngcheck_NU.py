@@ -114,7 +114,8 @@ for i, image in enumerate(images):
 	pngpath = os.path.join(pngdir, pngname)
 	f2n.compose([[g, sig]], pngpath)
 
-	orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
+    # a link to get the images sorted for the movies etc:
+	orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) 
 	os.symlink(pngpath, orderlink)
 
 
