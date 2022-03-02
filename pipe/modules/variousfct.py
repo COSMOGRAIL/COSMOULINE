@@ -1,9 +1,6 @@
 
 import os
 import numpy as np
-import math
-import scipy.signal as signal
-import scipy.ndimage as ndimage
 import astropy.io.fits as pyfits
 import pickle
 
@@ -14,10 +11,8 @@ def backupfile(filepath, backupdir, code=""):
     and the "code", if provided.
     """
     import os
-    import sys
     import shutil
     import datetime
-    import time
 
     now = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -160,7 +155,6 @@ def readmancat(mancatfile):
 
 # a little function that might ring a bell...
 def notify(computer, withsound, comment="Hmm. Sorry. I kindly ask you to have a look at the screen.", mood="neutral"):
-    import os
     import sys
     import subprocess
 
@@ -198,9 +192,6 @@ def notify(computer, withsound, comment="Hmm. Sorry. I kindly ask you to have a 
 
 # a little function to convert a timedelta object into a string representing a human-readable duration.
 def nicetimediff(td):
-    from datetime import datetime
-    from datetime import timedelta
-
     # could be improved
     strdiff = str(td) # looks like 0:02:04.43353
 

@@ -2,8 +2,6 @@
 
 import sys
 import os
-import types
-import copy as pythoncopy
 import numpy as np
 from PIL import Image as im
 from PIL import ImageOps as imop

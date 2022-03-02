@@ -1,29 +1,54 @@
 # -*- coding: utf-8 -*-
 
-
-from tkinter import *
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from tkinter.messagebox import * 
-from PIL import ImageTk
-from PIL import Image
-import os
-import glob
-import f2n
-from variousfct import *
-import star
+import matplotlib
+matplotlib.use("TkAgg")
 import astropy.io.fits as pyfits
 from itertools import count, product, islice
 from string import ascii_lowercase
+from tkinter import Tk, Frame, Label, Canvas, SUNKEN, Toplevel, Scrollbar,\
+                    VERTICAL, HORIZONTAL, BOTTOM, LEFT, RIGHT, BOTH, X, Y,\
+                    Menu
+from tkinter.messagebox import askyesno, showwarning
+from PIL import ImageTk
+from PIL import Image
+try:
+    import ImageTk
+    import Image
+except:
+    from PIL import ImageTk
+    from PIL import Image
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
 
-import numpy as np
-import matplotlib
-matplotlib.use("TkAgg")
-from matplotlib import pyplot
+from config import alidir, computer, settings, configdir
+from modules.variousfct import fromfits
+from modules import f2n
+from modules import star
+
+askquestions = settings['askquestions']
+refimgname = settings['refimgname']
+workdir = settings['workdir']
+
+#%%
+
+
 
 
 """
-Script that allow to pick the good stars by clicking on the image. Still work in progress
-Written by Eric Paic, early 2017 version. Modified by Vivien Bonvin to fit smoothly (and with less bugs...) into the cosmouline pipeline.
+Script that allow to pick the good stars by clicking on the image. 
+Still work in progress
+Written by Eric Paic, early 2017 version. 
+Modified by Vivien Bonvin to fit smoothly (and with less bugs...) 
+into the cosmouline pipeline.
+
+2022: tried to remove all the global variables 
 """
 
 from matplotlib.figure import Figure
@@ -41,7 +66,7 @@ class LoadImage:
         global height, width
         frame = Frame(root)
         #Creation of the canvas
-        self.canvas = Canvas(frame,width=1000,height=1000, relief = SUNKEN)
+        self.canvas = Canvas(frame,width=1000,height=1000, relief=SUNKEN)
 
         frame.pack()
 
@@ -67,7 +92,6 @@ class LoadImage:
         top.title("Stats")
         canvastop = Canvas(top, bg="black", width=200, height=200)
         f = Figure(figsize=(5,5))
-            #a = f.add_subplot(111)
         ax = Axes3D(f)
         ax.mouse_init()
 
@@ -114,7 +138,8 @@ class LoadImage:
         self.canvas.config(scrollregion=(0,0,width,height))
         self.canvas.config(highlightthickness=0)
 
-    # if you are on windows, Button-4 and Button-5 are united under MouseWheel and instead of event.num = 5 or 4 you have event.delta = -120 ou 120 
+    # if you are on windows, Button-4 and Button-5 are united under
+    # MouseWheel and instead of event.num = 5 or 4 you have event.delta = -120 ou 120 
     def zoomer(self,event):
         if (event.num ==4):
             if self.zoomcycle != 5: self.zoomcycle += 1
@@ -135,7 +160,8 @@ class LoadImage:
     def crop(self,event):
         if self.zimg_id: self.canvas.delete(self.zimg_id)
         if (self.zoomcycle) != 0:
-            x,y = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y) #to get the real coordinate of the star even after scrolling
+            #to get the real coordinate of the star even after scrolling:
+            x,y = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y) 
             if self.zoomcycle == 1:
                 tmp = self.orig_img.crop((x-45,y-30,x+45,y+30))
             elif self.zoomcycle == 2:
@@ -192,7 +218,7 @@ class LoadImage:
                     carre=self.canvas.create_rectangle(lenscoord[0],lenscoord[3], lenscoord[2], lenscoord[1],outline="blue")
                     if askyesno("Satisfied ?", "I can write the coordinates of the lensregion in settings.py if you wish"):
                         settings = os.path.join(configdir, "settings.py")
-                        set = open(settings,"r")
+                        set = open(settings, "r")
                         set_c = set.read()
                         set_line = set_c.split("\n")
                         set.close()
