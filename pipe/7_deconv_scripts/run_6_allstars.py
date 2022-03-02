@@ -1,6 +1,14 @@
-exec (open("../config.py").read())
+import sys
 import os
-from variousfct import *
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import python, configdir
+from modules.variousfct import proquest
 import star
 
 
@@ -12,5 +20,5 @@ print([star.name for star in photomstars])
 proquest(True)
 
 
-for star in photomstars :
-    os.system(f"{python} 6_readout.py " + star.name)
+for s in photomstars :
+    os.system(f"{python} 6_readout.py " + s.name)

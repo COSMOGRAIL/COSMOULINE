@@ -1,6 +1,14 @@
-exec (open("../config.py").read())
+import sys
 import os
-from variousfct import *
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import python, configdir, settings
+from modules.variousfct import proquest
 import star
 
 
@@ -11,28 +19,21 @@ print("I will run a full deconvolution for the following stars:")
 print([star.name for star in photomstars])
 proquest(True)
 
-if thisisatest == False:
+if settings['thisisatest'] == False:
     print("Warning : This is NOT a test !")
-    print("You did not forget to update your photomstar.cat with only the good stars, right ?")
+    print("You did not forget to update your photomstar.cat",
+          "with only the good stars, right ?")
     proquest(True)
     
 
-for star in photomstars :
-    os.system(f"{python} 1_prepfiles.py " + star.name)
-    os.system(f"{python} 2_applynorm_NU.py " + star.name)
-    os.system(f"{python} 3_fillinfile_NU.py "+ star.name)
-    os.system(f"{python} 4_deconv_NU.py "+ star.name)
-    os.system(f"{python} 5b_showptsrc_NU.py " + star.name)
-    os.system(f"{python} 5a_decpngcheck_NU.py "+ star.name)
+for s in photomstars :
+    os.system(f"{python} 1_prepfiles.py " + s.name)
+    os.system(f"{python} 2_applynorm_NU.py " + s.name)
+    os.system(f"{python} 3_fillinfile_NU.py "+ s.name)
+    os.system(f"{python} 4_deconv_NU.py "+ s.name)
+    os.system(f"{python} 5b_showptsrc_NU.py " + s.name)
+    os.system(f"{python} 5a_decpngcheck_NU.py "+ s.name)
     
-    if computer == "regor4" :
-        if not os.path.exists(visudir + "/dec_psf_" + decpsfnames[0] + "/dec_" + star.name):
-            os.makedirs(visudir + "/dec_psf_" + decpsfnames[0] + "/dec_" + star.name)
-            print(visudir + "/dec_psf_" + decpsfnames[0] + "/dec_" + star.name)
 
-        print("I'll copy the png to your visudir !")
-        key = "dec_" + decname + "_" + star.name + "_" + decnormfieldname + "_" + "_".join(decpsfnames)
-        os.system("cp "+workdir+"/"+key+ "_png/"+"0*.png " + visudir + "/dec_psf_" + decpsfnames[0] + "/dec_" + star.name)
-
-if thisisatest == False: 
+if settings['thisisatest'] == False: 
     print("You can now check the png and readout the good stars.")
