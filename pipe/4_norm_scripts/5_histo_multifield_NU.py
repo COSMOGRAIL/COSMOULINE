@@ -23,7 +23,7 @@ from modules.kirbybase import KirbyBase
 savefigs = settings['savefigs']
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 allimages = db.select(imgdb, ["gogogo"], [True], returnType='dict', sortFields=['mjd'])
 	
 for (fieldname, plotrange) in [("medcoeff", [0.5, 3.0]), ("skylevel", [0.0, 10000.0]), ("seeing", [0.5, 3.0]), ("ell", [0.0, 0.5])]:

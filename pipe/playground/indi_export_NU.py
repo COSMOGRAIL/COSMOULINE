@@ -43,7 +43,7 @@ print("My basename : %s" % (filename))
 readme = ["This is the automatic readme file for\n%s\n" %  pklfilepath]
 
 # We do only one select :
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(databasepath, ['recno'], ['*'], sortFields=['setname', 'mjd'], returnType='dict')
 mjdsortedimages = sorted(images, key=lambda k: k['mjd'])
 
@@ -56,7 +56,7 @@ telescopes = sorted(list(set([image["telescopename"] for image in images])))
 setnames = sorted(list(set([image["setname"] for image in images])))
 
 readme.append("Telescopes : %s" % ",".join(telescopes))
-readme.append("Setnames : %s" % ",".join(setnames))
+readme.append("setnames : %s" % ",".join(setnames))
 
 
 #readme.append("Ref image name : %s " % refimgname)

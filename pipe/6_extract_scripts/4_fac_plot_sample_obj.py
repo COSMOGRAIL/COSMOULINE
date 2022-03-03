@@ -29,7 +29,7 @@ from modules.kirbybase import KirbyBase
 
 workdir = settings['workdir']
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 workdir = Path(workdir) 
 keydir  = workdir / objkey
 allimages = db.select(imgdb, ['gogogo', 'treatme'], 

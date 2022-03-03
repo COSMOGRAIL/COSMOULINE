@@ -15,7 +15,7 @@ from config import dbbudir, imgdb, settings, testlist
 from modules.variousfct import proquest, readimagelist, mterror, backupfile
 from modules.kirbybase import KirbyBase
 
-db = KirbyBase()  
+db = KirbyBase(imgdb)  
 
 askquestions = settings['askquestions']
 setnames = settings['setnames']
@@ -41,7 +41,6 @@ proquest(askquestions)
 
 # Check the input list for typos ...
 # i.e. if all these images do exist in our database !
-db = KirbyBase()
 allimages = db.select(imgdb, ['recno'], ['*'], returnType='dict')
 allnames = [image['imgname'] for image in allimages]
 

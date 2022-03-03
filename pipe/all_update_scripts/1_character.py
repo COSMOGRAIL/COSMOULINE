@@ -10,7 +10,7 @@ from headerstuff import *
 print("I will update the database with new images in set %s, telescope %s from %s" %(setname, telescopename, rawdir))
 print("")
 nimages = len(glob.glob(os.path.join(rawdir, "*.fits")))
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['recno'], ['*'],['setname'], returnType='dict')
 nimagesindb = len([image for image in images if image['setname'] == setname])
 print("I have %i images in the database for set %s"%(nimagesindb, setname))

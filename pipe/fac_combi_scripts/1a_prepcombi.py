@@ -51,9 +51,9 @@ proquest(askquestions)
 
 backupfile(imgdb, dbbudir, "combine_" + combiname)
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
-if thisisatest:
+if settings['thisisatest']:
 	print("This is a test : I will combine the images from the testlist, disregarding your criteria !")
 	listimages = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 	imgrefdict = db.select(imgdb, ['imgname'], [refimgname], returnType='dict')

@@ -52,7 +52,7 @@ print("Done.")
 print("- "*40)
 
 print("Checking field types ...")
-db = KirbyBase()
+db = KirbyBase(imgdb)
 output = db.validate(database)
 
 if len(output) == 0:

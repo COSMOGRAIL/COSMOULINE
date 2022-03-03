@@ -25,7 +25,7 @@ print(xephemlens.split(',')[0])
 print("Number of point sources : %i" % len(ptsources))
 print("Names of sources : %s" % ", ".join([s.name for s in ptsources]))
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, [deckeyfilenum,'gogogo'], ['\d\d*', True], returnType='dict', useRegExp=True, sortFields=['mjd'])
 print('I have %i deconvolved images'%len(images))
 dic = []

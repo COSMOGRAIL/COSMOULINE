@@ -19,7 +19,7 @@ sexphotomname = settings['sexphotomname']
 savefigs = settings['savefigs']
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields = ["mhjd"])
 
 if settings['update']:

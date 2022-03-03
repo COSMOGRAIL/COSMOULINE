@@ -19,7 +19,7 @@ from modules.readandreplace_fct import justread, justreplace
 from modules import star
 from settings_manager import importSettings
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 askquestions = settings['askquestions']
 decobjname = settings['decobjname']

@@ -8,7 +8,7 @@ from variousfct import *
 
 fields = ['setname', 'imgname','testcomment']
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 report = db.select(imgdb, ['testlist'], ['True'], fields, sortFields=['setname', 'imgname'], returnType='report')
 images = db.select(imgdb, ['testlist'], ['True'], returnType='dict')
 

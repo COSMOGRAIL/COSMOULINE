@@ -15,7 +15,7 @@ from variousfct import *
 fields = ['imgname', renormname, renormerrfieldname, renormcommentfieldname]
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 reporttxt = ""
 
 usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], ['*'], ['setname'])])

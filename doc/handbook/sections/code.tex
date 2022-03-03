@@ -25,7 +25,7 @@ proquest(askquestions)	# askquestions is a boolean flag set in config.py :
 To select some images :
 
 \begin{lstlisting}
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], sortFields=['mjd'], returnType='dict')
 # imgdb : the path to database.dat
 # ['gogogo', 'treatme'] : the fields on which you want to select

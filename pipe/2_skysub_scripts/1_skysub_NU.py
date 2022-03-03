@@ -21,7 +21,7 @@ from datetime import datetime
 askquestions = settings['askquestions']
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 if settings['thisisatest']:
 	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo','treatme','testlist'], [True, True, True], returnType='dict')

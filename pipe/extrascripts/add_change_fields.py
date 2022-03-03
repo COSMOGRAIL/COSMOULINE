@@ -11,7 +11,7 @@ proquest(askquestions)
 
 backupfile(imgdb, dbbudir, "addchangefield")
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 #db.addFields(imgdb, ['geomapscale:float'])
 

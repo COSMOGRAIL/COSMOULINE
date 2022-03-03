@@ -27,7 +27,7 @@ uselinks = settings['uselinks']
 # As we will tweak the database, let's do a backup
 backupfile(imgdb, dbbudir, "alignimages")
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['gogogo','treatme'], [True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
 
 

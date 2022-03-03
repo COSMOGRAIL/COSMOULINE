@@ -6,7 +6,7 @@ exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 # we get a list of all image names
 namelist = [image[0] for image in db.select(imgdb, ['recno'], ['*'], ['imgname'])]

@@ -4,7 +4,7 @@ from kirbybase import KirbyBase, KBError
 from variousfct import *
 from pylab import *
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['gogogo'], [True], returnType='dict')
 
 

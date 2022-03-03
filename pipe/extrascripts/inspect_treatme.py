@@ -7,7 +7,7 @@ exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 usedsetnames = [x[0] for x in db.select(imgdb, ['recno'], ['*'], ['setname'])]
 gogogotrue = [x[0] for x in db.select(imgdb, ['gogogo'], [True], ['setname'])]

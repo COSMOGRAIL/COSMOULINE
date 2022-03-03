@@ -24,7 +24,7 @@ ptsources = star.readmancat(ptsrccat)
 print("Number of point sources : %i" % len(ptsources))
 print("Names of sources : %s" % ", ".join([s.name for s in ptsources]))
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=['mjd'])
 print("%i images" % len(images))
 

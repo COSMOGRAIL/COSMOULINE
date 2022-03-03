@@ -23,7 +23,7 @@ askquestions = settings['askquestions']
 workdir = settings['workdir']
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 
 def sigmaclipandreplace(data, sigmas=[0.5, 1.2], nit=2):

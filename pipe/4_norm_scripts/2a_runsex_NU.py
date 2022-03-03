@@ -20,7 +20,7 @@ from variousfct import notify, proquest, nicetimediff
 askquestions = settings['askquestions']
 # We select the images to treat
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 if settings['update']:
 	print("This is an update")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], 

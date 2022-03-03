@@ -1,5 +1,6 @@
 import sys
 import os
+from subprocess import call
 if sys.path[0]:
     # if ran as a script, append the parent dir to the path
     sys.path.append(os.path.dirname(sys.path[0]))
@@ -21,4 +22,4 @@ proquest(True)
 
 
 for s in photomstars :
-    os.system(f"{python} 6_readout.py " + s.name)
+    call([python, "6_readout.py", s.name])

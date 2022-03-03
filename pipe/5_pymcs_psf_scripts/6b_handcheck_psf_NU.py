@@ -54,7 +54,7 @@ then it closes the window.
 """
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 
 if settings['thisisatest']:

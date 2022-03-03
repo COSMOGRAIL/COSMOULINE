@@ -9,7 +9,7 @@ from headerstuff import *
 print("I will update the database with new images in set %s, telescope %s from %s" %(setname, telescopename, rawdir))
 print("Note that I will use the normal sky substraction")
 print("")
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['gogogo','treatme','updating'], [True, True, True], returnType='dict')
 nbrofimages = len(images)
 print("Number of images to treat :", nbrofimages)

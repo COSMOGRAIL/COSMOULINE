@@ -1,6 +1,6 @@
 exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 import matplotlib.pyplot as plt
 import numpy as np

@@ -16,7 +16,7 @@ from modules.variousfct import proquest, notify, nicetimediff
 from modules.kirbybase import KirbyBase
 from settings_manager import importSettings
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 askquestions = settings['askquestions']
 workdir = settings['workdir']

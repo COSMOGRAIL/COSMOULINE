@@ -19,7 +19,7 @@ from modules.kirbybase import KirbyBase
 from modules import star
 from settings_manager import importSettings
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 askquestions = settings['askquestions']
 decnormfieldname = settings['decnormfieldname']

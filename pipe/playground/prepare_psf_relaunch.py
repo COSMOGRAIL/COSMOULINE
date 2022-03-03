@@ -25,7 +25,7 @@ print("Please edit the source before running me.")
 proquest(askquestions)
 
 backupfile(imgdb, dbbudir, "prepare_psf_relaunch")
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 
 origdir = os.getcwd()

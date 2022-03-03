@@ -16,7 +16,7 @@ from modules.variousfct import proquest, mcsname, notify
 from modules.kirbybase import KirbyBase
 from settings_manager import importSettings
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 askquestions = settings['askquestions']
 refimgname_per_band = settings['refimgname_per_band']

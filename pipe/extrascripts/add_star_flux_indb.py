@@ -30,7 +30,7 @@ proquest(askquestions)
 backupfile(imgdb, dbbudir, 'add_star_flux_%s' %startoadd)
 
 	# select images to treat
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 
 

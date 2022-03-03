@@ -12,6 +12,9 @@ from modules.variousfct import proquest
 import star
 
 
+
+PARALLEL = True
+
 photomstarscatpath = os.path.join(configdir, "photomstars.cat")
 photomstars = star.readmancat(photomstarscatpath)
 
@@ -26,7 +29,7 @@ if settings['thisisatest'] == False:
     proquest(True)
     
 
-for s in photomstars :
+def runAll(s):
     os.system(f"{python} 1_prepfiles.py " + s.name)
     os.system(f"{python} 2_applynorm_NU.py " + s.name)
     os.system(f"{python} 3_fillinfile_NU.py "+ s.name)
@@ -34,6 +37,16 @@ for s in photomstars :
     os.system(f"{python} 5b_showptsrc_NU.py " + s.name)
     os.system(f"{python} 5a_decpngcheck_NU.py "+ s.name)
     
+if PARALLEL:
+    def main():
+        from multiprocessing import Pool
+        pool = Pool(3)
+        pool.map(runAll, photomstars)
+else:
+    def main():
+        for s in photomstars :
+            runAll(s)
 
+main()
 if settings['thisisatest'] == False: 
     print("You can now check the png and readout the good stars.")

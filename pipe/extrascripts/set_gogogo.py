@@ -20,7 +20,7 @@ proquest(askquestions)
 
 backupfile(imgdb, dbbudir, "imgkickgogogoFalse")
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['recno'], ['*'], returnType='dict')
 
 

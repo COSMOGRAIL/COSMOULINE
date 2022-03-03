@@ -11,7 +11,7 @@ from variousfct import *
 
 remove = input("Type a field substring you want to remove : ")
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 currentfields = db.getFieldNames(imgdb)
 currenttypes = db.getFieldTypes(imgdb)
 

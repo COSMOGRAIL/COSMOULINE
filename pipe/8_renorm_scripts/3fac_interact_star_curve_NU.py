@@ -24,7 +24,7 @@ deckey = sys.argv[1]
 sourcename = sys.argv[2]
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 allimages = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['mjd'])
 print("%i images in total." % len(allimages))
 

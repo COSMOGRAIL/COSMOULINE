@@ -53,10 +53,10 @@ if not os.path.isdir(lookbackdir):
 	os.mkdir(lookbackdir)
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 # We sort by setname, then by mhjd. So we will group sets together. Later code could rely on this sorting, so keep it like this please.
-if thisisatest:
+if settings['thisisatest']:
 	print("This is a test run.")
 	images = db.select(imgdb, [deckeyfilenum, 'testlist'], ['\d\d*', True], returnType='dict', useRegExp=True, sortFields=['setname', 'mhjd'])
 else:

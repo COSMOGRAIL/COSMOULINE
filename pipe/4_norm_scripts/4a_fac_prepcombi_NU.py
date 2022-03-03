@@ -21,7 +21,7 @@ print(("Name of combination: %s" % combibestname))
 combidir = os.path.join(workdir, combibestkey)
 f = open(os.path.join(workdir, combibestkey + '_log.txt'), 'w')
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 if settings['thisisatest']:
 	print("This is a test : I will combine the images from the testlist, disregarding your criteria !")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])

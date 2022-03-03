@@ -32,7 +32,7 @@ Put the images you don't like in the skiplist
 
 pngdir = os.path.join(settings['workdir'], 'imgpngs')
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 
 if settings['thisisatest']:

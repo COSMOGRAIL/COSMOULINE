@@ -34,7 +34,7 @@ print("using the sources")
 for renormsource in renormsources:
 	print(renormsource)
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 # Sort them like this, to ensure that points of one night are side by side (looks better on graphs ...)
 allimages = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname', 'mhjd'])

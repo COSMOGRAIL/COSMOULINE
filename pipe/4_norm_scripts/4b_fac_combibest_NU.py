@@ -23,7 +23,7 @@ else:
 from config import settings, combibestkey, imgdb
 from modules.variousfct import proquest, mterror
 from modules.kirbybase import KirbyBase
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 
 askquestions = settings['askquestions']

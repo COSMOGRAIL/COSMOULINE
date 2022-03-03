@@ -9,7 +9,7 @@ import numpy as np
 #import matplotlib.dates
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=['mjd'])
 
 refimage = [image for image in images if image["imgname"]==refimgname][0]

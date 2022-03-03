@@ -20,7 +20,7 @@ fields = ['imgname', 'seeing', 'nbralistars', 'geomaprms', 'medcoeff', 'nbrcoeff
 
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 reporttxt = ""
 
 usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], ['*'], ['setname'])])

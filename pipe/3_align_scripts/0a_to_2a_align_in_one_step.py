@@ -112,7 +112,7 @@ def main():
     # As we will tweak the database, let's do a backup
     backupfile(imgdb, dbbudir, "before_alignimages_onestep")
 
-    db = KirbyBase()
+    db = KirbyBase(imgdb)
     if settings['thisisatest']:
         print("This is a test.")
         images = db.select(imgdb, ['gogogo','treatme', 'testlist'],

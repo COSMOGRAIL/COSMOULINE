@@ -16,7 +16,7 @@ import shutil
 
 print("I will update the database with new images in set %s, telescope %s from %s" %(setname, telescopename, rawdir))
 print("")
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname', 'mjd'])
 nbrofimages = len(images)
 print("Number of images to treat :", nbrofimages)

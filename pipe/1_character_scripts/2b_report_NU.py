@@ -22,7 +22,7 @@ fields = ['imgname', 'datet','calctime', 'mhjd', 'airmass', 'moonpercent', \
           'moondist', 'moonalt', 'sunalt', 'sundist']
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 reporttxt = ""
 
 usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], 

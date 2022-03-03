@@ -27,7 +27,7 @@ askquestions = settings['askquestions']
 workdir = settings['workdir']
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 
 

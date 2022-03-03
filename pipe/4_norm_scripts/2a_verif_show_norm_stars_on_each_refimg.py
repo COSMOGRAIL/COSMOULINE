@@ -32,7 +32,7 @@ emptyregion = settings['emptyregion']
 
 
 # Read reference image info from database
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 refimgname_per_band = settings['refimgname_per_band']
 bandswithref = set(refimgname_per_band.values())

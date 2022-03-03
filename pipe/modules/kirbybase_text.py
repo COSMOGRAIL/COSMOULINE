@@ -10,7 +10,7 @@ Classes:
 Example:
     from db import *
 
-    db = KirbyBase()
+    db = KirbyBase(imgdb)
     db.create('plane.tbl', ['name:str', 'country:str', 'speed:int',
      'range:int'])
     db.insert('plane.tbl', ['P-51', 'USA', 403, 1201])
@@ -274,7 +274,7 @@ class KirbyBase:
     #----------------------------------------------------------------------
     # init
     #----------------------------------------------------------------------
-    def __init__(self, type='local', host=None, port=None):
+    def __init__(self, dbname, type='local', host=None, port=None):
         """Create an instance of the database and return a reference to it.
 
         Keyword Arguments:
@@ -572,7 +572,7 @@ class KirbyBase:
             # is embedded in a string representation of the database
             # command (i.e. "db.update('plane', ['recno'], [45], 
             # recordObject)").  So, what I did to get it working was, I 
-            # check to see if updates is a record object.  If it is, I grab 
+            # check to see if settings['update']s is a record object.  If it is, I grab 
             # the object's internal dictionary (__dict__) that holds all of 
             # the attributes and I send this as part of the expression 
             # string, instead of sending the object itself.
@@ -601,7 +601,7 @@ class KirbyBase:
         if filter:
             if isinstance(updates, list):
                 pass
-            # If updates is a dictionary, user cannot specify a filter,
+            # if settings['update']s is a dictionary, user cannot specify a filter,
             # because the keys of the dictionary will function as the
             # filter.
             elif isinstance(updates, dict):
@@ -612,25 +612,25 @@ class KirbyBase:
                  'object.')
 
         else:
-            # If updates is a list and no update filter
+            # if settings['update']s is a list and no update filter
             # fields were specified, that means user wants to update
             # all fields in record, so we set the filter list equal
             # to the list of field names of table, excluding the recno
             # field, since user is not allowed to update recno field.
             if isinstance(updates, list): filter = self.field_names[1:]
 
-        # If updates is a list, do nothing because it is already in the
+        # if settings['update']s is a list, do nothing because it is already in the
         # proper format and filter has either been supplied by the user
         # or populated above.
         if isinstance(updates, list): pass
-        # If updates is a dictionary, we are going to convert it into an
+        # if settings['update']s is a dictionary, we are going to convert it into an
         # updates list and a filters list.  This will allow us to use the
         # same routines for validation and updating.
         elif isinstance(updates, dict):
             filter = [k for k in list(updates.keys()) if k in 
              self.field_names[1:]]
             updates = [updates[i] for i in filter]
-        # If updates is an object, we are going to convert it into an
+        # if settings['update']s is an object, we are going to convert it into an
         # updates list and a filters list.  This will allow us to use the
         # same routines for validation and updating.
         else:
@@ -1636,7 +1636,7 @@ class KirbyBase:
 
         # Make sure each update is of the proper type.
         for update, field_name in zip(updates, filter):
-            if update in ['', None]: pass
+            if settings['update'] in ['', None]: pass
             elif type(update) != self.field_types[
              self.field_names.index(field_name)]:
                 raise KBError("Invalid update value for %s" % field_name)

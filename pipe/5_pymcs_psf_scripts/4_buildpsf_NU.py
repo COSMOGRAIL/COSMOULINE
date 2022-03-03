@@ -120,7 +120,7 @@ def main():
                                                 "template_pyMCS_psf_config.py"))
 
     # Select images to treat
-    db = KirbyBase()
+    db = KirbyBase(imgdb)
     
     # we extract the PSF for each band (setname) separately. 
     usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], 

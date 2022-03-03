@@ -19,7 +19,7 @@ from modules.kirbybase import KirbyBase
 from modules import star, f2n
 from settings_manager import importSettings
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 askquestions = settings['askquestions']
 workdir = settings['workdir']
@@ -69,7 +69,6 @@ for deckey, decskiplist, deckeyfilenum, setname, ptsrccat, \
     
     
     
-    db = KirbyBase()
     if sample_only :
         print("I will draw the png only for your test sample.")
         images = db.select(imgdb, [deckeyfilenum, 'testlist'], 

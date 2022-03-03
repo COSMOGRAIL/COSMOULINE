@@ -11,7 +11,7 @@ import sys
 proquest(askquestions)
 
 #backupfile(imgdb, dbbudir, "modiffield")
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['treatme'], [True], returnType='dict')
 
 print(len(images))

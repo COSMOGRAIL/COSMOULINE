@@ -17,7 +17,7 @@ from modules.kirbybase import KirbyBase
 fields = ['imgname', 'seeingpixels', 'seeing', 'ell', 'goodstars']
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 reporttxt = ""
 
 usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], 

@@ -20,7 +20,7 @@ from datetime import datetime
 askquestions = settings['askquestions']
 uselinks = settings['uselinks']
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
 
 nbrimages = len(images)

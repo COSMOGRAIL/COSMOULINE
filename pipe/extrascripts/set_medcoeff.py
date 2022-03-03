@@ -18,7 +18,7 @@ proquest(askquestions)
 
 backupfile(imgdb, dbbudir, "setmedcoeff")
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict') # selects according to treatme
 print("I will treat " + str(len(images)) + " images.")
 for image in images:

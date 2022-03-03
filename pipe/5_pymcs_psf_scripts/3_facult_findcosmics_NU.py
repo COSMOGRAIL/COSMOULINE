@@ -119,7 +119,7 @@ def main():
     ###########
 
     # Select images to treat
-    db = KirbyBase()
+    db = KirbyBase(imgdb)
 
     if settings['thisisatest'] :
         print("This is a test run.")

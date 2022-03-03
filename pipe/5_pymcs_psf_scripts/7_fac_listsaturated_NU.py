@@ -20,7 +20,7 @@ This script can be used anytime during the PSF
 maxpixelvaluecoeff = settings['maxpixelvaluecoeff']
 askquestions = settings['askquestions']
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 
 print("psfkey =", psfkey)

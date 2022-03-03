@@ -3,7 +3,7 @@ exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 #images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=['setname', 'mhjd'])
 

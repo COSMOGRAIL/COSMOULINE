@@ -23,15 +23,19 @@ configdir = "/run/media/fred/backup_storage/PSJ0147+4630/CONFIG/rp/"
 
 
 import os
-import shutil
 import sys
 
 # to get access to all our modules without installing anything :
 sys.path.append(os.path.join(pipedir, "modules"))
 
 # Read "global parameters" of the lens / deconvolution :
-print(os.path.join(configdir, "settings.py"))
-exec(compile(open(os.path.join(configdir, "settings.py"), "rb").read(), os.path.join(configdir, "settings.py"), 'exec'))
+# also I want to get rid of the global variables everywhere.
+# add the config dir to the path. (Later use a json for the config)
+sys.path.append(configdir)
+# Read "global parameters" of the lens / deconvolution :
+# print(os.path.join(configdir, "settings.py"))
+# exec(compile(open(os.path.join(configdir, "settings.py"), "rb").read(), os.path.join(configdir, "settings.py"), 'exec'))
+import settings
 
 # sometimes we call python from inside the scripts.
 python = "python"
@@ -79,7 +83,7 @@ prefix = ""
 extractexe = prefix + os.path.join(mcsf77dir, "extract.exe")
 psfexe = prefix + os.path.join(mcsf77dir, "psf.exe")
 deconvexe = prefix + os.path.join(mcsf77dir, "deconv.exe")
-if silencemcs == True:
+if settings.silencemcs == True:
     psfexe = prefix + os.path.join(mcsf77dir, "psf_silence.exe")
     deconvexe = prefix + os.path.join(mcsf77dir, "deconv_silence.exe")
 
@@ -92,12 +96,12 @@ if silencemcs == True:
 
 
 # The database of the images, fundamental for all scripts :
-imgdb = os.path.join(workdir, "database.dat")    # This will be a nice KirbyBase.
-dbbudir = os.path.join(workdir, "backups")    # The database is automatically backuped here.
+imgdb = os.path.join(settings.workdir, "database.dat")    # This will be a nice KirbyBase.
+dbbudir = os.path.join(settings.workdir, "backups")    # The database is automatically backuped here.
 
 
-alidir = os.path.join(workdir, "ali/")        # Alignment etc is done here
-plotdir = os.path.join(workdir, "plots/")    # Some plots will go here (not used anymore)
+alidir = os.path.join(settings.workdir, "ali/")        # Alignment etc is done here
+plotdir = os.path.join(settings.workdir, "plots/")    # Some plots will go here (not used anymore)
 
 # Image lists (line format : imgname comment (you can leave blank lines and use "#" to comment a line !)) :
 
@@ -120,20 +124,20 @@ normstarscat = os.path.join(configdir, "normstars.cat")
 
 #------------------------ BEST IMAGE COMBINATION ---------------------------
 
-combibestkey = "combi_" + combibestname
+combibestkey = "combi_" + settings.combibestname
 
 
 #------------------------ COMBINATION BY NIGHT ------------------------------
 
-combinightdirname = 'combinight_' +combinightname
+combinightdirname = 'combinight_'  + settings.combinightname
 
-combinightdirpath = os.path.join(workdir, combinightdirname)
+combinightdirpath = os.path.join(settings.workdir, combinightdirname)
 
 
 #------------------------ PSF CONSTRUCTION ---------------------------------
 
-psfkey = "psf_" + psfname        # Don't touch (all this is hard-coded in the first dec prepfiles script !)
-psfdir = os.path.join(workdir, psfkey)    # Don't touch
+psfkey = "psf_" + settings.psfname        # Don't touch (all this is hard-coded in the first dec prepfiles script !)
+psfdir = os.path.join(settings.workdir, psfkey)    # Don't touch
 psfkeyflag = "flag_" + psfkey        # Don't touch
 psfcosmicskey = psfkey + "_cosmics"    # Don't touch
 
@@ -146,16 +150,16 @@ psfkicklist = os.path.join(configdir, psfkey + "_skiplist.txt")
 
 #------------------------ OBJECT EXTRACTION --------------------------------
 # single extraction
-objkey = "obj_" + objname        # Don't touch, it would screw more than you can think of ! (dec preparation + png + lookback + ...)
-objdir = os.path.join(workdir, objkey)    # Don't touch, idem...
+objkey = "obj_" + settings.objname        # Don't touch, it would screw more than you can think of ! (dec preparation + png + lookback + ...)
+objdir = os.path.join(settings.workdir, objkey)    # Don't touch, idem...
 objkeyflag = "flag_" + objkey    # Don't touch
 objcosmicskey = objkey + "_cosmics" # Don't touch
 
 objcoordcat = os.path.join(configdir, objkey + ".cat")
 
 # multiple serial extractions
-objkeys = ["obj_" + objname for objname in objnames] # Don't touch my tralala
-objdirs = [os.path.join(workdir, o) for o in objkeys]
+objkeys = ["obj_" + objname for objname in settings.objnames] # Don't touch my tralala
+objdirs = [os.path.join(settings.workdir, o) for o in objkeys]
 objkeyflags = ["flag_" + o for o in objkeys]
 objcosmicskeys = [o + "_cosmics" for o in objkeys]
 objcoordcats = [os.path.join(configdir, o + ".cat") for o in objkeys]
@@ -164,7 +168,7 @@ objcoordcats = [os.path.join(configdir, o + ".cat") for o in objkeys]
 #------------------------ DECONVOLUTION ------------------------------------
 
         # I like to do many deconvolutions... we could choose an explicit deckey like :
-deckey = "dec_" + decname + "_" + decobjname + "_" + decnormfieldname + "_" + "_".join(decpsfnames)
+deckey = "dec_" + settings.decname + "_" + settings.decobjname + "_" + settings.decnormfieldname + "_" + "_".join(settings.decpsfnames)
         # Or, if you prefer, just use decname (but then you should write down what you did !)
 #deckey = decname
 
@@ -174,14 +178,14 @@ deckeyfilenum = "decfilenum_" + deckey                 # the name of the field t
 deckeypsfused = "decpsf_" + deckey                 # the name of the field to contain the used psfname for "this particular image"
 deckeynormused = "decnorm_" + deckey                # the name of the field to contain the normalization coeff that was actually used
                             # Don't even think of changing this last one (hard coded in : renorm)
-decdir = os.path.join(workdir, deckey)                # where the deconvolution will be done
+decdir = os.path.join(settings.workdir, deckey)                # where the deconvolution will be done
 
 
 
 #------------------------ RENORMALZATION -----------------------------------
 
-renormerrfieldname = renormname + "_err"
-renormcommentfieldname = renormname + "_comment"
+renormerrfieldname = settings.renormname + "_err"
+renormcommentfieldname = settings.renormname + "_comment"
 
 
 #---------------------------------------------------------------------------
@@ -210,9 +214,9 @@ if not os.path.isdir(pipedir):
 if not os.path.isdir(configdir):
     print(configdir)
     sys.exit("Your configdir does not exist !")
-if not os.path.isdir(workdir):
-    print(workdir)
-    sys.exit("Your workdir does not exist !")
+if not os.path.isdir(settings.workdir):
+    print(settings.workdir)
+    sys.exit("Your settings.workdir does not exist !")
 
 
 if not os.path.isdir(alidir):

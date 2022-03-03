@@ -24,7 +24,7 @@ askquestions = settings['askquestions']
 sexphotomname = settings['sexphotomname']
 
 # Selecting the images
-db = KirbyBase()
+db = KirbyBase(imgdb)
 if settings['update']:
 	print("This is an update.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict')

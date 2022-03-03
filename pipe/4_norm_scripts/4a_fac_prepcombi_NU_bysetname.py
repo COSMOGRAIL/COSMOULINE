@@ -37,7 +37,7 @@ print("Name of combination: %s" % combibestname)
 
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], ['*'], ['setname'])])
 

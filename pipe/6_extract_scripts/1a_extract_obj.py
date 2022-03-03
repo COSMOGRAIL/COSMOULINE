@@ -41,7 +41,7 @@ def extractObj(objkey, objcoordcat, objdir, objkeyflag, objcosmicskey):
     config.py
 
     """
-    db = KirbyBase()
+    db = KirbyBase(imgdb)
     
     print("objkey =", objkey)
         
@@ -59,7 +59,6 @@ def extractObj(objkey, objcoordcat, objdir, objkeyflag, objcosmicskey):
     
     
     # select images to extract from
-    db = KirbyBase()
     
     usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], 
                                                 ['*'], ['setname'])])

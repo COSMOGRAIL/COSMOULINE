@@ -94,7 +94,7 @@ print("You can configure some lines right at the beginning of this script.")
 
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 
 images = db.select(imgdb, ['gogogo', 'treatme'], 

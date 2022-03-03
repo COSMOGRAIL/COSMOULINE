@@ -13,6 +13,8 @@
 import progressbar
 import numpy as np
 import scipy
+# in some scipy versions, need to import this explicitly:
+import scipy.ndimage
 import sys
 import os
 if sys.path[0]:
@@ -29,7 +31,7 @@ from modules.readandreplace_fct import readouttxt
 from modules import star
 from settings_manager import importSettings
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 askquestions = settings['askquestions']
 workdir = settings['workdir']
@@ -78,7 +80,8 @@ for deckey, decskiplist, deckeyfilenum, setname, ptsrccat, \
                 deckeypsfuseds, deckeynormuseds, decdirs):
                 
     refimgname = refimgname_per_band[setname]
-    # We select only the images that are deconvolved (and thus have a deckeyfilenum)
+    # We select only the images that are deconvolved 
+    # (and thus have a deckeyfilenum)
     images = db.select(imgdb, [deckeyfilenum], 
                               ['\d\d*'], 
                               returnType='dict', 
@@ -87,7 +90,8 @@ for deckey, decskiplist, deckeyfilenum, setname, ptsrccat, \
     # We duplicate the ref image, this will be easier for the output reading.
     refimage = [image for image in images if image['imgname'] == refimgname][0]
     images.insert(0, refimage.copy()) # This copy is important !!!
-    images[0][deckeyfilenum] = mcsname(1) # The duplicated ref image gets number 1
+    # The duplicated ref image gets number 1:
+    images[0][deckeyfilenum] = mcsname(1) 
     
     nbimg = len(images)
     print(f"Number of images (including duplicated reference) : {nbimg}")
@@ -246,7 +250,8 @@ for deckey, decskiplist, deckeyfilenum, setname, ptsrccat, \
     for i, image in enumerate(images[1:]): # we skip the duplicated reference.
         pbar.update(i)
         db.update(imgdb, [deckeyfilenum],
-                  [image[deckeyfilenum]], image["updatedict"])
+                         [image[deckeyfilenum]], 
+                         image["updatedict"])
     
     pbar.finish()
     

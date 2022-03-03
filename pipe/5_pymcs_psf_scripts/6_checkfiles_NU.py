@@ -15,7 +15,7 @@ from config import settings, psfkeyflag, imgdb, psfkicklist, psfdir
 from modules.kirbybase import KirbyBase
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 if settings['update']:
 	images = db.select(imgdb, ['gogogo','treatme', 'updating', psfkeyflag], 
                               [True,True,True, True], 

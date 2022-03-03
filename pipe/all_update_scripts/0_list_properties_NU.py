@@ -24,13 +24,13 @@ else:
 	print("database exists...")
 
 # is this a test ?
-if thisisatest:
+if settings['thisisatest']:
 	mterror("The flag thisisatest is set to True. Change it to False")
 else:
 	print("thisisatest flag set to False...")
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
 
 #refimg exists ?

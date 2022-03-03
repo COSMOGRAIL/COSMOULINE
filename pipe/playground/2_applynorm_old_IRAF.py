@@ -14,7 +14,7 @@ print("deckey :", deckey) # this is a code that idendtifies this particular deco
 
 print("You want to normalize using :", decnormfieldname)
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=['setname', 'mjd']) # the \d\d* is a trick to select both 0000-like and 000-like
 # we select all images that have a deckeyfilenum

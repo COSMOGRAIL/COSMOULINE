@@ -115,7 +115,7 @@ proquest(settings['askquestions'])
 print("You did not forget to flip these images (if needed), right ?")
 proquest(settings['askquestions'])
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 if os.path.isfile(imgdb):
 

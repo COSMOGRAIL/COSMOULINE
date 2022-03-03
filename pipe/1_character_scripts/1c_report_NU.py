@@ -12,7 +12,7 @@ from config import imgdb, settings
 
 from modules.kirbybase import KirbyBase
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 fields = ['datet', 'mjd', 'imgname', 'telescopename', 'gain', 'gogogo']
 reporttxt = db.select(imgdb, ['recno'], 
                              ['*'], fields, 

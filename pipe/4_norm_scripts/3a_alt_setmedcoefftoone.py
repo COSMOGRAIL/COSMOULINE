@@ -24,7 +24,7 @@ proquest(askquestions)
 backupfile(imgdb, dbbudir, 'calccoeff')
 
 # Select images to treat
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 
 # We prepare the database

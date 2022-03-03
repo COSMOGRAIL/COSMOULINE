@@ -58,7 +58,7 @@ def fillnoise_aux(args):
 
 
 def main():
-    db = KirbyBase()
+    db = KirbyBase(imgdb)
     if settings['update']:
         print("This is an update.")
         images = db.select(imgdb, ['flagali', 'gogogo', 'treatme', 'updating'], ['==1', True, True, True],

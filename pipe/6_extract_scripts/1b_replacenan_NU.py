@@ -52,7 +52,7 @@ def replaceNaN(objkey, objkeyflag, objdir):
     # remember where we started from:
     origdir = os.getcwd()
     # select the images to treat:
-    db = KirbyBase()
+    db = KirbyBase(imgdb)
     images = db.select(imgdb, ['gogogo', 'treatme', objkeyflag], 
                               [True, True, True], 
                               returnType='dict')

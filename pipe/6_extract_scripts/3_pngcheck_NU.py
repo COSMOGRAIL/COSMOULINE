@@ -46,7 +46,7 @@ os.mkdir(pngdir)
 
 
 # Select images to treat
-db = KirbyBase()
+db = KirbyBase(imgdb)
 if settings['thisisatest'] :
 	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo', 'treatme', objkeyflag, 'testlist'], 

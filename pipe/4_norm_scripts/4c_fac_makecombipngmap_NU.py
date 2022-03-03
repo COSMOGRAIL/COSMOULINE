@@ -13,7 +13,7 @@ else:
 from config import alidir, alistarscat, settings, combibestkey, imgdb
 from modules.variousfct import proquest
 from modules.kirbybase import KirbyBase
-db = KirbyBase()
+db = KirbyBase(imgdb)
 from modules import star, f2n
 
 refimgname = settings['refimgname']
@@ -24,7 +24,7 @@ emptyregion = settings['emptyregion']
 xephemlens = settings['xephemlens']
 
 # Read reference image info from database
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 refimage = db.select(imgdb, ['imgname'], [refimgname], returnType='dict')
 refimage = refimage[0]

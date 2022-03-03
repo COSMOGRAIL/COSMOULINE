@@ -26,7 +26,7 @@ update = settings['update']
 redofromscratch = False
 manual = False
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 if settings['thisisatest']:
     print("This is a test run.")
     images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict',

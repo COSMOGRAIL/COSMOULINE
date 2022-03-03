@@ -17,7 +17,7 @@ norm_field = ['medcoeff' for s in ref_star]
 deckeyfilenum = "decfilenum_" + "dec_backfull_lens_renorm_abcdhij_abcdil"
 decpsfnames = ["abcdil"]
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, [deckeyfilenum,'gogogo'], ['\d\d*', True], returnType='dict', useRegExp=True, sortFields=['mjd'])
 key_list = ['mhjd']
 

@@ -73,7 +73,7 @@ else:
 	os.mkdir(pngdir)
 
 # We select the images to treat :
-db = KirbyBase()
+db = KirbyBase(imgdb)
 if settings['thisisatest'] :
 	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict', sortFields=['setname','mjd'])

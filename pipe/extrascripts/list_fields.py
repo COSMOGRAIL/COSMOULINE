@@ -1,7 +1,7 @@
 exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 currentfields = db.getFieldNames(imgdb)
 currenttypes = db.getFieldTypes(imgdb)

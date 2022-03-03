@@ -28,7 +28,7 @@ psfstars = star.readmancat(psfstarcat)
 
 
 # Select images to treat
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 
 if settings['thisisatest'] :

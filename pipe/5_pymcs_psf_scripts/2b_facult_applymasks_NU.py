@@ -51,7 +51,7 @@ if not update:
 		
 
 # Select images to treat
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 
 if settings['thisisatest'] :

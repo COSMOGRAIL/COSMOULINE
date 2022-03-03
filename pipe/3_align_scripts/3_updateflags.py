@@ -25,7 +25,7 @@ workdir = settings['workdir']
 backupfile(imgdb, dbbudir, "aliflagupdate")
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 nbdemotions = db.update(imgdb, ['flagali','treatme'], 
                                ['!=1','True'], 
                                [False, "Could not be aligned."],

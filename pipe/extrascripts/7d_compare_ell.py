@@ -13,7 +13,7 @@ pixscale = 0.2149
 # load the database
 lensname = workdir.split('/')[-1]
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', useRegExp=True, sortFields=['mjd'])
 

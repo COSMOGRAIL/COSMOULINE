@@ -8,7 +8,7 @@ from variousfct import *
 from pylab import * # matplotlib and NumPy etc
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 # We read this only once.
 images = db.select(imgdb, ['gogogo'], [True], returnType='dict')

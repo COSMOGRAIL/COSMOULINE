@@ -33,7 +33,7 @@ emptyregion = settings['emptyregion']
 # As we will tweak the database, do a backup first
 backupfile(imgdb, dbbudir, "imstat")
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 if settings['update']:
 	print("This is an update.")

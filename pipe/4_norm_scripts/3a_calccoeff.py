@@ -40,7 +40,7 @@ identtolerance = settings['identtolerance']
 # As we will tweak the database, do a backup first
 backupfile(imgdb, dbbudir, 'calccoeff')
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 
 

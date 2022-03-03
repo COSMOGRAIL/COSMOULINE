@@ -19,7 +19,7 @@ if os.path.isdir(pngdir):
 os.mkdir(pngdir)
 
 # We select the images to treat :
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['gogogo'], [False], returnType='dict', sortFields=['setname','mjd'])
 
 print("I will make pngs for %i rejected images." % len(images))

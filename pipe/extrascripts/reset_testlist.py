@@ -12,7 +12,7 @@ proquest(askquestions)
 
 backupfile(imgdb, dbbudir, "testlistreset")
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 if "testlist" in db.getFieldNames(imgdb) :
 	db.dropFields(imgdb, ['testlist', 'testcomment'])

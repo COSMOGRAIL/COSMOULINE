@@ -21,7 +21,7 @@ print('This will save some disk space, now that images are aligned...')
 print('You can rebuild these images at any time if needed.')
 
 # We select the images to treat :
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['recno'], ["*"], returnType='dict', sortFields=['setname','mjd'])
 
 nbrofimages = len(images)

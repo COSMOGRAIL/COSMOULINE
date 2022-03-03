@@ -26,7 +26,7 @@ from modules.variousfct import proquest, fromfits, tofits
 redofromscratch = False
 askquestions = settings["askquestions"]
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 if settings['thisisatest']:
     print("This is a test run!")

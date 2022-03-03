@@ -8,7 +8,7 @@ from pylab import * # matplotlib and NumPy etc
 #from numpy import *
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 data = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 
 hold(False)

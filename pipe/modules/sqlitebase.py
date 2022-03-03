@@ -32,11 +32,16 @@ SQLiteTypeTotype = {v:k for k,v in typeToSQLiteType.items()}
 DEBUG = False
 
 class KirbyBase():
-    def __init__(self):
+    def __init__(self, dbname):
         # unlike KirbyBase, can store multilpe tables in an SQlite base.
         # thus give a default one:
         self.defaulttable = "images"
         self.debug = DEBUG 
+        self.conn = sq.connect(dbname)
+       
+        
+    def __del__(self):
+        self.conn.close()
         
     def __str__(self):
         return "sqlite3 database interface"
@@ -60,7 +65,7 @@ class KirbyBase():
         if not (type(sqlstatements) is list):
             sqlstatements = [sqlstatements]
         
-        conn = sq.connect(dbname)
+        conn = self.conn
         results = []
         for sqlstatement in sqlstatements:
             if self.debug:
@@ -74,9 +79,8 @@ class KirbyBase():
                 cur.execute(sqlstatement)
                 result = cur.fetchall()
             results.append(result)
-        # at the end, commit our changes and close the connection:
+        # at the end, commit our changes
         conn.commit()
-        conn.close()
         if len(results) == 1:
             return results[0]
         return results
@@ -475,21 +479,27 @@ class KBError(Exception):
     
 
 if __name__ == "__main__":
-    minimaldbfields = ['imgname:str', 'treatme:bool', 'gogogo:bool', 'whynot:str', 'testlist:bool', 'testcomment:str',
-'telescopename:str', 'setname:str', 'rawimg:str',
-'scalingfactor:float', 'pixsize:float','date:str','datet:str','jd:str','mjd:float',
-'telescopelongitude:str', 'telescopelatitude:str', 'telescopeelevation:float',
-'exptime:float','gain:float', 'readnoise:float', 'rotator:float', 'saturlevel:float',
-'preredcomment1:str', 'preredcomment2:str', 'preredfloat1:float', 'preredfloat2:float']
+    minimaldbfields = ['imgname:str', 'treatme:bool', 'gogogo:bool', 
+                       'whynot:str', 'testlist:bool', 'testcomment:str',
+                       'telescopename:str', 'setname:str', 'rawimg:str',
+                       'scalingfactor:float', 'pixsize:float','date:str',
+                       'datet:str','jd:str','mjd:float',
+                       'telescopelongitude:str', 'telescopelatitude:str', 
+                       'telescopeelevation:float', 'exptime:float',
+                       'gain:float', 'readnoise:float', 'rotator:float', 
+                       'saturlevel:float',
+                       'preredcomment1:str', 'preredcomment2:str', 
+                       'preredfloat1:float', 'preredfloat2:float']
     dbname = "toast2.db"
-    db = KirbyBase()
+    db = KirbyBase(imgdb)
     db.create(dbname, minimaldbfields)
     db.addFields(dbname, ["imgname:str"])
     
     db.insert(dbname, {'imgname':'wow', 'gogogo':True, 'pixsize':0.25})
     
     print(db.select(dbname, ["recno"], ["*"], 
-                    filter=["recno", "imgname", "gogogo", "pixsize"], returnType='report'))
+                    filter=["recno", "imgname", "gogogo", "pixsize"], 
+                    returnType='report'))
     # db.dropFields(dbname, ["pixsize"])
     # print(db.select(dbname, ["recno"], ["*"], 
                     # filter=["recno", "imgname", "gogogo"], returnType='report'))

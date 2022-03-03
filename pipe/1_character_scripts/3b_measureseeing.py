@@ -31,7 +31,7 @@ forceseeingpixels = True
 if settings['checkplots']:
     import matplotlib.pyplot as plt
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 if settings['thisisatest']:
     print("This is a test !")
     images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], 

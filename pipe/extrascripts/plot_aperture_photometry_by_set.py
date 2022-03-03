@@ -42,7 +42,7 @@ catalog = 'obj_quasar.cat'
 sets= ['1']
 ref_images=["1_ECAM.2019-11-23T02:44:37.000"]
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 nbrofimages = len(images)
 print("I respect treatme, saturatedlist and other keywords defined in the script, and selected only %i images" % (nbrofimages))

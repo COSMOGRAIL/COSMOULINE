@@ -38,7 +38,7 @@ def airmass(radalt):
         return 1.0 / (math.sin(radalt) + .025*math.exp(-11.0*math.sin(radalt)))
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 if settings['update']:
     images = db.select(imgdb, ['gogogo','treatme', 'updating'], 

@@ -14,7 +14,7 @@ proquest(askquestions)
 
 
 backupfile(imgdb, dbbudir, "treatmeupdate")
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 # We do not have to select images first: directly update with a criteria !
 

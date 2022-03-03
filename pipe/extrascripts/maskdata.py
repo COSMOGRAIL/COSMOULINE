@@ -33,10 +33,10 @@ for i, s in enumerate(psfstars):
 		
 
 # Select images to treat
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 
-if thisisatest :
+if settings['thisisatest'] :
 	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 else :

@@ -30,7 +30,7 @@ import star
 import numpy as np
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 images = db.select(imgdb, ["gogogo", "treatme", "decfilenum_" + selectiondeckey], [True, True, '\d\d*'], returnType='dict', useRegExp=True)
 

@@ -21,7 +21,7 @@ f.write('\n')
 zp_vect = []
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, [deckeyfilenum,'gogogo'], ['\d\d*', True], returnType='dict', useRegExp=True, sortFields=['mjd'])
 print(f"{len(images)} images")
 groupedimages = combibynight_fct.groupbynights(images)

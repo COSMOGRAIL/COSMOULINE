@@ -43,7 +43,7 @@ emptyregion = settings['emptyregion']
 lensregion = settings['lensregion']
 
 import matplotlib.pyplot as plt
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 
 # remove saturated

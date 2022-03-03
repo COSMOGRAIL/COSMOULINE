@@ -29,7 +29,7 @@ if checkplots :
     import matplotlib.pyplot as plt
 
 # We select the images :
-db = KirbyBase()
+db = KirbyBase(imgdb)
 if settings['thisisatest'] :
     print("This is a test run.")
     images = db.select(imgdb, ['gogogo','treatme', 'testlist'], 

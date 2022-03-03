@@ -7,7 +7,7 @@ import star
 
 
 # Select images to treat
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 #images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
 images = db.select(imgdb, ['recno'], ["*"], returnType='dict')

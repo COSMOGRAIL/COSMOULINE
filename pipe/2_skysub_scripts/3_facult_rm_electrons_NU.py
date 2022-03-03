@@ -22,7 +22,7 @@ print('I will simply remove all the orignial images (converted to electrons and 
 print('This will save some disk space, now that images are skysubtracted...')
 print("Soft links would not be removed.")
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
 
 print("I will try to delete %i images." % len(images))

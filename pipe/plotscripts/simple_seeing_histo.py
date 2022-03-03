@@ -11,7 +11,7 @@ import numpy as np
 
 #imgdb = "/Users/mtewes/Desktop/vieuxdb.dat"
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 # We read this only once.
 images = db.select(imgdb, ['gogogo'], [True], returnType='dict')

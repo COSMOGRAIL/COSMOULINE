@@ -2,7 +2,7 @@
 exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from pylab import *
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 data = db.select(imgdb, ['recno'], ['*'], ['seeing', 'geomaprms'])
 

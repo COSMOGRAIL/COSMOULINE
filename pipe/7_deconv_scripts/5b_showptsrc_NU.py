@@ -15,7 +15,7 @@ from modules.variousfct import proquest
 from modules.kirbybase import KirbyBase
 from modules import star
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 askquestions = settings['askquestions']
 workdir = settings['workdir']

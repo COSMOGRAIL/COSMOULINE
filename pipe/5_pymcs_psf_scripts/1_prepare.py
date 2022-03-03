@@ -19,7 +19,7 @@ from readandreplace_fct import justread, justreplace
 askquestions = settings['askquestions']
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 
 print("psfkey =", psfkey)

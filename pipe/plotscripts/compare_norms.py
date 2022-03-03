@@ -15,7 +15,7 @@ from variousfct import *
 from numpy import *
 import matplotlib.pyplot as plt
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 allimages = db.select(imgdb, ["gogogo", "treatme"], [True, True], returnType='dict', sortFields=['setname', 'mhjd'])
 
 plt.figure(figsize=(12,8))	# sets figure size

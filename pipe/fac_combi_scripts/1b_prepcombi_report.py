@@ -10,7 +10,7 @@ combinamenum = 'combibynight_' + combiname +'_num'
 
 fields = ['imgname', combinamenum]
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 reporttxt = ""
 
 setreport = db.select(imgdb, ['gogogo','treatme'], ['True', 'True'], fields, returnType='report')

@@ -24,7 +24,7 @@ sys.exit()
 	# As we will tweak the database, do a backup first
 backupfile(imgdb, dbbudir, "hjd")
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 images = db.select(imgdb, ['gogogo'], [True], ['recno','imgname','mjd','date'], sortFields=['imgname'], returnType='dict')
 
 if db.getFieldNames(imgdb).count("hjd") == 0 :

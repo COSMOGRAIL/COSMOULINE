@@ -50,7 +50,7 @@ for i, s in enumerate(psfstars):
 
 
 
-db = KirbyBase()
+db = KirbyBase(imgdb)
 
 if settings['thisisatest'] :
     print("This is a test run.")
