@@ -16,7 +16,6 @@ from modules.variousfct import proquest, notify, nicetimediff
 from modules.kirbybase import KirbyBase
 from settings_manager import importSettings
 
-db = KirbyBase(imgdb)
 
 askquestions = settings['askquestions']
 workdir = settings['workdir']
@@ -27,6 +26,7 @@ setnames = settings['setnames']
 scenario = "normal"
 if len(sys.argv)==2:
     scenario = "allstars"
+    decobjname = sys.argv[1]
 if settings['update']:
     scenario = "update"
     askquestions = False
@@ -37,14 +37,15 @@ deckeyfilenums, deckeynormuseds, deckeys, decdirs,\
 # I am adding this switch here, because I heard that mac computers
 # really don't like running two instances of MCS at once. 
 # so, by default: false.         
-RUNINPARALLEL = False
+RUNINPARALLEL = True
 if computer == "fred":
     RUNINPARALLEL = True
 
 def doOneDeconvolution(deckey, deckeyfilenum, setname, decdir):
     print(f"deckey : {deckey}") 
     print(f"Starting deconvolution {deckey}")
-    
+    # parallel: create multiple connections to the database.
+    db = KirbyBase(imgdb)
     
     images = db.select(imgdb, [deckeyfilenum], 
                               ['\d\d*'], 

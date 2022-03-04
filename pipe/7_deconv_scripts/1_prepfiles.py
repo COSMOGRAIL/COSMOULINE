@@ -67,6 +67,7 @@ setnames = settings['setnames']
 scenario = "normal"
 if len(sys.argv)==2:
     scenario = "allstars"
+    decobjname = sys.argv[1]
 if settings['update']:
     scenario = "update"
     askquestions = False
@@ -311,6 +312,7 @@ for deckey, decskiplist, deckeyfilenum, setname, \
                             # this full erase is important, as we will use the 
                             # simple presence of these numbers to identify 
                             # images used in this deconvolution !
+        
     db.addFields(imgdb, [f'{deckeyfilenum}:str', 
                          f'{deckeypsfused}:str', 
                          f'{deckeynormused}:float'])

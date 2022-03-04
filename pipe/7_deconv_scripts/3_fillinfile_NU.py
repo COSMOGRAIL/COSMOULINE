@@ -30,6 +30,7 @@ setnames = settings['setnames']
 scenario = "normal"
 if len(sys.argv)==2:
     scenario = "allstars"
+    decobjname = sys.argv[1]
 if settings['update']:
     scenario = "update"
     askquestions = False

@@ -28,7 +28,6 @@ if settings['thisisatest'] == False:
           "with only the good stars, right ?")
     proquest(True)
     
-
 def runAll(s):
     os.system(f"{python} 1_prepfiles.py " + s.name)
     os.system(f"{python} 2_applynorm_NU.py " + s.name)
