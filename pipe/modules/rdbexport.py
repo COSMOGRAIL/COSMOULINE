@@ -6,18 +6,27 @@
 #	Malte, 2008
 #
 
-from variousfct import *
-
+import sys
+import os
+import csv
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from modules.variousfct import proquest, mterror
 
 def writerdb(columns, filename, writeheader=True):
-	# columns = [{"name":string, "data":pythonlist}, ...], ordered as you want them to be in the rdb file.
+	# columns = [{"name":string, "data":pythonlist}, ...], 
+    # ordered as you want them to be in the rdb file.
 	# filename = full path to the file to write.
 	
-	import csv
-	import sys
-	import os
 	
-	# Just to be sure, we stat by checking if the columns all have the same length.
+	
+	# Just to be sure, we stat by checking 
+    # if the columns all have the same length.
 	lengths = [len(x["data"]) for x in columns]
 	if len(set(lengths)) != 1:
 		raise mterror("Columns must all have the same length !")

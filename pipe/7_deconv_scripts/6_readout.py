@@ -31,7 +31,11 @@ from modules.readandreplace_fct import readouttxt
 from modules import star
 from settings_manager import importSettings
 
-db = KirbyBase(imgdb)
+
+
+backupfile(imgdb, dbbudir, "readout")
+
+db = KirbyBase(imgdb, fast=True)
 
 askquestions = settings['askquestions']
 workdir = settings['workdir']
@@ -230,8 +234,6 @@ for deckey, decskiplist, deckeyfilenum, setname, ptsrccat, \
     #print "\nI would now update the database."
     #proquest(askquestions)
     print("\nI will now update the database.")
-    
-    backupfile(imgdb, dbbudir, "readout_"+deckey)
     
     
     for field in newfields:

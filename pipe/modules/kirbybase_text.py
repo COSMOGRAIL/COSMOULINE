@@ -274,10 +274,11 @@ class KirbyBase:
     #----------------------------------------------------------------------
     # init
     #----------------------------------------------------------------------
-    def __init__(self, dbname, type='local', host=None, port=None):
+    def __init__(self, dbname, fast=False, type='local', host=None, port=None):
         """Create an instance of the database and return a reference to it.
 
         Keyword Arguments:
+            fast - decoy argument, used in the sqlite version only. 
             type - Connection type: local(default), client, or server.
             host - IP address of server to connect to, if connection type
                    is client.

@@ -1,4 +1,5 @@
 import datetime
+import shutil
 import sys
 import os
 if sys.path[0]:
@@ -9,14 +10,14 @@ else:
     # will be emtpy.
     sys.path.append('..')
 from config import imgdb, settings, configdir
-from modules.variousfct import proquest, readpickle, fromfits, copyorlink,\
-                               notify, makejpgtgz
+from modules.variousfct import proquest, writepickle
 from modules.kirbybase import KirbyBase
 
 db = KirbyBase(imgdb)
 
 xephemlens = settings['xephemlens']
 refimgname = settings['refimgname']
+askquestions = settings['askquestions']
 
 print("I am the only script that writes into your configdir.")
 print("But I will try to be careful.")
@@ -46,13 +47,17 @@ readme = [f"This is the automatic readme file for\n{pklfilepath}\n"]
 
 # We do only one select :
 db = KirbyBase(imgdb)
-images = db.select(imgdb, ['recno'], ['*'], sortFields=['setname', 'mjd'], returnType='dict')
+images = db.select(imgdb, ['recno'], 
+                          ['*'], 
+                          sortFields=['setname', 'mjd'], 
+                          returnType='dict')
 mjdsortedimages = sorted(images, key=lambda k: k['mjd'])
 
-readme.append(f"Target : {xephemlens}")
+readme.append(f"Target: {xephemlens}")
 
-readme.append(f"Total : {len(images)} images")
-readme.append(f"Time span : {mjdsortedimages[0]['datet']} -> {mjdsortedimages[-1]['datet']}")
+readme.append(f"Total: {len(images)} images")
+beg, end = mjdsortedimages[0]['datet'], mjdsortedimages[-1]['datet']
+readme.append(f"Time span: {beg} -> {end}")
 
 telescopes = sorted(list(set([image["telescopename"] for image in images])))
 setnames = sorted(list(set([image["setname"] for image in images])))
@@ -67,15 +72,22 @@ readme.append(f"Ref image name : {refimgname} ")
 
 fieldnames = db.getFieldNames(imgdb)
 fieldtypes = db.getFieldTypes(imgdb)
-fielddesc = [f"{fieldname} {fieldtype}" for (fieldname, fieldtype) in zip(fieldnames, fieldtypes)]
+fielddesc = [f"{fieldname} {fieldtype}" 
+                for (fieldname, fieldtype) in zip(fieldnames, fieldtypes)]
 
 
-deconvolutions = [fieldname[11:] for fieldname in fieldnames if fieldname.split("_")[0] == "decfilenum"]
+deconvolutions = [fieldname[11:] 
+                   for fieldname in fieldnames 
+                     if fieldname.split("_")[0] == "decfilenum"]
 
-deconvolutionsreadout = [fieldname[4:] for fieldname in fieldnames if (fieldname.split("_")[0] == "out") and ( fieldname.split("_")[-1] == "flux" or fieldname.split("_")[-1] == "int")]
+deconvolutionsreadout = [fieldname[4:] 
+                            for fieldname in fieldnames 
+                               if (fieldname.split("_")[0] == "out")  
+                                   and (fieldname.split("_")[-1] == "flux" 
+                                   or   fieldname.split("_")[-1] == "int")]
 
 readme.append("\nDeconvolutions :")
-readme.extend(deconvolutions)
+readme.extend(deconvolutions) 
 
 readme.append("\nDeconvolution sources :")
 readme.extend(deconvolutionsreadout)
@@ -91,7 +103,7 @@ readmetxt = "\n".join(readme)
 print(f"Here is the readme text : \n\n{readmetxt}\n\n")
 
 print("I will now write the files.")
-variousfct.proquest(askquestions)
+proquest(askquestions)
 
 readme.append("\nThe full list of fields :")
 readme.extend(fielddesc)
@@ -99,9 +111,11 @@ readme.append("\n\n(end of automatic part)\n")
 readmetxt = "\n".join(readme)
 
 
-if os.path.exists(readmefilepath) or os.path.exists(pklfilepath) or os.path.exists(dbcopyfilepath):
+if os.path.exists(readmefilepath) \
+    or os.path.exists(pklfilepath) \
+    or os.path.exists(dbcopyfilepath):
 	print("The files exist. I will overwrite them.")
-	variousfct.proquest(askquestions)
+	proquest(askquestions)
 	if os.path.exists(readmefilepath):
 		os.remove(readmefilepath)
 	if os.path.exists(pklfilepath):
@@ -118,8 +132,10 @@ out_file.write(readmetxt)
 out_file.close()
 print(f"Wrote {readmefilepath}")
 
-variousfct.writepickle(images, pklfilepath, verbose=True) # copy once the file with the date on its name...
-variousfct.writepickle(images, pklgenericfilepath, verbose=True) # and redoit using a generic name, for the automated reduction procedure...
+ # copy once the file with the date on its name...
+writepickle(images, pklfilepath, verbose=True)
+# and redoit using a generic name, for the automated reduction procedure...
+writepickle(images, pklgenericfilepath, verbose=True) 
 
 shutil.copy(imgdb, dbcopyfilepath)
 

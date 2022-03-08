@@ -158,28 +158,6 @@ def mags(listofnights, key, normkey = None, verbose = True):
 
 
 
-# THIS IS NOT USED ANYMORE, AS WE NOW DO EVERY RENORMALIZATION BEFORE THE DECONVOLUTION ITSELF !
-#def renormmags(listofnights, key, renormfieldname): 	# Very similar to mags, but applies the renormalization coefficients
-#							# Remeber : these are additive in magnitude for now !!!
-#
-#	from numpy import array, asarray, log10, median, std, min, max
-#	medvals=[]
-#	stddevvals=[]
-#	minvals=[]
-#	maxvals=[]
-#	uperrors=[]
-#	downerrors=[]
-#	for night in listofnights:
-#		values = -2.5 * log10(asarray([float(image[key]) for image in night]))
-#		addmags = - asarray([float(image[renormfieldname]) for image in night])
-#		values = values + addmags
-#		medvals.append(median(values))
-#		stddevvals.append(std(values))
-#		minvals.append(min(values))
-#		maxvals.append(max(values))
-#		uperrors.append(maxvals[-1]-medvals[-1])
-#		downerrors.append(medvals[-1]-minvals[-1])
-#	
-#	return {'median': medvals, 'stddev': stddevvals, 'min': minvals, 'max': maxvals, 'up':uperrors, 'down':downerrors}
+
 #
 

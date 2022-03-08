@@ -32,16 +32,27 @@ SQLiteTypeTotype = {v:k for k,v in typeToSQLiteType.items()}
 DEBUG = False
 
 class KirbyBase():
-    def __init__(self, dbname):
+    def __init__(self, dbname, fast=False):
         # unlike KirbyBase, can store multilpe tables in an SQlite base.
         # thus give a default one:
         self.defaulttable = "images"
+        
         self.debug = DEBUG 
-        self.conn = sq.connect(dbname)
-       
+        
+        self.dbname = dbname
+                
+        # "fast" when adding or updating tons of rows in series, 
+        # open the connection only once and store it in this object.
+        self.fast = fast
+        if self.fast:
+            self.conn = sq.connect(dbname)
+        else:
+            # then open the connetion at each execute
+            self.conn = None
         
     def __del__(self):
-        self.conn.close()
+        if self.fast:
+            self.conn.close()
         
     def __str__(self):
         return "sqlite3 database interface"
@@ -64,23 +75,32 @@ class KirbyBase():
         """
         if not (type(sqlstatements) is list):
             sqlstatements = [sqlstatements]
-        
-        conn = self.conn
+        if self.fast:
+            conn = self.conn
+        else: 
+            conn = sq.connect(self.dbname)
         results = []
-        for sqlstatement in sqlstatements:
-            if self.debug:
-                print(sqlstatement)
-            # in case there is reg exprs, must add a function to the connection:
-            if 'regexp' in sqlstatement.lower():
-                conn.create_function("REGEXP", 2, regexp)
-            with conn:
+        with conn:
+            # context manager: locks the database while we execute every sql 
+            # statement.
+            for sqlstatement in sqlstatements:
+                if self.debug:
+                    print(sqlstatement)
+                # in case there is reg exprs, 
+                # must add a function to the connection:
+                if 'regexp' in sqlstatement.lower():
+                    conn.create_function("REGEXP", 2, regexp)
+                
                 cur = conn.cursor()
                 # execute and fetch the result:
                 cur.execute(sqlstatement)
                 result = cur.fetchall()
-            results.append(result)
-        # at the end, commit our changes
-        conn.commit()
+                    
+                results.append(result)
+            # at the end, commit our changes
+            conn.commit()
+        if not self.fast:
+            conn.close()
         if len(results) == 1:
             return results[0]
         return results
@@ -116,14 +136,17 @@ class KirbyBase():
 
 
     def getTableNames(self, dbname):
-        # pretty self exlpanatory: get the names of all the tables in our database.
-        tabs = self.execute(dbname, "SELECT name FROM sqlite_master WHERE type='table';")
+        # pretty self exlpanatory: get the names of all 
+        # the tables in our database.
+        tabs = self.execute(dbname, 
+                    "SELECT name FROM sqlite_master WHERE type='table';")
         return [t[0] for t in tabs]
     
     def getColumns(self, dbname, tablename=None):
         if not tablename:
             tablename = self.defaulttable
-        return self.execute(dbname, f"select name,type from pragma_table_info('{tablename}')")
+        return self.execute(dbname, 
+                    f"select name,type from pragma_table_info('{tablename}')")
     
     def getFieldNames(self, dbname, tablename=None):
         if not tablename:
@@ -133,7 +156,8 @@ class KirbyBase():
     def getFieldTypes(self, dbname, tablename=None):
         if not tablename:
             tablename = self.defaulttable 
-        return [SQLiteTypeTotype[c[1].lower()] for c in self.getColumns(dbname, tablename)]
+        return [SQLiteTypeTotype[c[1].lower()] 
+                         for c in self.getColumns(dbname, tablename)]
     
     def getColumnType(self, dbname, field, tablename=None):
         if not tablename:
@@ -218,7 +242,8 @@ class KirbyBase():
                 
     def dropFields(self, dbname, fields, talbename=None):
         """
-        soooo sqlite 3.35 can do this. But not sure we'll  have it on everyone's computer ...
+        soooo sqlite 3.35 can do this. 
+        But not sure we'll  have it on everyone's computer ...
         hence we copy the table without those columns, destroy the old table
         and rename the new one to the old name.
         """
@@ -226,8 +251,10 @@ class KirbyBase():
             tablename = self.defaulttable
         tmptable = tablename+"___tmp___"
         allfields = self.getFieldNames(dbname, tablename)
-        alltypes  = [typeToSQLiteType[t] for t in self.getFieldTypes(dbname, tablename)]
-        transferfields = [f"{f} {t}" for f, t in zip(allfields,alltypes) if not f in fields]
+        alltypes  = [typeToSQLiteType[t] 
+                               for t in self.getFieldTypes(dbname, tablename)]
+        transferfields = [f"{f} {t}" for f, t in zip(allfields,alltypes) 
+                                                           if not f in fields]
         # prepare the transfer of the columns:
         transfieldstr = ','.join(transferfields)
         req2 = f'insert into {tmptable} select {transfieldstr} from {tablename}'

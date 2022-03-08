@@ -6,11 +6,20 @@
 
 
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-from variousfct import *
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import imgdb, settings, renormerrfieldname, renormcommentfieldname
+from modules.kirbybase import KirbyBase
 
-
+renormname = settings['renormname']
+workdir = settings['workdir']
 
 fields = ['imgname', renormname, renormerrfieldname, renormcommentfieldname]
 
@@ -23,9 +32,13 @@ usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], ['*'], ['setname']
 
 for setname in sorted(list(usedsetnames)):
 	
-	reporttxt += "\n\n\n###################### %10s    ###################\n\n"%setname
+	reporttxt += f"\n\n\n################# {setname:10} ##################\n\n"
 	
-	setreport = db.select(imgdb, ['gogogo','treatme','setname'], [True, True, setname], fields, sortFields=[renormname], returnType='report')
+	setreport = db.select(imgdb, ['gogogo','treatme','setname'], 
+                                 [True, True, setname],
+                                 fields, 
+                                 sortFields=[renormname], 
+                                 returnType='report')
 	reporttxt += setreport
 		
 

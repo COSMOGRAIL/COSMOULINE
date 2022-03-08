@@ -5,13 +5,22 @@ not involved in the renormalization.
 """
 
 exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-from kirbybase import KirbyBase, KBError
-import variousfct
-import star
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.dates
 import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import imgdb, settings
+from modules.kirbybase import KirbyBase
+
+renormname = settings['renormname']
+workdir = settings['workdir']
 
 
 print("I will plot lightcurves using renormalization coefficient called :")
@@ -25,8 +34,11 @@ sourcename = sys.argv[2]
 
 
 db = KirbyBase(imgdb)
-allimages = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['mjd'])
-print("%i images in total." % len(allimages))
+allimages = db.select(imgdb, ['gogogo', 'treatme'], 
+                             [True, True], 
+                             returnType='dict', 
+                             sortFields=['mjd'])
+print(f"{len(allimages)} images in total.")
 
 
 
@@ -37,7 +49,7 @@ errorfieldname = "out_" + deckey + "_" + sourcename + "_shotnoise"
 decnormfieldname = "decnorm_" + deckey
 	
 images = [image for image in allimages if image[deckeyfilenumfield] != None]
-print("%i images" % len(images))
+print(f"{len(images)} images")
 
 fluxes = np.array([image[fluxfieldname] for image in images])
 errors = np.array([image[errorfieldname] for image in images])
@@ -55,11 +67,13 @@ mhjds = np.array([image["mhjd"] for image in images])
 	
 plt.figure(figsize=(15,10))
 
-plt.errorbar(mhjds, renormfluxes/ref, yerr=renormerrors/ref, ecolor=(0.8, 0.8, 0.8), linestyle="None", marker=".")
-#plt.errorbar(mhjds, renormfluxes/ref, yerr=renormerrors/ref, ecolor=(0.8, 0.8, 0.8), linestyle="None", marker="None")
+plt.errorbar(mhjds, renormfluxes/ref, yerr=renormerrors/ref, 
+                                      ecolor=(0.8, 0.8, 0.8), 
+                                      linestyle="None", 
+                                      marker=".")
 	
 
-plt.title("Source %s, %s, normalized with %s" % (sourcename, deckey, renormname))
+plt.title(f"Source {sourcename}, {deckey}, normalized with {renormname}")
 plt.xlabel("MHJD")
 plt.ylabel("Flux in electrons / median")
 plt.grid(True)
