@@ -1,45 +1,78 @@
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-import os,sys
 import glob
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-from headerstuff import *
-from readandreplace_fct import *
 import numpy as np
-import star
-import shutil
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import imgdb, settings, deckeys, python, configdir
+from modules.variousfct import proquest, mterror
+from modules.kirbybase import KirbyBase
 
-#if not update:
-#	raise mterror("update keyword not set to True !")
+setnames = settings['setnames']
+telescopename = settings['telescopename']
+askquestions = settings['askquestions']
+allrenormsources = settings['renormsources']
+workdir = settings['workdir']
 
-# This one is going to be tricky. And long
-
-print("I will update the database with new images in set %s, telescope %s from %s" %(setname, telescopename, rawdir))
+print(f"I will update the database with new images in set {setnames},"
+      f"telescope {telescopename}")
+print("Note that I will use the normal sky substraction")
 print("")
+
 db = KirbyBase(imgdb)
-images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname', 'mjd'])
+images = db.select(imgdb, ['gogogo','treatme','updating'], 
+                          [True, True, True], 
+                          returnType='dict')
 nbrofimages = len(images)
 print("Number of images to treat :", nbrofimages)
+proquest(askquestions)
 
 # lensdecpaths = None
 lensdecpaths = [] # put here the name of the lens deconvolutions you want to update
 if not lensdecpaths:
-    lensdecpaths = [deckey]
+    lensdecpaths = [deckeys[0]]
     
 if not lensdecpaths == None:
 	print("You want to update the following lens deconvolutions:")
 	for decpath in lensdecpaths:
 		print(decpath)
-	print('Note that I will update only ONE renormcoeff at the time, the one that is in your settings !')
+	print('Note that I will update only ONE renormcoeff at the time,',
+          'the one that is in your settings !')
 	print('I am not idiot-proof yet, so BE CAREFUL HERE !!!')
 	proquest(True)
 else:
 	proquest(askquestions)
 
 os.chdir('../7_deconv_scripts')
+sys.exit()
+
+
+def writeUpdateConfigFile():
+    for renormsources in allrenormsources:
+        for renormsource in renormsources:
+            info = renormsource[0].split('_')
+            setname = info[1]
+            decname = info[2]
+            decobjname = info[3]
+            decnormfieldname = info[4]
+            decpsfnames = info[5:]
+            # above looks like this:
+            # ['dec', 'rp', 'back', 'b', 'medcoeff', 'bdijln']
+            
+    with open(os.path.join(configdir,'deconv_config_update.py'), 'w') as file:
+        pass
+    
+deckeyfilenums, deckeynormuseds, \
+deckeys, decdirs, decskiplists, \
+deckeypsfuseds, ptsrccats
 
 # Deconvolve each star with the new images
-if 1:
+for renormsources in allrenormsources:
 	for renormsource in renormsources:
 
 		# start by creating a temporary configuration file with the deconvolution keywords needed...
@@ -49,12 +82,12 @@ if 1:
 
 		file = open(os.path.join(configdir,'deconv_config_update.py'), 'w')
 		file.write('import os\n\n')
-		file.write("configdir = '%s'\n " % configdir)
+		file.write(f"configdir = '{configdir}'\n ")
 		file.write("\ndecname = %s" % "'"+infos[1]+"'")
 		file.write("\ndecobjname = %s" % "'"+infos[2]+"'")
 		file.write("\ndecnormfieldname = %s" % "'"+infos[3]+"'")
-		file.write("\ndecpsfnames = %s" % '['+', '.join(["'"+decpsfname+"'" for decpsfname in infos[4:]])+']')
-		file.write("\n\ndeckey = '%s'" % renormsource[0])
+		file.write(f"\ndecpsfnames = {'['}"+', '.join(["'"+decpsfname+"'" for decpsfname in infos[4:]])+']')
+		file.write(f"\n\ndeckey = '{renormsource[0]}'")
 		file.write("\nptsrccat = os.path.join(configdir, deckey + '_ptsrc.cat')")
 		file.write("\ndecskiplist = os.path.join(configdir, deckey + '_skiplist.txt')")
 		file.write("\ndeckeyfilenum = 'decfilenum_' + deckey")
@@ -76,7 +109,7 @@ if 1:
 		fwhmpath = os.path.join(workdir, renormsource[0], 'fwhm-des-G.txt')
 
 		for path in [inpath, deconvpath, fwhmpath]:
-			os.system('cp %s %s' % (path, os.path.join(workdir, 'updating_'+os.path.basename(path))))
+			os.system(f"cp {path} {os.path.join(workdir, 'updating_' + os.path.basename(path))}")
 			pass
 
 
@@ -88,8 +121,13 @@ if 1:
 		# Instead of 3, I simply move back or change wisely the config files previously backuped:
 		exec(compile(open(os.path.join(configdir, 'deconv_config_update.py'), "rb").read(), os.path.join(configdir, 'deconv_config_update.py'), 'exec'))
 
-		allimages = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum])
-		refimage = [image for image in allimages if image['imgname'] == refimgname][0]
+		allimages = db.select(imgdb, [deckeyfilenum], 
+                                     ['\d\d*'], 
+                                     returnType='dict', 
+                                     useRegExp=True, 
+                                     sortFields=[deckeyfilenum])
+		refimage = [image for image in allimages 
+                           if image['imgname'] == refimgname][0]
 		allimages.insert(0, refimage.copy())
 		images[0][deckeyfilenum] = mcsname(1)
 		nbimg = len(allimages)
@@ -152,7 +190,7 @@ if 1:
 		testseeings = np.array([image["seeingpixels"] for image in allimages])
 		if not np.all(testseeings>2.0):
 			raise mterror("I have seeinpixels <= 2.0, deconv.exe cannot deal with those.")
-		fwhmtxt = "\n".join(["%.4f" % image["seeingpixels"] for image in allimages]) + "\n"
+		fwhmtxt = "\n".join([f"{image['seeingpixels']:.4f}" for image in allimages]) + "\n"
 		fwhmfile = open(fwhmpath, "w")
 		fwhmfile.write(fwhmtxt)
 		fwhmfile.close()
@@ -229,12 +267,12 @@ if 1:
 
 		file = open(os.path.join(configdir,'deconv_config_update.py'), 'w')
 		file.write('import os\n\n')
-		file.write("configdir = '%s'\n " % configdir)
+		file.write(f"configdir = '{configdir}'\n ")
 		file.write("\ndecname = %s" % "'"+deconvname+"'")
 		file.write("\ndecobjname = %s" % "'"+infos[obj_index]+"'")
 		file.write("\ndecnormfieldname = %s" % "'"+n_fieldname+"'")
 		file.write("\ndecpsfnames = %s" % "['"+infos[-1]+"']")
-		file.write("\n\ndeckey = '%s'" % os.path.basename(abspath))
+		file.write(f"\n\ndeckey = '{os.path.basename(abspath)}'")
 		file.write("\nptsrccat = os.path.join(configdir, deckey + '_ptsrc.cat')")
 		file.write("\ndecskiplist = os.path.join(configdir, deckey + '_skiplist.txt')")
 		file.write("\ndeckeyfilenum = 'decfilenum_' + deckey")
@@ -256,7 +294,7 @@ if 1:
 		fwhmpath = os.path.join(abspath, 'fwhm-des-G.txt')
 
 		for path in [inpath, deconvpath, fwhmpath]:
-			os.system('cp %s %s' % (path, os.path.join(workdir, 'updating_'+os.path.basename(path))))
+			os.system(f"cp {path} {os.path.join(workdir, 'updating_' + os.path.basename(path))}")
 			pass
 
 		# backup the background
@@ -283,7 +321,7 @@ if 1:
 		# Instead of 3, I simply move back or change wisely the config files previously backuped:
 		exec(compile(open(os.path.join(configdir, 'deconv_config_update.py'), "rb").read(), os.path.join(configdir, 'deconv_config_update.py'), 'exec'))
 		# first, the background:
-		os.system('mv %s %s' % (os.path.join(workdir, 'updating_back.fits'), os.path.join(abspath, back_name)))
+		os.system(f"mv {os.path.join(workdir, 'updating_back.fits')} {os.path.join(abspath, back_name)}")
 
 		allimages = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum])
 		refimage = [image for image in allimages if image['imgname'] == refimgname][0]
@@ -348,7 +386,7 @@ if 1:
 		testseeings = np.array([image["seeingpixels"] for image in allimages])
 		if not np.all(testseeings>2.0):
 			raise mterror("I have seeinpixels <= 2.0, deconv.exe cannot deal with those.")
-		fwhmtxt = "\n".join(["%.4f" % image["seeingpixels"] for image in allimages]) + "\n"
+		fwhmtxt = "\n".join([f"{image['seeingpixels']:.4f}" for image in allimages]) + "\n"
 		fwhmfile = open(fwhmpath, "w")
 		fwhmfile.write(fwhmtxt)
 		fwhmfile.close()

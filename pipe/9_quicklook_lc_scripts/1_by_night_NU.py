@@ -19,7 +19,7 @@ from config import imgdb, settings, plotdir, deckeys, ptsrccats,\
 from modules.kirbybase import KirbyBase
 
 from modules import combibynight_fct
-from modules import  headerstuff
+from modules import headerstuff
 from modules import star
 
 
@@ -48,7 +48,10 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
     db = KirbyBase(imgdb)
     
     images = db.select(imgdb, [deckeyfilenum,'gogogo'], 
-                              ['\d\d*', True], returnType='dict', useRegExp=True, sortFields=['mjd'])
+                              ['\d\d*', True], 
+                              returnType='dict', 
+                              useRegExp=True, 
+                              sortFields=['mjd'])
     print(f"{len(images)} images")
     
     groupedimages = combibynight_fct.groupbynights(images)
@@ -60,30 +63,6 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
     
     mhjds = combibynight_fct.values(groupedimages, 'mhjd', normkey=None)['mean']
     
-    """
-    medairmasses = combibynight_fct.values(groupedimages, 'airmass', normkey=None)['median']
-    medseeings = combibynight_fct.values(groupedimages, 'seeing', normkey=None)['median']
-    medskylevels = combibynight_fct.values(groupedimages, 'skylevel', normkey=None)['median']
-    meddeccoeffs = combibynight_fct.values(groupedimages, deckeynormused, normkey=None)['median']
-    
-    meddates = [headerstuff.DateFromJulianDay(mhjd + 2400000.5).strftime("%Y-%m-%dT%H:%M:%S") for mhjd in mhjds]
-    
-    telescopenames = [night[0]["telescopename"] for night in groupedimages]
-    setnames = [night[0]["setname"] for night in groupedimages]
-    """
-    
-    """
-    exportcols = [
-    {"name":"mhjd", "data":mhjds},
-    {"name":"datetime", "data":meddates},
-    {"name":"telescope", "data":telescopenames},
-    {"name":"setname", "data":setnames},
-    {"name":"fwhm", "data":medseeings},
-    {"name":"airmass", "data":medairmasses},
-    {"name":"skylevel", "data":medskylevels},
-    {"name":"deccoeff", "data":meddeccoeffs}
-    ]
-    """
     
     # deckeynormused = "medcoeff"
     magtot = []
@@ -96,13 +75,18 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
         fluxfieldname = f"out_{deckey}_{s.name}_flux"
         randomerrorfieldname = f"out_{deckey}_{s.name}_shotnoise"
     
-        mags = combibynight_fct.mags(groupedimages, fluxfieldname, normkey=deckeynormused)['median']
-        # errors = combibynight_fct.mags(groupedimages, fluxfieldname, normkey=deckeynormused)['median']
+        mags = combibynight_fct.mags(groupedimages, 
+                                     fluxfieldname, 
+                                     normkey=deckeynormused)['median']
     
     
         absfluxerrors = np.array(
-            combibynight_fct.values(groupedimages, randomerrorfieldname, normkey=deckeynormused)['median'])
-        fluxvals = np.array(combibynight_fct.values(groupedimages, fluxfieldname, normkey=deckeynormused)['median'])
+            combibynight_fct.values(groupedimages, 
+                                    randomerrorfieldname, 
+                                    normkey=deckeynormused)['median'])
+        fluxvals = np.array(combibynight_fct.values(groupedimages, 
+                                                    fluxfieldname,
+                                                    normkey=deckeynormused)['median'])
     
         # relfluxerrors = absfluxerrors / fluxvals
         # magerrorbars = -2.5*np.log10(relfluxerrors)
@@ -115,10 +99,15 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
         if lc_to_sum != None :
             if s.name != lc_to_sum[0] and s.name!=lc_to_sum[1] :
                 plt.figure(1)
-                plt.errorbar(mhjds, mags, yerr=[upmags - mags, mags - downmags], linestyle="None", marker=".", label=s.name)
+                plt.errorbar(mhjds, mags, yerr=[upmags - mags, mags - downmags], 
+                                          linestyle="None", 
+                                          marker=".", 
+                                          label=s.name)
         else :
-            plt.errorbar(mhjds, mags, yerr=[upmags - mags, mags - downmags], linestyle="None", marker=".", label=s.name)
-        # exportcols.extend([{"name":"mag_%s" % ptsrc.name, "data":mags}, {"name":"magerr_%s" % ptsrc.name, "data":2.0*magerrorbars}])
+            plt.errorbar(mhjds, mags, yerr=[upmags - mags, mags - downmags], 
+                                      linestyle="None", 
+                                      marker=".", 
+                                      label=s.name)
         magtot.append(mags)
         magerrtot.append(magerrorbars)
         fluxvalstot.append(fluxvals)
@@ -141,7 +130,9 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
         magerrortot_sum = np.zeros((len(magtot[:, 0])-1,len(magtot[0,:])))
         ptsources_str = []
     
-        i = [i for i,source in enumerate(ptsources) if source.name==lc_to_sum[0] or source.name==lc_to_sum[1]]
+        i = [i for i,source in enumerate(ptsources) 
+                    if source.name==lc_to_sum[0] or source.name==lc_to_sum[1]]
+        
         fluxvalstot_sum = [fluxvalstot[i[0]]+fluxvalstot[i[1]]]
         ptsources_str = [ptsources[i[0]].name + "+"+ptsources[i[1]].name]
         magtot_sum[0,:] = -2.5*np.log10(fluxvalstot_sum)
@@ -151,7 +142,11 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
         upmags = -2.5 * np.log10(fluxvalstot_sum + fluxerr_sum)
         downmags = -2.5 * np.log10(fluxvalstot_sum - fluxerr_sum)
         magerrortot_sum[0,:]= (downmags - upmags) / 2.0
-        plt.errorbar(mhjds, magtot_sum[0,:], yerr=magerrortot_sum[0,:], linestyle="None", marker=".",label=ptsources_str[0])
+        
+        plt.errorbar(mhjds, magtot_sum[0,:], yerr=magerrortot_sum[0,:], 
+                                             linestyle="None", 
+                                             marker=".",
+                                             label=ptsources_str[0])
     
         z =1
         for j in range(len(magtot)):
@@ -182,12 +177,19 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
     titletext1 = f"{xephemlens.split(',')[0]} ({len(groupedimages)} nights)"
     titletext2 = deckey
     
-    ax.text(0.02, 0.98, titletext1, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
-    ax.text(0.02, 0.95, titletext2, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
+    ax.text(0.02, 0.98, titletext1, verticalalignment='top',
+                                    horizontalalignment='left', 
+                                    transform=ax.transAxes)
+    
+    ax.text(0.02, 0.95, titletext2, verticalalignment='top', 
+                                    horizontalalignment='left', 
+                                    transform=ax.transAxes)
     
     if plotnormfieldname:
         titletext3 = f"Renormalized with {plotnormfieldname}"
-        ax.text(0.02, 0.92, titletext3, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
+        ax.text(0.02, 0.92, titletext3, verticalalignment='top',
+                                        horizontalalignment='left',
+                                        transform=ax.transAxes)
     
     
     #plt.legend()

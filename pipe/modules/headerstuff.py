@@ -26,7 +26,6 @@ import astropy.io.fits as fits
 import sys; sys.path.append('..')
 
 from config import settings
-setname = settings['setname']
 workdir = settings['workdir']
 telescopename = settings['telescopename']
 
@@ -156,7 +155,7 @@ def DateFromJulianDay(JD):
 
 ###############################################################################################
 
-def eulerc2header(rawimg):
+def eulerc2header(rawimg, setname):
     print(rawimg)
     imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0]  # drop extension
 
@@ -200,7 +199,7 @@ def eulerc2header(rawimg):
     # Now we produce the date and datet fields, middle of exposure :
 
 
-def maidanak2k2kheader(rawimg):
+def maidanak2k2kheader(rawimg, setname):
     """
     Maidanak 2k2k = raw image format 2000 x 2000 reduced size image by Ildar
     Written 2020
@@ -276,7 +275,7 @@ def maidanak2k2kheader(rawimg):
 
 ###############################################################################################
 
-def eulercamheader(rawimg):
+def eulercamheader(rawimg, setname):
     print(rawimg)
     imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0]  # drop extension
 
@@ -352,7 +351,7 @@ def eulercamheader(rawimg):
 ###############################################################################################
 
 
-def mercatorheader(rawimg):
+def mercatorheader(rawimg, setname):
     print(rawimg)
     imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0]  # drop extension
 
@@ -433,7 +432,7 @@ def mercatorheader(rawimg):
 ###############################################################################################
 
 
-def liverpoolheader(rawimg):
+def liverpoolheader(rawimg, setname):
     """
     Reading the header of 2010 RATCam LRT images.
     Probably also ok for previous RATCam images.
@@ -517,7 +516,7 @@ def liverpoolheader(rawimg):
 ###############################################################################################
 
 
-def maidanaksiteheader(rawimg):
+def maidanaksiteheader(rawimg, setname):
     """
     Maidanak SITE = raw image format 2030 x 800
     Written 2010 Malte & Denis
@@ -602,7 +601,7 @@ def maidanaksiteheader(rawimg):
 ###############################################################################################
 
 
-def maidanaksiheader(rawimg):
+def maidanaksiheader(rawimg, setname):
     """
     Maidanak SI = raw image format 4096 x 4096
     Written 2010 Malte & Gianni
@@ -677,7 +676,7 @@ def maidanaksiheader(rawimg):
 ###############################################################################################
 
 
-def maidanak2k2kheader(rawimg):
+def maidanak2k2kheader(rawimg, setname):
     """
     Maidanak 2k2k = raw image format 2084 x 2084
     Written 2012 Malte
@@ -750,7 +749,7 @@ def maidanak2k2kheader(rawimg):
 
 
 ###############################################################################################
-def Maidanak_2_5kheader(rawimg):
+def Maidanak_2_5kheader(rawimg, setname):
     print(rawimg)
     imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0]  # drop extension
 
@@ -809,7 +808,7 @@ def Maidanak_2_5kheader(rawimg):
 
 ###############################################################################################
 
-def hctheader(rawimg):
+def hctheader(rawimg, setname):
     """
     HCT : will have to be adapted later so to handle new fields added by pypr prereduction.
     """
@@ -884,7 +883,7 @@ def hctheader(rawimg):
 
 ###############################################################################################
 
-def holiheader(rawimg):  # HoLiCam header
+def holiheader(rawimg, setname):  # HoLiCam header
     """
     HoliCam header, adapted together with Dominik Klaes
     """
@@ -965,7 +964,7 @@ def holiheader(rawimg):  # HoLiCam header
 ###############################################################################################
 
 
-def smartsandicamheader(rawimg):
+def smartsandicamheader(rawimg, setname):
     """
     Malte, Jan 2011
     Info from the web :
@@ -1080,7 +1079,7 @@ def smartsandicamheader(rawimg):
 ###############################################################################################
 
 
-def skysimheader(rawimg):
+def skysimheader(rawimg, setname):
     """
     skysim = skymaker simulated images
     Written 2010 Gianni
@@ -1150,7 +1149,7 @@ def skysimheader(rawimg):
     return returndict
 
 
-def VSTheader(rawimg):
+def VSTheader(rawimg, setname):
     """
     Version for VST images
     Experimental
@@ -1219,7 +1218,7 @@ def VSTheader(rawimg):
 
 ###############################################################################################
 
-def Stancamheader(rawimg):
+def Stancamheader(rawimg, setname):
     """
     Version for VST images
     Experimental
@@ -1285,7 +1284,7 @@ def Stancamheader(rawimg):
     return returndict
 
 
-def VST_mosaic_header(rawimg):
+def VST_mosaic_header(rawimg, setname):
     """
     Version for VST mosaic images
     Experimental
@@ -1350,7 +1349,7 @@ def VST_mosaic_header(rawimg):
     return returndict
 
 
-def VATTheader(rawimg):
+def VATTheader(rawimg, setname):
     """
     Version for VATT images
     Written by Martin, 09.2019
@@ -1416,7 +1415,7 @@ def VATTheader(rawimg):
     return returndict
 
 
-def LCOheader(rawimg):
+def LCOheader(rawimg, setname):
     """
     Version for LCO images
     Experimental

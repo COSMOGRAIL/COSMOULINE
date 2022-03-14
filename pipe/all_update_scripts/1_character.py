@@ -1,32 +1,44 @@
-
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-import os,sys
 import glob
-from kirbybase import KirbyBase, KBError
-from variousfct import *
-from headerstuff import *
+import sys
+import os
+if sys.path[0]:
+    # if ran as a script, append the parent dir to the path
+    sys.path.append(os.path.dirname(sys.path[0]))
+else:
+    # if ran interactively, append the parent manually as sys.path[0] 
+    # will be emtpy.
+    sys.path.append('..')
+from config import imgdb, settings, python
+from modules.variousfct import proquest
+from modules.kirbybase import KirbyBase
 
+telescopename = settings['telescopename']
+setnames = settings['setnames']
+rawdirs = settings['rawdirs']
 
-print("I will update the database with new images in set %s, telescope %s from %s" %(setname, telescopename, rawdir))
-print("")
-nimages = len(glob.glob(os.path.join(rawdir, "*.fits")))
-db = KirbyBase(imgdb)
-images = db.select(imgdb, ['recno'], ['*'],['setname'], returnType='dict')
-nimagesindb = len([image for image in images if image['setname'] == setname])
-print("I have %i images in the database for set %s"%(nimagesindb, setname))
-print("I have found %i images in the your raw folder"%(nimages))
-if nimages > nimagesindb :
-	nnewimages = nimages-nimagesindb
-	print("This means %i new images added to this set" % nnewimages)
-else :
-	nnewimages = nimages
-	print("It seems that you have only the new images in the raw folder, I will add %i new images."%nimages)
+print("I will update the database with new images, with",
+      f"telescope {telescopename}\n")
 
-if nnewimages == 0:
-	print("Nothing to do.")
-	#sys.exit()
+for setname, rawdir in zip(setnames, rawdirs):
+    nimages = len(glob.glob(os.path.join(rawdir, "*.fits")))
+    db = KirbyBase(imgdb)
+    images = db.select(imgdb, ['recno'], ['*'],['setname'], returnType='dict')
+    nimagesindb = len([image for image in images if image['setname'] == setname])
+    print(f"I have {int(nimagesindb)} images in the database for set {setname}")
+    print(f"I have found {int(nimages)} images in the your raw folder")
+    if nimages > nimagesindb :
+    	nnewimages = nimages-nimagesindb
+    	print(f"This means {int(nnewimages)} new images added to this set")
+    else :
+    	nnewimages = nimages
+    	print("It seems that you have only the new images in the raw folder,",
+              f"I will add {int(nimages)} new images.")
+    
+    if nnewimages == 0:
+    	print("Nothing to do.")
+    	#sys.exit()
 
-proquest(True)
+proquest(settings['askquestions'])
 
 os.chdir('../1_character_scripts')
 try:
