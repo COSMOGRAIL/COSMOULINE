@@ -140,7 +140,14 @@ def main():
     refimage = refimage[0]
 
     # load the reference sextractor catalog
-    refsexcat = os.path.join(alidir, refimage['imgname'] + ".cat")
+    if update:
+        # if update, align to the already aligned ref img
+        # (that is because for old datasets, we used to crop the image
+        # in the alignment step. Thus, we'll ask astroalign to crop
+        # to the same dimensions as well.)
+        refsexcat = os.path.join(alidir, refimage['imgname'] + ".alicat")
+    else:
+        refsexcat = os.path.join(alidir, refimage['imgname'] + ".cat")
     refautostars = star.readsexcat(refsexcat, maxflag=16, posflux=True)
     refautostars = star.sortstarlistbyflux(refautostars)
     refscalingfactor = refimage['scalingfactor']
@@ -157,8 +164,11 @@ def main():
     # we'll still need the reference image: astroalign needs it only to
     # get the dimension of the target. Could pass the image to align itself
     # if everything has the same shape.
-    refimage = os.path.join(alidir, refimgname + "_skysub.fits")
-    refimage = fits.getdata(refimage)
+    if update:
+        # again, if update: pass the already aligned image to astroalign.
+        refimagepath = os.path.join(alidir, refimage['imgname'] + "_ali.fits")
+    else:
+        refimagepath = refimage['rawimg']
 
 
     ### here we do the alignment in parallel.
@@ -169,12 +179,12 @@ def main():
         cpus = multiprocessing.cpu_count()
     if cpus > 1 :
         pool = multiprocessing.Pool(processes=cpus)
-        args = [(im, tupleref, refimage) for im in images]
+        args = [(im, tupleref, refimagepath) for im in images]
         retdicts = pool.map(multi_alignImage, args)
     else :
         retdicts = []
         for im in images :
-            retdicts.append(alignImage(im, tupleref, refimage))
+            retdicts.append(alignImage(im, tupleref, refimagepath))
     ###############################################################################
     ###############################################################################
 
