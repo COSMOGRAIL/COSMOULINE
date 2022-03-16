@@ -1,4 +1,4 @@
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 import os,sys
 import glob
 from kirbybase import KirbyBase, KBError
@@ -14,22 +14,22 @@ import shutil
 
 # This one is going to be tricky. And long
 
-print "I will update the database with new images in set %s, telescope %s from %s" %(setname, telescopename, rawdir)
-print ""
+print("I will update the database with new images in set %s, telescope %s from %s" %(setname, telescopename, rawdir))
+print("")
 db = KirbyBase()
 images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname', 'mjd'])
 nbrofimages = len(images)
-print "Number of images to treat :", nbrofimages
+print("Number of images to treat :", nbrofimages)
 
 # lensdecpaths = None
-lensdecpaths = ["dec_backfull_lens_renorm_adgjlnrvwxy_aegijk"] # put here the name of the lens deconvolutions you want to update
+lensdecpaths = ["dec_noback_lens_medcoeff_abdehi"] # put here the name of the lens deconvolutions you want to update
 
 if not lensdecpaths == None:
-	print "You want to update the following lens deconvolutions:"
+	print("You want to update the following lens deconvolutions:")
 	for decpath in lensdecpaths:
-		print decpath
-	print 'Note that I will update only ONE renormcoeff at the time, the one that is in your settings !'
-	print 'I am not idiot-proof yet, so BE CAREFUL HERE !!!'
+		print(decpath)
+	print('Note that I will update only ONE renormcoeff at the time, the one that is in your settings !')
+	print('I am not idiot-proof yet, so BE CAREFUL HERE !!!')
 	proquest(True)
 else:
 	proquest(askquestions)
@@ -80,11 +80,11 @@ if 1:
 
 		# I could save some time running 1 and 2 only on the updating images but the gain is 1-2 min. per star -- don't care
 		# Note that we don't run 0 on stars - we want to compute the coeff for all the images !
-		os.system('python 1_prepfiles.py')
-		os.system('python 2_applynorm_NU.py')
+		os.system(f'{python} 1_prepfiles.py')
+		os.system(f'{python} 2_applynorm_NU.py')
 
 		# Instead of 3, I simply move back or change wisely the config files previously backuped:
-		execfile(os.path.join(configdir, 'deconv_config_update.py'))
+		exec(compile(open(os.path.join(configdir, 'deconv_config_update.py'), "rb").read(), os.path.join(configdir, 'deconv_config_update.py'), 'exec'))
 
 		allimages = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=[deckeyfilenum])
 		refimage = [image for image in allimages if image['imgname'] == refimgname][0]
@@ -113,7 +113,7 @@ if 1:
 
 		# int and pos of the sources : first bunch of lines that does not start with | or -
 		intandposblock = ""
-		print "Reformatted point sources :"
+		print("Reformatted point sources :")
 		for i in range(nbptsrc):
 			if ptsrc[i].flux < 0.0 :
 				raise mterror("Please specify a positive flux for your point sources !")
@@ -157,18 +157,18 @@ if 1:
 
 
 		# And now the rest of the deconv procedure
-		os.system('python 4_deconv_NU.py')
-		os.system('python 5a_decpngcheck_NU.py')
-		os.system('python 6_readout.py')
+		os.system(f'{python} 4_deconv_NU.py')
+		os.system(f'{python} 5a_decpngcheck_NU.py')
+		os.system(f'{python} 6_readout.py')
 
 
 
 	# I need to recompute the normalisation coefficient with these new values:
 	os.chdir('../8_renorm_scripts')
-	os.system('python 1a_renormalize.py')
-	os.system('python 1b_report_NU.py')
-	os.system('python 2_plot_star_curves_NU.py')
-	os.system('python 4_fac_merge_pdf_NU.py')
+	os.system(f'{python} 1a_renormalize.py')
+	os.system(f'{python} 1b_report_NU.py')
+	os.system(f'{python} 2_plot_star_curves_NU.py')
+	os.system(f'{python} 4_fac_merge_pdf_NU.py')
 
 
 # That being done, I can get back to the lens now
@@ -184,7 +184,7 @@ else:
 	lensdecpaths = [os.path.join(workdir, decpath) for decpath in lensdecpaths]
 	for decpath in lensdecpaths:
 		if not os.path.isdir(decpath):
-			print decpath, " does not exists ! Check your lensdecpaths !!"
+			print(decpath, " does not exists ! Check your lensdecpaths !!")
 			sys.exit()
 
 #This is pretty much the same than above.
@@ -196,13 +196,13 @@ if 1:
 			r_index = infos.index('renorm')
 			n_fieldname = infos[r_index] + "_" + infos[r_index+1]
 		except:
-			print "You don't have the key word 'renorm' in your renorm name ! I might get it wrong here !"
+			print("You don't have the key word 'renorm' in your renorm name ! I might get it wrong here !")
 			n_fieldname = infos[-2]
 
 		try :
 			obj_index = infos.index("lens")
 			if obj_index > 2 :
-				print "Arf you choose a decname with '_', that was a bad idea ! But I can still live with it."
+				print("Arf you choose a decname with '_', that was a bad idea ! But I can still live with it.")
 				deconvname = ""
 				for i in range(1,obj_index+1):
 					deconvname+=infos[i]
@@ -212,12 +212,12 @@ if 1:
 				deconvname = infos[obj_index-1]
 
 			else :
-				print "There is something strange here, I prefer to stop."
-				print "Name of your deconv name : ", abspath
+				print("There is something strange here, I prefer to stop.")
+				print("Name of your deconv name : ", abspath)
 				sys.exit()
 
 		except:
-			print "I'm not deconvolving a lens, alles gut !"
+			print("I'm not deconvolving a lens, alles gut !")
 			obj_index = 2
 			deconvname = infos[obj_index-1]
 
@@ -267,19 +267,19 @@ if 1:
 		try :
 			shutil.copy(back_name, os.path.join(workdir, 'updating_back.fits'))
 		except:
-			print back_name
-			print "There is no background to backup, is this a deconvolution without backgound ??? "
+			print(back_name)
+			print("There is no background to backup, is this a deconvolution without backgound ??? ")
 			proquest(askquestions)
 
 		# I could save some time running 1 and 2 only on the updating images but the gain is 1-2 min. per star -- don't care
 		if 0: #makeautoskiplist
-			os.system('python 0_facult_autoskiplist_NU.py')
+			os.system(f'{python} 0_facult_autoskiplist_NU.py')
 
-		os.system('python 1_prepfiles.py')
-		os.system('python 2_applynorm_NU.py')
+		os.system(f'{python} 1_prepfiles.py')
+		os.system(f'{python} 2_applynorm_NU.py')
 
 		# Instead of 3, I simply move back or change wisely the config files previously backuped:
-		execfile(os.path.join(configdir, 'deconv_config_update.py'))
+		exec(compile(open(os.path.join(configdir, 'deconv_config_update.py'), "rb").read(), os.path.join(configdir, 'deconv_config_update.py'), 'exec'))
 		# first, the background:
 		os.system('mv %s %s' % (os.path.join(workdir, 'updating_back.fits'), os.path.join(abspath, back_name)))
 
@@ -310,7 +310,7 @@ if 1:
 
 		# int and pos of the sources : first bunch of lines that does not start with | or -
 		intandposblock = ""
-		print "Reformatted point sources :"
+		print("Reformatted point sources :")
 		for i in range(nbptsrc):
 			if ptsrc[i].flux < 0.0 :
 				raise mterror("Please specify a positive flux for your point sources !")
@@ -353,10 +353,10 @@ if 1:
 
 
 		# And now the rest of the deconv procedure
-		os.system('python 4_deconv_NU.py')
-		os.system('python 5a_decpngcheck_NU.py')
-		os.system('python 6_readout.py')
+		os.system(f'{python} 4_deconv_NU.py')
+		os.system(f'{python} 5a_decpngcheck_NU.py')
+		os.system(f'{python} 6_readout.py')
 
 
-	print "Finally done...ugh..."
+	print("Finally done...ugh...")
 

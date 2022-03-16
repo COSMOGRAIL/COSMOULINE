@@ -14,7 +14,7 @@ $HeadURL: http://astropy.scipy.org/svn/astrolib/trunk/asciidata/Lib/asciielement
 __version__ = "Version 1.0 $LastChangedRevision: 305 $"
 
 import string, sys, os, types
-from asciierror import *
+from asciidata.asciierror import *
 
 class Element(object):
     """
@@ -62,15 +62,15 @@ class Element(object):
         @return: the element type
         @rtype: <types> name
         """
-	# check for int
-	if self._isint(item):
-            return types.IntType
-	# check for float
+        # check for int
+        if self._isint(item):
+            return int
+        # check for float
         elif self._isfloat(item):
-            return types.FloatType
-	# the default is string
+            return float
+        # the default is string
         else:
-            return types.StringType        
+            return bytes        
 
     def _isint(self, item):
         """
@@ -117,20 +117,20 @@ class ValElement(Element):
         @param item: the element to be analyzed
         @type item: string/integer/float
         """
-	# check whether it is a string
-	if isinstance(item, type("a")):
-	    # if yes, initialize it in the super class
-	    super(ValElement, self).__init__(item)
-	    
-	    # get the typed value
-	    self._tvalue = self._get_tvalue(item, self.get_type())
-	else:
-	    # if no string, determine the type.
-	    # store the typed value and the
-	    # value as string
-	    self._item   = str(item)
-	    self._type   = type(item)
-	    self._tvalue = item
+        # check whether it is a string
+        if isinstance(item, type("a")):
+            # if yes, initialize it in the super class
+            super(ValElement, self).__init__(item)
+            
+            # get the typed value
+            self._tvalue = self._get_tvalue(item, self.get_type())
+        else:
+            # if no string, determine the type.
+            # store the typed value and the
+            # value as string
+            self._item   = str(item)
+            self._type   = type(item)
+            self._tvalue = item
 
     def get_tvalue(self):
         """
@@ -154,9 +154,9 @@ class ValElement(Element):
         """
         Transforms and returns the typed value.
         
-	For a string element with a type different from
-	string, the string is transformed into this type
-	(e.g. "  1", int ----> 1).
+    For a string element with a type different from
+    string, the string is transformed into this type
+    (e.g. "  1", int ----> 1).
 
         @param item: the element to transform
         @type item: string
@@ -166,9 +166,9 @@ class ValElement(Element):
         @return: the typed element value
         @rtype: string/integer/float
         """
-        if type == types.IntType:
+        if type == int:
             return int(item)
-        elif type == types.FloatType:
+        elif type == float:
             return float(item)
         else:
             return self._item
@@ -186,17 +186,17 @@ class ForElement(ValElement):
         @param item: the element to be analyzed
         @type item: string/integer/float
         """
-	# if yes, initialize it in the super class
-	super(ForElement, self).__init__(item)
-
-	# check whether it is a string
-	if isinstance(item, type("a")):
-	    
-	    # get the format
-	    self._fvalue = self._get_fvalue(self.get_type())
-	else:
-	    # get the default format
-	    self._fvalue = self._get_fdefaults(self.get_type())
+        # if yes, initialize it in the super class
+        super(ForElement, self).__init__(item)
+    
+        # check whether it is a string
+        if isinstance(item, type("a")):
+            
+            # get the format
+            self._fvalue = self._get_fvalue(self.get_type())
+        else:
+            # get the default format
+            self._fvalue = self._get_fdefaults(self.get_type())
 
     def get_fvalue(self):
         """
@@ -211,9 +211,9 @@ class ForElement(ValElement):
         """
         Determines and returns the element format.
 
-	The proper format for the element is derived from
-	it string representation. This string representation
-	originates directly from the input data.
+    The proper format for the element is derived from
+    it string representation. This string representation
+    originates directly from the input data.
         
         @param type: the type to transform into
         @type type: <types> name        
@@ -222,10 +222,10 @@ class ForElement(ValElement):
         @rtype: [string]
         """
         # check for te data type
-        if type == types.IntType:
+        if type == int:
 
             # get the length of the stripped string version
-            svalue = string.strip(self._item)
+            svalue = self._item.strip()
             flength = len(svalue)
 
             # correct for a sign in the stripped string
@@ -240,14 +240,14 @@ class ForElement(ValElement):
                 # return the format
                 return ['% '+str(flength)+'i','%'+str(flength+1)+'s']
 
-        elif type == types.FloatType:
+        elif type == float:
             # store the stripped string
-            svalue = string.strip(self._item)
+            svalue = self._item.strip()
 
             # check for an exponent
-            epos = string.find(svalue, 'E')
+            epos = svalue.find('E')
             if epos < 0:
-                epos = string.find(svalue, 'e')
+                epos = svalue.find('e')
 
             # get the floating point format
             if epos > -1:
@@ -261,7 +261,7 @@ class ForElement(ValElement):
                     accuracy = epos-2
 
                 # check whether there is a '.'
-                if string.find(svalue, '.') < 0:
+                if svalue.find('.') < 0:
                     # correct for missing dot
                     accuracy += 1
                 
@@ -280,7 +280,7 @@ class ForElement(ValElement):
             else:
 
                 # find the position of the '.' and the total length
-                dpos = string.find(svalue, '.')
+                dpos = svalue.find('.')
                 tlength = len(svalue)
                 
                 # compute the accuracy, to say the number
@@ -296,8 +296,8 @@ class ForElement(ValElement):
                         '%'+str(tlength+1)+'s']
                        
         else:
-	    # default format for strings
-	    flength = str(len(self._item))
+            # default format for strings
+            flength = str(len(self._item))
             return ['% '+flength+'s', '%'+flength+'s']
 
     def _get_fdefaults(self, type):
@@ -309,16 +309,16 @@ class ForElement(ValElement):
 
         @return: the list of format strings
         @rtype: [string]
-	"""
-        if type == types.IntType:
-	    # default format for integers
+    """
+        if type == int:
+            # default format for integers
             return ['%5i','%5s']
-        elif type == types.FloatType:
-	    # default format for floats
+        elif type == float:
+            # default format for floats
             return ['% 12.6e', '%13s']
         else:
-	    # default format for strings
-	    flength = str(len(self._item))
+            # default format for strings
+            flength = str(len(self._item))
             return ['% '+flength+'s', '%'+flength+'s']
 
 class TypeTransformator(object):
@@ -366,18 +366,18 @@ class TypeTransformator(object):
         istransf = 0
 
         # check whether the original type is string
-        if orig_type == types.StringType:
+        if orig_type == bytes:
             # everything can be transformed to a string
             istransf = 1
 
         # check whether the original type is float
-        elif orig_type == types.FloatType:
+        elif orig_type == float:
             # integers can be transformed to float
-            if new_type == types.IntType:
+            if new_type == int:
                 istransf = 1
 
         # check whether the original type is integer
-        elif orig_type == types.IntType:
+        elif orig_type == int:
             # NOTHING can be transformed to an integer 
             istransf = 0
 
@@ -399,9 +399,9 @@ class TypeTransformator(object):
         """
 
         # check whether the type is not of any valid type
-        if in_type != types.StringType \
-           and in_type != types.FloatType \
-           and in_type != types.IntType:
+        if in_type != bytes \
+           and in_type != float \
+           and in_type != int:
 
             # raise an exception for invalid types
             raise ColTypeError('Column type: "'+str(in_type)+'" is not a valid column type!')
@@ -417,28 +417,28 @@ class TypeTransformator(object):
         @rtype: value of any accepted type
         """
         # check if higher type is string
-        if self.higher_type == types.StringType:
+        if self.higher_type == bytes:
             # transform to string
             try:
                 rvalue = str(tvalue)
             except:
-                raise TypeTransError('Element: "' + str(tvalue) + '" can not be transformed to ' + str(types.StringType) + '!')
+                raise TypeTransError('Element: "' + str(tvalue) + '" can not be transformed to ' + str(bytes) + '!')
             
         # check if higher type is float
-        elif self.higher_type == types.FloatType:
+        elif self.higher_type == float:
             # transform to float
             try:
                 rvalue = float(tvalue)
             except:
-                raise TypeTransError('Element: "' + str(tvalue) + '" can not be transformed to ' + str(types.FloatType) + '!')
+                raise TypeTransError('Element: "' + str(tvalue) + '" can not be transformed to ' + str(float) + '!')
 
         # check if higher type is integer
-        elif self.higher_type == types.IntType:
+        elif self.higher_type == int:
             # transform to integer
             try:
                 rvalue = int(tvalue)
             except:
-                raise TypeTransError('Element: "' + str(tvalue) + '" can not be transformed to ' + str(types.IntType) + '!')
+                raise TypeTransError('Element: "' + str(tvalue) + '" can not be transformed to ' + str(int) + '!')
 
         # it should never come to this
         else:

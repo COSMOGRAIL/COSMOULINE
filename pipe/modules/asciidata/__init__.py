@@ -5,4 +5,4 @@ $HeadURL: http://astropy.scipy.org/svn/astrolib/trunk/asciidata/Lib/__init__.py 
 """
 __version__ = "Version 1.1 $LastChangedRevision: 123 $"
 
-from asciifunction import *
+from asciidata.asciifunction import *

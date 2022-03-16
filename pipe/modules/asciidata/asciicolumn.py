@@ -12,9 +12,9 @@ $HeadURL: http://astropy.scipy.org/svn/astrolib/trunk/asciidata/Lib/asciicolumn.
 __version__ = "Version 1.0 $LastChangedRevision: 329 $"
 
 import string
-from asciielement import *
-from asciierror   import *
-from asciiutils   import *
+from asciidata.asciielement import *
+from asciidata.asciierror   import *
+from asciidata.asciiutils   import *
 
 class NullColumn(object):
     """
@@ -22,25 +22,25 @@ class NullColumn(object):
     """
     def __init__(self, nrows):
         """
-	    Constructor for the class
+        Constructor for the class
 
         @param nrows: the number of rows
         @type nrows: integer
-	    """
+        """
 
-	    # create the data array
+        # create the data array
         dummy_list = []
 
         # set the row number
         self._nrows   = nrows
 
-	    # append the reuqested number of None
-        #   	for index in range(nrows):
+        # append the reuqested number of None
+        #       for index in range(nrows):
         #             self._data.append(None)
 
         # append the reuqested number of None
         # perhaps a bit faster than the above lines
-        self._data = map(dummy_list.append, range(nrows))
+        self._data = list(map(dummy_list.append, list(range(nrows))))
 
         # set the row number
         self._nrows   = nrows
@@ -54,12 +54,12 @@ class AsciiColumn(NullColumn):
         """
         Constructor for the column class.
 
-    	Instances of this column class hold the data in
-    	a private list. Moreover there exist few
-    	attributes in addition. A column does have
-    	a type, which is either string/integer/float.
-    	The column can be undefined, which means it contains
-    	only 'None', but the default type is string.
+        Instances of this column class hold the data in
+        a private list. Moreover there exist few
+        attributes in addition. A column does have
+        a type, which is either string/integer/float.
+        The column can be undefined, which means it contains
+        only 'None', but the default type is string.
 
         @param element: list of elements to start the data with
         @type element: string/integer/float
@@ -71,13 +71,13 @@ class AsciiColumn(NullColumn):
         self.colcomment =''
         self._data    = []
         self._defined = 0
-        self._type    = types.StringType
+        self._type    = bytes
         self._format  = ['%10s','%10s']
         self._nrows   = 0
 
         # set the default null string
         if null:
-            self._null = [string.strip(null[0])]
+            self._null = [null[0].strip()]
         else:
             self._null  = ['*']
 
@@ -102,26 +102,26 @@ class AsciiColumn(NullColumn):
                         # if defined, add the element
                         self.add_element(item)
                 else:
-		            # simply append the 'None'
-		            self._data.append(item)
+                    # simply append the 'None'
+                    self._data.append(item)
 
-		            # increment the number of rows
-		            self._nrows += 1
+                    # increment the number of rows
+                    self._nrows += 1
 
     def __getitem__(self, index):
         """
-    	Defines the list operator for indexing
+        Defines the list operator for indexing
 
-    	This method returns the value at a given index.
-    	In the current class this means the method returns
-    	the column value  at the requested index.
+        This method returns the value at a given index.
+        In the current class this means the method returns
+        the column value  at the requested index.
 
         @param index: the index of the column to be returned
         @type index: integer
 
         @return: the column value
         @rtype: string/integer/float
-    	"""
+        """
         # check whether the requested index is available.
         # raise an error if not
         # [BUG] ?  self._nrows-1: ->  self._nrows:
@@ -135,18 +135,18 @@ class AsciiColumn(NullColumn):
 
     def __setitem__(self, index, value):
         """
-    	Defines the list operator for indexed assignement
+        Defines the list operator for indexed assignement
 
-    	The method inserts a value into the column at the
-    	specified index. It is not possible to create
-    	extra rows with this method. Only existing
-    	elements can be overwritten.
+        The method inserts a value into the column at the
+        specified index. It is not possible to create
+        extra rows with this method. Only existing
+        elements can be overwritten.
 
         @param index: the index to put the colun to
         @type index: integer
         @param value: the value to assign to an index
         @type value: string/integer/float
-     	"""
+         """
         # check whether the indexed element does exist
         # raise an error if not
         if index > self._nrows-1:
@@ -155,7 +155,7 @@ class AsciiColumn(NullColumn):
             raise Exception(err_msg)
 
         if value != None:
-	        # check whether the column is defined
+            # check whether the column is defined
             if not self._defined:
                 # create an element object
                 val = ForElement(value)
@@ -204,7 +204,7 @@ class AsciiColumn(NullColumn):
 
     def _change_column_type(self, t_trans, value):
         """
-    	Changes the type of a column
+        Changes the type of a column
 
         The method changes the type of a column. It transformes
         all element into the new type and also defines the
@@ -214,7 +214,7 @@ class AsciiColumn(NullColumn):
         @type t_trans:
         @param value: the template value
         @type value: string/integer/float
-     	"""
+         """
         # create an element object
         val = ForElement(value)
 
@@ -244,10 +244,10 @@ class AsciiColumn(NullColumn):
         @return: the format for the null elements
         @rtype: string
         """
-        if self._type == types.IntType:
+        if self._type == int:
             length = len(str(newformat % 1))
             return '%'+str(length)+'s'
-        elif self._type == types.FloatType:
+        elif self._type == float:
             length = len(str(newformat % 1.0))
             return '%'+str(length)+'s'
         else:
@@ -272,12 +272,12 @@ class AsciiColumn(NullColumn):
         """
         Print the column elements to the screen.
 
-    	The method prints the column name and the elements onto
-    	the screen. The format is column format, each
-    	element is written otno a new line.
+        The method prints the column name and the elements onto
+        the screen. The format is column format, each
+        element is written otno a new line.
 
-    	@return: the string representation of the column
-    	@rtype: string
+        @return: the string representation of the column
+        @rtype: string
         """
         # make the header
         bigstring = 'Column: '+str(self.colname)
@@ -303,14 +303,14 @@ class AsciiColumn(NullColumn):
 
     def __delitem__(self, index):
         """
-    	Deletes an index.
+        Deletes an index.
 
-    	The method deletes a column row specified in the input.
-    	The column is specified by the index.
+        The method deletes a column row specified in the input.
+        The column is specified by the index.
 
         @param index: row index
         @type index: integer
-    	"""
+        """
         # delete the column
         del self._data[index]
 
@@ -375,14 +375,14 @@ class AsciiColumn(NullColumn):
         """
         Adds an element to the the column
 
-	    The method adds an element at the end of the data list
-	    of the column object. Type cheking is performed, and
-	    and error is thrown if the types do not match.
+        The method adds an element at the end of the data list
+        of the column object. Type cheking is performed, and
+        and error is thrown if the types do not match.
 
         @param element: string to be interpretet as NULL
         @type element: string/integer/float
         """
-	    # check for 'None'
+        # check for 'None'
         if element != None:
 
             # check whether the column is defined
@@ -424,8 +424,8 @@ class AsciiColumn(NullColumn):
             self._data.append(elem.get_tvalue())
 #            print elem.get_tvalue()
 
-    	else:
-	        # append a 'None' element
+        else:
+            # append a 'None' element
             self._data.append(element)
 
         # increment the number of rows
@@ -434,18 +434,18 @@ class AsciiColumn(NullColumn):
 
     def fprint_elem(self, index):
         """
-    	Create and return a formatted string representation for an element.
+        Create and return a formatted string representation for an element.
 
-    	The method creates a formatted string representation
-    	for an element in an AsciiColumn. The element is specified
-    	by the row index. The string representation is returned.
+        The method creates a formatted string representation
+        for an element in an AsciiColumn. The element is specified
+        by the row index. The string representation is returned.
 
-    	@param index: the index of the element
-    	@type index: integer
+        @param index: the index of the element
+        @type index: integer
 
         @return: the string representation of the element
         @rtype: string
-    	"""
+        """
         # check whether the row exists
         # raise an error if not
         if index > self._nrows-1:
@@ -480,17 +480,17 @@ class AsciiColumn(NullColumn):
             raise Exception('There are "None" elements in the column. They can not be\ntransformed to numarrays!')
 
         # check for string column
-        if self._type == types.StringType:
+        if self._type == bytes:
             # import CharArrays
             import numarray.strings
             # transform the array to CharArrays
             narray = numarray.strings.array(self._data)
 
-        elif self._type == types.IntType:
+        elif self._type == int:
             # transform the data to integer numarray
             narray = numarray.array(self._data, type='Int32')
 
-        elif self._type == types.FloatType:
+        elif self._type == float:
             # transform the data to float numarray
             narray = numarray.array(self._data, type='Float64')
 
@@ -525,7 +525,7 @@ class AsciiColumn(NullColumn):
 
             # create the numpy array,
             # making on the fly the mask
-            narray = numpy.ma.array(self._data, mask=map(make_mask, self._data))
+            narray = numpy.ma.array(self._data, mask=list(map(make_mask, self._data)))
 
         else:
             # convert the list to a numpy object

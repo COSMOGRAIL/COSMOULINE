@@ -5,8 +5,8 @@ __date__ = '2009'
 __author__ = "Cantale Nicolas - EPFL <n.cantale@gmail.com>"
 
 
-from AImage import Image
-from PSF   import PSF
+from .AImage import Image
+from .PSF   import PSF
 import numpy as np
 from scipy import signal
 #from Scientific.Functions.FirstDerivatives import *
@@ -195,7 +195,7 @@ class Star():
         c1, c2 = int(c1/self.sampling_factor),int(c2/self.sampling_factor)
         #check for an eventual overstepping of the image border 
         if c1 - r < 0. or c2 - r < 0. or c1 + r >= self.bshape[0]  or c2 + r >= self.bshape[1]:
-            raise ValueError, 'Bad gaussian fit diameter: too wide (' +  str(r)+ ' pixels)'
+            raise ValueError('Bad gaussian fit diameter: too wide (' +  str(r)+ ' pixels)')
         return self.residuals[int(c1 - r) : int(c1 + r + sup),
                               int(c2 - r) : int(c2 + r + sup)]
         
@@ -212,8 +212,8 @@ class Star():
         fault = False
         #inner grid:
         if self.inrad > 0:
-            for i in xrange(int(c1 - self.inrad), int(c1 + self.inrad)+self.isuppix, self.idisp):
-                for j in xrange(int(c2 - self.inrad), int(c2 + self.inrad)+self.isuppix, self.idisp):
+            for i in range(int(c1 - self.inrad), int(c1 + self.inrad)+self.isuppix, self.idisp):
+                for j in range(int(c2 - self.inrad), int(c2 + self.inrad)+self.isuppix, self.idisp):
                     if par[cnt,1] < self.fwhmin:
                         fault = True                    
                         break
@@ -223,8 +223,8 @@ class Star():
                     cnt += 1  
         #outer grid:
         if self.outrad > 0:
-            for i in xrange(int(c1 - self.outrad), int(c1 + self.outrad)+self.osuppix, self.odisp):
-                for j in xrange(int(c2 - self.outrad), int(c2 + self.outrad)+self.osuppix, self.odisp):
+            for i in range(int(c1 - self.outrad), int(c1 + self.outrad)+self.osuppix, self.odisp):
+                for j in range(int(c2 - self.outrad), int(c2 + self.outrad)+self.osuppix, self.odisp):
                     if par[cnt,1] < self.fwhmin or fault == True:
                         fault = True
                         break                    
@@ -255,7 +255,7 @@ class Star():
         c1, c2, i0 = self.par.getLocpar(self.id-1)
         c1, c2 = int(c1/self.sampling_factor),int(c2/self.sampling_factor) 
         if c1 - diameter/2. < 0. or c2 - diameter/2. < 0. or c1 + diameter/2. >= self.bshape[0]  or c2 + diameter/2. >= self.bshape[1]:
-            raise ValueError, 'Bad gaussian fit diameter'
+            raise ValueError('Bad gaussian fit diameter')
         return self.diffm.array[int(c1 - self.gausrad) : int(c1 + self.gausrad),
                                 int(c2 - self.gausrad) : int(c2 + self.gausrad)]
         
@@ -270,8 +270,8 @@ class Star():
         cnt = -1
         self.psfg.reset()
         fault = False
-        for i in xrange(int(c1 - self.gausrad), int(c1 + self.gausrad)):
-            for j in xrange(int(c2 - self.gausrad), int(c2 + self.gausrad)):
+        for i in range(int(c1 - self.gausrad), int(c1 + self.gausrad)):
+            for j in range(int(c2 - self.gausrad), int(c2 + self.gausrad)):
                 cnt += 1  
                 if par[cnt,1] < self.fwhmin:
                     fault = True             
@@ -329,8 +329,8 @@ class Star():
         lenShape = len(shape)
         factor = np.asarray(shape)/np.asarray(args)
         evList = ['a.reshape('] + \
-                 ['args[%d],factor[%d],'%(i,i) for i in xrange(lenShape)] + \
-                 [')'] + ['.sum(%d)'%(i+1) for i in xrange(lenShape)] #+ \
+                 ['int(args[%d]),int(factor[%d]),'%(i,i) for i in range(lenShape)] + \
+                 [')'] + ['.sum(%d)'%(i+1) for i in range(lenShape)] #+ \
 #                 ['/factor[%d]'%i for i in xrange(lenShape)]
         return eval(''.join(evList))
         

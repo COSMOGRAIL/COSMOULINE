@@ -1,4 +1,4 @@
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 
@@ -11,4 +11,4 @@ reporttxtfile = open(os.path.join(workdir, "report_chronocontent.txt"), "w")
 reporttxtfile.write(reporttxt)
 reporttxtfile.close()
 
-print "Done."
+print("Done.")

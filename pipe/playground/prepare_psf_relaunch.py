@@ -16,12 +16,12 @@ imgstoredoanyway = ["Mer2_qk270885"]
 
 
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 
 
-print "Please edit the source before running me."
+print("Please edit the source before running me.")
 proquest(askquestions)
 
 backupfile(imgdb, dbbudir, "prepare_psf_relaunch")
@@ -33,9 +33,9 @@ origdir = os.getcwd()
 images = db.select(imgdb, ['gogogo','treatme',psfkeyflag], [True,True,True], returnType='dict')
 
 
-print "I will check %i images." % len(images)
-print "The psfdir :"
-print psfdir
+print("I will check %i images." % len(images))
+print("The psfdir :")
+print(psfdir)
 proquest(askquestions)
 
 
@@ -49,20 +49,20 @@ for image in images:
 	#print file_count
 	
 	if (file_count == nbr_if_done) and (image['imgname'] not in imgstoredoanyway):
-		print image['imgname'], "is done."
+		print(image['imgname'], "is done.")
 		nchanged += 1
 		db.update(imgdb, ['imgname'], [image['imgname']], [False], ['treatme'])
 	else:
-		print image['imgname']
+		print(image['imgname'])
 
 	
 
 db.pack(imgdb)
 
-print "I've set treatme to False for", nchanged, "images."
-print len(images) - nchanged, "images remain to be done."
+print("I've set treatme to False for", nchanged, "images.")
+print(len(images) - nchanged, "images remain to be done.")
 
-print "Don't forget to put treatme to True again once you are done !"
+print("Don't forget to put treatme to True again once you are done !")
 
 
 

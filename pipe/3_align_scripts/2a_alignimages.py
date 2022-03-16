@@ -1,122 +1,128 @@
 #
-#	here we do the actual geomap and gregister (pyraf)
-#	we apply this inprinciple to all images gogogo, treatme, and flagali
+#    here we do the actual geomap and gregister (pyraf)
+#    we apply this inprinciple to all images gogogo, treatme, and flagali
 #
 
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+import numpy as np
+from astropy.io import fits
+import astroalign as aa
 
 from kirbybase import KirbyBase, KBError
 import math
-from pyraf import iraf
+# from pyraf import iraf
 from variousfct import *
 from datetime import datetime, timedelta
+import progressbar
+import multiprocessing
+
+from star import readgeomap
 
 # As we will tweak the database, let's do a backup
 backupfile(imgdb, dbbudir, "alignimages")
 
 db = KirbyBase()
 if thisisatest:
-	print "This is a test."
-	images = db.select(imgdb, ['flagali','gogogo','treatme', 'testlist'], ['==1',True, True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
+    print("This is a test.")
+    images = db.select(imgdb, ['flagali','gogogo','treatme', 'testlist'], ['==1',True, True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
 elif update:
-	print "This is an update."
-	images = db.select(imgdb, ['flagali','gogogo','treatme', 'updating'], ['==1',True, True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
-	askquestions = False
+    print("This is an update.")
+    images = db.select(imgdb, ['flagali','gogogo','treatme', 'updating'], ['==1',True, True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
+    askquestions = False
 else:
-	images = db.select(imgdb, ['flagali','gogogo','treatme'], ['==1',True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
+    images = db.select(imgdb, ['flagali','gogogo','treatme'], ['==1',True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
 
-# perhaps you want to tweak this to run the alignment only on a few images :
 
-#images = db.select(imgdb, ['flagali','gogogo','treatme','maxalistars'], ['==1', True, True, '==7'], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
-#images = db.select(imgdb, ['flagali', 'geomaprms'], ['==1', '> 1.0'], ['recno','imgname','rotator'], returnType='dict')
-#images = db.select(imgdb, ['flagali','imgname'], ['==1','c_e_20080526_35_1_1_1'], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
-
-#for image in images:
-#	print image['imgname']
-
-#recnos = [image['recno'] for image in images]
-#sys.exit()
 
 
 if "geomapangle" not in db.getFieldNames(imgdb) :
-	print "I will add some fields to the database."
-	proquest(askquestions)
-	db.addFields(imgdb, ['geomapangle:float', 'geomaprms:float', 'geomapscale:float'])
+    print("I will add some fields to the database.")
+    proquest(askquestions)
+    db.addFields(imgdb, ['geomapangle:float', 'geomaprms:float', 'geomapscale:float'])
 
 nbrofimages = len(images)
-print "Number of images to treat :", nbrofimages
+print("Number of images to treat :", nbrofimages)
 proquest(askquestions)
 
 starttime = datetime.now()
 
-for i,image in enumerate(images):
+# we'll still need the reference image, see below.
+refimage = fits.getdata(db.select(imgdb, ['imgname'], [refimgname], returnType='dict')[0]['rawimg'])
 
-	print "--------------------"
-	print i+1, "/", nbrofimages, image['imgname']
-	
-	imgtorotate = os.path.join(alidir, image['imgname'] + "_skysub.fits")
-	geomapin = os.path.join(alidir, image['imgname'] + ".geomap")
-	
-	aliimg = os.path.join(alidir, image['imgname'] + "_ali.fits")
-	
-	if os.path.isfile(aliimg):
-		"Removing existing aligned image."
-		os.remove(aliimg)
-	
-	#databasename = "geodatabase"
-	databasename = os.path.join(workdir, "geodatabase") # better, it prevents pbs when doing simultaneous alignments with same pipe.
-	if os.path.isfile(databasename):
-		os.remove(databasename)
 
-	iraf.unlearn(iraf.geomap)
-	iraf.geomap.fitgeom = "rscale"		# shift, xyscale, rotate, rscale
-	iraf.geomap.function = "polynomial"
-	iraf.geomap.transfo = "broccoli"
-	iraf.geomap.interac = "no"
-	#iraf.geomap.verbose="no"
+def alignImage(image):
+    try:
+        print("Processing", image['imgname'], "with recno", image['recno'])
+        imgtorotate = os.path.join(alidir, image['imgname'] + "_skysub.fits")
+        geomapin = os.path.join(alidir, image['imgname'] + ".geomap")
+        
+        aliimg = os.path.join(alidir, image['imgname'] + "_ali.fits")
+        
+    
+        # so, we aim to replace IRAF with astroalign. First, let us
+        # recover the mapped stars obtained in 1b_identcoord.py :
+        referenceset, toalignset = readgeomap(geomapin)
+        
+        # now this might fail if one of the images is e.g. distorted.
+        # thus wrap the find_transform operation in a try/except block.
+        transform, _ = aa.find_transform(toalignset, referenceset)
 
-	mapblabla = iraf.geomap(input = geomapin, database = databasename, xmin = 1, xmax = dimx, ymin = 1, ymax = dimy, Stdout=1)
-	
-	
-	for line in mapblabla:
-		if "X and Y scale:" in line:
-			mapscale = line.split()[4:6]
-		if "Xin and Yin fit rms:" in line:
-			maprmss = line.split()[-2:]
-		if "X and Y axis rotation:" in line:
-			mapangles = line.split()[-4:-2]
-		if "X and Y shift:" in line:
-			mapshifts = line.split()[-4:-2]
-	
-	geomaprms = math.sqrt(float(maprmss[0])*float(maprmss[0]) + float(maprmss[1])*float(maprmss[1]))
-	geomapangle = float(mapangles[0])
-	geomapscale = float(mapscale[0])
-	
-	if mapscale[0] != mapscale[1]:
-		raise mterror("Error reading geomap scale")
-	
-	print "Scale :", geomapscale
-	print "Angle :", geomapangle
-	print "RMS   :", geomaprms
-	
-	db.update(imgdb, ['recno'], [image['recno']], {'geomapangle': geomapangle, 'geomaprms': geomaprms, 'geomapscale': geomapscale})
+        
+        # assign the different parts of the transformation:
+        geomapscale = transform.scale
+        geomaprms   = np.sqrt( np.sum(transform.residuals(toalignset, referenceset)) / len(referenceset) )
+        geomapangle = transform.rotation
+        mapshifts   = transform.translation
+        
+        print('transforming image no. ', image['recno'])
+        # apply the said transformation to the image.
+        # astroalign still wants a reference to the target image: that is in case
+        # it has a different shape. Thus we provide it for generality.
+        imgtorotatedata  = fits.getdata(imgtorotate)
+        # aaand for some reason, this doesn't work with 32 bits data.
+        aligned_image, _ = aa.apply_transform(transform, 
+                                              source=imgtorotatedata.astype(np.float64), 
+                                              target=refimage)
+        # thus we convert it before applying the transformation, and now we
+        # go back as we write the result:
+        fits.writeto(aliimg, aligned_image.astype(np.float32), overwrite=1)
+    except:
+        print(f"Could not align image {image['imgname']}.")
+        return {'recno':image['recno'], 'flagali':0}
+    
+    return {'recno': image['recno'], 'geomapangle': geomapangle, 
+            'geomaprms':float(geomaprms), 
+            'geomapscale': float(geomapscale)}
+   
+msg  = "Sorry to interrupt: do you want to run this in parallel?"
+msg += f"\ntype yes to run on {maxcores} cores, anything else to run in serial: "
+resp = input(msg)
 
-	print "geomap done"
+if resp.lower() == "yes":
+    pool = multiprocessing.Pool(processes=maxcores)
+    retdicts = pool.map(alignImage, images)
+else:
+    retdicts = []
+    for image in images:
+        retdicts.append(alignImage(image))
 
-	iraf.unlearn(iraf.gregister)
-	iraf.gregister.geometry = "geometric"	# linear, distortion, geometric
-	iraf.gregister.interpo = "spline3"	# linear, spline3
-	iraf.gregister.boundary = "constant"	# padding with zero
-	iraf.gregister.constant = 0.0
-	iraf.gregister.fluxconserve = "yes"
 
-	regblabla = iraf.gregister(input = imgtorotate, output = aliimg, database = databasename, transform = "broccoli", xmin = 1, xmax = dimx, ymin = 1, ymax = dimy, Stdout=1)
 
-	print "gregister done"
+widgets = [progressbar.Bar('>'), ' ', progressbar.ETA(), ' ', progressbar.ReverseBar('<')]
+pbar = progressbar.ProgressBar(widgets=widgets, maxval=len(images)).start()
+for i, (retdict,image) in enumerate(zip(retdicts,images)):
+    if not retdict == None:
+        if 'geomapscale' in retdict:
+            db.update(imgdb, ['recno'], [image['recno']], 
+                      {'geomapangle': retdict["geomapangle"], 
+                       'geomaprms': retdict["geomaprms"], 
+                       'geomapscale': retdict["geomapscale"]})
+        else:
+            db.update(imgdb, ['recno'], [image['recno']], {'flagali':0})
+    pbar.update(i)
+pbar.finish()    
 
-if os.path.isfile(databasename):
-	os.remove(databasename)
 
 db.pack(imgdb)
 

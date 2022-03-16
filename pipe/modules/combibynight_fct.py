@@ -35,7 +35,7 @@ def groupbynights(imagelist, separatesetnames=True):
 	
 	for imageset in imagesbysets:
 		
-		jd = map(lambda x:float(x['mhjd']), imageset)
+		jd = [float(x['mhjd']) for x in imageset]
 		#images = map(lambda x: x['imgname'], imageset)
 	
 		nbimg = len(imageset)
@@ -55,7 +55,7 @@ def groupbynights(imagelist, separatesetnames=True):
 			thisjd = sortedimages[i][0]
 			diffjd = thisjd - lastjd
 			if diffjd < 0.0:
-				print "Fatal error"
+				print("Fatal error")
 				sys.exit()
 			if diffjd < 0.4:			# this will be the maximum gap between observations in one same night.
 				thisnight.append(sortedimages[i][1])
@@ -133,13 +133,13 @@ def mags(listofnights, key, normkey = None, verbose = True):
 			if im[normkey] is None :
 				im[normkey] = numpy.nan
 		if verbose :
-			print "----"
-			print normkey
-			print [float(im[key]) for im in night]
-			print [float(im[key]) for im in night]
-			print [im['medcoeff'] for im in night]
+			print("----")
+			print(normkey,im['imgname'])
+			print([float(im[key]) for im in night])
+			print([float(im[key]) for im in night])
+			print([im['medcoeff'] for im in night])
 			# print [im['box_renorm'] for im in night]
-			print [im['imgname'] for im in night]
+			print([im['imgname'] for im in night])
 
 		if normkey == None:
 			values = -2.5 * log10(clip(asarray([float(image[key]) for image in night]), 1.0, 1.0e18)) # We clip at 1.0, to avoid negative values

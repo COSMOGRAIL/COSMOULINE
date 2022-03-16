@@ -10,14 +10,14 @@
 
 
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from pyraf import iraf
 from kirbybase import KirbyBase, KBError
 #import operator # for the sorting
 #import csv # just leave it there
 from variousfct import *
 
-print "bug"
+print("bug")
 sys.exit()
 
 
@@ -32,7 +32,7 @@ if db.getFieldNames(imgdb).count("hjd") == 0 :
 if db.getFieldNames(imgdb).count("jd") == 0 :
 	db.addFields(imgdb, ['jd:str'])
 
-print "Number of images :", len(images)
+print("Number of images :", len(images))
 
 iraf.astutil()
 iraf.unlearn(iraf.astutil.setjd)
@@ -67,7 +67,7 @@ for image in images:
 	#	Liverpool Telescope : lat 28:45:44.63 lon -17:52:47.99 	= lat 28.762397, lon 17.979997 W
 	#
 	
-	print filename
+	print(filename)
 	heditblabla = iraf.imutil.hedit(image=filename, fields="EPOCH", value=2000, Stdout=1)
 	#print heditblabla
 	
@@ -83,7 +83,7 @@ for image in images:
 		hjd = elements[2]
 		ljd = elements[3]
 		
-	print image['imgname'], image['mjd'], hjd, jd
+	print(image['imgname'], image['mjd'], hjd, jd)
 		
 		
 	db.update(imgdb, ['recno'], [image['recno']], {'hjd': hjd})
@@ -92,4 +92,4 @@ for image in images:
 
 db.pack(imgdb) # to erase the blank lines
 
-print "Done."
+print("Done.")

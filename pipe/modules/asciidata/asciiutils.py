@@ -38,15 +38,15 @@ class NicePrinter(object):
         @param linend: optional linenend
         @type linend: string
         """
-    	#set the stream
+        #set the stream
         self._stream = stream
 
         # set a start value
         self._start  = ''
-	
+    
         # set the delimiter
         if delimiter != None:
-            #	    self._delimiter = ' '+delimiter+' '
+            #        self._delimiter = ' '+delimiter+' '
             self._delimiter = delimiter
         else:
             self._delimiter = ' '
@@ -79,16 +79,16 @@ class NicePrinter(object):
 
     def print_list(self, strlist):
         """
-    	Prints a list to the stream.
+        Prints a list to the stream.
 
-	    The method combines a string list from the input
-    	to a string which represents a line. Delimiter,
-	    linend and linestart are taken into account.
-    	The lines is directly sent to the I/O stream.
+        The method combines a string list from the input
+        to a string which represents a line. Delimiter,
+        linend and linestart are taken into account.
+        The lines is directly sent to the I/O stream.
 
         @param strlist: list 
-        @type strlist: [string] 	
-	    """
+        @type strlist: [string]     
+        """
         self._stream.write(self._start
                            + self._delimiter.join(strlist) + self._linend)
 
@@ -104,11 +104,11 @@ class Separator(object):
     in a file (not yet implemented.
     """
     def __init__(self, delimiter=None, file=None):
-	"""
-	The class constructor
-	"""
-	self._delimiter = delimiter
-	self._file      = file
+        """
+        The class constructor
+        """
+        self._delimiter = delimiter
+        self._file      = file
 
     def separate(self, line):
         """
@@ -120,18 +120,18 @@ class Separator(object):
         @return: the list of items
         @rtype: [string]
         """
-        # delete the trailing newline
-	if line[-1] == '\n':
-	    line = line[:len(line)-1]
-
-        # separate either along a delimiter
-	if self._delimiter != None:
-	    items = self.separate_delim(line)
-        # or along whitespaces
-	else:
-	    items = self.separate_white(line)
-
-	return items
+            # delete the trailing newline
+        if line[-1] == '\n':
+            line = line[:len(line)-1]
+    
+            # separate either along a delimiter
+        if self._delimiter != None:
+            items = self.separate_delim(line)
+            # or along whitespaces
+        else:
+            items = self.separate_white(line)
+    
+        return items
 
     def separate_white(self, line):
         """
@@ -151,23 +151,23 @@ class Separator(object):
         @rtype: [string]
         """
         # create the item list
-	witems = []
-
-        # split it conventionally
-	items = string.split(string.strip(line))
-
-        # go again over the line and identify
-        # the exact starting position of each
-        # item, preserving the leading spaces
-	start=0
-	for item in items:
-	    pos = line.find(item,start)
-	    if pos > -1:
-		witems.append(line[start:pos+len(item)])
-		start = pos+len(item)+1
-
-        # return the list
-	return witems
+        witems = []
+    
+            # split it conventionally
+        items = line.strip().split()
+    
+            # go again over the line and identify
+            # the exact starting position of each
+            # item, preserving the leading spaces
+        start=0
+        for item in items:
+            pos = line.find(item,start)
+            if pos > -1:
+                witems.append(line[start:pos+len(item)])
+                start = pos+len(item)+1
+    
+            # return the list
+        return witems
 
     def separate_delim(self, line):
         """
@@ -183,10 +183,10 @@ class Separator(object):
         @rtype: [string]
         """
         # split the line
-	items = string.split(line, self._delimiter)
-
-        # return the list
-	return items
+        items = string.split(line, self._delimiter)
+    
+            # return the list
+        return items
 
 
 class AsciiLenGetIter(object):
@@ -212,7 +212,7 @@ class AsciiLenGetIter(object):
         """
         return self
 
-    def next(self):
+    def __next__(self):
         """
         Mandatory method for an iterator class
         
@@ -256,7 +256,7 @@ class AsciiColumnIter(object):
         """
         return self
 
-    def next(self):
+    def __next__(self):
         """
         Mandatory method for an iterator class
         

@@ -1,4 +1,4 @@
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from readandreplace_fct import *
@@ -12,23 +12,23 @@ This script can be used anytime during the PSF
 db = KirbyBase()
 
 
-print "psfkey =", psfkey
+print("psfkey =", psfkey)
 
-print "Reading psf star catalog ..."
+print("Reading psf star catalog ...")
 psfstars = star.readmancat(psfstarcat)
 
 for i, s in enumerate(psfstars):
-	print '---------------PSF STAR------------------'
-	print s.name
-	print '-----------------------------------------'
+	print('---------------PSF STAR------------------')
+	print(s.name)
+	print('-----------------------------------------')
 	s.filenumber = (i+1)
 
 
 if thisisatest :
-	print "This is a test run."
+	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 if update:
-	print "This is an update."
+	print("This is an update.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'updating',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 	askquestions=False
 else :
@@ -37,7 +37,7 @@ else :
 
 
 
-print "Number of images to treat :", len(images)
+print("Number of images to treat :", len(images))
 proquest(askquestions)
 
 
@@ -45,7 +45,7 @@ kicklist = []
 
 for i, image in enumerate(images):
 
-	print "%i : %s" % (i+1, image['imgname'])
+	print("%i : %s" % (i+1, image['imgname']))
 	imgpsfdir = os.path.join(psfdir, image['imgname'])
 	os.chdir(os.path.join(imgpsfdir, "results"))
 
@@ -56,20 +56,20 @@ for i, image in enumerate(images):
 		(stararray, starheader) = fromfits(starfilename, verbose=False)
 
 		if max([max(starline) for starline in stararray]) > image["saturlevel"]*image["gain"]*maxpixelvaluecoeff:
-			print image["imgname"] , ' is saturated ! '
+			print(image["imgname"] , ' is saturated ! ')
 			kicklist.append(image["imgname"])
 			break
 
 
-print len(kicklist), ' PSF(s) are saturated:'
+print(len(kicklist), ' PSF(s) are saturated:')
 for imgname in kicklist:
-	print imgname
+	print(imgname)
 
-print "Copy the names above to your psf skiplist!"
-print "I can do it for you if you want"
+print("Copy the names above to your psf skiplist!")
+print("I can do it for you if you want")
 proquest(askquestions)
 skiplist = open(psfkicklist, "a")
 for imgname in kicklist:
 	skiplist.write("\n" + imgname)
 skiplist.close()
-print 'Ok, done.'
+print('Ok, done.')

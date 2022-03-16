@@ -4,7 +4,7 @@
 import sys
 
 if len(sys.argv) == 2:
-	execfile("../config.py")
+	exec (open("../config.py").read())
 	decobjname = sys.argv[1]
 	deckey = "dec_" + decname + "_" + decobjname + "_" + decnormfieldname + "_" + "_".join(decpsfnames)
 	ptsrccat = os.path.join(configdir, deckey + "_ptsrc.cat")
@@ -13,12 +13,12 @@ if len(sys.argv) == 2:
 	deckeypsfused = "decpsf_" + deckey
 	deckeynormused = "decnorm_" + deckey
 	decdir = os.path.join(workdir, deckey)
-	print "You are running the deconvolution on all the stars at once."
-	print "Current star : " + sys.argv[1]
+	print("You are running the deconvolution on all the stars at once.")
+	print("Current star : " + sys.argv[1])
 
 
 else :
-	execfile("../config.py")
+	exec (open("../config.py").read())
 
 from kirbybase import KirbyBase, KBError
 #from variousfct import *
@@ -42,30 +42,30 @@ images[0][deckeyfilenum] = mcsname(1) # The duplicated ref image gets number 1
 nbimg = len(images)
 #nbimg = int(os.popen("ls -1 " + decdir + "g???.fits" + " | wc -l").readlines()[0])
 
-print "We have %i images (ref image is duplicated)." % nbimg
+print("We have %i images (ref image is duplicated)." % nbimg)
 
 
 	# read params of point sources
 try:
 	ptsrc = star.readmancat(ptsrccat)
 	nbptsrc = len(ptsrc)
-	print "Number of point sources :", nbptsrc
+	print("Number of point sources :", nbptsrc)
 
 
 except:
-	print "I haven't seen any point source catalogue in your configdir..."
-	print "I can create it with the following input:"
-	print "%s\t33\t33\t100000" % decobjname
+	print("I haven't seen any point source catalogue in your configdir...")
+	print("I can create it with the following input:")
+	print("%s\t33\t33\t100000" % decobjname)
 	proquest(askquestions)
 	os.system("touch %s" %ptsrccat)
 	cat = open(ptsrccat, 'w')
 	cat.write("%s\t33\t33\t100000" % decobjname)
 	cat.close()
-	print "OK, done !"
+	print("OK, done !")
 
 	ptsrc = star.readmancat(ptsrccat)
 	nbptsrc = len(ptsrc)
-	print "Number of point sources :", nbptsrc
+	print("Number of point sources :", nbptsrc)
 
 
 
@@ -79,18 +79,18 @@ deconvtxt = justreplace(deconv_template, deconvdict)
 deconvfile = open(os.path.join(decdir, "deconv.txt"), "w")
 deconvfile.write(deconvtxt)
 deconvfile.close()
-print "Wrote deconv.txt"
+print("Wrote deconv.txt")
 	# in.txt
 
 		# int and pos of the sources
 intandposblock = ""
-print "Reformatted point sources :"
+print("Reformatted point sources :")
 for i in range(nbptsrc):
 	if ptsrc[i].flux < 0.0 :
 		raise mterror("Please specify a positive flux for your point sources !")
 	intandposblock = intandposblock + nbimg * (str(ptsrc[i].flux) + " ") + "\n"
 	intandposblock = intandposblock + str(2*ptsrc[i].x-0.5) + " " + str(2*ptsrc[i].y-0.5) + "\n"
-	print str(ptsrc[i].flux), str(2*ptsrc[i].x-0.5), str(2*ptsrc[i].y-0.5)
+	print(str(ptsrc[i].flux), str(2*ptsrc[i].x-0.5), str(2*ptsrc[i].y-0.5))
 intandposblock	= intandposblock.rstrip("\n") # remove the last newline
 	
 		# other params
@@ -103,7 +103,7 @@ intxt = justreplace(in_template, indict)
 infile = open(os.path.join(decdir, "in.txt"), "w")
 infile.write(intxt)
 infile.close()
-print "Wrote in.txt"
+print("Wrote in.txt")
 
 	# Is a worse input file possible ?
 	# Yes !!!!
@@ -118,7 +118,7 @@ print "Wrote in.txt"
 # We test the seeingpixels : all values should be above 2, otherwise the dec code will crash :
 testseeings = np.array([image["seeingpixels"] for image in images])
 for image in images:
-	print image["imgname"], image["seeingpixels"]
+	print(image["imgname"], image["seeingpixels"])
 
 if not np.all(testseeings>2.0):
 	raise mterror("I have seeinpixels <= 2.0, deconv.exe cannot deal with those.")
@@ -127,15 +127,15 @@ fwhmtxt = "\n".join(["%.4f" % image["seeingpixels"] for image in images]) + "\n"
 fwhmfile = open(os.path.join(decdir, "fwhm-des-G.txt"), "w")
 fwhmfile.write(fwhmtxt)
 fwhmfile.close()
-print "Wrote fwhm-des-G.txt"
+print("Wrote fwhm-des-G.txt")
 
 
 
-print "I've prepared the input files for %s." % deckey
+print("I've prepared the input files for %s." % deckey)
 
-print "Here they are, if you want to tweak them :"
-print os.path.join(decdir, "in.txt")
-print os.path.join(decdir, "deconv.txt")
+print("Here they are, if you want to tweak them :")
+print(os.path.join(decdir, "in.txt"))
+print(os.path.join(decdir, "deconv.txt"))
 
 	
 	

@@ -1,4 +1,4 @@
-import os, os.path, cPickle, copy
+import os, os.path, pickle, copy,sys
 from src import _1_get_sky, set_mask, _2_get_stars, _3_fitmof, deconv_simult
 from src import _4_fitgaus, _4b_fitnum, _5_PSFgen, get_ini_par
 import src.lib.wsutils as ws
@@ -31,7 +31,7 @@ class MCS_interface():
         return self.listop()
 
     def help(self):
-        print 'help page in construction'
+        print('help page in construction')
         self.listop()
         
     def listop(self):
@@ -41,7 +41,7 @@ class MCS_interface():
         @rtype: list
         @return: List of available methods
         """
-        attr = self.__dict__.keys()
+        attr = list(self.__dict__.keys())
         l = [e for e in dir(self) if ('__' not in e) and (e not in attr)]
         out(1, 'Available operations:')
         for op in l:
@@ -65,17 +65,17 @@ class MCS_interface():
         """
         if not self.as_exe:
             ws.setup_workspace()
-        f = open(self.cfg, 'r')
-        exec f.read()
-        f.close()
-        err = fn.check_namespace(self.needed_par, locals())
+
+        exec(compile(open(self.cfg, 'rb').read(), self.cfg, 'exec'), globals())
+
+        err = fn.check_namespace(self.needed_par, globals())
         if len(err)>0: 
-            raise EnvironmentError, 'Parameters problem. Needs:'+ str(err)
+            raise EnvironmentError('Parameters problem. Needs:'+ str(err))
         for p in self.needed_par:
             self.params[p] = eval(p)
         while not self.check_cfg_val():
             out(2, 'Bad parameters values. Please change and press ENTER','-r')
-            _ = raw_input()
+            _ = input()
         files = ws.get_files(FILENAME, directory='images', as_exe=self.as_exe)[0] #@UndefinedVariable
         self.params['filenb'] = len(files)
         self.params['img_names'] = files
@@ -158,7 +158,7 @@ class MCS_interface():
             d[e] = self.params[e]
         fn.write_cfg(self.cfg, d)
         f = open('param.dat', 'wb')
-        cPickle.dump(self.params, f)
+        pickle.dump(self.params, f)
         f.close()
         if all:
             #TODO: save the images
@@ -180,7 +180,7 @@ class MCS_interface():
         sigl = []
         dir = 'images'
         if self.as_exe: dir = './'
-        for i in xrange(fnb):
+        for i in range(fnb):
             f = self.params['img_names'][i]
             out(1, '===============', i+1, '/', fnb,'===============|')
             out(1, 'Getting sky from', f)
@@ -215,7 +215,7 @@ class MCS_interface():
             fn.array2ds9(img, zscale=True)
             out(1, 'Place markers on the desired stars (may not work if several ds9 instances are actives).')
             out(1, '[Press ENTER when you are done]', '-r')
-            _ = raw_input()
+            _ = input()
             stars = []
             for r in _2_get_stars.getregions():
                 stars += [(r.x,r.y)]
@@ -252,7 +252,7 @@ class MCS_interface():
         fnb = self.params['filenb']
         mpar = []
         out(1, 'Begin moffat fit')
-        for i in xrange(fnb):
+        for i in range(fnb):
             f = self.params['img_names'][i]
             out(1, '===============', i+1, '/', fnb,'===============|')
             out(1, 'Working on', f)
@@ -270,7 +270,7 @@ class MCS_interface():
         self.refresh()
         fnb = self.params['filenb']
         out(1, 'Begin numerical fit')
-        for i in xrange(fnb):
+        for i in range(fnb):
             f = self.params['img_names'][i]
             out(1, '===============', i+1, '/', fnb,'===============|')
             out(1, 'Working on', f)
@@ -288,7 +288,7 @@ class MCS_interface():
         gpar = []
         gpos = []
         out(1, 'Begin gaussian fit')
-        for i in xrange(fnb):
+        for i in range(fnb):
             f = self.params['img_names'][i]
             out(1, '===============', i+1, '/', fnb,'===============|')
             out(1, 'Working on', f)
@@ -306,7 +306,7 @@ class MCS_interface():
         """
         self.refresh()
         fnb = self.params['filenb']
-        for i in xrange(fnb):
+        for i in range(fnb):
             out(1, 'Generate PSF', i+1)
             _5_PSFgen.psf_gen(i, self.params)
         out(1, 'Done')

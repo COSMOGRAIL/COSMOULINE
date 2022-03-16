@@ -5,7 +5,7 @@ It avoids them to be stupidly aligned and cut when you align them
 """
 
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
@@ -19,7 +19,7 @@ db = KirbyBase()
 
 images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
 
-print "I will treat %i images." % len(images)
+print("I will treat %i images." % len(images))
 proquest(askquestions)
 
 images = sorted(images, key=lambda image: image["imgname"])
@@ -32,12 +32,12 @@ assert len(xpattern) == len(ypattern)
 assert len(images) == len(xpattern)
 
 for n, (image, x, y) in enumerate(zip(images, xpattern, ypattern)):
-	print n+1, "/", len(images), ":", image['imgname']
+	print(n+1, "/", len(images), ":", image['imgname'])
 	skysubimg = os.path.join(alidir, image["imgname"] + "_skysub.fits")
 
 	(img, hdr) = fromfits(skysubimg, verbose=True)
 
-	maxext = max(len(img), len(img[0]))/2
+	maxext = max(len(img), len(img[0]))//2
 	newarray = np.zeros((2*maxext+len(img), 2*maxext+len(img[0])))
 
 

@@ -36,7 +36,7 @@ os.mkdir(destdir)
 
 for origpath in origpaths:
 	destpath = newpath(origpath, destdir)
-	print origpath, "->", destpath 
+	print(origpath, "->", destpath) 
 
 	os.symlink(origpath, destpath)		# choose between the two possibilities
 #	shutil.copy(origpath, destpath)	

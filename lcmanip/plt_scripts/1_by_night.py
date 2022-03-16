@@ -1,19 +1,19 @@
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 
 import matplotlib.pyplot as plt
 import matplotlib.dates
 
 
-print "Deconvolution : %s" % (deconvname)
-print "Point sources : %s" % ", ".join(sourcenames)
+print("Deconvolution : %s" % (deconvname))
+print("Point sources : %s" % ", ".join(sourcenames))
 
 images = variousfct.readpickle(pkldbpath, verbose=True)
 
 images = [image for image in images if image["decfilenum_" + deconvname] != None] 
-print "%i images" % len(images)
+print("%i images" % len(images))
 
 groupedimages = groupfct.groupbynights(images)
-print "%i nights"% len(groupedimages)
+print("%i nights"% len(groupedimages))
 
 
 plt.figure(figsize=(12,8))

@@ -13,7 +13,7 @@ Later we will do something more sophisticated for the renormalization.
 
 """
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import star
@@ -26,7 +26,7 @@ backupfile(imgdb, dbbudir, 'calccoeff')
 db = KirbyBase()
 
 if update:
-	print "This is an update."
+	print("This is an update.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict')
 	askquestions = False
 else:
@@ -36,7 +36,7 @@ nbrofimages = len(images)
 
 # we prepare the database
 if "nbrcoeffstars" not in db.getFieldNames(imgdb) :
-	print "I will add some fields to the database."
+	print("I will add some fields to the database.")
 	proquest(askquestions)
 	db.addFields(imgdb, ['nbrcoeffstars:int', 'maxcoeffstars:int', 'medcoeff:float', 'sigcoeff:float', 'spancoeff:float'])
 
@@ -44,37 +44,27 @@ if "nbrcoeffstars" not in db.getFieldNames(imgdb) :
 # we read the handwritten star catalog
 normstars = star.readmancat(normstarscat)
 for s in normstars:
-	print s.name
+	print(s.name)
 
 
-print "Checking reference image ..."
+print("Checking reference image ...")
 refsexcat = os.path.join(alidir, refimgname + ".alicat")
 refcatstars = star.readsexcat(refsexcat, propfields=["FLUX_APER", "FLUX_APER1", "FLUX_APER2", "FLUX_APER3", "FLUX_APER4"])
-id = star.listidentify(normstars, refcatstars, tolerance = identtolerance)
+id = star.listidentify(normstars, refcatstars, tolerance=identtolerance)
 refidentstars = id["match"]
 # now refidentstars contains the same stars as normstars, but with sex fluxes.
 
 
-'''
-print "="*25
-
-print refcatstars[0].props
-print refcatstars[0].flux
-
-
-import sys
-sys.exit()
-'''
 
 if len(refidentstars) != len(normstars):
-	print "Not all normstars identified in sextractor cat of reference image !"
+	print("Not all normstars identified in sextractor cat of reference image !")
 	sys.exit()
 
 # the maximum number of possible stars that could be used
 maxcoeffstars = len(normstars)
-print "Number of coefficient stars :", maxcoeffstars
+print("Number of coefficient stars :", maxcoeffstars)
 nbrofimages = len(images)
-print "I will treat", nbrofimages, "images."
+print("I will treat", nbrofimages, "images.")
 proquest(askquestions)
 
 def simplemediancoeff(refidentstars, identstars):
@@ -101,8 +91,8 @@ def simplemediancoeff(refidentstars, identstars):
 
 
 for i, image in enumerate(images):
-	print "- "*30
-	print i+1, "/", nbrofimages, ":", image['imgname']
+	print("- "*30)
+	print(i+1, "/", nbrofimages, ":", image['imgname'])
 	
 	# the catalog we will read
 	sexcat = os.path.join(alidir, image['imgname'] + ".alicat")
@@ -110,7 +100,7 @@ for i, image in enumerate(images):
 	# read sextractor catalog
 	catstars = star.readsexcat(sexcat, maxflag = 0, posflux = True)
 	if len(catstars) == 0:
-		print "No stars in catalog !"
+		print("No stars in catalog !")
 		db.update(imgdb, ['recno'], [image['recno']], {'nbrcoeffstars': 0, 'maxcoeffstars': maxcoeffstars, 'medcoeff': 1.0, 'sigcoeff': 99.0, 'spancoeff': 99.0})
 		continue
 		
@@ -119,15 +109,15 @@ for i, image in enumerate(images):
 
 	# calculate the normalization coefficient
 	nbrcoeff, medcoeff, sigcoeff, spancoeff = simplemediancoeff(refidentstars, identstars)
-	print "nbrcoeff :", nbrcoeff
-	print "medcoeff :", medcoeff
-	print "sigcoeff :", sigcoeff
-	print "spancoeff :", spancoeff
+	print("nbrcoeff :", nbrcoeff)
+	print("medcoeff :", medcoeff)
+	print("sigcoeff :", sigcoeff)
+	print("spancoeff :", spancoeff)
 	
 	db.update(imgdb, ['recno'], [image['recno']], {'nbrcoeffstars': nbrcoeff, 'maxcoeffstars': maxcoeffstars, 'medcoeff': medcoeff, 'sigcoeff': sigcoeff, 'spancoeff': spancoeff})
 
 db.pack(imgdb) # to erase the blank lines
 
-print "Done."
+print("Done.")
 	
 	

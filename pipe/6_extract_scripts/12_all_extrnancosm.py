@@ -12,7 +12,7 @@
 
 
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from readandreplace_fct import *
@@ -26,10 +26,10 @@ import cosmics
 if update:
 	askquestions=False
 
-print "I will extract, replace NaN, and mask cosmics for the following sources:"
+print("I will extract, replace NaN, and mask cosmics for the following sources:")
 for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdirs, objkeyflags, objcosmicskeys, objcoordcats):
 
-	print "objkey =", objkey
+	print("objkey =", objkey)
 	# read the position of the object to extract
 	objcoords = readmancat(objcoordcat)
 	if len(objcoords) != 1 : raise mterror("Oh boy ... one extraction at a time please !")
@@ -37,19 +37,19 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 	# In fact we do not care about the source at all, just want to know what part of the image to extract.
 	#print "name = ", objcoords[0]['name']
 	objcoordtxt = "%7.2f %7.2f\n" % (objcoords[0]['x'], objcoords[0]['y'])
-	print "Source name = ", objcoords[0]['name']
-	print "coords = ", objcoordtxt
+	print("Source name = ", objcoords[0]['name'])
+	print("coords = ", objcoordtxt)
 
-print "Warning, no further questions will be asked beyond this one"
+print("Warning, no further questions will be asked beyond this one")
 proquest(askquestions)
-print "This may take some time..."
+print("This may take some time...")
 
 askquestions = False
 
 for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdirs, objkeyflags, objcosmicskeys, objcoordcats):
 
 	db = KirbyBase()
-	print "objkey =", objkey
+	print("objkey =", objkey)
 
 	# read the position of the object to extract
 
@@ -60,8 +60,8 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 	#print "name = ", objcoords[0]['name']
 	objcoordtxt = "%7.2f %7.2f\n" % (objcoords[0]['x'], objcoords[0]['y'])
 
-	print "Source name (I don't use it, just for you to check) = ", objcoords[0]['name']
-	print "coords = ", objcoordtxt
+	print("Source name (I don't use it, just for you to check) = ", objcoords[0]['name'])
+	print("coords = ", objcoordtxt)
 
 	proquest(askquestions)
 
@@ -70,42 +70,42 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 	db = KirbyBase()
 
 	if thisisatest :
-		print "This is a test run."
+		print("This is a test run.")
 		images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 	elif update:
-		print "This is an update."
+		print("This is an update.")
 		images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 	else :
 		images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname', 'mjd'])
 
 	nbrofimages = len(images)
 
-	print "I will extract, replace NaN, and mask cosmics on ", nbrofimages, "images."
+	print("I will extract, replace NaN, and mask cosmics on ", nbrofimages, "images.")
 
 
-	print "I will start by updating the database."
-	print "Thus, wait for this progressbar to be done before launching e.g. another extraction."
+	print("I will start by updating the database.")
+	print("Thus, wait for this progressbar to be done before launching e.g. another extraction.")
 	proquest(askquestions)
 
 
 	if os.path.isdir(objdir):	# start from empty directory
-		print "Ok, this objdir already exists :"
-		print objdir
+		print("Ok, this objdir already exists :")
+		print(objdir)
 
 		if objkeyflag not in db.getFieldNames(imgdb) :
 			raise mterror("... but your corresponding objkey is not in the database !")
 
-		print "I will add or rebuild images within this objdir."
+		print("I will add or rebuild images within this objdir.")
 		proquest(askquestions)
 	else :
 
-		print "I will create a NEW objdir/objkey !"
-		print objdir
+		print("I will create a NEW objdir/objkey !")
+		print(objdir)
 		proquest(askquestions)
 		if objkeyflag not in db.getFieldNames(imgdb) :
 			db.addFields(imgdb, ['%s:bool' % objkeyflag, '%s:int' % objcosmicskey])
 		else:
-			raise mterror("... funny : the objkey was in the DB ! Please clean objdir and objkey !")
+			raise mterror("... funny : the objkey was in the DB ! Please clean objdir %s and objkey %s!"%(objdir,objkey))
 		os.mkdir(objdir)
 
 
@@ -127,7 +127,7 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 
 
 	notify(computer, withsound, "Ok, done with updating the database !")
-	print "If the rest of this script fails somehow, it might be safe to go on from the last db backup."
+	print("If the rest of this script fails somehow, it might be safe to go on from the last db backup.")
 
 
 		# read the template files
@@ -136,12 +136,12 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 	origdir = os.getcwd() # Is used by all steps !
 
 	for i, image in enumerate(images):
-		print "Extraction %s %i/%i : %s" % (objkey, i+1, len(images), image["imgname"])
+		print("Extraction %s %i/%i : %s" % (objkey, i+1, len(images), image["imgname"]))
 
 		imgobjdir = os.path.join(objdir, image['imgname'])
 
 		if os.path.isdir(imgobjdir):
-			print "Deleting existing stuff."
+			print("Deleting existing stuff.")
 			shutil.rmtree(imgobjdir)
 		os.mkdir(imgobjdir)
 
@@ -169,7 +169,7 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 			os.remove(os.path.join(imgobjdir, "in.fits"))
 
 
-	print "Done with extraction."
+	print("Done with extraction.")
 
 	if refimgname in [img["imgname"] for img in images]:
 
@@ -178,11 +178,11 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 		destpath = os.path.join(workdir, objkey + "_ref_input.fits")
 		copyorlink(sourcepath, destpath, uselinks)
 
-		print "I have linked the extraction from the reference image here :"
-		print destpath
+		print("I have linked the extraction from the reference image here :")
+		print(destpath)
 	else:
 		if not update:
-			print "Warning : the reference image was not in your selection !"
+			print("Warning : the reference image was not in your selection !")
 
 
 
@@ -195,7 +195,7 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 		sigstars = pyfits.open(filename, mode='update')
 		scidata = sigstars[0].data
 		if True in isNaN(scidata):
-			print "Yep, some work for me : ", len(scidata[isNaN(scidata)]), "pixels."
+			print("Yep, some work for me : ", len(scidata[isNaN(scidata)]), "pixels.")
 		scidata[isNaN(scidata)] = value
 		sigstars.flush()
 
@@ -205,13 +205,13 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 		for x in range(len(scidata)):
 			for y in range(len(scidata[0])):
 				if scidata[x][y] < 1.0e-8:
-					print "Nearly zero at ", x, y
+					print("Nearly zero at ", x, y)
 					scidata[x][y] = value
 		myfile.flush()
 
 
 	for i, image in enumerate(images):
-		print "NaN replacement %s %i/%i : %s" % (objkey, i+1, len(images), image["imgname"])
+		print("NaN replacement %s %i/%i : %s" % (objkey, i+1, len(images), image["imgname"]))
 
 		imgobjdir = os.path.join(objdir, image['imgname'])
 
@@ -222,7 +222,7 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 		replacezeroes("sig.fits", 1.0e-7)
 		os.chdir(origdir)
 
-	print "Done with NaN replacment."
+	print("Done with NaN replacment.")
 
 
 	# And finally the cosmics :
@@ -231,7 +231,7 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 
 	for i, image in enumerate(images):
 
-		print "Cosmics %s %i/%i : %s" % (objkey, i+1, len(images), image["imgname"])
+		print("Cosmics %s %i/%i : %s" % (objkey, i+1, len(images), image["imgname"]))
 
 		imgobjdir = os.path.join(objdir, image['imgname'])
 		os.chdir(imgobjdir)
@@ -253,7 +253,7 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 		# We gather some parameters :
 
 		pssl = image['skylevel'] # The Previously Subtracted Sky Level
-		print "PSSL (TM): %.2f" % pssl
+		print("PSSL (TM): %.2f" % pssl)
 		gain = image['gain']
 		readnoise = image['readnoise']
 

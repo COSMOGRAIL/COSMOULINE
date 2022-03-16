@@ -7,7 +7,7 @@
 #	- the sorting and naming of the images
 #
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import star
@@ -37,22 +37,22 @@ z2 =  2000
 
 # - - - - - - - - - - - - -
 
-print "You can configure some lines of this script."
-print "(e.g. to produce full frame pngs, or zoom on the lens, etc)"
-print "I respect thisisatest, so you can use this to try your settings..."
+print("You can configure some lines of this script.")
+print("(e.g. to produce full frame pngs, or zoom on the lens, etc)")
+print("I respect thisisatest, so you can use this to try your settings...")
 
 #proquest(askquestions)
 
 pngdir = os.path.join(workdir, "ali_" + pngkey + "_png")
 
 if update:
-	print "I will complete the existing sky folder. Or create it if you deleted it to save space"
+	print("I will complete the existing sky folder. Or create it if you deleted it to save space")
 	if not os.path.isdir(pngdir):
 		os.mkdir(pngdir)
 
 else:
 	if os.path.isdir(pngdir):
-		print "I will delete existing stuff."
+		print("I will delete existing stuff.")
 		proquest(askquestions)
 		shutil.rmtree(pngdir)
 	os.mkdir(pngdir)
@@ -60,10 +60,10 @@ else:
 # We select the images to treat :
 db = KirbyBase()
 if thisisatest :
-	print "This is a test run."
+	print("This is a test run.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict', sortFields=['setname','mjd'])
 elif update:
-	print "This is an update."
+	print("This is an update.")
 	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict', sortFields=['setname','mjd'])
 	askquestions=False
 else :
@@ -76,7 +76,7 @@ else :
 #images = db.select(imgdb, ['gogogo', 'ell'], [True, ">0.65"], returnType='dict', sortFields=['mjd'])
 #images = db.select(imgdb, ['recno'], ['*'], returnType='dict', sortFields=['mjd'])
 
-print "I will treat", len(images), "images."
+print("I will treat", len(images), "images.")
 proquest(askquestions)
 
 # We get the ref image to draw the ali stars, as for 1a_checkalistars.py etc :
@@ -95,8 +95,8 @@ starttime = datetime.now()
 
 for i, image in enumerate(images):
 	
-	print "- " * 40
-	print i+1, "/", len(images), ":", image['imgname']
+	print("- " * 40)
+	print(i+1, "/", len(images), ":", image['imgname'])
 
 	
 	fitsfile = os.path.join(alidir, image['imgname'] + "_ali.fits")
@@ -128,7 +128,7 @@ for i, image in enumerate(images):
 	"Nbr alistars : " + "%2i / %2i = "%(image['nbralistars'], image['maxalistars']) + "|"*image['nbralistars'],
 	"Actual geomap rms : %4.2f [pixel]" % image['geomaprms'],
 	"Rotator (header) : %7.2f [deg]" % image['rotator'],
-	"Guessed angle : %9.4f [deg]" % image['angle'],
+	#"Guessed angle : %9.4f [deg]" % image['angle'],
 	"Actual geomap angle : %9.4f [deg]" % image['geomapangle'],
 	"Alignment info : %s" % image['alicomment']
 	]
@@ -170,8 +170,8 @@ if update:  # remove all the symlink and redo it again with the new images
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
 notify(computer, withsound, "I'm done. %s ." % timetaken)
-print "PNGs are written into"
-print pngdir
+print("PNGs are written into")
+print(pngdir)
 
 if makejpgarchives :
 	makejpgtgz(pngdir, workdir, askquestions = askquestions)

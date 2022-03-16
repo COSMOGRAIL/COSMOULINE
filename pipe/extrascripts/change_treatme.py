@@ -4,12 +4,12 @@
 #	Example: if setname = 1 then set treatme to false.
 #
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 
 
-print "This script is to change the treatme flags... adapt the source !"
+print("This script is to change the treatme flags... adapt the source !")
 proquest(askquestions)
 
 
@@ -18,7 +18,7 @@ db = KirbyBase()
 
 # We do not have to select images first: directly update with a criteria !
 
-n = db.update(imgdb, ['imgname'], ['1_cutout_rings.v3.skycell.0837.079.wrp.g.55274.46227'], [True], ['gogogo'])
+n = db.update(imgdb, ['imgname'], ['1_ogg2m001-fs02-20200419-0080-e91'], [True], ['gogogo'])
 # n = db.update(imgdb, ['imgname'], ['3_ECAM.2011-05-31T07:47:14.000'], [True], ['gogogo'])
 
 #n = db.update(imgdb, ['setname'], ['3'], [True], ['treatme'])
@@ -33,7 +33,7 @@ n = db.update(imgdb, ['imgname'], ['1_cutout_rings.v3.skycell.0837.079.wrp.g.552
 #n = db.update(imgdb, ['imgname'], [refimgname], [True], ['treatme'])
 
 
-print "Number of updates : %i" % n
+print("Number of updates : %i" % n)
 
 # And do not forget to pack afterwards.
 db.pack(imgdb)

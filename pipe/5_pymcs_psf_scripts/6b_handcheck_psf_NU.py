@@ -1,12 +1,12 @@
-from Tkinter import *            
-from tkMessageBox import *
+from tkinter import *
+from tkinter.messagebox import *
 #~ try:
 	#~ import ImageTk
 	#~ import Image
 #~ except:
 from PIL import ImageTk
 from PIL import Image
-execfile("../config.py")
+exec(open("../config.py").read())
 from kirbybase import KirbyBase, KBError 
 from variousfct import * 
 from readandreplace_fct import *
@@ -37,10 +37,10 @@ db = KirbyBase()
 
 
 if thisisatest:
-	print "This is a test run."
+	print("This is a test run.")
 	imagesdict = db.select(imgdb, ['gogogo','treatme','testlist'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 if update:
-	print "This is an update."
+	print("This is an update.")
 	imagesdict = db.select(imgdb, ['gogogo','treatme','updating'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 	plt.figure(figsize=(8,5))
 	plt.scatter(0,0, label='COUCOU')
@@ -60,15 +60,15 @@ for i,image in enumerate(imagesdict):
 	images.append(image['imgname'])
 		
 		
-nb= raw_input("Which image do you want to start from ? (For the first image write 0 ...) ")
+nb= eval(input("Which image do you want to start from ? (For the first image write 0 ...) "))
 i = int(nb)
 
 
-resize = raw_input("Do you want to resize ? (yes/no) This is useful if your PSF uses over 6 stars otherwise it just slows the program ")
+resize = input("Do you want to resize ? (yes/no) This is useful if your PSF uses over 6 stars otherwise it just slows the program ")
 
 #Dimension of the window if you decide to resize
 if resize == 'yes':
-	dimension = raw_input("What dimension ?(1 for 1200/950, 2 for 1900/1150, 3 for 1600/968, 4 to enter your dimension")
+	dimension = eval(input("What dimension ?(1 for 1200/950, 2 for 1900/1150, 3 for 1600/968, 4 to enter your dimension"))
 	
 	if dimension == '1':
 		width = 1200 
@@ -80,19 +80,19 @@ if resize == 'yes':
 		width = 1600
 		height = 968
 	elif dimension == '4':
-		width = int(raw_input("Width ?"))
-		height = int(raw_input("Height ?"))
+		width = int(eval(input("Width ?")))
+		height = int(eval(input("Height ?")))
 	
 t = Tk() 
 
 
 if os.path.isfile(psfkicklist):
-	print "The psfkicklist already exists :"
+	print("The psfkicklist already exists :")
 else:
 	cmd = "touch " + psfkicklist
 	os.system(cmd)
-	print "I have just touched the psfkicklist for you :"
-print psfkicklist
+	print("I have just touched the psfkicklist for you :")
+print(psfkicklist)
 
 # Functions to increase or decrease i
 def incri():
@@ -193,7 +193,7 @@ liste3 = [] # List of the images that don't have the same size
 def quit():
 	global t
 	global i
-	print "You stopped at the ", i, "th image, remember that if you want to come back ! (I wrote that in comment of your skiplist in case you have Alzheimer)"
+	print(("You stopped at the ", i, "th image, remember that if you want to come back ! (I wrote that in comment of your skiplist in case you have Alzheimer)"))
 	skiplist = open(psfkicklist, "a")
 	skiplist.write("\n #" + str(i) )
 	skiplist.close()
@@ -205,11 +205,11 @@ def quit():
 		if liste2[i]!=liste2[0]:
 			liste3.append(images[i])
 	if liste3 == []:
-		print 'All the images have the same size : ' + str(liste2[0])
+		print(('All the images have the same size : ' + str(liste2[0])))
 	else:
-		print str(len(liste3))+" images do not have the same size as the first image ("+str(liste2[0])+"), here is the list :" 
+		print((str(len(liste3))+" images do not have the same size as the first image ("+str(liste2[0])+"), here is the list :")) 
 		for i, elem in enumerate(liste3):
-			print str(elem)
+			print((str(elem)))
 		
 	t.destroy()
 	

@@ -14,8 +14,8 @@ os.chdir(filepath)
 filenames = sorted(glob("*.fits"))
 
 for filename in filenames:
-	print "-"*40
-	print filename
+	print("-"*40)
+	print(filename)
 	
 	#if "flip" in filename:
 	#	continue

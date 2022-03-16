@@ -6,7 +6,7 @@
 #	- the sorting and naming of the images
 #
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from star import *
@@ -20,8 +20,8 @@ from datetime import datetime, timedelta
 # This pngkey is nothing more than the name of a directory in which the pngs will be written.
 # Change it to avoid overwriting an existing set of pngs.
 
-print "You want to make pngs for the combined images"
-print "Is this correct, my dear master?"
+print("You want to make pngs for the combined images")
+print("Is this correct, my dear master?")
 proquest(askquestions)
 
 pngkey = combidirname
@@ -37,9 +37,9 @@ z2 = "auto"
 
 # - - - - - - - - - - - - -
 
-print "You can configure some lines of this script."
-print "(e.g. to produce full frame pngs, or zoom on the lens, etc)"
-print "I respect thisisatest, so you can use this to try your settings..."
+print("You can configure some lines of this script.")
+print("(e.g. to produce full frame pngs, or zoom on the lens, etc)")
+print("I respect thisisatest, so you can use this to try your settings...")
 
 proquest(askquestions)
 
@@ -47,7 +47,7 @@ pngdir = os.path.join(workdir, pngkey + "_png")
 
 # We check for potential existing stuff :
 if os.path.isdir(pngdir):
-	print "I will delete existing stuff."
+	print("I will delete existing stuff.")
 	proquest(askquestions)
 	shutil.rmtree(pngdir)
 os.mkdir(pngdir)
@@ -56,7 +56,7 @@ os.mkdir(pngdir)
 filepath = os.path.join(pipedir, 'fac_combi_scripts/' + 'info_temp.pkl')
 images = readpickle(filepath)
 
-print "I will treat", len(images), "images."
+print("I will treat", len(images), "images.")
 proquest(askquestions)
 
 
@@ -65,8 +65,8 @@ starttime = datetime.now()
 
 for i, image in enumerate(images):
 	
-	print "- " * 40
-	print i+1, "/", len(images), ":", image['imgname']
+	print("- " * 40)
+	print(i+1, "/", len(images), ":", image['imgname'])
 
 	
 	fitsfile = os.path.join(combidir, image["imgname"] +".fits")
@@ -104,16 +104,16 @@ for i, image in enumerate(images):
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
 notify(computer, withsound, "I'm done. %s ." % timetaken)
-print "PNGs are written into"
-print pngdir
+print("PNGs are written into")
+print(pngdir)
 
 if makejpgarchives :
 	makejpgtgz(pngdir, workdir, askquestions = askquestions)
 
-print "\nI will delete now the temporary pickle used for the combination:"
+print("\nI will delete now the temporary pickle used for the combination:")
 proquest(askquestions)
 os.remove(filepath)
-print "Done."
+print("Done.")
 
 
 

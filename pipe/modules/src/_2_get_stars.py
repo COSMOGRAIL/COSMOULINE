@@ -25,7 +25,7 @@ def __print_stars(clist, smax, sig, out=True, save=None, data=None, imgw=None):
     pylab.figure(1)
     for c in clist:
         if c.grade > 2:
-            print c
+            print(c)
             slist += [c]
             pylab.subplot(nx,ny,i)
             pylab.title('candidate '+str(i))
@@ -161,13 +161,13 @@ def __get_clist(img, nobj, sky, sigma, gain, val_bnd, usemom):
     #mask[:1200, 960:965] = 0.
     #mask[:, 0:120] = 0
     candidate_list = []
-    print "Acquiring candidates positions..."
+    print("Acquiring candidates positions...")
     n = 0
     while n < nobj:
         x, y = divmod(data.argmax(), data.shape[1])
         max_val = data[x,y]
         if max_val <= 0. or (val_bnd is not None and val_bnd != (0,0) and max_val <= val_bnd[0]):
-            print "exiting, max candidates number reached:", n
+            print("exiting, max candidates number reached:", n)
             break
         c = Candidate(x,y)
         if val_bnd is not None and val_bnd != (0,0) and (max_val > val_bnd[1] or max_val < val_bnd[0]):
@@ -205,9 +205,9 @@ def get_stars(data, params, imgw=None, show=True):
     e_list = []
     rot_list = []
     fwhm_list = []
-    print "Checking abnormal ellipticities..."
+    print("Checking abnormal ellipticities...")
     candidate_list, bad = __clean_ell(candidate_list)
-    print "\n", bad, "candidate(s) removed due to a bad ellipticity"
+    print("\n", bad, "candidate(s) removed due to a bad ellipticity")
     for i, c in enumerate(candidate_list):
         c.id = i+1
         e_list += [c.e]
@@ -215,19 +215,19 @@ def get_stars(data, params, imgw=None, show=True):
         fwhm_list += [c.fwhm]
         
     smax, chlog = 0, [0,0]
-    for binv in xrange(4):
+    for binv in range(4):
         fbins = 10
         erbins = 10
         if binv == 0 and out == True:
-            print "\nBegin candidates selection (checking ellipticity-rotation-fwhm correlations):"
+            print("\nBegin candidates selection (checking ellipticity-rotation-fwhm correlations):")
         elif binv == 1:
             fbins = 12
-            print smax, "candidate(s) remaining.", "Variating bins width 1..."
+            print(smax, "candidate(s) remaining.", "Variating bins width 1...")
         elif binv == 2: 
             if chlog[0] == 1:
                 fbins = 12
             erbins = 12
-            print smax, "candidate(s) remaining.", "Variating bins width 2..."
+            print(smax, "candidate(s) remaining.", "Variating bins width 2...")
         elif binv == 3:
             if chlog == (0,0):
                 break
@@ -237,12 +237,12 @@ def get_stars(data, params, imgw=None, show=True):
         hg_e = np.histogram(e_list, bins=erbins, normed=False)
         hg_r = np.histogram(rot_list, bins=erbins, normed=False)
         hg_f = np.histogram(fwhm_list, bins=fbins, normed=False)
-        print hg_e
+        print(hg_e)
         for c in candidate_list:
             c.grade = 1
         hlist = []
         ilist = []
-        for i in xrange(hg_e[0].shape[0]):
+        for i in range(hg_e[0].shape[0]):
             #i = np.where(hg[0] == hg_e[0].max())[0][0]
             up, down = hg_e[1][i+1], hg_e[1][i]
             rlist = []
@@ -280,12 +280,12 @@ def get_stars(data, params, imgw=None, show=True):
         elif binv == 2 and l > smax:
             smax = l
             chlog[1] = 1
-    print "**************** Histograms ***************"
-    print "hg_e:", hg_e
-    print "hg_r:", hg_r
-    print "hg_f:", hg_f
-    print "****************** Stars ******************"
-    print smax, "suitable stars found (grade 3):"
+    print("**************** Histograms ***************")
+    print("hg_e:", hg_e)
+    print("hg_r:", hg_r)
+    print("hg_f:", hg_f)
+    print("****************** Stars ******************")
+    print(smax, "suitable stars found (grade 3):")
     if show:
         slist = __print_stars(candidate_list, smax, sigma, out, save, data, imgw)
     else:
@@ -293,7 +293,7 @@ def get_stars(data, params, imgw=None, show=True):
     poslist = []
     for s in slist:
         poslist += [(s.x, s.y)]
-    print "Final stars' positions:", poslist
+    print("Final stars' positions:", poslist)
     return poslist, candidate_list
 
 
@@ -313,11 +313,11 @@ class marker:
         self.type=type
         self.size=size
     def display(self):   #Sends an XPA message to the viewer to show this marker
-        import commands
+        import subprocess
         if self.type=='point':  #Points don't have a size attribute
-            cmd="regions '"+self.type+" "+`self.x`+" "+`self.y`+" # text={"+self.label+"} '"
-            commands.getoutput('echo '+cmd+' | xpaset ds9')
-        print cmd
+            cmd="regions '"+self.type+" "+repr(self.x)+" "+repr(self.y)+" # text={"+self.label+"} '"
+            subprocess.getoutput('echo '+cmd+' | xpaset ds9')
+        print(cmd)
 
 
 def getregions():
@@ -328,9 +328,9 @@ def getregions():
     credits:
     http://internal.physics.uwa.edu.au/~andrew/AP7/xpa.py
     """
-    import commands
+    import subprocess
     import string
-    out=string.split(commands.getoutput('xpaget ds9 regions'),'\n')
+    out=string.split(subprocess.getoutput('xpaget ds9 regions'),'\n')
     label=''
     mlist=[]
     for r in out:       #For each line
@@ -377,7 +377,7 @@ def main(argv=None):
     VAL_BND = (0,0)
     USE_MOMENTS = False
     f = open(cfg, 'r')
-    exec f.read()
+    exec(f.read())
     f.close()
     vars = ['FILENAME','SHOW', 'NOBJ','SKY_BACKGROUND',
             'SIGMA_SKY', 'IMG_GAIN', 'NOWRITE']
@@ -396,7 +396,7 @@ def main(argv=None):
 #        numdisplay.readcursor()
         out(1, 'Place markers on the desired stars (may not work if several ds9 instances are actives).')
         out(1, '[Press ENTER when you are done]', '-r')
-        _ = raw_input()
+        _ = input()
         stars = []
         for r in getregions():
             stars += [(r.x,r.y)]

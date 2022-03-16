@@ -1,10 +1,10 @@
-from pyPdf import PdfFileWriter, PdfFileReader
+from PyPDF2 import PdfFileWriter, PdfFileReader
 import glob
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from variousfct import *
 
 files = sorted(glob.glob(plotdir + "renorm_" + renormname +"*.pdf"))
-print "I will create a single pdf file with all the renormalisation plots" 
+print("I will create a single pdf file with all the renormalisation plots") 
 
 # Creating a routine that appends files to the output file
 def append_pdf(inp,out):
@@ -23,7 +23,7 @@ for fil in files :
 output.write(open(plotdir + "Combined_"+renormname+".pdf","wb"))
 
 if computer == "regor4":
-	print "I can copy it in your visudir if you want." 
+	print("I can copy it in your visudir if you want.") 
 	proquest(askquestions)
 	
 	if not os.path.exists(visudir + "/plots"): 

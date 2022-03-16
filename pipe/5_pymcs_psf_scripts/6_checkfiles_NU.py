@@ -2,7 +2,7 @@
 #	generates pngs related to the old psf construction
 #
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 import shutil
 from kirbybase import KirbyBase, KBError
 from variousfct import *
@@ -16,7 +16,7 @@ else:
 	images = db.select(imgdb, ['gogogo','treatme',psfkeyflag], [True,True,True], returnType='dict', sortFields=['mjd'])
 
 
-print "Images that I on the psfskiplist now :"
+print("Images that I on the psfskiplist now :")
 skiplist = open(psfkicklist, "a")
 for i, image in enumerate(images):
 
@@ -24,6 +24,6 @@ for i, image in enumerate(images):
 	resultsdir = os.path.join(imgpsfdir, "results")
 	
 	if not os.path.exists(os.path.join(resultsdir, "psf_1.fits")):
-		print image['imgname']
+		print(image['imgname'])
 		skiplist.write("\n" + image["imgname"])
 skiplist.close()

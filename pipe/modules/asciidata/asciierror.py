@@ -35,7 +35,7 @@ class ColumnError(AsciiDataError):
         self.value = value
 
     def __str__(self):
-	return repr(self.value)
+        return repr(self.value)
 
 class ColTypeError(AsciiDataError):
     """
@@ -45,7 +45,7 @@ class ColTypeError(AsciiDataError):
         self.value = value
 
     def __str__(self):
-	return repr(self.value)
+        return repr(self.value)
 
 class TypeTransError(AsciiDataError):
     """
@@ -55,4 +55,4 @@ class TypeTransError(AsciiDataError):
         self.value = value
 
     def __str__(self):
-	return repr(self.value)
+        return repr(self.value)

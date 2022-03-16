@@ -18,7 +18,7 @@ rdb_list = [
 ]
 
 object_list = [os.path.basename(r).split("_")[0] for  r in rdb_list]
-print object_list
+print(object_list)
 nicename = [
  ' HE 0047-1756',
  ' WG 0214-2105',
@@ -45,13 +45,13 @@ for i,rdb in enumerate(rdb_list):
      nbimage = [float(prop['nbimg']) for prop in lc.properties]
      ellipticity = [float(prop['ellipticity']) for prop in lc.properties]
 
-     print  "### %s ### "% object_list[i]
-     print "Epochs : ", len(lc.jds)
-     print "Median seeing : ", np.median(seeings)
-     print "Median airmass : ", np.median(airmass)
-     print "Median skylevel : ", np.median(skylevel)
-     print "Median nbimage : ", np.median(nbimage)
-     print "Median ellipticity : ", np.median(ellipticity)
+     print("### %s ### "% object_list[i])
+     print("Epochs : ", len(lc.jds))
+     print("Median seeing : ", np.median(seeings))
+     print("Median airmass : ", np.median(airmass))
+     print("Median skylevel : ", np.median(skylevel))
+     print("Median nbimage : ", np.median(nbimage))
+     print("Median ellipticity : ", np.median(ellipticity))
 
 
      ax1.hist(seeings, histtype= 'step', color= mycolours[i], label=nicename[i], density= True, linewidth = 2)

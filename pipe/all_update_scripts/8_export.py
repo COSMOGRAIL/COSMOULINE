@@ -1,4 +1,4 @@
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 import os,sys
 import glob
 from kirbybase import KirbyBase, KBError
@@ -9,11 +9,11 @@ import numpy as np
 import star
 import shutil
 
-print "I now export the database"
+print("I now export the database")
 
 proquest(askquestions)
 
 os.chdir('../9_export_scripts')
-os.system('python export_NU.py')
+os.system(f'{python} export_NU.py')
 
-print "That was easy."
+print("That was easy.")

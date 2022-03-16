@@ -7,7 +7,7 @@
 #	The combination will be done in the second script.
 
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from pyraf import iraf
 from kirbybase import KirbyBase, KBError
 import shutil
@@ -45,8 +45,8 @@ def values(listofimg, key):	# stats of the values within the given nights
 
 		
 
-print "You want to create the input for the image combination per night of observation."
-print "Combiname = ", combiname
+print("You want to create the input for the image combination per night of observation.")
+print("Combiname = ", combiname)
 proquest(askquestions)
 
 backupfile(imgdb, dbbudir, "combine_" + combiname)
@@ -54,7 +54,7 @@ backupfile(imgdb, dbbudir, "combine_" + combiname)
 db = KirbyBase()
 
 if thisisatest:
-	print "This is a test : I will combine the images from the testlist, disregarding your criteria !"
+	print("This is a test : I will combine the images from the testlist, disregarding your criteria !")
 	listimages = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 	imgrefdict = db.select(imgdb, ['imgname'], [refimgname], returnType='dict')
 else:
@@ -64,7 +64,7 @@ else:
 
 
 if os.path.isdir(combidir):
-	print "Ok, this combidir already exists. I will erase it..."
+	print("Ok, this combidir already exists. I will erase it...")
 	proquest(askquestions)
 	shutil.rmtree(combidir)
 os.mkdir(combidir)
@@ -77,8 +77,8 @@ if combinamenum not in db.getFieldNames(imgdb):
 
 groupedimages = groupbynights(listimages)
 
-print "I have selected", len(listimages), "images."
-print "I recognized ", len(groupedimages), " observation nights"
+print("I have selected", len(listimages), "images.")
+print("I recognized ", len(groupedimages), " observation nights")
 proquest(askquestions)
 
 infoofnights = []
@@ -99,7 +99,7 @@ for j, images in enumerate(groupedimages):
 	datenightobsmin = pythondtmin.strftime("%Y-%m-%d")
 
 	
-	print "%i :  writing input for the night %s" %(j+1, datenightobsmin)
+	print("%i :  writing input for the night %s" %(j+1, datenightobsmin))
 	
 	if datenightobsmin is not datenightobsmed:
 		combinightdir = os.path.join(combidir, datenightobsmin)		#directory that will contain the iraf input for the combination, the symlinks on the nonorm images and the images normalized to combine
@@ -107,20 +107,20 @@ for j, images in enumerate(groupedimages):
 		combinightdir = os.path.join(combidir, datenightobsmed)
 	
 	if os.path.isdir(combinightdir):	# if this happen, then look at the function groupbynights
-		print "The directory already exists. It mean that 2 sets of images have the same date! It is not normal!"
+		print("The directory already exists. It mean that 2 sets of images have the same date! It is not normal!")
 		sys.exit()
 	os.mkdir(combinightdir)	
 	
 	combilist = []	#list containing the normalized images to combine
 
-	print "Normalizing images ..."
+	print("Normalizing images ...")
 
 	for i, image in enumerate(images):
 		
 		# we give to the image use for the combination of this night a unic number that will correspond the combined image (update of the database)
 		db.update(imgdb, ['recno'], [image['recno']], [j+1], [combinamenum])
 		
-		print i+1, image['imgname']
+		print(i+1, image['imgname'])
 		
 		ali = os.path.join(alidir, image['imgname'] + "_ali.fits")
 		nonorm = os.path.join(combinightdir, image['imgname'] + "_ali.fits")
@@ -140,7 +140,7 @@ for j, images in enumerate(groupedimages):
 		combilist.append(os.path.join(combinightdir,image['imgname'] + "_alinorm.fits"))
 		# Attention : we only append image names, not full paths !
 		
-	print "Done with normalizing"
+	print("Done with normalizing")
 	
 	os.chdir(combinightdir)
 	
@@ -152,7 +152,7 @@ for j, images in enumerate(groupedimages):
 	
 	# Gathering information for the groupdimage to add into the pickle
 	
-	print "\nGathering information for this groupdimage to add into a pickle..."
+	print("\nGathering information for this groupdimage to add into a pickle...")
 	
 	
 	combinumname = "combinum" 		# I attribute to each combined image a unic number to add into the database. That will help to identify which images I used for the combination
@@ -164,7 +164,7 @@ for j, images in enumerate(groupedimages):
 	
 	infoofnights.append(dbdict) # In this case we build a big list to create a pickle
 	
-	print "Done. \n"
+	print("Done. \n")
 
 
 # Here we do a pickle of a list of dictionnaries
@@ -173,4 +173,4 @@ writepickle(infoofnights, filepath)
 
 db.pack(imgdb)
 
-print "I finished to create inputs for all the observation nights"
+print("I finished to create inputs for all the observation nights")

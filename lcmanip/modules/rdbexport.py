@@ -22,13 +22,13 @@ def writerdb(columns, filename, writeheader=True, autoformat=True):
 	
 	
 	# Just to be sure, we stat by checking if the columns all have the same length.
-	lengths = map(lambda x : len(x["data"]), columns)
+	lengths = [len(x["data"]) for x in columns]
 	if len(set(lengths)) != 1:
 		raise mterror("Columns must all have the same length !")
 	
 	colnames = [column["name"] for column in columns]
 	
-	if 0 in map(len, colnames):
+	if 0 in list(map(len, colnames)):
 		raise mterror("C'mon, give a name to that poor column !")
 	
 	# Tests done.
@@ -42,38 +42,39 @@ def writerdb(columns, filename, writeheader=True, autoformat=True):
 		for column in columns:
 			# Stuff with high precision :
 			if column["name"] in ["mhjd"] or "mag_" in column["name"]:
-				column["data"] = map(lambda x: "%.6f" % (x), column["data"])
+				column["data"] = ["%.6f" % (x) for x in column["data"]]
 			elif "magerr_" in column["name"]:
-				column["data"] = map(lambda x: "%.6f" % (x), column["data"])
+				column["data"] = ["%.6f" % (x) for x in column["data"]]
 			# Stuff with medium precision :
 			elif column["name"] in ["fwhm", "elongation", "ellipticity", "airmass", "normcoeff"]:
-				column["data"] = map(lambda x: "%.3f" % (x), column["data"])
+				column["data"] = ["%.3f" % (x) for x in column["data"]]
 			# Stuff with low precision :
 			elif column["name"] in ["relskylevel"]:
-				column["data"] = map(lambda x: "%6.1f" % (x), column["data"])
+				column["data"] = ["%6.1f" % (x) for x in column["data"]]
 
 	
 	underline = ["="*n for n in map(len, colnames)]	
-	data = zip(*[column["data"] for column in columns])
+	data = list(zip(*[column["data"] for column in columns]))
 	
 	#if os.path.isfile(filename):
 	#	print "File exists. If you go on I will overwrite it."
 	#	proquest(True)
 	
-	outfile = open(filename, "wb") # b needed for csv
+	outfile = open(filename, "w") # b needed for csv
 	writer = csv.writer(outfile, delimiter="\t")
 	
 	
 	if writeheader :
+		print(colnames)
 		writer.writerow(colnames)
 		writer.writerow(underline)
 	writer.writerows(data)
 	
 	outfile.close()
 	
-	print "Wrote %s" % (filename) 
-	print "Column index - Label"
-	print "\n".join([ "%12i - %s" % (coli, column["name"]) for (coli, column) in enumerate(columns)])
+	print("Wrote %s" % (filename)) 
+	print("Column index - Label")
+	print("\n".join([ "%12i - %s" % (coli, column["name"]) for (coli, column) in enumerate(columns)]))
 	
 	
 	

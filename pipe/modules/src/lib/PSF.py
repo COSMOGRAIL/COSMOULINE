@@ -4,9 +4,7 @@ __version__ = '0.3.5'
 __date__ = '2009'
 __author__ = "Cantale Nicolas - EPFL <n.cantale@gmail.com>"
 
-import numpy
 from numpy import *
-import weave
 
 class PSF:
     def __init__(self, shape, center=None):
@@ -37,7 +35,7 @@ class PSF:
         self.indexes = indices(shape)
         self.indexes2 = indices((32,32))
         self.ind = []
-        for i in xrange(int(shape[0]*shape[1])):
+        for i in range(int(shape[0]*shape[1])):
             self.ind += [(i//shape[0],i%shape[1])]
         #polynoms (6th degree) used for the gaussian parameters (fwhm1, fwhm2, fwhm3, peak1, peak2, peak3)
         self.poly = array([[ -3.37565861e-05,   9.10960743e-04,  -1.01011591e-02,   5.90495767e-02, -1.93764661e-01,   3.57152802e-01,   4.45229001e-01],
@@ -74,12 +72,12 @@ class PSF:
             gpar, gpos = array(gpar), array(gpos)
         if gstrat not in ['grid', '2grids']:
             if fwhm0 != 0.:
-                for i in xrange(gpar.shape[0]):
-                    for j in xrange(gpar.shape[1]):
+                for i in range(gpar.shape[0]):
+                    for j in range(gpar.shape[1]):
                         self.addGaus_fnorm_trunc(gpar[i,j,1], c1+gpos[i,j,0], c2+gpos[i,j,1], i0*gpar[i,j,0], fwhm0=fwhm0)
             else:
-                for i in xrange(gpar.shape[0]):
-                    for j in xrange(gpar.shape[1]):
+                for i in range(gpar.shape[0]):
+                    for j in range(gpar.shape[1]):
                         self.addGaus_trunc(gpar[i,j,1], c1+gpos[i,j,0], c2+gpos[i,j,1], i0*gpar[i,j,0], fwhm0=fwhm0)
         if flux is not None:
             self.array = flux*self.array/self.array.sum() + bak
@@ -314,7 +312,7 @@ class PSF:
                 - fwhm1, fwhm2, fwhm3, peak1, peak2, peak3
         """
         res = zeros(6)
-        for i in xrange(6):
+        for i in range(6):
             res[i] = polyval(poly1d(self.poly[i]), beta)
         return res
         

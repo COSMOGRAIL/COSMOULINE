@@ -1,11 +1,11 @@
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from astropy.time import Time
 
 
 
-print "This script is to add fields by hand... adapt the source !"
+print("This script is to add fields by hand... adapt the source !")
 proquest(askquestions)
 
 
@@ -29,31 +29,31 @@ images = db.select(imgdb, ['gogogo'], [True], returnType='dict') # selects all 3
 for image in images:
 	name = image["rawimg"][-16:-5]
 	mjd = float(name)
-	print mjd
+	print(mjd)
 	t = Time(mjd, format='mjd')
 	nbupdate = db.update(imgdb, ['recno'], [image['recno']], [mjd,mjd], ['mjd','mhjd'])
 	if nbupdate == 1:
-		print "updated"
+		print("updated")
 	else :
-		print "failed"
+		print("failed")
 
 	t.format = "fits"
-	print t.value[:-9]
+	print(t.value[:-9])
 	date = t.value[:-9]
 	nbupdate = db.update(imgdb, ['recno'], [image['recno']], [date], ['datet'])
 	if nbupdate == 1:
-		print "updated"
+		print("updated")
 	else :
-		print "failed"
+		print("failed")
 
 	t.format = 'jd'
-	print t.value
+	print(t.value)
 	jd = t.value
 	nbupdate = db.update(imgdb, ['recno'], [image['recno']], [str(jd)], ['jd'])
 	if nbupdate == 1:
-		print "updated"
+		print("updated")
 	else :
-		print "failed"
+		print("failed")
 
 
 db.pack(imgdb)

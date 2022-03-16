@@ -1,4 +1,4 @@
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import glob
@@ -13,7 +13,7 @@ def replacezeroes(filename, value):
     for x in range(len(scidata)):
         for y in range(len(scidata[0])):
             if scidata[x][y] < 1.0e-8:
-                print "Nearly zero at ", x, y
+                print("Nearly zero at ", x, y)
                 scidata[x][y] = value
     myfile.flush()
 
@@ -22,7 +22,7 @@ def replaceNaN(filename, value):
 	sigstars = pf.open(filename, mode='update')
 	scidata = sigstars[0].data
 	if True in isNaN(scidata):
-		print "Yep, some work for me : ", len(scidata[isNaN(scidata)]), "pixels."
+		print("Yep, some work for me : ", len(scidata[isNaN(scidata)]), "pixels.")
 	scidata[isNaN(scidata)] = value
 	sigstars.flush()
 
@@ -49,12 +49,12 @@ for f in files_dark :
         masterdark += pf.open(f)[0].data
 
 masterdark = masterdark / dark_count
-print "I have %i darks in %s with an exposure time of 300s."%(dark_count, dark_directory)
+print("I have %i darks in %s with an exposure time of 300s."%(dark_count, dark_directory))
 
 
 for d in dir :
     path = os.path.join(rawdir, d)
-    print "I'm in : ", path
+    print("I'm in : ", path)
 
     files_bias = glob.glob(path + '/Bias-*.fts')
     files_flat = glob.glob(path + '/AutoFlat-*.fts')
@@ -81,8 +81,8 @@ for d in dir :
     masterflat = masterflat / flat_count
     masterflat = (masterflat - masterdark) / np.median(masterflat - masterdark)
 
-    print "I have %i flats in %s"%(flat_count, d)
-    print "I have %i bias in %s"%(bias_count, d)
+    print("I have %i flats in %s"%(flat_count, d))
+    print("I have %i bias in %s"%(bias_count, d))
 
     hdu1 = pf.PrimaryHDU(masterdark)
     lists = pf.HDUList([hdu1])
@@ -111,9 +111,9 @@ for d in dir :
 
         reduced = (reduced - masterdark) / (masterflat)
         reduced = reduced [25:-25,25:-25]
-        print np.mean(reduced)
-        print np.max(reduced)
-        print np.min(reduced)
+        print(np.mean(reduced))
+        print(np.max(reduced))
+        print(np.min(reduced))
         # plt.figure()
         # plt.imshow(reduced)
         # plt.show()
@@ -128,6 +128,6 @@ for d in dir :
         science_name = ''.join(science_name)[:-5]
         lists.writeto(reduced_dir + d + '-' +science_name + '_reduced.fits', clobber=True)
 
-    print "I have %i science images in %s" % (science_count, d)
+    print("I have %i science images in %s" % (science_count, d))
 
 

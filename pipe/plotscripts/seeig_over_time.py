@@ -2,7 +2,7 @@
 #	Histogramm of the measured seeings, for each set.
 #
 
-execfile("../config.py")
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 

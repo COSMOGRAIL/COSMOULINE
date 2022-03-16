@@ -1,7 +1,7 @@
-from PSF import PSF
-from Algorithms import minimi
+from .PSF import PSF
+from .Algorithms import minimi
 from src.lib.waveletdenoise import cyclespin
-import utils as fn
+from . import utils as fn
 import numpy as np
 import time
 import scipy.optimize
@@ -86,7 +86,7 @@ class Dec:
         khi2_smooth = self.lambd*self._get_sm_err(_model)**2. #if self._itnb > 30 else 0.
         err += khi2_smooth
         _model_conv = self.conv_fun(self.psfs[0], _model)
-        for i in xrange(self._nb_img):           
+        for i in range(self._nb_img):           
             if self._multiple_psfs and i > 0:
                 _model_conv = self.conv_fun(self.psfs[i], _model)
             if ret_all: 
@@ -112,11 +112,11 @@ class Dec:
         
         n, m1 = model.shape ## n=m1 - number of rows or columns
         if n!=m1:
-            print "Error: the image should be square!"
+            print("Error: the image should be square!")
             exit()
         m, m = fitting_star.shape
         if n!=2*m:
-            print "Error: check the sizes of your data!"
+            print("Error: check the sizes of your data!")
             exit()
             
     # psf 
@@ -199,7 +199,7 @@ class Dec:
         zlist = []
         thlist = []
         dstd = img.std()
-        for i in xrange(100):
+        for i in range(100):
             std = dstd/200.*(i+1)*4.
             dn = img-cyclespin(img, 1, std)
             z, p = st.normaltest(dn.ravel())
@@ -224,7 +224,7 @@ class DecML(Dec):
         _model_conv = self.conv_fun(self.psfs[0], _model)
         step = _model*0.
         psft = np.flipud(np.fliplr(self.psfs[0]))
-        for i in xrange(self._nb_img):           
+        for i in range(self._nb_img):           
             if self._multiple_psfs and i > 0:
                 _model_conv = self.conv_fun(self.psfs[i], _model)
                 psft = np.flipud(np.fliplr(self.psfs[i]))
@@ -290,7 +290,7 @@ class DecSrc(Dec):
         self.src_range = src_range
         self.force_ini = force_ini
         self.sources = [PSF(self._sshape, (self._sshape[0]/2., self._sshape[1]/2.)) 
-                        for i in xrange(self._nb_img)] #@UnusedVariable
+                        for i in range(self._nb_img)] #@UnusedVariable
         self._old_src_par = None
         #Results:
         self.model_src = None
@@ -313,7 +313,7 @@ class DecSrc(Dec):
         _model_sm = self.conv_fun(self.psf_sm, _model)
         khi_smooth = self.lambd*self._get_sm_err(_model)**2.
         err += khi_smooth
-        for i in xrange(self._nb_img):     
+        for i in range(self._nb_img):     
             _model_conv = self.conv_fun(self.psfs[i], _model+self.sources[i].array)
             khi_fit = self.get_im_resi(_model_conv, i)**2. 
             err += khi_fit
@@ -331,7 +331,7 @@ class DecSrc(Dec):
         ini = self.ini.ravel()
         srcini = self.src_ini.copy()
         t = time.time()
-        for i in xrange(nb_runs):
+        for i in range(nb_runs):
             out(3, 'Run', i+1, '/', nb_runs)
             minipar, lastpar = minimi(self.get_err, ini, srcini, 
                                       minstep_px=minstep_px, maxstep_px=maxstep_px, 
@@ -358,12 +358,12 @@ class DecSrc(Dec):
         self.shifts = shiftpar.reshape((self._nb_img, 2))
         
     def set_sources(self, srcpar, bkg):
-        for i in xrange(self._nb_img):
+        for i in range(self._nb_img):
             self._add_sources(self.sources[i], srcpar, i)
     
     def _add_sources(self, im, srcpar, im_ind):
         im.reset()
-        for i in xrange(self.nb_src):
+        for i in range(self.nb_src):
             c1, c2, i0 =  srcpar[i*(2+self._nb_img)], srcpar[i*(2+self._nb_img)+1], srcpar[i*(2+self._nb_img)+2+im_ind]
             im.addGaus_fnorm_trunc(self.g_res, c1, c2, i0)
                 
@@ -371,10 +371,10 @@ class DecSrc(Dec):
         err = np.zeros(len(srcpar))
 #        if self.max_iratio_range or self.maxpos_range:
         #compute the error for each parameter
-        for i in xrange(self._nb_img):
+        for i in range(self._nb_img):
             #compute intensities errors
             self.sources[i].reset()
-            for j in xrange(self.nb_src):
+            for j in range(self.nb_src):
                 p_k = j*(2+self._nb_img)+2+i
                 #get the old values back
                 param = self._old_src_par.copy()
@@ -384,16 +384,16 @@ class DecSrc(Dec):
                 e = self.get_im_resi(_model_conv, i)
                 e = (e>0)*e + (e<0)*e*10.
                 err[p_k] = (e**2.).sum()
-        for i in xrange(self.nb_src):
+        for i in range(self.nb_src):
             #compute centers errors
             #change the parameter to evaluate
-            for j in xrange(2):
+            for j in range(2):
                 p_k = i*(2+self._nb_img) + j
                 #get the old values back
                 param = self._old_src_par.copy()
                 param[p_k] = srcpar[p_k]
                 c_err = 0.
-                for l in xrange(self._nb_img):
+                for l in range(self._nb_img):
                     self.sources[l].reset()
                     self._add_sources(self.sources[l], param, l)
                     _model_conv = self.conv_fun(self.psfs[l], self.sources[l].array + bkg)
@@ -404,7 +404,7 @@ class DecSrc(Dec):
         
     def _set_ini_src(self):
         import get_ini_par as init
-        import wsutils as ws
+        from . import wsutils as ws
         srcini =self.src_ini
         force_ini = self.force_ini
         try: 
@@ -433,7 +433,7 @@ class DecSrc(Dec):
                 if i==self.nb_src or self.nb_src==0: #tmp
                     break
                 srcini += [p[0],p[1]]
-                for j in xrange(self._nb_img): #@UnusedVariable
+                for j in range(self._nb_img): #@UnusedVariable
                     srcini += [p[2]]
         srcini = np.array(srcini)
         self.src_ini = srcini
@@ -464,11 +464,11 @@ class DecMC(Dec):
         par = param.copy()*3.
         std = par.std()/100.
         lerr = (func(par,[])**2.).sum()
-        for i in xrange(nb_runs):
-            for j in xrange(itnb/nb_runs):
+        for i in range(nb_runs):
+            for j in range(itnb/nb_runs):
                 err = []
                 offs = []
-                for k in xrange(2): #@UnusedVariable
+                for k in range(2): #@UnusedVariable
                     rdm = np.random.standard_normal(param.shape)
                     offset = rdm*par/50. + std*np.sign(rdm)
                     testpar = par + offset
@@ -496,7 +496,7 @@ class DecCLEAN(Dec):
 #        err = np.array([self.get_im_resi(_model, i)[0] for i in xrange(self._nb_img)]).sum(0)
         err = np.zeros(self._sshape, dtype=np.float64)
         resi = np.zeros(self._sshape, dtype=np.float64)
-        for i in xrange(self._nb_img):           
+        for i in range(self._nb_img):           
             khi_fit, res = self.get_im_resi(_model, i, ret_all=True)
             err += khi_fit
             resi += res
@@ -533,7 +533,7 @@ class DecCLEAN(Dec):
         psf /= psf.sum()
         out(2, 'Begin minimization procedure')
         t = time.time()
-        for i in xrange(it_nb):#*sshape[0]**2):
+        for i in range(it_nb):#*sshape[0]**2):
             pos = np.unravel_index(np.abs(mask*err).argmax(), err.shape)
             dir = (np.sign(err[pos]))
             if pos == last_pos: 
@@ -589,7 +589,7 @@ class DecCLEAN(Dec):
         dest[cr_x1:cr_x2, cr_y1:cr_y2] += self.psfs[0][r_x1:r_x2, r_y1:r_y2]*val
     
 import scipy.optimize as opt
-import waveletdenoise as wd
+from . import waveletdenoise as wd
 class DecWL(Dec):
     
     def get_err(self, param):
@@ -598,7 +598,7 @@ class DecWL(Dec):
         err = np.zeros(self._sshape, dtype=np.float64)
         _model_conv = self.conv_fun(self.psfs[0], _model)
 #        for i, psf in enumerate(self.psfs):         
-        for i in xrange(self._nb_img):                  
+        for i in range(self._nb_img):                  
             if self._multiple_psfs and i > 0:
 #                _model_conv = self.conv_fun(psf, _model)
                 _model_conv = self.conv_fun(self.psfs[i], _model)
@@ -622,7 +622,7 @@ class DecWL(Dec):
         self.cur_ind = 1
         for p in params[1:]:
             opt_p = opt.fmin(self.get_err, p, maxiter=100,disp=0, xtol=1e-6)[0]
-            print 'powell:', p, opt_p
+            print('powell:', p, opt_p)
             self.params[self.cur_ind] = opt_p
             self.cur_ind += 1
         return self.params
@@ -631,7 +631,7 @@ class DecWL(Dec):
         levels = int(np.log2(img.shape[0]))
         h = wd.multihaar(img)
         output = np.array(h[-1][0][0])
-        for l in xrange(levels-1, -1, -1):
+        for l in range(levels-1, -1, -1):
             output = np.append(output, np.array(h[l][1:]).ravel())
         return output
 

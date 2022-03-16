@@ -96,10 +96,10 @@ def proquest():
 	Asks the user if he wants to proceed. If not, exits python.
 	
 	"""
-	answer = raw_input("Tell me, do you want to go on ? (yes/no) ")
+	answer = input("Tell me, do you want to go on ? (yes/no) ")
 	if answer[:3] != "yes":
 		sys.exit("Ok, bye.")
-	print ""
+	print("")
 
 
 def write_images(imglist, simname="MySim", skypath="sky", workdir=".", skyconffile="config.sky", makepngs=True, pngrebin=2):
@@ -113,11 +113,11 @@ def write_images(imglist, simname="MySim", skypath="sky", workdir=".", skyconffi
 	Settings of the Simimg objects will supersede these default settings
 	"""
 
-	print "Simulation '%s' : %i images." % (simname, len(imglist))
+	print("Simulation '%s' : %i images." % (simname, len(imglist)))
 	destdir = os.path.join(workdir, simname)
-	print "I'll write them here : %s" % (destdir)
+	print("I'll write them here : %s" % (destdir))
 	if os.path.isdir(destdir):
-		print "Ok, this simulation directory already exists. I will erase it..."
+		print("Ok, this simulation directory already exists. I will erase it...")
 		proquest()
 		shutil.rmtree(destdir)
 	os.mkdir(destdir)
@@ -126,8 +126,8 @@ def write_images(imglist, simname="MySim", skypath="sky", workdir=".", skyconffi
 
 	for i, image in enumerate(imglist):
 
-		print "- " * 30
-		print "%i/%i : %s" % (i+1, len(imglist), image.image_name)
+		print("- " * 30)
+		print("%i/%i : %s" % (i+1, len(imglist), image.image_name))
 
 
 		if image.image_name == None:
@@ -144,7 +144,7 @@ def write_images(imglist, simname="MySim", skypath="sky", workdir=".", skyconffi
 	
 		parameters += " -IMAGE_NAME %s" % imgfilepath 	#sky maker will save the img directly in the good directory		
 	
-		for attr, value in image.__dict__.iteritems():
+		for attr, value in image.__dict__.items():
 			
 			if attr == "image_name":
 				continue
@@ -165,7 +165,7 @@ def write_images(imglist, simname="MySim", skypath="sky", workdir=".", skyconffi
 				parameters += " -%s %s" %(attr, value)
 		
 		command = "%s %s -c config.sky %s" %(skypath, sourcelistfilepath, parameters)
-		print command
+		print(command)
 		
 		skymakerout = os.system(command)
 		
@@ -186,6 +186,6 @@ def write_images(imglist, simname="MySim", skypath="sky", workdir=".", skyconffi
 			f2nimg.tonet(pngfilepath)
 	
 	
-	print "- " * 30
-	print "Done."
+	print("- " * 30)
+	print("Done.")
 
