@@ -22,7 +22,8 @@ minimaldbfields = ['imgname:str', 'treatme:bool', 'gogogo:bool', 'whynot:str', '
 'scalingfactor:float', 'pixsize:float','date:str','datet:str','jd:str','mjd:float',
 'telescopelongitude:str', 'telescopelatitude:str', 'telescopeelevation:float',
 'exptime:float','gain:float', 'readnoise:float', 'rotator:float', 'saturlevel:float',
-'preredcomment1:str', 'preredcomment2:str', 'preredfloat1:float', 'preredfloat2:float']
+'preredcomment1:str', 'preredcomment2:str', 'preredfloat1:float', 'preredfloat2:float',
+'filter:str', 'updating:bool']
 
 
 

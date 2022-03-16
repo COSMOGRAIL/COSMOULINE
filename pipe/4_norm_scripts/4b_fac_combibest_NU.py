@@ -102,7 +102,7 @@ combinearray = []
 with open('irafinput.txt', 'r') as f:
     for line in f.readlines():
         combinearray.append(fits.getdata(line.strip()))
-
+combinearray = np.array(combinearray)
 resultimage = np.median(combinearray, axis=0)
 fits.writeto(outputname, resultimage, overwrite=1)
     

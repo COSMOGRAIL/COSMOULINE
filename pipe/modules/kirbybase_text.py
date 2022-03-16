@@ -1,3 +1,6 @@
+#	Be careful, this version is tweaked by Malte to avoid raising string exceptions...
+
+
 """Contains classes for a plain-text, client-server dbms.
 
 Classes:
@@ -222,6 +225,8 @@ History:
          columns to a table and remove existing columns from the table.
          Thanks to Pierre Quentel for the code for these two enhancements.     
 """
+
+from __future__ import print_function
 import re
 import socket
 import os.path
@@ -232,6 +237,9 @@ import operator
 import tempfile
 import shutil
 
+
+def cmp(a, b):
+    return (a > b) - (a < b)
 
 #--------------------------------------------------------------------------
 # KirbyBase Class
@@ -922,9 +930,8 @@ class KirbyBase:
             reversedSortFields.reverse()
             for sortField in reversedSortFields:
                 i = filter.index(sortField)
-                result_set.sort( lambda x,y:
-                    cmp(*[(x[i], y[i]), (y[i], x[i])]
-                     [sortField in sortDesc]))
+                result_set.sort(key = lambda x:x[i],
+                     reverse = [sortField in sortDesc][0])
 
         # If returnType is 'object', then convert each result record
         # to a Record object before returning the result list.
@@ -1720,7 +1727,7 @@ class KirbyBase:
                 line = line[:-1].strip()
                 try:
                     # If blank line, skip this record.
-                    if line == "": raise 'No Match'
+                    if line == "": raise KBnomatch('No Match : blank line')
                     # Split the line up into fields.
                     record = line.split("|", maxfield)
 
@@ -1739,12 +1746,15 @@ class KirbyBase:
                             try:
                                 if useRegExp:
                                     if not pattern.search(
-                                     self._unencodeString(record[fieldPos])
+                                    self._unencodeString(record[fieldPos])
                                      ):
-                                        raise 'No Match'
+                                        raise KBnomatch('No Match : line 1744')
                                 else:
                                     if record[fieldPos] != pattern:
-                                        raise 'No Match'
+                                        raise KBnomatch('No Match : line 1747')       
+                            except KBnomatch:
+                                raise # we raise the same KBnomatch again
+
                             except Exception:
                                 raise KBError(
                                  'Invalid match expression for %s'
@@ -1755,7 +1765,7 @@ class KirbyBase:
                         # here rather than a boolean compare.
                         elif self.field_types[fieldPos] == bool:
                             if record[fieldPos] != pattern:
-                                raise 'No Match'
+                                raise KBnomatch('No Match : boolean')
                         # If it is not a string or a boolean, then it must 
                         # be a number or a date.
                         else:
@@ -1791,10 +1801,10 @@ class KirbyBase:
                             # they are trying to do and I do it directly.
                             # This sped up queries by 40%.     
                             if not pattern[0](tableValue, pattern[1]):
-                                raise 'No Match' 
+                                raise KBnomatch('No Match : line 1796') 
                 # If a 'No Match' exception was raised, then go to the
                 # next record, otherwise, add it to the list of matches.
-                except 'No Match':
+                except KBnomatch:
                     pass
                 else:
                     match_list.append([line, fpos])
@@ -2029,3 +2039,28 @@ class KBError(Exception):
     def __repr__(self):
         format = """KBError("%s")"""
         return format % (self.value)
+        
+        
+        
+#--------------------------------------------------------------------------
+# KBnomatch Class
+# Added to avoid those string exceptions that are to be domoted.
+#--------------------------------------------------------------------------
+class KBnomatch(Exception):
+    """Exception class for Database Management System.
+
+    Public Methods:
+        __init__ - Create an instance of exception.
+    """
+    def __init__(self, value):
+        self.value = value
+        #print self.value
+
+    def __str__(self):
+        return repr(self.value)
+        
+    # Don't know if I need this, but anyway.
+    def __repr__(self):
+        format = """KBnomatch("%s")"""
+        return format % (self.value)
+
