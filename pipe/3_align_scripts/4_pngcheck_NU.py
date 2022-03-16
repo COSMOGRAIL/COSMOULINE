@@ -130,7 +130,6 @@ for i, image in enumerate(images):
 	"Rotator (header) : %7.2f [deg]" % image['rotator'],
 	#"Guessed angle : %9.4f [deg]" % image['angle'],
 	"Actual geomap angle : %9.4f [deg]" % image['geomapangle'],
-	"Alignment info : %s" % image['alicomment']
 	]
 	
 	f2nimg.drawstarlist(preciserefmanstarsasdicts, r = 20, colour = None)
