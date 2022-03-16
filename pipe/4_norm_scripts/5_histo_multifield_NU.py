@@ -21,6 +21,12 @@ allimages = db.select(imgdb, ["gogogo"], [True], returnType='dict', sortFields=[
 	
 for (fieldname, plotrange) in [("medcoeff", [0.5, 3.0]), ("skylevel", [0.0, 10000.0]), ("seeing", [0.5, 3.0]), ("ell", [0.0, 0.5])]:
 
+	for image in allimages:
+		if image[fieldname] is None:
+			if fieldname == 'medcoeff':
+				raise RuntimeError('Field %s is missing for image %s. Are you sure script 3a_calccoeff was run ?'%(fieldname, image['name']))
+			else :
+				raise RuntimeError('Field %s is missing for image %s.' % (fieldname, image['name']))
 
 	images = [image for image in allimages if image[fieldname] > 0.0]
 	print("%s : %i images" % (fieldname, len(images)))

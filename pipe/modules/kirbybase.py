@@ -236,10 +236,17 @@ import io
 import operator
 import tempfile
 import shutil
+import functools
 
 
 def cmp(a, b):
-    return (a > b) - (a < b)
+    if a is None :
+        a1 = -99999
+    else : a1 = a
+    if b is None:
+        b1 = -99999
+    else : b1 = b
+    return (a1 > b1) - (a1 < b1)
 
 #--------------------------------------------------------------------------
 # KirbyBase Class
@@ -930,8 +937,9 @@ class KirbyBase:
             reversedSortFields.reverse()
             for sortField in reversedSortFields:
                 i = filter.index(sortField)
-                result_set.sort(key = lambda x:x[i],
-                     reverse = [sortField in sortDesc][0])
+                result_set.sort(key=functools.cmp_to_key(lambda x,y:
+                    cmp(*[(x[i], y[i]), (y[i], x[i])]
+                     [sortField in sortDesc])))
 
         # If returnType is 'object', then convert each result record
         # to a Record object before returning the result list.
