@@ -204,7 +204,7 @@ def readmancat(mancatfilepath, verbose="True"):
 	return table
 
 
-def readsexcat(sexcatfilepath, verbose=True, maxflag = 2, posflux = True, propfields=[]):
+def readsexcat(sexcatfilepath, verbose=True, maxflag = 2, posflux = True, propfields=[], restrict_region = None ):
 	"""
 	We read a sextractor catalog with astroasciidata and return a list of stars.
 	Minimal fields that must be present in the catalog :
@@ -234,6 +234,9 @@ def readsexcat(sexcatfilepath, verbose=True, maxflag = 2, posflux = True, propfi
 		print "Sextractor catalog does not exist :"
 		print sexcatfilepath	
 		sys.exit(1)
+
+	if restrict_region is not None:
+		minx, miny, maxx, maxy = restrict_region
 	
 	returnlist = []
 	
@@ -264,6 +267,9 @@ def readsexcat(sexcatfilepath, verbose=True, maxflag = 2, posflux = True, propfi
 		for i, num in enumerate(mycat['NUMBER']) :
 			if mycat['FLAGS'][i] > maxflag :
 				continue
+			if restrict_region is not None :
+				if  mycat['X_IMAGE'][i] < minx or mycat['X_IMAGE'][i] > maxx or mycat['Y_IMAGE'][i] < miny or mycat['y_IMAGE'][i] > maxy :
+					continue
 			flux = mycat['FLUX_AUTO'][i]
 			if posflux and (flux < 0.0) :
 				continue

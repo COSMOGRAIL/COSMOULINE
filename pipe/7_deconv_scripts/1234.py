@@ -8,3 +8,5 @@ os.system("python 3_fillinfile_NU.py")
 os.system("python 4_deconv_NU.py")
 os.system("python 5b_showptsrc_NU.py")
 os.system("python 5a_decpngcheck_NU.py")
+if computer=='martin':
+    os.system('say "Cosmouline scripts finished')

@@ -35,3 +35,6 @@ for star in photomstars :
 
 if thisisatest == False: 
 	print "You can now check the png and readout the good stars."
+
+if computer=='martin':
+    os.system('say "Cosmouline scripts finished')

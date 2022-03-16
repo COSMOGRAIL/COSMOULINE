@@ -293,6 +293,9 @@ for objkey, objdir, objkeyflag, objcosmicskey, objcoordcat in zip(objkeys, objdi
 
 
 	notify(computer, withsound, "Done with extraction, NaN, and cosmics for %s." % objkey)
+
+if computer=='martin':
+    os.system('say "Cosmouline scripts finished')
 	
 	
 

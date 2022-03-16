@@ -1933,7 +1933,7 @@ def Stancamheader(rawimg):
 	print "image : %s, gain : %2.4f"%(imgname, gain)
 	readnoise = 6.5
 	scalingfactor = 1.0  # no need for it right now...
-	saturlevel = 65000.0  # in ADU
+	saturlevel = 65536.0  # in ADU
 	rotator = 0.0  # useless
 
 	telescopelongitude = "-17:53:06.00"

@@ -48,7 +48,7 @@ sample_only = True
 # Max number of CPU cores to use (0 = automatic, meaning that all available cores will be used) :
 maxcores = 0
 # Only some scripts run on multiple cores. It is noramlly fine to leave this on 0.
-# You might want to use the manual setting for instance if someone is already using some cores for other jobs etc. 
+# You might want to use the manual setting for instance if someone is already using some cores for other jobs etc.
 
 #------------------------ IMPORTATION --------------------------------------
 
@@ -158,6 +158,8 @@ identfindmindist = 300
 # distances (in pixels) of stars to consider for finding pairs in the algorithm
 # 300 pixels is good. Put smaller values if you have only a few close stars available for alignment.
 
+limit_to_alistar_region = False
+# Use true in case of crowded fields. It will speed up the 3/align_scripts/1b_identcoord.py
 
 
 #------------------------ SEXTRACTOR PHOTOMETRY READOUT --------------------

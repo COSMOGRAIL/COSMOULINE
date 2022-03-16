@@ -9,3 +9,6 @@ os.system("python 3b_measureseeing.py")
 os.system("python 3c_report_NU.py")
 os.system("python 4a_skystats.py")
 os.system("python 4b_report_NU.py")
+
+if computer=='martin':
+    os.system('say "Cosmouline scripts finished')
