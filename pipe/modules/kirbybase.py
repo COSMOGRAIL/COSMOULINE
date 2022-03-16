@@ -5,7 +5,7 @@ Created on Thu Jan  6 12:20:04 2022
 @author: fred
 """
 
-BACKEND = "SQLITE"
+BACKEND = "TEXT"
 
 if BACKEND == "SQLITE":
     from sqlitebase import KirbyBase, KBError 

@@ -22,8 +22,7 @@ minimaldbfields = ['imgname:str', 'treatme:bool', 'gogogo:bool', 'whynot:str', '
 'scalingfactor:float', 'pixsize:float','date:str','datet:str','jd:str','mjd:float',
 'telescopelongitude:str', 'telescopelatitude:str', 'telescopeelevation:float',
 'exptime:float','gain:float', 'readnoise:float', 'rotator:float', 'saturlevel:float',
-'preredcomment1:str', 'preredcomment2:str', 'preredfloat1:float', 'preredfloat2:float',
-'filter:str', 'updating:bool']
+'preredcomment1:str', 'preredcomment2:str', 'preredfloat1:float', 'preredfloat2:float', 'updating:bool']
 
 
 
@@ -126,8 +125,10 @@ if os.path.isfile(imgdb):
 	presentfields = db.getFieldNames(imgdb)
 	mandatoryfields = [field.split(':')[0] for field in minimaldbfields]
 	mandatoryfields.append('recno')
-	if not set(mandatoryfields).issubset(set(presentfields)) :
-		raise mterror("Your database misses mandatory fields ! Change this and come back. ")
+
+	for field in mandatoryfields:
+		if field not in presentfields:
+			raise RuntimeError('Missing field %s'%field)
 	
 	# We check if the setname is already used
 	usedsetnames = [x[0] for x in db.select(imgdb, ['recno'], ['*'], ['setname'])]
