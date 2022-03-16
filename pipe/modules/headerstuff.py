@@ -199,79 +199,6 @@ def eulerc2header(rawimg):
     # Now we produce the date and datet fields, middle of exposure :
 
 
-def maidanak2k2kheader(rawimg):
-    """
-    Maidanak 2k2k = raw image format 2000 x 2000 reduced size image by Ildar
-    Written 2020
-    For image prereduced by pypr in 2010
-    Those show these ugly "fingers" that we could not remove with the prereduction.
-    """
-    print(rawimg)
-    imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0]  # drop extension
-
-    pixsize = 0.268  # from Otabek and IDlar in 2018
-    gain = 1.45  #
-    readnoise = 4.7  #
-    scalingfactor = 1.0  # measured scalingfactor (with respect to Mercator = 1.0)
-    saturlevel = 65535.0  # arbitrary
-
-    telescopelongitude = "66:53:47.07"
-    telescopelatitude = "38:40:23.95"
-    telescopeelevation = 2593.0
-
-    header = pyfits.getheader(rawimg)
-    # availablekeywords = header.keys()
-
-    treatme = True
-    gogogo = True
-    whynot = "na"
-    testlist = False
-    testcomment = "na"
-
-    rotator = 0.0
-
-    # Now the date and time stuff :
-
-    date_str = header["UTDATE"] + 'T' + header['UTSTART']
-    pythondt = datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S")  # beginning of exposure in UTC
-    exptime = float(header['EXPTIME'])
-    pythondt = pythondt + datetime.timedelta(seconds=exptime / 2.0)  # This is the middle of the exposure.
-
-    if (exptime < 10.0) or (exptime > 1800):
-        raise mterror("Problem with exptime...")
-
-    # Now we produce the date and datet fields, middle of exposure :
-    date = pythondt.strftime("%Y-%m-%d")
-    datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
-
-    myownjdfloat = juliandate(pythondt)
-    myownmjdfloat = myownjdfloat - 2400000.5
-    jd = "%.6f" % myownjdfloat
-    mjd = myownmjdfloat
-
-    # The pre-reduction info :
-    preredcomment1 = None
-    preredcomment2 = None
-    preredfloat1 = None
-    preredfloat2 = None
-
-    # We return a dictionnary containing all this info, that is ready to be inserted into the database.
-    returndict = {'imgname': imgname, 'treatme': treatme, 'gogogo': gogogo, 'whynot': whynot, 'testlist': testlist,
-                  'testcomment': testcomment,
-                  'telescopename': telescopename, 'setname': setname, 'rawimg': rawimg,
-                  'scalingfactor': scalingfactor, 'pixsize': pixsize, 'date': date, 'datet': datet, 'jd': jd,
-                  'mjd': mjd,
-                  'telescopelongitude': telescopelongitude, 'telescopelatitude': telescopelatitude,
-                  'telescopeelevation': telescopeelevation,
-                  'exptime': exptime, 'gain': gain, 'readnoise': readnoise, 'rotator': rotator,
-                  'saturlevel': saturlevel,
-                  'preredcomment1': preredcomment1, 'preredcomment2': preredcomment2, 'preredfloat1': preredfloat1,
-                  'preredfloat2': preredfloat2
-                  }
-
-    return returndict
-
-
 ###############################################################################################
 
 def eulercamheader(rawimg):
@@ -1219,8 +1146,7 @@ def VSTheader(rawimg):
 
 def Stancamheader(rawimg):
     """
-    Version for VST images
-    Experimental
+    Version for NOT stancam images
     """
     imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0]  # drop extension
 
@@ -1480,3 +1406,310 @@ def LCOheader(rawimg):
                   }
 
     return returndict
+
+##############################################################################################################
+
+
+def grondheader(rawimg):
+	"""
+	Version for 2.2m GROND images
+	Experimental
+	Written by Vivien, 02.2016
+	"""
+	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
+
+	# From headers, http://www.mpe.mpg.de/~jcg/GROND/grond_pasp.pdf and the web...
+	pixsize = 0.158  #
+
+	readnoise = 5.0  # 5 for slow mode, 23 for fast mode. Let's assume slow mode here...
+	scalingfactor = 1.0  # no need for it right now...
+	saturlevel = 65535.0  # in ADU
+	rotator = 0.0  # ??
+
+	telescopelongitude = "-70:44:04.543"
+	telescopelatitude = "-29:15:15.433"
+	telescopeelevation = 2335.0
+
+	header = pyfits.getheader(rawimg)
+	# availablekeywords = header.keys()  # not used anyway
+	gain = header["GAIN"]  # put it at 1.0 for now, according to the header...
+	treatme = True
+	gogogo = True
+	whynot = "na"
+	testlist = False
+	testcomment = "na"
+
+	pythondt = datetime.datetime.strptime(header["DATE"][0:19], "%Y-%m-%dT%H:%M:%S") # This is the start of the exposure.
+	exptime = float(header['TEXPTIME']) # in seconds. exptime is 1 for all images...
+
+	pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
+
+	# Now we produce the date and datet fields, middle of exposure :
+
+	date = pythondt.strftime("%Y-%m-%d")
+	datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+	myownjdfloat = juliandate(pythondt) # The function from headerstuff.py
+	myownmjdfloat = myownjdfloat - 2400000.5
+	jd = "%.6f" % myownjdfloat
+	mjd = myownmjdfloat
+
+
+	# The pre-reduction info :
+	# May be useful one day...can be used.
+	preredcomment1 = "None"
+	preredcomment2 = "None"
+	preredfloat1 = 0.0
+	preredfloat2 = 0.0
+
+
+	# We return a dictionnary containing all this info, that is ready to be inserted into the database.
+	returndict = {'imgname':imgname, 'treatme':treatme, 'gogogo':gogogo, 'whynot':whynot, 'testlist':testlist,'testcomment':testcomment ,
+	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg,
+	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
+	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
+	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
+	}
+
+	return returndict
+
+
+###############################################################################################
+
+
+def noheader(rawimg):
+    imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0]  # drop extension
+
+    pixsize = 1.0
+    gain = 1.0
+    readnoise = 5.0
+    scalingfactor = 1.0
+    saturlevel = 65000.0  # arbitrary
+
+    telescopelongitude = "00:00:00.00"
+    telescopelatitude = "00:00:00.00"
+    telescopeelevation = 0.0
+
+    treatme = True
+    gogogo = True
+    whynot = "na"
+    testlist = False
+    testcomment = "na"
+
+    pythondt = datetime.datetime.strptime("2002-10-10T13:37:00", "%Y-%m-%dT%H:%M:%S")  # 2000-00-00 was not working...
+    exptime = 300.0
+    pythondt = pythondt + datetime.timedelta(seconds=exptime / 2.0)  # This is the middle of the exposure.
+
+    # Now we produce the date and datet fields, middle of exposure :
+    date = pythondt.strftime("%Y-%m-%d")
+    datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+    myownjdfloat = juliandate(pythondt)
+    myownmjdfloat = myownjdfloat - 2400000.5
+    jd = "%.6f" % myownjdfloat
+    mjd = myownmjdfloat
+
+    # Other default values
+    rotator = 0.0
+
+    # The pre-reduction info :
+    preredcomment1 = "None"
+    preredcomment2 = "None"
+    preredfloat1 = 0.0
+    preredfloat2 = 0.0
+
+    # We return a dictionnary containing all this info, that is ready to be inserted into the database.
+    returndict = {'imgname': imgname, 'treatme': treatme, 'gogogo': gogogo, 'whynot': whynot, 'testlist': testlist,
+                  'testcomment': testcomment,
+                  'telescopename': telescopename, 'setname': setname, 'rawimg': rawimg,
+                  'scalingfactor': scalingfactor, 'pixsize': pixsize, 'date': date, 'datet': datet, 'jd': jd,
+                  'mjd': mjd,
+                  'telescopelongitude': telescopelongitude, 'telescopelatitude': telescopelatitude,
+                  'telescopeelevation': telescopeelevation,
+                  'exptime': exptime, 'gain': gain, 'readnoise': readnoise, 'rotator': rotator,
+                  'saturlevel': saturlevel,
+                  'preredcomment1': preredcomment1, 'preredcomment2': preredcomment2, 'preredfloat1': preredfloat1,
+                  'preredfloat2': preredfloat2
+                  }
+
+    return returndict
+
+def PANSTARRSheader(rawimg):
+	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0]  # drop extension
+
+	header = pyfits.getheader(rawimg)
+
+	pixsize = 0.26 # Measured on an image, Malte
+	gain = float(header['CELL.GAIN'])  # Rough mean of Monika's measure in Q1, might get updated.
+	readnoise = float(header['CELL.READNOISE']) # typical value for quadrant 1, i.e. also all LL frames.
+	scalingfactor = 0.89767829371  # measured scalingfactor (with respect to Mercator = 1.0)
+	saturlevel = float(header['CELL.SATURATION'])  # arbitrary
+	rotator = 0.0
+
+	telescopelongitude = "-156:15:26.00"
+	telescopelatitude = "20:42:30.00"
+	telescopeelevation = 3048.0
+
+	# availablekeywords = header.keys() # depreciated, not needed anyway
+
+	treatme = True
+	gogogo = True
+	whynot = "na"
+	testlist = False
+	testcomment = "na"
+
+	pythondt = datetime.datetime.strptime(header["DATE"][0:19],
+										  "%Y-%m-%dT%H:%M:%S")  # This is the start of the exposure.
+	exptime = float(header['EXPTIME'])  # in seconds.
+
+	pythondt = pythondt + datetime.timedelta(seconds=exptime / 2.0)  # This is the middle of the exposure.
+
+	# Now we produce the date and datet fields, middle of exposure :
+
+	date = pythondt.strftime("%Y-%m-%d")
+	datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+	myownjdfloat = juliandate(pythondt)  # The function from headerstuff.py
+	myownmjdfloat = myownjdfloat - 2400000.5
+	jd = "%.6f" % myownjdfloat
+	mjd = myownmjdfloat
+
+	# We return a dictionnary containing all this info, that is ready to be inserted into the database.
+	returndict = {'imgname': imgname, 'treatme': treatme, 'gogogo': gogogo, 'whynot': whynot, 'testlist': testlist,
+				  'testcomment': testcomment,
+				  'telescopename': telescopename, 'setname': setname, 'rawimg': rawimg,
+				  'scalingfactor': scalingfactor, 'pixsize': pixsize, 'date': date, 'datet': datet, 'jd': jd,
+				  'mjd': mjd,
+				  'telescopelongitude': telescopelongitude, 'telescopelatitude': telescopelatitude,
+				  'telescopeelevation': telescopeelevation,
+				  'exptime': exptime, 'gain': gain, 'readnoise': readnoise, 'rotator': rotator,
+				  'saturlevel': saturlevel
+				  }
+
+	return returndict
+
+#########################################################################################################
+
+def UH2m2header(rawimg):
+	print (rawimg)
+	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0]  # drop extension
+
+	header = pyfits.getheader(rawimg)
+
+	pixsize = 0.22 # Measured on an image, Malte
+	gain = 1.78  #
+	readnoise = 10.0 # t
+	scalingfactor = 1.0 # measured scalingfactor (with respect to Mercator = 1.0)
+	saturlevel = 65535.0  # arbitrary
+	rotator = 0.0
+
+	telescopelongitude = "19:49:34"
+	telescopelatitude = "-155:28:15"
+	telescopeelevation = 4205.0
+
+	# availablekeywords = header.keys() # depreciated, not needed anyway
+
+	treatme = True
+	gogogo = True
+	whynot = "na"
+	testlist = False
+	testcomment = "na"
+
+	date_str = header["DATE-OBS"] + 'T' + header['UT'][1:-3]
+
+	pythondt = datetime.datetime.strptime(date_str,
+										  "%Y-%m-%dT%H:%M:%S")  # This is the start of the exposure.
+	exptime = float(header['EXPTIME'])  # in seconds.
+
+	pythondt = pythondt + datetime.timedelta(seconds=exptime / 2.0)  # This is the middle of the exposure.
+
+	# Now we produce the date and datet fields, middle of exposure :
+
+	date = pythondt.strftime("%Y-%m-%d")
+	datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+	myownjdfloat = juliandate(pythondt)  # The function from headerstuff.py
+	myownmjdfloat = myownjdfloat - 2400000.5
+	jd = "%.6f" % myownjdfloat
+	mjd = myownmjdfloat
+
+	returndict = {'imgname': imgname, 'treatme': treatme, 'gogogo': gogogo, 'whynot': whynot, 'testlist': testlist,
+				  'testcomment': testcomment,
+				  'telescopename': telescopename, 'setname': setname, 'rawimg': rawimg,
+				  'scalingfactor': scalingfactor, 'pixsize': pixsize, 'date': date, 'datet': datet, 'jd': jd,
+				  'mjd': mjd,
+				  'telescopelongitude': telescopelongitude, 'telescopelatitude': telescopelatitude,
+				  'telescopeelevation': telescopeelevation,
+				  'exptime': exptime, 'gain': gain, 'readnoise': readnoise, 'rotator': rotator,
+				  'saturlevel': saturlevel
+				  }
+
+	return returndict
+
+##############################################################################################################
+
+
+def wfiheader(rawimg):
+	"""
+	Version for 2.2m WFI images
+	Experimental
+	Written by Vivien, 02.2016
+	"""
+	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
+
+	# From WFI User Manual
+	pixsize = 0.238  # 0.12 for 1x1 binning
+	gain = 2.0  # varies between 1.31 and 1.34...
+	readnoise = 4.5  # varies between 8.5 and 9.8
+	scalingfactor = 1.0  # no need for it right now...
+	saturlevel = 65535.0  # in ADU
+	rotator = 0.0  # ??
+
+	telescopelongitude = "-70:44:04.543"
+	telescopelatitude = "-29:15:15.433"
+	telescopeelevation = 2335.0
+
+	header = pyfits.getheader(rawimg)
+	# availablekeywords = header.keys()  # not used anyway
+
+	treatme = True
+	gogogo = True
+	whynot = "na"
+	testlist = False
+	testcomment = "na"
+
+	pythondt = datetime.datetime.strptime(header["DATE-OBS"][0:19], "%Y-%m-%dT%H:%M:%S") # This is the start of the exposure.
+	exptime = float(header['EXPTIME']) # in seconds.
+
+	pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
+
+	# Now we produce the date and datet fields, middle of exposure :
+
+	date = pythondt.strftime("%Y-%m-%d")
+	datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+	myownjdfloat = juliandate(pythondt) # The function from headerstuff.py
+	myownmjdfloat = myownjdfloat - 2400000.5
+	jd = "%.6f" % myownjdfloat
+	mjd = myownmjdfloat
+
+
+	# The pre-reduction info :
+	# May be useful one day...can be used.
+	preredcomment1 = "None"
+	preredcomment2 = "None"
+	preredfloat1 = 0.0
+	preredfloat2 = 0.0
+
+
+	# We return a dictionnary containing all this info, that is ready to be inserted into the database.
+	returndict = {'imgname':imgname, 'treatme':treatme, 'gogogo':gogogo, 'whynot':whynot, 'testlist':testlist,'testcomment':testcomment ,
+	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg,
+	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
+	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
+	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
+	}
+
+	return returndict
