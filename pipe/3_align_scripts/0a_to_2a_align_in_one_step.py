@@ -2,7 +2,7 @@ import numpy as np
 from astropy.io import fits
 import astroalign as aa
 
-exec (compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 from kirbybase import KirbyBase
 from variousfct import *
 import progressbar
@@ -11,7 +11,11 @@ import star
 from datetime import datetime
 import multiprocessing
 
+
+
+        
 def alignImage(image, tupleref, refimage):
+
     """
         input: database row, "image"
 
@@ -70,8 +74,26 @@ def alignImage(image, tupleref, refimage):
             'nbralistars': len(match1),
             'flagali': 1}
 
+
+
 def multi_alignImage(args):
    return alignImage(*args)
+   
+   
+
+def updateDB(db, retdict, image):
+    if 'geomapscale' in retdict:
+        db.update(imgdb, ['recno'], [image['recno']], 
+                  {'geomapangle': retdict["geomapangle"], 
+                   'geomaprms'  : retdict["geomaprms"], 
+                   'geomapscale': retdict["geomapscale"],
+                   'maxalistars': retdict['maxalistars'],
+                   'nbralistars': retdict['nbralistars'],
+                   'flagali' : 1})
+    else:
+        db.update(imgdb, ['recno'], [image['recno']], {'flagali': 0})
+        
+        
 
 def main():
     # As we will tweak the database, let's do a backup
@@ -168,25 +190,8 @@ def main():
 
 
 
-
-    # now we update the database with the result:
-    widgets = [progressbar.Bar('>'), ' ', progressbar.ETA(), ' ', progressbar.ReverseBar('<')]
-    pbar = progressbar.ProgressBar(widgets=widgets, maxval=len(images)).start()
     for i, (retdict,image) in enumerate(zip(retdicts,images)):
-        if not retdict == None:
-            if 'geomapscale' in retdict:
-                db.update(imgdb, ['recno'], [image['recno']],
-                          {'geomapangle': retdict["geomapangle"],
-                           'geomaprms'  : retdict["geomaprms"],
-                           'geomapscale': retdict["geomapscale"],
-                           'maxalistars': retdict['maxalistars'],
-                           'nbralistars': retdict['nbralistars'],
-                           'flagali' : 1})
-            else:
-                db.update(imgdb, ['recno'], [image['recno']], {'flagali': 0})
-        pbar.update(i)
-    pbar.finish()
-
+        updateDB(db, retdict, image)
 
     db.pack(imgdb)
 
@@ -196,6 +201,8 @@ def main():
 
     notify(computer, withsound,
            f"Dear user, I'm done with the alignment. I did it in {timetaken}.")
+
+
 
 if __name__ == '__main__':
     main()

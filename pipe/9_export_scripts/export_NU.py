@@ -5,7 +5,7 @@ import variousfct
 import datetime
 
 
-print("I am the only scirpt that writes into your configdir.")
+print("I am the only script that writes into your configdir.")
 print("But I will try to be careful.")
 
 
@@ -14,8 +14,7 @@ print("But I will try to be careful.")
 
 now = datetime.datetime.now()
 datestr = now.strftime("%Y-%m-%d")
-configstr = os.path.split(configdir)[-1]
-
+configstr = os.path.basename(os.path.normpath(configdir))
 filename = "%s_%s" % (datestr, configstr)
 
 readmefilepath = os.path.join(configdir, filename + "_readme.txt")

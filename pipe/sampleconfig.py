@@ -65,6 +65,8 @@ if computer=="martin":
 if computer=="fred":
     sex = "/usr/bin/sex"
     python = "/home/fred/anaconda3/bin/python"
+
+
 # Path to compiled programs :
 
 mcsf77dir = os.path.join(pipedir, "progs", "MCSf77")
@@ -80,6 +82,7 @@ deconvexe = prefix + os.path.join(mcsf77dir, "deconv.exe")
 if silencemcs == True:
     psfexe = prefix + os.path.join(mcsf77dir, "psf_silence.exe")
     deconvexe = prefix + os.path.join(mcsf77dir, "deconv_silence.exe")
+
 
 
 #---------------------------------------------------------------------------
@@ -105,7 +108,8 @@ imgkicklist = os.path.join(configdir, "kicklist.txt")    # Images that get "gogo
 testlist = os.path.join(configdir, "testlist.txt")            # This is a "white list" for test runs (e.g. psf construction, ...).
                             # Write images + comments on this list, and use the extrascript "set_testlist.py" to
                             # set the "testlist" and "testcomment" flags in the database.
-                            # This list is also handy if you want to rebuild some handpicked psfs after
+                            # This list is also handy if you want to rebuild some handpicked psfs after 
+
                             # a change of some parameters for instance !
 
 # File with the alignment stars
@@ -209,6 +213,7 @@ if not os.path.isdir(configdir):
 if not os.path.isdir(workdir):
     print(workdir)
     sys.exit("Your workdir does not exist !")
+
 
 if not os.path.isdir(alidir):
     os.mkdir(alidir)

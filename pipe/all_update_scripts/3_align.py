@@ -16,8 +16,6 @@ proquest(askquestions)
 
 
 os.chdir('../3_align_scripts')
-# os.system(f'{python} 1b_identcoord.py')
-# os.system(f'{python} 1c_report_NU.py')
 os.system(f'{python} 0a_to_2a_align_in_one_step.py')
 os.system(f'{python} 2b_report_NU.py')
 os.system(f'{python} 3_updateflags.py')
