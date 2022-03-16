@@ -15,11 +15,11 @@ $HeadURL: $
 __version__ = "Version 1.1 $LastChangedRevision: 330 $"
 
 import string, sys, os, types,copy
-from asciidata.asciiheader import *
-from asciidata.asciicolumn import *
-from asciidata.asciisorter import *
-from asciidata.asciierror  import *
-from asciidata.asciiutils  import *
+from asciiheader import *
+from asciicolumn import *
+from asciisorter import *
+from asciierror  import *
+from asciiutils  import *
 
 class NullData(object):
     """
@@ -46,7 +46,7 @@ class NullData(object):
         """
         # set the default null string
         if null:
-            self._null = [null.strip()]
+            self._null = [string.strip(null)]
         else:
             self._null  = ['Null']
 
@@ -113,7 +113,7 @@ class AsciiData(NullData):
 
         # set the default null string
         if null:
-            self._null = [null.strip()]
+            self._null = [string.strip(null)]
         else:
             self._null  = ['Null', 'NULL', 'None', '*']
 
@@ -187,11 +187,11 @@ class AsciiData(NullData):
         @rtype: AsciiColumn(s)
         """
         # this part deals with slices
-        if type(element) == slice:
+        if type(element) == types.SliceType:
             # FIXME this must be possible to do more elegantly
             start,stop,step = element.indices(self.ncols)
             newAD = copy.deepcopy(self)
-            all = list(range(self.ncols))
+            all = range(self.ncols)
             inclusive = [x for x in all[start:stop:step]]
             while all:
                 idx = all.pop()
@@ -407,7 +407,7 @@ class AsciiData(NullData):
            headComment = self.headerComment
 
         # open the file
-        fstream = open(filename,'w+')
+        fstream = file(filename,'w+')
 
         # open a printstream
         nprinter = NicePrinter(fstream, delimiter=self._delimiter)
@@ -431,7 +431,7 @@ class AsciiData(NullData):
         @return: pointer to the fits object
         @rtype: binary table HDU
         """
-        from . import asciifits
+        import asciifits
 
         # create an AsciiFits object
         asciiFits = asciifits.AsciiFits(self)
@@ -450,7 +450,7 @@ class AsciiData(NullData):
         @return: the name of the fits file
         @rtype: string
         """
-        from . import asciifits
+        import asciifits
 
         # check whether a file name is given
         if fits_name == None:
@@ -499,7 +499,7 @@ class AsciiData(NullData):
         l_start, l_delim, l_end = self._get_lineparams(tr_attr, td_attr)
 
         # open the file
-        fstream = open(html_name,'w+')
+        fstream = file(html_name,'w+')
 
         # open a printstream
         nprinter = NicePrinter(fstream, delimiter=l_delim,
@@ -542,7 +542,7 @@ class AsciiData(NullData):
                 latex_name = self._get_latexname(self.filename)
 
         # open the file
-        fstream = open(latex_name,'w+')
+        fstream = file(latex_name,'w+')
 
         # open a printstream with the correct parameters
         # please note that each '\' must be protected by
@@ -986,7 +986,7 @@ class AsciiData(NullData):
         elem = Element(element)
 
         # check the types and derive the column index
-        if elem.get_type() == int:
+        if elem.get_type() == types.IntType:
             # check for -1, which indicates the last column
             if element == -1:
                 # set the index of the last column
@@ -994,7 +994,7 @@ class AsciiData(NullData):
             else:
                 # set the index to the input index
                 index = element
-        elif elem.get_type() == bytes:
+        elif elem.get_type() == types.StringType:
             index = self.find(element)
 
         # check whether the column index exists
@@ -1032,10 +1032,10 @@ class AsciiData(NullData):
         collist    = []
 
         # open the file, and parse through all rows
-        for line in open(filename, 'r'):
+        for line in file(filename, 'r'):
 
             # throw away trailing and leading whitespaces
-            str_line = line.strip()
+            str_line = string.strip(line)
             if len(str_line) < 1 or str_line[0] == comment_char:
                 continue
 
@@ -1118,7 +1118,7 @@ class AsciiData(NullData):
             # check whether the item is NULL.
             # add the item to the column,
             # using 'None' for NULL items
-            if null.count(item.strip()) > 0:
+            if null.count(string.strip(item)) > 0:
                 collist[index].add_element(None)
             else:
                 collist[index].add_element(item)
@@ -1169,7 +1169,7 @@ class AsciiData(NullData):
                 colname = self._def_colname(index)
 
             # check whether the element is a NULL-value
-            if null.count(item.strip()) > 0:
+            if null.count(string.strip(item)) > 0:
                 # append an undefined column
                 collist.append(AsciiColumn(element=[None], colname=colname,
                                            null=null))

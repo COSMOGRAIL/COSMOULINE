@@ -2,7 +2,7 @@
 #	Useful only with a small number of psf stars, very polluted (i.e. space images such HST images)
 
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import cosmics # used to read and write the fits files
@@ -25,9 +25,9 @@ for i, s in enumerate(psfstars):
 		s.reg.readds9(possiblemaskfilepath, verbose=False)
 		s.reg.buildmask(verbose = False)
 		
-		print("You masked %i pixels of star %s." % (np.sum(s.reg.mask), s.name))
+		print "You masked %i pixels of star %s." % (np.sum(s.reg.mask), s.name)
 	else:
-		print("No mask file for star %s." % (s.name))
+		print "No mask file for star %s." % (s.name)
 
 #proquest(askquestions)
 		
@@ -37,13 +37,13 @@ db = KirbyBase()
 
 
 if thisisatest :
-	print("This is a test run.")
+	print "This is a test run."
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist',psfkeyflag], [True, True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 else :
 	images = db.select(imgdb, ['gogogo', 'treatme',psfkeyflag], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 
 
-print("Number of images to treat :", len(images))
+print "Number of images to treat :", len(images)
 #proquest(askquestions)
 
 
@@ -52,7 +52,7 @@ print("Number of images to treat :", len(images))
 if 0:
 	for i, image in enumerate(images):
 
-		print("%i : %s" % (i+1, image['imgname']))
+		print "%i : %s" % (i+1, image['imgname'])
 		imgpsfdir = os.path.join(psfdir, image['imgname'])
 		os.chdir(os.path.join(imgpsfdir, "results"))
 
@@ -77,14 +77,14 @@ if 0:
 			oriarray[s.reg.mask] = 0
 
 			tofits(orifilename, oriarray, oriheader, verbose=False)
-			print('saved !')
+			print 'saved !'
 
 # hard (smarter) way, replace everythink masked by the median of the other stars (if any), or by 0 otherwise.
 
 if 1:
 	for i, image in enumerate(images):
 
-		print("%i : %s" % (i+1, image['imgname']))
+		print "%i : %s" % (i+1, image['imgname'])
 		imgpsfdir = os.path.join(psfdir, image['imgname'])
 		os.chdir(os.path.join(imgpsfdir, "results"))
 		
@@ -151,7 +151,7 @@ if 1:
 							meanpixval = 0		
 						toline.append(meanpixval)
 						if min([abs(elt) for elt in toline]) ==0 :
-							print('HOHOHO')
+							print 'HOHOHO'
 							#sys.exit()
 				neworiarray.append(toline)
 			
@@ -179,7 +179,7 @@ if 1:
 			#print oriarrays[ind][50]
 			#sys.exit()	
 			tofits(orifilenames[ind],orituple,oriheaders[ind],verbose=False)
-			print('saved !')		
-print("Done.")
+			print 'saved !'		
+print "Done."
 	
 	

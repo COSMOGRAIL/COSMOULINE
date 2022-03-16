@@ -4,7 +4,7 @@
 #	are indeed useless.
 #
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import f2n
@@ -13,7 +13,7 @@ pngdir = os.path.join(workdir, "kick_png")
 
 # We check for potential existing stuff :
 if os.path.isdir(pngdir):
-	print("I will delete existing stuff.")
+	print "I will delete existing stuff."
 	proquest(askquestions)
 	shutil.rmtree(pngdir)
 os.mkdir(pngdir)
@@ -22,18 +22,18 @@ os.mkdir(pngdir)
 db = KirbyBase()
 images = db.select(imgdb, ['gogogo'], [False], returnType='dict', sortFields=['setname','mjd'])
 
-print("I will make pngs for %i rejected images." % len(images))
+print "I will make pngs for %i rejected images." % len(images)
 proquest(askquestions)
 
 for i, image in enumerate(images):
 	
-	print("- " * 40)
-	print(i+1, "/", len(images), ":", image['imgname'])
+	print "- " * 40
+	print i+1, "/", len(images), ":", image['imgname']
 
 	
-	fitsfile = os.path.join(alidir, image['imgname'] + "_skysub.fits")
+	fitsfile = os.path.join(alidir, image['imgname'] + "_ali.fits")
 	if not os.path.exists(fitsfile):
-		print("You removed the non-aligned images...")
+		print "You removed the non-aligned images..."
 		continue
 	
 	f2nimg = f2n.fromfits(fitsfile)
@@ -58,10 +58,10 @@ for i, image in enumerate(images):
 	orderlink = os.path.join(pngdir, "%05i.png" % (i+1)) # a link to get the images sorted for the movies etc.
 	os.symlink(pngpath, orderlink)
 
-print("- " * 40)
+print "- " * 40
 
-print("The PNG files of the kicked images are written into")
-print(pngdir)
+print "The PNG files of the kicked images are written into"
+print pngdir
 
 if makejpgarchives :
 	makejpgtgz(pngdir, workdir, askquestions = askquestions)

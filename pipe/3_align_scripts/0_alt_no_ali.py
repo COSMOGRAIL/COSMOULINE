@@ -5,7 +5,7 @@
 #
 
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 
 from kirbybase import KirbyBase, KBError
 import math
@@ -21,11 +21,11 @@ images = db.select(imgdb, ['gogogo','treatme'], [True, True], ['recno','imgname'
 
 
 nbrofimages = len(images)
-print("Number of images to treat :", nbrofimages)
+print "Number of images to treat :", nbrofimages
 
-print("I will not change the images, just (link or) copy the files.")
-print("You won't have to run the other scripts of this directory.")
-print("uselinks : %s" % (uselinks))
+print "I will not change the images, just (link or) copy the files."
+print "You won't have to run the other scripts of this directory."
+print "uselinks : %s" % (uselinks)
 
 proquest(askquestions)
 
@@ -33,12 +33,12 @@ starttime = datetime.now()
 
 # Prepare database : add new fields
 if "flagali" not in db.getFieldNames(imgdb) :
-	print("I will add the fields flagali, nbralistars, maxalistars, angle, alicomment to the database.")
+	print "I will add the fields flagali, nbralistars, maxalistars, angle, alicomment to the database."
 	proquest(askquestions)
 	db.addFields(imgdb, ['flagali:int', 'nbralistars:int', 'maxalistars:int', 'angle:float', 'alicomment:str'])
 	
 if "geomapangle" not in db.getFieldNames(imgdb) :
-	print("I will add the fields geomapangle, geomaprms, geomapscale  to the database.")
+	print "I will add the fields geomapangle, geomaprms, geomapscale  to the database."
 	proquest(askquestions)
 	db.addFields(imgdb, ['geomapangle:float', 'geomaprms:float', 'geomapscale:float'])
 
@@ -48,8 +48,8 @@ for i,image in enumerate(images):
 	justname = image['imgname']
 	filepath = os.path.join(alidir, justname)
 	
-	print("+++++++++++++++++++++++++++++++++++++++++++++++")
-	print(i+1, "/", nbrofimages, ":", justname)
+	print "+++++++++++++++++++++++++++++++++++++++++++++++"
+	print i+1, "/", nbrofimages, ":", justname
 	
 	# I update the database with pseudo values for alignement so that we still have the same structure later.
 	db.update(imgdb, ['recno'], [recno], {'flagali': 1, 'nbralistars': 0, 'maxalistars': 0, 'alicomment':'Pseudo alignenement', 'angle': 0.0, 'geomapangle': 0.0, 'geomaprms': 0.0, 'geomapscale': 0.0})

@@ -1,4 +1,4 @@
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 
 from kirbybase import KirbyBase, KBError
 from variousfct import *
@@ -78,7 +78,7 @@ for image in selimages:
 	#print "%s %s" % (image["imgname"], image["date"])
 	#print  "cp %s /home/epfl/tewes/unsaved/pack/." % (image["rawimg"])
 
-	print("%s.fits\t%.7f\t%s" % (image["imgname"][2:], image["mhjd"], image["datet"]))
+	print "%s.fits\t%.7f\t%s" % (image["imgname"][2:], image["mhjd"], image["datet"])
 
 
 #print len(selimages)

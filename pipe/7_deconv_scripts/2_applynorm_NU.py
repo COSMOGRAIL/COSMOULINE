@@ -4,7 +4,7 @@
 import sys
 
 if len(sys.argv) == 2:
-	exec (open("../config.py").read())
+	execfile("../config.py")
 	decobjname = sys.argv[1]
 	deckey = "dec_" + decname + "_" + decobjname + "_" + decnormfieldname + "_" + "_".join(decpsfnames)
 	ptsrccat = os.path.join(configdir, deckey + "_ptsrc.cat")
@@ -13,11 +13,11 @@ if len(sys.argv) == 2:
 	deckeypsfused = "decpsf_" + deckey
 	deckeynormused = "decnorm_" + deckey
 	decdir = os.path.join(workdir, deckey)
-	print("You are running the deconvolution on all the stars at once.")
-	print("Current star : " + sys.argv[1])
+	print "You are running the deconvolution on all the stars at once."
+	print "Current star : " + sys.argv[1]
 
 else :
-	exec (open("../config.py").read())
+	execfile("../config.py")
 
 from kirbybase import KirbyBase, KBError
 from variousfct import *
@@ -25,11 +25,11 @@ import astropy.io.fits as pyfits
 
 if update:
 	# override config settings...
-	exec (open(os.path.join(configdir, 'deconv_config_update.py')).read())
+	execfile(os.path.join(configdir, 'deconv_config_update.py'))
 	askquestions=False
 	# nothing more. Let's run on the whole set of images now.
 
-print("deckey : %s" % deckey) # this is a code that idendtifies this particular deconvolution.
+print "deckey : %s" % deckey # this is a code that idendtifies this particular deconvolution.
 db = KirbyBase()
 
 images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=['setname', 'mjd']) # the \d\d* is a trick to select both 0000-like and 000-like
@@ -40,12 +40,12 @@ refimage = [image for image in images if image['imgname'] == refimgname][0] # we
 images.insert(0, refimage.copy()) # This copy is important !!!
 images[0][deckeyfilenum] = mcsname(1) # The duplicated ref image gets number 1
 
-print("I've selected %i images (ref image is duplicated)." % len(images))
+print "I've selected %i images (ref image is duplicated)." % len(images)
 proquest(askquestions)
 
 for image in images:
 		
-	print(image[deckeyfilenum], image['imgname'])
+	print image[deckeyfilenum], image['imgname']
 	
 	mycoeff = image[deckeynormused]
 	

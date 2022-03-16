@@ -38,7 +38,7 @@ def groupbynights(imagelist, separatesetnames=False):
 	
 	for imageset in imagesbysets:
 		
-		jd = [float(x['mhjd']) for x in imageset]
+		jd = map(lambda x:float(x['mhjd']), imageset)
 		#images = map(lambda x: x['imgname'], imageset)
 	
 		nbimg = len(imageset)
@@ -58,7 +58,7 @@ def groupbynights(imagelist, separatesetnames=False):
 			thisjd = sortedimages[i][0]
 			diffjd = thisjd - lastjd
 			if diffjd < 0.0:
-				print("Fatal error")
+				print "Fatal error"
 				sys.exit()
 			if diffjd < 0.4:			# this will be the maximum gap between observations in one same night.
 				thisnight.append(sortedimages[i][1])

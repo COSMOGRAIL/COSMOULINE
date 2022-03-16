@@ -93,7 +93,7 @@ def fitgaus(fit_id, data, params, savedir = 'results/'):
         else:
             joker = 2
             old = final_errg
-        print('-----------------------------------------------------')
+        print '-----------------------------------------------------'
     #for star in self.star_tab:
     #    star.build_diffg()
     gaus_err = 0.
@@ -150,7 +150,7 @@ def main(argv=None):
         out.level = 3
         out(1, '~~~ DEBUG MODE ~~~')
     if 'e' in opt: 
-        from . import prepare
+        import prepare
         prepare.main(['_3_fitmof.py', '-ce', cfg])
     if 'h' in opt:
         out(1, 'No help page yet!')
@@ -158,7 +158,7 @@ def main(argv=None):
     out(1, 'Begin gaussian fit')
     SHOW = None
     f = open(cfg, 'r')
-    exec(f.read())
+    exec f.read()
     f.close()
     vars = ['FILENAME', 'STARS','NPIX', 'MOF_PARAMS', 
             'G_PARAMS', 'G_POS', 'G_STRAT', 'S_FACT', 'NOWRITE', 
@@ -175,7 +175,7 @@ def main(argv=None):
     data['starnb'] = len(STARS) #@UndefinedVariable
     gpar = []
     gpos = []
-    for i in range(fnb):
+    for i in xrange(fnb):
         out(1, '===============', i+1, '/', fnb,'===============')
         out(1, 'Working on', files[i])
         

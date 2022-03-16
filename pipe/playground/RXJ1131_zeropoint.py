@@ -1,7 +1,7 @@
 
 
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 import variousfct
 import numpy as np
@@ -34,6 +34,6 @@ calibmags = np.array([star[1] for star in stars])
 #print instmags
 zps = calibmags - instmags
 
-print(zps)
-print(np.mean(zps), np.std(zps))
+print zps
+print np.mean(zps), np.std(zps)
 

@@ -127,7 +127,7 @@ else :
 refimgname = "3_ECAM.2011-08-31T09:35:49.000"
 
 # dimensions you want for the aligned images (you have to start at pixels (1,1), no choice)
-if telescopename == "WFI" or telescopename == "VST":
+if telescopename == "WFI":
     dimx = 2022
     dimy = 4000
 else :

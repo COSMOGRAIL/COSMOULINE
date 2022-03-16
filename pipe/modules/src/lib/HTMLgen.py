@@ -1,7 +1,7 @@
-from . import utils
+import utils
 import get_sky
-from .HTags import *
-from . import help 
+from HTags import *
+import help 
 
 
 

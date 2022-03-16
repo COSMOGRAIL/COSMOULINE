@@ -4,7 +4,7 @@ Now that the coeffs are in the db, you might want to plot curves
 not involved in the renormalization.
 """
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 import variousfct
 import star
@@ -12,22 +12,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates
 
-print("I will plot lightcurves using renormalization coefficient called :")
-print(renormname)
-print("for the sources")
+print "I will plot lightcurves using renormalization coefficient called :"
+print renormname
+print "for the sources"
 for renormsource in renormsources:
-	print(renormsource)
+	print renormsource
 
 
 db = KirbyBase()
 allimages = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['mjd'])
-print("%i images in total." % len(allimages))
+print "%i images in total." % len(allimages)
 
 
 for renormsource in renormsources:
 	deckey = renormsource[0]
 	sourcename = renormsource[1]
-	print(deckey)
+	print deckey
 	
 	deckeyfilenumfield = "decfilenum_" + deckey
 	fluxfieldname = "out_" + deckey + "_" + sourcename + "_flux"
@@ -35,7 +35,7 @@ for renormsource in renormsources:
 	decnormfieldname = "decnorm_" + deckey
 	
 	images = [image for image in allimages if image[deckeyfilenumfield] != None]
-	print("%i images" % len(images))
+	print "%i images" % len(images)
 
 	fluxes = np.array([image[fluxfieldname] for image in images])
 	errors = np.array([image[errorfieldname] for image in images])
@@ -74,6 +74,6 @@ for renormsource in renormsources:
 	if savefigs:
 		plotfilepath = os.path.join(plotdir, "renorm_%s_renormflux_%s.pdf" % (renormname, sourcename))
 		plt.savefig(plotfilepath)
-		print("Wrote %s" % (plotfilepath))
+		print "Wrote %s" % (plotfilepath)
 	else:
 		plt.show()

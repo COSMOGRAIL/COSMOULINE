@@ -3,7 +3,7 @@
 
 from numpy import *
 #import lib.utils as fn
-from .lib.PSF import *
+from lib.PSF import *
 #from lib.AImage import *
 import sys
 import src.lib.utils as fn
@@ -53,7 +53,7 @@ def main(argv=None):
     if len(sys.argv) >1:
         cfg = sys.argv[1]
     f = open(cfg, 'r')
-    exec(f.read())
+    exec f.read()
     f.close()
     vars = ['NPIX', 'MOF_PARAMS',  'S_FACT', 'G_PARAMS', 
             'G_POS', 'G_STRAT', 'CENTER', 'PSF_SIZE', 'OUT']
@@ -61,7 +61,7 @@ def main(argv=None):
     if err > 0:
         return 1
     fnb = ws.get_filenb(FILENAME) #@UndefinedVariable
-    for i in range(fnb):
+    for i in xrange(fnb):
         psf_gen(i, locals())
     return 0
     

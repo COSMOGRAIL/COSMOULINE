@@ -27,7 +27,7 @@ def main():
     
     galnb = ask('How many extended sources do you want?', 0,
                 lambda r: r>=0)
-    for i in range(galnb):
+    for i in xrange(galnb):
         out(2, 'Defining source', 1)
         pos = ask('Position?', (size[0]/2.,size[1]/2.),
                   lambda r: len(r)==2 and type(r[0]) == type(1) and type(r[1]) == type(1) and
@@ -56,7 +56,7 @@ def main():
         
     if not rnd:
         fwhm = 0.
-        for i in range(srcnb):
+        for i in xrange(srcnb):
             out(2, 'Defining source', 1)
             pos = ask('Position?', (size[0]/2.,size[1]/2.),
                       lambda r: len(r)==2 and (type(r[0]) == type(1) or type(r[0]) == type(1.)) 
@@ -127,16 +127,16 @@ def main():
     offsets = []
     #i_range = linspace(65050., 150.*(srcnb>=10)+20000.*(srcnb<10), srcnb)
     i_range = linspace(200000., 2000., srcnb)
-    for j in range(nbimg):
+    for j in xrange(nbimg):
         uni.reset()
         dx = rd.random()/2. * (j>0)
         dy = rd.random()/2. * (j>0)
         offsets += [dx,dy]
         out(2, 'Adding Moffats...')
-        for i in range(galnb):
+        for i in xrange(galnb):
             uni.addMof(fn.flatten([moffats[i][1:]] + [mofpos[i][0]+dx,mofpos[i][1]+dy] + [moffats[i][0]]))
         out(2, 'Adding gaussians...')
-        for i in range(srcnb):
+        for i in xrange(srcnb):
             if rnd:
                 if j == 0:
                     c1, c2 = random.rand(1)*shape[0], random.rand(1)*shape[1]
@@ -162,7 +162,7 @@ def main():
     
     if sampling:
         out(2, 'Re-sampling to the desired resolution...')
-        for i in range(nbimg):
+        for i in xrange(nbimg):
             data = imgs[i]
             sum = data.sum()
             data = scipy.ndimage.interpolation.zoom(data, 1./sampling, order = 0, mode='reflect').astype('float64')
@@ -170,13 +170,13 @@ def main():
             imgs[i] = data.copy()
         
     out(2, 'Creating sigma map...')
-    for i in range(nbimg):
+    for i in xrange(nbimg):
         sig = sqrt(abs(imgs[i]+sky))
         imsigs += [sig]
     
     if sky:
         out(2, 'Generating some noise...')
-        for i in range(nbimg):
+        for i in xrange(nbimg):
             imgs[i] += sqrt(abs(imgs[i]+sky))*rd.normal(0., 1., size)
         
     
@@ -187,21 +187,21 @@ def main():
     show = ask('Do you want to see the result?', 'Y',
                lambda r: r==0 or r == 1)
     if show:
-        for i in range(nbimg):
+        for i in xrange(nbimg):
             fn.array2ds9(imgs[i], name='artificial_data', frame=i+1)
     
     save = ask('Do you want to save the result?', 'Y',
                lambda r: r==0 or r == 1)
     
     if save:
-        import pickle
+        import cPickle
         out(2, 'Output name [g.fits]:', '-r')
-        name = input()
+        name = raw_input()
         name = string.strip(name)
         if not name: name = 'g_'
         elif name[-6:] == '.fits' : name = name[:-6]
         name = os.path.join(os.path.join(os.getcwd(),'images'), name)
-        for i in range(nbimg):
+        for i in xrange(nbimg):
             fn.array2fits(imgs[i], name+str(i+1)+'.fits')
             fn.array2fits(imsigs[i], 'gsig_'+str(i+1)+'.fits')
         fname = os.path.join(os.path.join(os.getcwd(),'results'), 'true_par.dat')
@@ -212,14 +212,14 @@ def main():
                'moffats':moffats,
                'psfpar':psfpar,
                'offsets':offsets}
-        pickle.dump(obj, output)
+        cPickle.dump(obj, output)
         output.close()
         out(2, 'Saved in', os.path.join(os.getcwd(),'results'))
     save = ask('Do you want to save the PSF?', 'Y',
                lambda r: r==0 or r == 1)
     if save:
         out(2, 'Output name [psf_1.fits]:', '-r')
-        name = input()
+        name = raw_input()
         name = string.strip(name)
         if not name: name = 'psf_1.fits'
         name = os.path.join(os.path.join(os.getcwd(),'results'), name)

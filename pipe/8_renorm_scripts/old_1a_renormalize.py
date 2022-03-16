@@ -18,7 +18,7 @@
 
 
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 #from combibynight_fct import *
@@ -28,20 +28,20 @@ import progressbar
 import numpy as np
 import matplotlib.pyplot as plt
 
-print("You want to calculate a renormalization coefficient called :")
-print(renormname)
-print("using the sources")
+print "You want to calculate a renormalization coefficient called :"
+print renormname
+print "using the sources"
 for renormsource in renormsources:
-	print(renormsource)
+	print renormsource
 
 db = KirbyBase()
 
 # Sort them like this, to ensure that points of one night are side by side (looks better on graphs ...)
 allimages = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname', 'mhjd'])
 
-print("I will try to calculate a coefficient for", len(allimages), "images.")
+print "I will try to calculate a coefficient for", len(allimages), "images."
 
-print("Before adding anything to the database, I will make plots.")
+print "Before adding anything to the database, I will make plots."
 proquest(askquestions)
 
 # Add a new temporary field to the dicts
@@ -67,7 +67,7 @@ for renormsource in renormsources:
 	# we start by calculating some statistics for the available fluxes :
 	
 	images = [image for image in allimages if image[deckeyfilenumfield] != None]
-	print("%20s %5s : %4i deconvolutions available" % (deckey, sourcename, len(images)))
+	print "%20s %5s : %4i deconvolutions available" % (deckey, sourcename, len(images))
 	
 	fluxes = np.array([image[fluxfieldname] for image in images]) # So these are raw fluxes in electrons, not normalized
 	decnormcoeffs = np.array([image[decnormfieldname] for image in images])
@@ -115,10 +115,10 @@ for renormsource in renormsources:
 	medmag = np.median(mags)
 	stddevmag = np.std(mags)
 	
-	print("Mean mag :", meanmag)
-	print("Median mag :", medmag)
-	print("Stddev mag :", stddevmag)
-	print("(in electrons, given the normalization used for deconvolution)")
+	print "Mean mag :", meanmag
+	print "Median mag :", medmag
+	print "Stddev mag :", stddevmag
+	print "(in electrons, given the normalization used for deconvolution)"
 	
 	# and now we go through *all*images, and update the indivcoeff field :
 	
@@ -163,7 +163,7 @@ for i, image in enumerate(allimages):
 	if len(image["tmp_indivcoeffs"]) == 0:
 		# bummer. Then we will just write 0.0, to be sure that this one will pop out.
 		renormcoeff = 0.0
-		print("Image %s : no star available." % (image["imgname"]))
+		print "Image %s : no star available." % (image["imgname"])
 		image["tmp_coeffcomment"].append("No star available.")
 		# we add nothing to coeffs
 	else :
@@ -199,7 +199,7 @@ plt.legend()
 if savefigs:
 	plotfilepath = os.path.join(plotdir, "renorm_%s_indivcoeffs.pdf" % renormname)
 	plt.savefig(plotfilepath)
-	print("Wrote %s" % (plotfilepath))
+	print "Wrote %s" % (plotfilepath)
 else:
 	plt.show()
 
@@ -211,18 +211,18 @@ else:
 # In a second plot we compare this new renormalization with the medcoeffs.
 # To do this, we will first rescale the renormalization coeffs so that the reference image has coeff 1.0.
 
-print("Rescaling coefficients with respect to reference image...")
+print "Rescaling coefficients with respect to reference image..."
 
 refimage = [image for image in allimages if image["imgname"] == refimgname][0]
 
 if len(refimage["tmp_indivcoeffs"]) == 0:
-	print("OMFG !!! You did not deconvolve the reference image.")
-	print("Warning : I will not scale the renormalization coeffs, you better know what you are doing.")
+	print "OMFG !!! You did not deconvolve the reference image."
+	print "Warning : I will not scale the renormalization coeffs, you better know what you are doing."
 
 refnewcoeff = refimage["tmp_coeff"]
-print("Renormalization coeff of the reference image with respect to the median level of all images :")
-print(refnewcoeff)
-print("(This should typically be around 1.0, but deviations are not a problem, they would mean that your reference image has atypical fluxes.)")
+print "Renormalization coeff of the reference image with respect to the median level of all images :"
+print refnewcoeff
+print "(This should typically be around 1.0, but deviations are not a problem, they would mean that your reference image has atypical fluxes.)"
 #proquest(askquestions)
 
 for i, image in enumerate(allimages):
@@ -252,7 +252,7 @@ plt.legend()
 if savefigs:
 	plotfilepath = os.path.join(plotdir, "renorm_%s_medcoeffcompa.pdf" % renormname)
 	plt.savefig(plotfilepath)
-	print("Wrote %s" % (plotfilepath))
+	print "Wrote %s" % (plotfilepath)
 else:
 	plt.show()
 
@@ -309,15 +309,15 @@ for renormsource in renormsources:
 
 # If you want, you can now write this into the database.
 
-print("Ok, I would now add these coefficients to the database.")
+print "Ok, I would now add these coefficients to the database."
 proquest(askquestions)
 
 # As we will tweak the database, do a backup first
 backupfile(imgdb, dbbudir, renormname)
 
 if renormname in db.getFieldNames(imgdb):
-	print("The field", renormname, "already exists in the database.")
-	print("I will erase it.")
+	print "The field", renormname, "already exists in the database."
+	print "I will erase it."
 	proquest(askquestions)
 	db.dropFields(imgdb, [renormname, renormcommentfieldname])
 
@@ -335,4 +335,4 @@ pbar.finish()
 
 db.pack(imgdb) # to erase the blank lines
 
-print("Ok, here you are.")
+print "Ok, here you are."

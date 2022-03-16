@@ -5,11 +5,11 @@
 #	
 
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 
-remove = input("Type a field substring you want to remove : ")
+remove = raw_input("Type a field substring you want to remove : ")
 
 db = KirbyBase()
 currentfields = db.getFieldNames(imgdb)
@@ -20,21 +20,21 @@ for i, field in enumerate(currentfields):
 	if field.find(remove) > -1:
 		fieldstoremove.append([field, currenttypes[i]])
 
-print("Fields that will be removed :")	
+print "Fields that will be removed :"	
 for field in fieldstoremove:
-	print("%30s  %8s" % (field[0], field[1]))
-print("These are", len(fieldstoremove), "fields.")
+	print "%30s  %8s" % (field[0], field[1])
+print "These are", len(fieldstoremove), "fields."
 
-answer = input("Type GO to proceed. ")
+answer = raw_input("Type GO to proceed. ")
 
 if answer[:2] == "GO":
 	backupfile(imgdb, dbbudir, "removing_"+remove)
 	for field in fieldstoremove:
 		db.dropFields(imgdb, [field[0]])
 	db.pack(imgdb)
-	print("Ok, they are all gone.")
+	print "Ok, they are all gone."
 else:
-	print("Wrong answer, I did nothing.")
+	print "Wrong answer, I did nothing."
 
 
 db.pack(imgdb) # always a good idea !

@@ -1,5 +1,5 @@
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 #from combibynight_fct import *
@@ -9,11 +9,11 @@ import progressbar
 import numpy as np
 import matplotlib.pyplot as plt
 
-print("You want to calculate a renormalization coefficient called :")
-print(renormname)
-print("using the sources")
+print "You want to calculate a renormalization coefficient called :"
+print renormname
+print "using the sources"
 for renormsource in renormsources:
-	print(renormsource)
+	print renormsource
 
 db = KirbyBase()
 
@@ -28,12 +28,12 @@ for image in allimages:
 
 
 for telescopename in telescopenames:
-	print(" --- " +telescopename + " --- ")
+	print " --- " +telescopename + " --- "
 	
 	colorrefmedflux = 0.0
 	
 	telimages = [image for image in allimages if image["telescopename"] == telescopename]
-	print("%i images" % (len(telimages)))
+	print "%i images" % (len(telimages))
 	
 	for j, renormsource in enumerate(renormsources):
 		deckey = renormsource[0]
@@ -44,7 +44,7 @@ for telescopename in telescopenames:
 		#decnormfieldname = "decnorm_" + deckey
 		
 		sourcetelimages = [image for image in telimages if image[deckeyfilenumfield] != None]
-		print("%20s %5s : %4i deconvolutions available" % (deckey, sourcename, len(sourcetelimages)))
+		print "%20s %5s : %4i deconvolutions available" % (deckey, sourcename, len(sourcetelimages))
 	
 		fluxes = np.array([image[fluxfieldname] for image in sourcetelimages]) # So these are raw fluxes in electrons, not normalized
 		
@@ -52,7 +52,7 @@ for telescopename in telescopenames:
 		
 		# For the first star, this will be the colorrefmedflux :
 		if j == 0:
-			print("That's the colour ref source.")
+			print "That's the colour ref source."
 			colorrefmedflux = medflux
 	
 		for image in sourcetelimages:
@@ -90,8 +90,8 @@ for telescopename in telescopenames:
 refimage = [image for image in allimages if image["imgname"] == refimgname][0]
 
 if len(refimage["tmp_indivcoeffs"]) == 0:
-	print("You did not deconvolve the reference image.")
-	print("Warning : I will not scale the renormalization coeffs as usual !")
+	print "You did not deconvolve the reference image."
+	print "Warning : I will not scale the renormalization coeffs as usual !"
 	
 	refnewcoeff = np.median(np.array([image["tmp_coeff"] for image in allimages]))
 
@@ -131,7 +131,7 @@ plt.legend()
 if savefigs:
 	plotfilepath = os.path.join(plotdir, "renorm_%s_medcoeffcompa.pdf" % renormname)
 	plt.savefig(plotfilepath)
-	print("Wrote %s" % (plotfilepath))
+	print "Wrote %s" % (plotfilepath)
 else:
 	plt.show()
 
@@ -140,7 +140,7 @@ else:
 
 # If you want, you can now write this into the database.
 
-print("Ok, I would now add these coefficients to the database.")
+print "Ok, I would now add these coefficients to the database."
 proquest(askquestions)
 
 
@@ -149,8 +149,8 @@ backupfile(imgdb, dbbudir, renormname)
 
 
 if renormname in db.getFieldNames(imgdb):
-	print("The field", renormname, "already exists in the database.")
-	print("I will erase it.")
+	print "The field", renormname, "already exists in the database."
+	print "I will erase it."
 	proquest(askquestions)
 	db.dropFields(imgdb, [renormname])
 	if renormerrfieldname in db.getFieldNames(imgdb):
@@ -175,4 +175,4 @@ pbar.finish()
 
 db.pack(imgdb) # to erase the blank lines
 
-print("Ok, here you are.")
+print "Ok, here you are."

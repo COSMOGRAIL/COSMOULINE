@@ -36,7 +36,7 @@ if not os.path.isdir(destdir):
 
 
 for fitsfilepath in origpaths:
-	print(os.path.split(fitsfilepath)[1])
+	print os.path.split(fitsfilepath)[1]
 
 	newfitsfilepath = newpath(fitsfilepath, destdir)
 	
@@ -44,14 +44,14 @@ for fitsfilepath in origpaths:
 	pixelarray = numpy.asarray(pixelarray).transpose() # To put it in the usual ds9 orientation
 	
 	pixelarrayshape = pixelarray.shape
-	print("Input : (%i, %i), %s, %s" % (pixelarrayshape[0], pixelarrayshape[1], hdr["BITPIX"], pixelarray.dtype.name))
+	print "Input : (%i, %i), %s, %s" % (pixelarrayshape[0], pixelarrayshape[1], hdr["BITPIX"], pixelarray.dtype.name)
 	
 	
 	if region != None:
 		exec("pixelarray = pixelarray%s" % (region))
 	
 	pixelarrayshape = pixelarray.shape
-	print("Ouput : (%i, %i)" % (pixelarrayshape[0], pixelarrayshape[1]))
+	print "Ouput : (%i, %i)" % (pixelarrayshape[0], pixelarrayshape[1])
 	if os.path.isfile(newfitsfilepath):
 		os.remove(newfitsfilepath)
 	

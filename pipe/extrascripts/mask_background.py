@@ -1,7 +1,7 @@
 import numpy as np
 import os
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 import ds9reg
 from variousfct import *
 
@@ -16,7 +16,7 @@ inverted = True
 
 region = os.path.join(configdir,deckey + '_mask_lens.reg')
 
-print(('mask file path is: ', os.path.join(configdir,deckey + '_mask_lens.reg')))
+print 'mask file path is: ', os.path.join(configdir,deckey + '_mask_lens.reg')
 if os.path.exists(region):
 
     reg = ds9reg.regions(128,128)  # hardcoded for now # Warning, can cause a lot of trouble when dealing with images other than ECAM
@@ -29,10 +29,10 @@ if os.path.exists(region):
 
     tofits(os.path.join(decdir,outputname + extension), backarray, backheader, verbose=False)
 
-    print(("You masked %i pixels of the background" %np.sum(reg.mask)))
-    print('saved !')
+    print "You masked %i pixels of the background" %np.sum(reg.mask)
+    print 'saved !'
 else:
-    print("No mask file")
+    print "No mask file"
 
 
 

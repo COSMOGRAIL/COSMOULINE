@@ -5,7 +5,7 @@
 #	New : create png images of the cropped fits
 #
 #
-exec(compile(open("../../config.py", "rb").read(), "../../config.py", 'exec'))
+execfile("../../config.py")
 import os, sys, glob, pyfits, numpy
 from variousfct import *
 import f2n
@@ -40,7 +40,7 @@ def newpath(origpath, destdir): 	# specifies how to change the name :
 filterlist = []
 
 for fitsfilepath in origpaths[::-1]:
-	print(os.path.split(fitsfilepath)[1])
+	print os.path.split(fitsfilepath)[1]
 
 	newfitsfilepath = newpath(fitsfilepath, destdir)
 	
@@ -66,7 +66,7 @@ for fitsfilepath in origpaths[::-1]:
 	
 	pixelarray = numpy.asarray(pixelarray).transpose() # To put it in the usual ds9 orientation
 	pixelarrayshape = pixelarray.shape
-	print("Input : (%i, %i), %s, %s" % (pixelarrayshape[0], pixelarrayshape[1], hdr["BITPIX"], pixelarray.dtype.name))
+	print "Input : (%i, %i), %s, %s" % (pixelarrayshape[0], pixelarrayshape[1], hdr["BITPIX"], pixelarray.dtype.name)
 	
 	#pixelarray = pixelarray[96:1037, 118:1024] # This was for J0158
 	
@@ -85,7 +85,7 @@ for fitsfilepath in origpaths[::-1]:
 	
 	
 	pixelarrayshape = pixelarray.shape
-	print("Ouput : (%i, %i)" % (pixelarrayshape[0], pixelarrayshape[1]))
+	print "Ouput : (%i, %i)" % (pixelarrayshape[0], pixelarrayshape[1])
 	if os.path.isfile(newfitsfilepath):
 		os.remove(newfitsfilepath)
 	
@@ -100,12 +100,12 @@ for fitsfilepath in origpaths[::-1]:
 	hdu.writeto(newfitsfilepath)
 	
 
-print("Filter histo :")
+print "Filter histo :"
 filterhisto = [(f, filterlist.count(f)) for f in sorted(list(set(filterlist)))]
-print("\n".join(["%s : %i" % h for h in filterhisto]))
+print "\n".join(["%s : %i" % h for h in filterhisto])
 
 ########
-print("\n Now I make pngs of these croped images vs raw images")
+print "\n Now I make pngs of these croped images vs raw images"
 proquest(askquestions)
 
 if not os.path.isdir(pngdir):

@@ -1,5 +1,5 @@
 
-exec(compile(open("config.py", "rb").read(), "config.py", 'exec'))
+execfile("config.py")
 import math
 #import matplotlib.pyplot as plt
 #import matplotlib.dates
@@ -12,7 +12,7 @@ sumshotnoisefield = "out_%s_%s_shotnoise" % (deconvname, sumsourcename)
 
 
 addcode = sumsourcename  + "=" + "+".join(toaddsourcenames)
-print("Operation : %s" % (addcode))
+print "Operation : %s" % (addcode)
 
 filenameels = os.path.splitext(dbfilepath)
 newdbfilepath = filenameels[0] + "_" + addcode + filenameels[1]
@@ -23,7 +23,7 @@ if os.path.exists(newdbfilepath):
 shutil.copy(dbfilepath, newdbfilepath)
 
 images = variousfct.readpickle(newdbfilepath, verbose=True)
-print("%i images in db." % (len(images)))
+print "%i images in db." % (len(images))
 
 for image in images:
 	image[sumfluxfield] = None
@@ -42,5 +42,5 @@ for image in images:
 	#print image[sumfluxfield], " +/- ", image[sumshotnoisefield]
 
 variousfct.writepickle(images, newdbfilepath, verbose=True)
-print("Ok done, this is the new dbfilename to use :")
-print(os.path.basename(newdbfilepath))
+print "Ok done, this is the new dbfilename to use :"
+print os.path.basename(newdbfilepath)

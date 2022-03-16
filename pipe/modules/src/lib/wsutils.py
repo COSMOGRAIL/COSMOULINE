@@ -1,6 +1,6 @@
 
 import os
-from . import utils as fn
+import utils as fn
 import numpy as np
 from numpy import *
 
@@ -69,12 +69,12 @@ def get_files(filename, directory=None, excl=None, as_exe=False):
     cat = []
     if '*' not in filename:
         if not os.path.isfile(os.path.join(cd, filename)):
-            raise IOError('No such file: '+filename)
+            raise IOError, 'No such file: '+filename
         files += [filename]
         cat += ['']
     else:
-        s = filename.split('*')
-        if len(s) > 2: raise ValueError('filename error: only one "*" accepted') 
+        s = string.split(filename, '*')
+        if len(s) > 2: raise ValueError, 'filename error: only one "*" accepted' 
         lf = [e for e in os.listdir(cd)
               if os.path.isfile(os.path.join(cd, e))]
         for f in lf:
@@ -99,7 +99,7 @@ def populate(filename, spos, npix, opos, orad, sky, sig, gain, clean=0, as_exe=F
         radius = size//2
         r = size-radius * 2.
         if x+radius+r > data.shape[0] or y+radius+r > data.shape[1] or x-radius<0 or y-radius<0:
-            raise RuntimeError('extraction error: sides too close')
+            raise RuntimeError, 'extraction error: sides too close'
         return data[x-radius:x+radius+int(round(r)), y-radius:y+radius+int(round(r))]
     if as_exe:
         cd = './'
@@ -122,6 +122,7 @@ def populate(filename, spos, npix, opos, orad, sky, sig, gain, clean=0, as_exe=F
     except TypeError: gain = [sky for f in files]
     try: gain[0]
     except TypeError: gain = [gain for f in files]
+    
     for i, f in enumerate(files):
         out(2, 'Opening '+f)
         data = fn.get_data(f, directory=cdim, sky=sky[i])
@@ -234,7 +235,7 @@ def restore(stars=None, sigs=None, masks=None, objs=None, objssig=None, objsmask
     return data
 
 def drop(name, val):
-    import pickle
+    import cPickle
     data = {}
     try:
         data = pick()
@@ -242,13 +243,13 @@ def drop(name, val):
         pass
     f = open('param.dat', 'wb')
     data[name]=val
-    pickle.dump(data, f)
+    cPickle.dump(data, f)
     f.close()
 
 def pick(name=None, file='param.dat'):
-    import pickle
+    import cPickle
     pkl_file = open(file, 'rb')
-    dic = pickle.load(pkl_file)
+    dic = cPickle.load(pkl_file)
     pkl_file.close()
     if name is None:
         return dic

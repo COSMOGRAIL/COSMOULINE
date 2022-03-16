@@ -1,13 +1,13 @@
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from pylab import *
 db = KirbyBase()
 
 data = db.select(imgdb, ['recno'], ['*'], ['seeing', 'geomaprms'])
 
-x = [x[0] for x in data]
-y = [x[1] for x in data]
+x = map(lambda x:x[0], data)
+y = map(lambda x:x[1], data)
 
 #print data[0]
 #title(r'$\alpha_i > \beta_i$', fontsize=20)

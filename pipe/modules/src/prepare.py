@@ -41,7 +41,7 @@ def main(argv=None):
     if EXTRACT is True:
         out(2, 'Extracting all images...')
         f = open(cfg, 'r')
-        exec(f.read())
+        exec f.read()
         f.close()
         vars = ['FILENAME', 'STARS', 'NPIX', 'OBJ_POS', 
                 'OBJ_SIZE', 'IMG_GAIN', 'SKY_BACKGROUND', 

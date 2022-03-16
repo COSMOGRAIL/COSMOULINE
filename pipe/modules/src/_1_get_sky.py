@@ -22,7 +22,7 @@ def get_sky_val(data, show=False, range=None, nbins=None, save=None):
     bnind = np.where(h[0]==h[0].max())[0][0]
     g = lambda c, f, I: lambda x: I*np.exp(-(x-c)**2/(2*f**2))
     errfun = lambda p: g(*p)(h[1][:h[0].shape[0]]) - h[0]
-    print((h[1][bnind], np.abs(h[1][-1]-h[1][0])/20., h[0][bnind]))
+    print (h[1][bnind], np.abs(h[1][-1]-h[1][0])/20., h[0][bnind])
     p, success = scipy.optimize.leastsq(errfun, 
                                         (h[1][bnind], np.abs(h[1][-1]-h[1][0])/20., h[0][bnind]), 
 #                                        (h[1][bnind], h[0].shape[0]/20., h[0][bnind]), #changed for hst, get back if needed
@@ -55,7 +55,7 @@ def main(argv=None):
     p = False
     SKY_RANGE = NBINS = SHOW = None
     f = open(cfg, 'r')
-    exec(f.read())
+    exec f.read()
     f.close()
     vars = ['FILENAME', 'NOWRITE']
     err = fn.check_namespace(vars, locals())
@@ -81,7 +81,7 @@ def main(argv=None):
     skyl = []
     sigl = []
     fnb = len(files)
-    for i in range(fnb):
+    for i in xrange(fnb):
         out(1, '===============', i+1, '/', fnb,'===============|')
         out(1, 'Getting sky from', files[i])
         sky, sig = get_sky_val(fn.get_data(files[i], directory='images'), show = SHOW, range=SKY_RANGE, nbins=NBINS)

@@ -14,7 +14,7 @@ $HeadURL: http://astropy.scipy.org/svn/astrolib/trunk/asciidata/Lib/asciidata_SE
 __version__ = "Version 1.1 $LastChangedRevision: 234 $"
 
 import unittest
-from . import asciidata, asciifunction
+import asciidata, asciifunction
 import os, string
 
 

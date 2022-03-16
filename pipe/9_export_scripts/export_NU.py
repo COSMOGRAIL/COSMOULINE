@@ -1,12 +1,12 @@
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 import rdbexport
 import variousfct
 import datetime
 
 
-print("I am the only scirpt that writes into your configdir.")
-print("But I will try to be careful.")
+print "I am the only scirpt that writes into your configdir."
+print "But I will try to be careful."
 
 
 
@@ -24,7 +24,7 @@ pklgenericfilepath = os.path.join(configdir, "%s_db.pkl" % configstr)
 dbcopyfilepath = os.path.join(configdir, filename + "_db.dat")
 
 
-print("My basename : %s" % (filename))
+print "My basename : %s" % (filename)
 
 
 
@@ -113,9 +113,9 @@ print "Images with gogogo == True :", len(gogogotrue)
 
 
 readmetxt = "\n".join(readme)
-print("Here is the readme text : \n\n%s\n\n" % (readmetxt))
+print "Here is the readme text : \n\n%s\n\n" % (readmetxt)
 
-print("I will now write the files.")
+print "I will now write the files."
 variousfct.proquest(askquestions)
 
 readme.append("\nThe full list of fields :")
@@ -125,7 +125,7 @@ readmetxt = "\n".join(readme)
 
 
 if os.path.exists(readmefilepath) or os.path.exists(pklfilepath) or os.path.exists(dbcopyfilepath):
-	print("The files exist. I will overwrite them.")
+	print "The files exist. I will overwrite them."
 	variousfct.proquest(askquestions)
 	if os.path.exists(readmefilepath):
 		os.remove(readmefilepath)
@@ -141,7 +141,7 @@ if os.path.exists(readmefilepath) or os.path.exists(pklfilepath) or os.path.exis
 out_file = open(readmefilepath, "w")
 out_file.write(readmetxt)
 out_file.close()
-print("Wrote %s" % readmefilepath)
+print "Wrote %s" % readmefilepath
 
 variousfct.writepickle(images, pklfilepath, verbose=True) # copy once the file with the date on its name...
 variousfct.writepickle(images, pklgenericfilepath, verbose=True) # and redoit using a generic name, for the automated reduction procedure...
@@ -149,4 +149,4 @@ variousfct.writepickle(images, pklgenericfilepath, verbose=True) # and redoit us
 shutil.copy(imgdb, dbcopyfilepath)
 
 
-print("Done !")
+print "Done !"

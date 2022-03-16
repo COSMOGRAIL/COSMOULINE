@@ -8,7 +8,7 @@ tocompare = ["medcoeff", "renormacg"]
 
 
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 
@@ -22,7 +22,7 @@ plt.figure(figsize=(12,8))	# sets figure size
 
 for fieldname in tocompare:
 
-	coeffs = asarray([x[fieldname] for x in allimages])
+	coeffs = asarray(map(lambda x: x[fieldname], allimages))
 		
 	label = fieldname
 

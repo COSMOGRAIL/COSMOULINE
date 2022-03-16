@@ -8,7 +8,7 @@
 #		- Apply my mask on the original sigma image.
 #
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import numpy as np
@@ -17,8 +17,8 @@ import cosmics
 # Select images to treat
 db = KirbyBase()
 images = db.select(imgdb, ['gogogo','treatme',objkeyflag], [True,True,True], returnType='dict', sortFields=['setname', 'mjd'])
-print("Number of images to analyse for cosmics :", len(images))
-print("You have set cosmicssigclip to %f" % cosmicssigclip)
+print "Number of images to analyse for cosmics :", len(images)
+print "You have set cosmicssigclip to %f" % cosmicssigclip
 proquest(askquestions)
 
 
@@ -31,7 +31,7 @@ origdir = os.getcwd()
 for i, image in enumerate(images):
 	
 
-	print(i+1, "/", len(images), ":", image['imgname'])
+	print i+1, "/", len(images), ":", image['imgname']
 	imgobjdir = os.path.join(objdir, image['imgname'])
 	os.chdir(imgobjdir)
 	
@@ -53,7 +53,7 @@ for i, image in enumerate(images):
 	# We gather some parameters :
 	
 	pssl = image['skylevel'] # The Previously Subtracted Sky Level
-	print("PSSL (TM): %.2f" % pssl)
+	print "PSSL (TM): %.2f" % pssl
 	gain = image['gain']
 	readnoise = image['readnoise']
 	
@@ -76,7 +76,7 @@ for i, image in enumerate(images):
 	ncosmics = np.sum(c.mask)
 	
 	if ncosmics != 0:
-		print("--- %i pixels ---" % ncosmics)
+		print "--- %i pixels ---" % ncosmics
 	
 	# We do the rest anyway (easier): 
 	

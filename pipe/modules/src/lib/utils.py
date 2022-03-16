@@ -7,7 +7,10 @@ try:
 except:
     pass
 
-import imexam
+try:
+    import numdisplay
+except:
+    import stsci.numdisplay # for usage with anaconda
  
 INF = float("infinity")
 
@@ -54,7 +57,7 @@ def ask(msg, default, assertion, errmsg='', level=1):
     try:
         while 1:
             out(level, msg, '['+str(default)+']:', '-r')
-            resp = input()
+            resp = raw_input()
             if string.strip(resp):
                 if not(not resp.isdigit() and (resp.isalnum() or '.' in resp or '/' in resp  or '_' in resp or '\\'in resp)):
                     try:
@@ -70,7 +73,7 @@ def ask(msg, default, assertion, errmsg='', level=1):
                     return default
     #                return eval(default)
                 return default
-    except KeyboardInterrupt as EOFError:
+    except KeyboardInterrupt, EOFError:
         return 'quit'
 
 def has_cuda():
@@ -125,7 +128,7 @@ def switch_psf_shape(psf, center='SW'):
     return s
 
 def psf_gen(size, bak, mpar, gpar, gpos, gstrat, sfact=2.):
-    from . import PSF
+    import PSF
     nx, ny = size
     c1, c2 = nx/2., ny/2.
     psf = PSF.PSF((nx,ny), (c1,c2))
@@ -228,7 +231,7 @@ def getGpos(img, nmax, size, bounds=None, epos=None, cutoffs=None):
         out(2, i, 'out of', nmax, 'positions found')
     return gpos.reshape(gpos.shape[0]/2, 2), i
 
-from .PSF import PSF
+from PSF import PSF
 def get_s_pos(data, psf, pos, sig=1., tol=1., gres=2., conv_fun=None):
     import scipy.optimize
     if conv_fun is None: conv_fun = conv
@@ -266,8 +269,8 @@ def mean(a, *args):
         lenShape = len(shape)
         factor = np.asarray(shape)/np.asarray(args)
         evList = ['a.reshape('] + \
-                 ['int(args[%d]),int(factor[%d]),'%(i,i) for i in range(lenShape)] + \
-                 [')'] + ['.sum(%d)'%(i+1) for i in range(lenShape)] #+ \
+                 ['args[%d],factor[%d],'%(i,i) for i in xrange(lenShape)] + \
+                 [')'] + ['.sum(%d)'%(i+1) for i in xrange(lenShape)] #+ \
 #                 ['/factor[%d]'%i for i in xrange(lenShape)]
         return eval(''.join(evList))
     
@@ -386,7 +389,7 @@ def makepilimage(img, ztrans="log", cutoffs=(None,None)):
     else:
         z1, z2 = cutoffs
     if ztrans not in ["log", "lin"]:
-        raise RuntimeError("makepilimage : ztrans must be log or lin")
+        raise RuntimeError, "makepilimage : ztrans must be log or lin"
 
     ztransarray = img.array.copy() # deep copy of the array
     ztransarray[ztransarray > z2] = z2
@@ -403,9 +406,9 @@ def makepilimage(img, ztrans="log", cutoffs=(None,None)):
 
     ztransarray.ravel()
     if ztrans == "log" :
-        ztransarray = np.array([loggray(x, minpixelval, maxpixelval) for x in ztransarray])
+        ztransarray = np.array(map(lambda x: loggray(x, minpixelval, maxpixelval), ztransarray))
     if ztrans == "lin" :
-        ztransarray = np.array([lingray(x, minpixelval, maxpixelval) for x in ztransarray])
+        ztransarray = np.array(map(lambda x: lingray(x, minpixelval, maxpixelval), ztransarray))
     ztransarray.shape = img.array.shape
     gvarray = np.zeros(img.array.shape, dtype=np.uint8) # an array of 256 bit gray values
     ztransarray.round(out=gvarray)
@@ -426,13 +429,6 @@ def array2fits(array, filename, header = None):
     hdu.writeto(filename)
     
 def array2ds9(array, frame=1, name=None, zscale=False):
-    viewer = imexam.connect()
-    viewer.view(array)
-            
-####### version using numdisplay, don't see how to make this work in python3.
-####### thus I replace it with the above, using imexam
-def array2ds9numdisplay(array, frame=1, name=None, zscale=False):
-    import numdisplay
     ds9frame = frame%16
     try:
         numdisplay.display(array.transpose(), z1=array.min(), z2=array.min(), 
@@ -457,7 +453,7 @@ def array2png(array, filename, ztrans="log", cutoffs=(None,None)):
     flippilimage.save(filename, "PNG")
     
 def save_img(imgs, names, filename, min_size=(0,0)):
-    from . import f2n
+    import f2n
     sys.path.append('./src/lib')
     nb = len(imgs)
     assert nb == len(names)
@@ -469,15 +465,15 @@ def save_img(imgs, names, filename, min_size=(0,0)):
         size_max = ((x>size_max[0])*x or size_max[0],
                     (y>size_max[1])*y or size_max[1])
     im_list = []
-    for i in range(nb):
+    for i in xrange(nb):
         im = f2n.f2nimage(imgs[i], verbose=False)
         im.numpyarray = rebin(im.numpyarray, size_max) #TODO: use upsample instead
         im.setzscale(z2='ex')
         im.makepilimage()
         im.writetitle(names[i])
         im_list += [im]
-    im_list = [[im_list[i+c*j] for i in range(c) if i+c*j<nb] for j in range(l)]
-    for i in range(nb, c*l):
+    im_list = [[im_list[i+c*j] for i in xrange(c) if i+c*j<nb] for j in xrange(l)]
+    for i in xrange(nb, c*l):
         fim = f2n.f2nimage(np.zeros(size_max), verbose=False)
         fim.makepilimage()
         im_list[-1] += [fim]
@@ -516,7 +512,7 @@ def get_data(filename, directory=None, pos=None, transpose=True, sky = 0., retal
     hdulist = pyfits.open(path)
     #hdulist.verify('fix')
     if len(hdulist) != 1:
-        raise RuntimeError("extractfromfits : len(hdulist) > 1 not allowed")
+        raise RuntimeError, "extractfromfits : len(hdulist) > 1 not allowed"
     data = hdulist[0].data       # assumes the first extension is an image
     header = hdulist[0].header
     if transpose is True:
@@ -532,7 +528,7 @@ def get_data(filename, directory=None, pos=None, transpose=True, sky = 0., retal
         radius = int(size/2.)
         r = size-radius * 2.
         if x+radius+r >= data.shape[1] or y+radius+r >= data.shape[0] or x-radius<0 or y-radius<0:
-            raise RuntimeError('extraction error: sides too close')
+            raise RuntimeError, 'extraction error: sides too close'
         if retall is True:
             return data[x-radius:x+radius+r, y-radius:y+radius+r] - sky, header
         return data[x-radius:x+radius+r, y-radius:y+radius+r] - sky
@@ -541,14 +537,14 @@ def get_data(filename, directory=None, pos=None, transpose=True, sky = 0., retal
     return data - sky
 
 def get_ds9_mask(shape, show=False):
-    import subprocess
+    import commands
     import string
     from matplotlib.nxutils import points_inside_poly #@UnresolvedImport
     
     mask = np.zeros(shape)
     ind = np.indices(shape)
-    ind = list(zip(ind[0].ravel(),ind[1].ravel()))
-    out=string.split(subprocess.getoutput('xpaget ds9 regions'),'\n')
+    ind = zip(ind[0].ravel(),ind[1].ravel())
+    out=string.split(commands.getoutput('xpaget ds9 regions'),'\n')
     for r in out:
         if r[0]!='#' and r[:6]!='global' and r[:3]!='XPA' and r[:8]!='physical':
             i = string.find(r,'(')
@@ -591,7 +587,7 @@ def write_cfg(filename, var_dic):
             if line[-1] != '\n':
                 line += '\n'
             name, val = line.split("=")
-            name, val = name.strip(), val.strip(val)
+            name, val = string.strip(name), string.strip(val)
             if name in dic:
                 if type(dic[name]) == type(''):
                     out += name + " = '" + str(dic[name]) + "'\n"
@@ -603,7 +599,7 @@ def write_cfg(filename, var_dic):
         else:
             out += line
     if len(dic) > 0:
-        for name in list(dic.keys()):
+        for name in dic.keys():
             if type(dic[name]) == type(''):
                 out += name + " = '" + str(dic[name]) + "'\n"
             else:
@@ -633,7 +629,7 @@ def get_shifts(imgs, boxsize=10.):
     c12 = np.minimum(ref.shape[0], (ref.shape[0]+boxsize)//2)
     c21 = np.maximum(0, (ref.shape[1]-boxsize)//2)
     c22 = np.minimum(ref.shape[1], (ref.shape[1]+boxsize)//2)
-    for i in range(nimg-1):
+    for i in xrange(nimg-1):
         im = np.flipud(np.fliplr(imgs[i+1]))
         corr = conv(ref, im)[c11:c12,c21:c22]
         c1, c2 = get_moments(corr)[:2]

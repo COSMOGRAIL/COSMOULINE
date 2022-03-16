@@ -4,7 +4,7 @@
 	You can turn on the flag "checkplots" to check how I do this.
 """
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 
 from variousfct import *
@@ -18,17 +18,17 @@ if checkplots :
 # We select the images :
 db = KirbyBase()
 if thisisatest :
-	print("This is a test run.")
+	print "This is a test run."
 	images = db.select(imgdb, ['gogogo','treatme', 'testlist'], [True, True, True], returnType='dict')
 elif update:
-	print("This is an update !")
+	print "This is an update !"
 	images = db.select(imgdb, ['gogogo','treatme', 'updating'], [True, True, True], returnType='dict')
 	askquestions = False
 else :
 	images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
 
 nbrofimages = len(images)
-print("Number of images to treat :", nbrofimages)
+print "Number of images to treat :", nbrofimages
 proquest(askquestions)
 
 if not checkplots : # Then we will update the database.
@@ -44,8 +44,8 @@ starttime = datetime.now()
 
 for i,image in enumerate(images):
 
-	print("- " * 40)
-	print("%i / %i : %s" % (i+1, nbrofimages, image['imgname']))
+	print "- " * 40
+	print "%i / %i : %s" % (i+1, nbrofimages, image['imgname'])
 	
 	# Read the FITS file as numpy array :
 	pixelarray, header = pyfits.getdata(os.path.join(alidir, image['imgname']+".fits"), header=True)
@@ -53,7 +53,7 @@ for i,image in enumerate(images):
 	
 	# Print some info about the image :
 	pixelarrayshape = pixelarray.shape
-	print("(%i, %i), %s, %s" % (pixelarrayshape[0], pixelarrayshape[1], header["BITPIX"], pixelarray.dtype.name))
+	print "(%i, %i), %s, %s" % (pixelarrayshape[0], pixelarrayshape[1], header["BITPIX"], pixelarray.dtype.name)
 	
 	# Ready to rock. (Hell yeah!)
 	# So we want to get the sky level, and the std dev of the pixels around this level (noise in sky).
@@ -78,7 +78,7 @@ for i,image in enumerate(images):
 	skylevel = np.nanmedian(nearskypixvals.ravel())
 	skystddev = np.nanstd(nearskypixvals.ravel())
 	
-	print("Sky level at %f, noise of %f" % (skylevel, skystddev))
+	print "Sky level at %f, noise of %f" % (skylevel, skystddev)
 		
 	if checkplots :
 		plt.hist(pixelarray.ravel(), facecolor='green', bins=np.linspace(0,3*medianlevel,100), normed=True, log=False)
@@ -91,7 +91,7 @@ for i,image in enumerate(images):
 		plt.title('Histogram of all pixel values for image %s: %s' %(image['imgname'], image['testcomment']))
 		plt.legend(loc='best')
 		plt.show()
-		print("Remember : the database is NOT UPDATED !")
+		print "Remember : the database is NOT UPDATED !"
 	else:
 		db.update(imgdb, ['recno'], [image['recno']], {'skylevel': float(skylevel), 'prealistddev': float(skystddev)})
 	

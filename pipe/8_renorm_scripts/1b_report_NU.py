@@ -6,7 +6,7 @@
 
 
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 
@@ -18,7 +18,7 @@ fields = ['imgname', renormname, renormerrfieldname, renormcommentfieldname]
 db = KirbyBase()
 reporttxt = ""
 
-usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], ['*'], ['setname'])])
+usedsetnames = set(map(lambda x : x[0], db.select(imgdb, ['recno'], ['*'], ['setname'])))
 
 
 for setname in sorted(list(usedsetnames)):

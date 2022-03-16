@@ -18,7 +18,7 @@ Index of different plots:
 """
 
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import star
@@ -39,7 +39,7 @@ skipimages = [image[0] for image in readimagelist(os.path.join(configdir,'satura
 images = [image for image in images if not image['imgname'] in skipimages]
 
 nbrofimages = len(images)
-print("I respect treatme, saturatedlist and other keywords defined in the script, and selected only %i images" % (nbrofimages))
+print "I respect treatme, saturatedlist and other keywords defined in the script, and selected only %i images" % (nbrofimages)
 
 
 # Read the manual star catalog :
@@ -66,9 +66,9 @@ specialkw = 'WFI'  # keyword for the first plot
 
 ######## blah blah blah blah ########
 
-print("These is the subset of photom stars I will treat here :")
-print("Aperture is defined as: %s" % aperture)
-print("\n".join(["%s\t%.2f\t%.2f" % (s.name, s.x, s.y) for s in photomstars]))
+print "These is the subset of photom stars I will treat here :"
+print "Aperture is defined as: %s" % aperture
+print "\n".join(["%s\t%.2f\t%.2f" % (s.name, s.x, s.y) for s in photomstars])
 #proquest(askquestions)
 
 # transform mydates in mjds
@@ -82,9 +82,9 @@ colors = ['crimson', 'chartreuse', 'purple', 'cyan', 'gold', 'black', 'blue', 'm
 dates = sorted(list(set([image["date"] for image in images])))
 mjds = sorted(list(set([round(image["mjd"]) for image in images])))
 
-print(dates)
-print(mjds)
-print(mymjds)
+print dates
+print mjds
+print mymjds
 
 
 ############################################################################################################
@@ -255,7 +255,7 @@ if 0:
 				yerrmag = [[np.mean(lc["magerrbottom"]) / np.sqrt(nightlen)], [np.mean(lc["magerrtop"]) / np.sqrt(nightlen)]]
 				yerrstd = [[np.std(lc["magnitude"]) / np.sqrt(nightlen)], [np.std(lc["magnitude"]) / np.sqrt(nightlen)]]
 
-				print(yerrstd)
+				print yerrstd
 
 				plt.errorbar(np.mean(lc["mjds"]), np.mean(lc["magnitude"]), yerr=yerrmag, color="grey", linewidth=4)
 				plt.errorbar(np.mean(lc["mjds"]), np.mean(lc["magnitude"]), yerr=yerrstd, color="black", linewidth=1.5)
@@ -365,8 +365,8 @@ if 0:
 
 
 				#plt.savefig(os.path.join(plotdir, "Airmass_vs_fluxratio_%s_over_%s" %(amstars[0].name, amstars[1].name)))
-		print("Plots saved :")
-		print(os.path.join(plotdir, "Airmass_vs_fluxratio_*"))
+		print "Plots saved :"
+		print os.path.join(plotdir, "Airmass_vs_fluxratio_*")
 		plt.show()
 		sys.exit()
 
@@ -536,9 +536,9 @@ if 1:
 			try:
 				fluxratios.append(nightinfo[star.name][1] / refnight[star.name][1])
 			except ZeroDivisionError:
-				print("No flux for star %s at night %s." %(star.name, nightinfo["date"]))
+				print "No flux for star %s at night %s." %(star.name, nightinfo["date"])
 			except:
-				print("Error with star %s" % star.name)
+				print "Error with star %s" % star.name
 				sys.exit()
 		#print "nightmeancoeff : ", np.mean(fluxratios)
 		#print "nightmedcoeff : ", np.median(fluxratios)
@@ -748,8 +748,8 @@ if 0:
 			xmin, xmax, ymin, ymax = 0.4, 1.0, 0.5, 0.77  # for abs
 
 		if min(medscat) < xmin or max(medscat) > xmax or min(stdscat) < ymin or max(stdscat) > ymax:
-			print("points are out of plot axis !")
-			print("for star %s" % star)
+			print "points are out of plot axis !"
+			print "for star %s" % star
 			#sys.exit()
 
 		plt.axis([xmin, xmax, ymin, ymax])
@@ -835,10 +835,10 @@ if 0:
 
 	# We draw the rectangles around qso and empty region :
 
-	lims = [list(map(int,x.split(':'))) for x in lensregion[1:-1].split(',')]
+	lims = [map(int,x.split(':')) for x in lensregion[1:-1].split(',')]
 	f2nimg.drawrectangle(lims[0][0], lims[0][1], lims[1][0], lims[1][1], colour=(0,255,0), label = "Lens")
 
-	lims = [list(map(int,x.split(':'))) for x in emptyregion[1:-1].split(',')]
+	lims = [map(int,x.split(':')) for x in emptyregion[1:-1].split(',')]
 	f2nimg.drawrectangle(lims[0][0], lims[0][1], lims[1][0], lims[1][1], colour=(0,255,0), label = "Empty")
 
 
@@ -847,8 +847,8 @@ if 0:
 	pngpath = os.path.join(workdir, "apertures_on_photomstars.png")
 	f2nimg.tonet(pngpath)
 
-	print("I have written a map into")
-	print(pngpath)
+	print "I have written a map into"
+	print pngpath
 	sys.exit()
 
 ############################################################################################################
@@ -862,11 +862,11 @@ if 0:
 	for i, image in enumerate(images[500:550]):
 
 		if i < 1:
-			print(" -" * 20)
-			print(i+1, "/", nbrofimages, ":", image['imgname'])
+			print " -" * 20
+			print i+1, "/", nbrofimages, ":", image['imgname']
 
 			for s in photomstars:
-					print("Star %s" %s.name)
+					print "Star %s" %s.name
 					dbfields = [{"name":"%s_%s_%s" % (sexphotomname, s.name, f["dbname"]), "type":f["type"]} for f in sexphotomfields]
 					apertures = []
 					fluxerrs = []
@@ -875,17 +875,17 @@ if 0:
 					try:
 						for field in dbfields:
 							if 'auto' not in field["name"] and 'err' not in field["name"]:
-								print(field["name"], image[field["name"]])
+								print field["name"], image[field["name"]]
 								fluxes.append(float(image[field["name"]]))
 								apertures.append(int(field["name"].split('_')[2].split('ap')[1]))
 							if 'auto' not in field["name"] and 'err' in field["name"]:
-								print(field["name"], image[field["name"]])
+								print field["name"], image[field["name"]]
 								fluxerrs.append(float(image[field["name"]]))
 							if 'auto' in field["name"] and 'err' not in field["name"]:
-								print(field["name"], image[field["name"]])
+								print field["name"], image[field["name"]]
 								flux_auto = float(image[field["name"]])
 							if 'auto' in field["name"] and 'err' in field["name"]:
-								print(field["name"], image[field["name"]])
+								print field["name"], image[field["name"]]
 								flux_auto_err = float(image[field["name"]])
 
 						plt.figure()
@@ -895,7 +895,7 @@ if 0:
 						plt.suptitle('Star %s' % s.name)
 
 					except:
-						print("No fluxes for star %s on image %s" %(s.name, image["imgname"]))
+						print "No fluxes for star %s on image %s" %(s.name, image["imgname"])
 			plt.show()
 			continue
 	sys.exit()

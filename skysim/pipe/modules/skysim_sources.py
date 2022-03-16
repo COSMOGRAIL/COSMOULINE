@@ -193,8 +193,8 @@ def build_array_stars(image_size, matrix_x, matrix_y, distance=None, mag=None):
 	############### case with specified distance   #################
 	else:
 		if (matrix_x-1)*distance > effective_x or (matrix_y-1)*distance > effective_y:
-			print('Problem while creating starnetwork list:')
-			print('distance between stars to big to put specified nb of stars into the image')
+			print 'Problem while creating starnetwork list:'
+			print 'distance between stars to big to put specified nb of stars into the image'
 			sys.exit()
 
 
@@ -311,10 +311,10 @@ def random_shiftrot_sourcelist(inputlist, shiftx_max=0, shifty_max=0, angle_max=
 	Units: shift [pixel], angle [degrees]
 	"""
 
-	print('I will apply a coordinate transformation with the following properties:')
-	print('Shift in x direction between %.2f and %.2f pixels.' %(-abs(shiftx_max), abs(shiftx_max)))
-	print('Shift in y direction between %.2f and %.2f pixels.' %(-abs(shifty_max), abs(shifty_max)))
-	print('Rotation between %.4f and %.4f degrees.' %(-abs(angle_max), abs(angle_max)))   
+	print 'I will apply a coordinate transformation with the following properties:'
+	print 'Shift in x direction between %.2f and %.2f pixels.' %(-abs(shiftx_max), abs(shiftx_max))
+	print 'Shift in y direction between %.2f and %.2f pixels.' %(-abs(shifty_max), abs(shifty_max))
+	print 'Rotation between %.4f and %.4f degrees.' %(-abs(angle_max), abs(angle_max))   
 
 	shiftx = random.uniform( - shiftx_max, shiftx_max)     #no problem if -shiftx_max > shiftx_max
 	shifty = random.uniform( - shifty_max, shifty_max)

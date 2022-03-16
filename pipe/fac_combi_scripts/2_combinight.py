@@ -5,7 +5,7 @@
 #	Viva iraf...
 #
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from pyraf import iraf
 from kirbybase import KirbyBase, KBError
 import shutil
@@ -15,7 +15,7 @@ from headerstuff import *
 import astropy.io.fits as pyfits
 import numpy as np
 
-print("You want to combine the images per night of observation for the combiname: %s, using the coeff: %s" %(combiname,renormcoeff))
+print "You want to combine the images per night of observation for the combiname: %s, using the coeff: %s" %(combiname,renormcoeff)
 proquest(askquestions)
 
 
@@ -26,7 +26,7 @@ filepath = os.path.join(pipedir, 'fac_combi_scripts/' + 'info_temp.pkl')
 listimages = readpickle(filepath)
 	
 
-print("I have selected", len(listimages), "images.")
+print "I have selected", len(listimages), "images."
 proquest(askquestions)
 	
 
@@ -84,7 +84,7 @@ for i, image in enumerate(listimages):
 	iraf.unlearn(iraf.images.immatch.imcombine)
 	iraf.images.immatch.imcombine.combine = "median"
 	
-	print("\n", i+1, " Combining image of night %s" %image["date"])
+	print "\n", i+1, " Combining image of night %s" %image["date"]
 	
 	combinightdir = os.path.join(combidir, image["date"])	#directory that contains the iraf input for the combination, the symlinks on the nonorm images and the images normalized to combine
 	
@@ -107,25 +107,25 @@ for i, image in enumerate(listimages):
 	iraf.images.immatch.imcombine("@irafinput.txt", output = outputpath)
 	
 	
-	print("\nModifying the header of the images...")
+	print "\nModifying the header of the images..."
 	
 	pixelarray, hdr = pyfits.getdata(outputpath, 0, header=True)
 	pixelarray = np.asarray(pixelarray).transpose()
 	
 	if hdr['NCOMBINE'] is not image['ncombine']:
-		print("\nIRAF did not combine all the image you wanted because there are more than 8. Viva IRAF!!!!")
+		print "\nIRAF did not combine all the image you wanted because there are more than 8. Viva IRAF!!!!"
 		compter += 1	
 	
 	listcoeff = np.array(image['listcoeff'])
 	sum1overcoeff = np.sum(1/listcoeff)
 
-	print("Sum of 1/normcoeff : ", sum1overcoeff)
+	print "Sum of 1/normcoeff : ", sum1overcoeff
 
 	pixelarray = pixelarray * sum1overcoeff + image['skylevel']	# equivalent to make the sum of the images but a "clean" version of the original images
 		
 	hdu = pyfits.PrimaryHDU(pixelarray.transpose())			# we clean the header to have only the mandatory fields
 	
-	for (key, value) in image.items():
+	for (key, value) in image.iteritems():
 		if key == 'listcoeff':
 			pass
 		else:
@@ -139,9 +139,9 @@ for i, image in enumerate(listimages):
 	os.remove(inputpath)
 
 if compter is not 0:
-	print("Warning: IRAF did not combine correctly %i images."	%compter)
+	print "Warning: IRAF did not combine correctly %i images."	%compter
 
-print("Done.")
+print "Done."
 
 
 

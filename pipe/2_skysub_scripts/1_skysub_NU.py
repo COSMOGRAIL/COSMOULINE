@@ -5,7 +5,7 @@
 #
 
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
@@ -15,10 +15,10 @@ import os
 
 db = KirbyBase()
 if thisisatest:
-	print("This is a test run.")
+	print "This is a test run."
 	images = db.select(imgdb, ['gogogo','treatme','testlist'], [True, True, True], returnType='dict')
 elif update:
-	print("This is an update.")
+	print "This is an update."
 	images = db.select(imgdb, ['gogogo','treatme','updating'], [True, True, True], returnType='dict')
 	askquestions = False
 else:
@@ -26,7 +26,7 @@ else:
 	
 	
 nbrimages = len(images)
-print("Number of images to treat :", nbrimages)
+print "Number of images to treat :", nbrimages
 proquest(askquestions)
 
 starttime = datetime.now()
@@ -35,29 +35,29 @@ redofromscratch = True
 
 for i,image in enumerate(images):
 	
-	print("+ " * 30)
-	print("%5i/%i : %s" % (i+1, nbrimages, image["imgname"]))
+	print "+ " * 30
+	print "%5i/%i : %s" % (i+1, nbrimages, image["imgname"])
 	
 	imagepath = os.path.join(alidir, image["imgname"] + ".fits")
 	skyimagepath = os.path.join(alidir,  image["imgname"] + "_sky.fits")
 	if os.path.isfile(skyimagepath):
 		if redofromscratch:
-			print("Removing existing sky image.")
+			print "Removing existing sky image."
 			os.remove(skyimagepath)
 		else:
-			print("Already done, I skip this one...")
+			print "Already done, I skip this one..."
 			continue
 	
 	# We run sextractor  on the image in electrons :
 	saturlevel = image["gain"] * image["saturlevel"] # to convert to electrons
 	
 	if image["telescopename"] in ["EulerCAM", "SMARTSandicam", "GMOS"]:
-		print("Detected fine pixel telescope, switching to smooth sky")
+		print "Detected fine pixel telescope, switching to smooth sky"
 		cmd = "%s %s -c default_sky_template_smooth.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CHECKIMAGE_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, skyimagepath)
 
 
 	elif image["telescopename"] in ["FORS2"]:
-		print("FORS2 detected, switching to FORS sky")
+		print "FORS2 detected, switching to FORS sky"
 		cmd = "%s %s -c default_sky_template_FORS.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CHECKIMAGE_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, skyimagepath)
 	else:
 		cmd = "%s %s -c default_sky_template_smooth.sex -PIXEL_SCALE %.3f -SATUR_LEVEL %.3f -CHECKIMAGE_NAME %s" % (sex, imagepath, image["pixsize"], saturlevel, skyimagepath)
@@ -72,7 +72,7 @@ for i,image in enumerate(images):
 	
 	skysubimagepath = os.path.join(alidir, image["imgname"] + "_skysub.fits")
 	if os.path.isfile(skysubimagepath):
-		print("Removing existing skysubtracted image.")
+		print "Removing existing skysubtracted image."
 		os.remove(skysubimagepath)
 	
 	tofits(skysubimagepath, skysubimagea, hdr = imageh, verbose = True)

@@ -7,7 +7,7 @@
 import time
 from numpy import *
 from scipy import signal
-from . import utils as fn
+import utils as fn
 
 out = fn.Verbose()
 
@@ -38,11 +38,11 @@ def timing(func):
 		mstaken = (t2-t1)*1000.0 # milliseconds
 		
 		if mstaken < 1000.:
-			print('+++ timing : function %s took %0.2f ms' % (func.__name__, mstaken))
+			print '+++ timing : function %s took %0.2f ms' % (func.func_name, mstaken)
 		elif mstaken < 60000.:
-			print('+++ timing : function %s took %0.2f s' % (func.__name__, mstaken/1000.0))
+			print '+++ timing : function %s took %0.2f s' % (func.func_name, mstaken/1000.0)
 		else:	
-			print('+++ timing : function %s took %0.2f min' % (func.__name__, mstaken/60000.0))
+			print '+++ timing : function %s took %0.2f min' % (func.func_name, mstaken/60000.0)
 		return res
 	return wrapper
 
@@ -139,7 +139,7 @@ def fftatrous(image, infilter=csplinefilter2d, levels=3):
 		diff = conved - reconved
 		outimgs.append(diff)
 		conved = reconved
-		print("+++ wavelet decomp. : level", l+1, "done.")
+		print "+++ wavelet decomp. : level", l+1, "done."
 	outimgs.append(reconved)
 	
 	return outimgs
@@ -155,8 +155,8 @@ def reconstructiontest(atrousoutlist):
 		rec += atrousoutlist[i].array
 	null = rec - orig
 	
-	print("+++ reconstructiontest : mean =", mean(null))
-	print("+++ reconstructiontest : stddev =", std(null))
+	print "+++ reconstructiontest : mean =", mean(null)
+	print "+++ reconstructiontest : stddev =", std(null)
 	return mtimage(null) #@UndefinedVariable
 
 @timing

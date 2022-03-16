@@ -7,7 +7,7 @@ we respect gogogo
 
 """
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 #import variousfct
 #import headerstuff
@@ -23,7 +23,7 @@ for (fieldname, plotrange) in [("medcoeff", [0.5, 3.0]), ("skylevel", [0.0, 1000
 
 
 	images = [image for image in allimages if image[fieldname] > 0.0]
-	print("%s : %i images" % (fieldname, len(images)))
+	print "%s : %i images" % (fieldname, len(images))
 	usedsetnames = sorted(list(set([image['setname'] for image in images])))
 
 	#minval = np.min(np.array([image[fieldname] for image in images]))
@@ -33,13 +33,13 @@ for (fieldname, plotrange) in [("medcoeff", [0.5, 3.0]), ("skylevel", [0.0, 1000
 	
 	for usedsetname in usedsetnames :
 	
-		print("Set ", usedsetname)
+		print "Set ", usedsetname
 		setimages = [image for image in images if image["setname"] == usedsetname]
 		
 		setminval = np.min(np.array([image[fieldname] for image in setimages]))
 		setmaxval = np.max(np.array([image[fieldname] for image in setimages]))
 		setminmaxtext = "min, max = %f, %f" % (setminval, setmaxval)
-		print(setminmaxtext)
+		print setminmaxtext
 	
 		telescopenames = sorted(list(set([image['telescopename'] for image in setimages])))
 		values = np.array([image[fieldname] for image in setimages])
@@ -55,7 +55,7 @@ for (fieldname, plotrange) in [("medcoeff", [0.5, 3.0]), ("skylevel", [0.0, 1000
 		if savefigs:
 			plotfilepath = os.path.join(plotdir, "histo_%s_%s.pdf" % (fieldname, usedsetname))
 			plt.savefig(plotfilepath)
-			print("Wrote %s" % (plotfilepath))
+			print "Wrote %s" % (plotfilepath)
 			plt.close()
 		else:
 			plt.show()

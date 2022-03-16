@@ -3,7 +3,7 @@
 #	Adds a lot of not-that-important entries to the database :-)
 #
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 
@@ -42,11 +42,11 @@ else:
 	images = db.select(imgdb, ['gogogo','treatme'], [True, True], returnType='dict')
 
 nbrofimages = len(images)
-print("Number of images to treat :", nbrofimages)
+print "Number of images to treat :", nbrofimages
 proquest(askquestions)
 
 
-print("Doublecheck that this is true : ", xephemlens)
+print "Doublecheck that this is true : ", xephemlens
 proquest(askquestions)
 
 # We make a backup copy of our database.
@@ -58,8 +58,8 @@ if "hjd" not in db.getFieldNames(imgdb) :
 
 for i,image in enumerate(images):
 
-	print("- " * 30)
-	print(i+1, "/", nbrofimages, ":", image['imgname'])
+	print "- " * 30
+	print i+1, "/", nbrofimages, ":", image['imgname']
 	
 	astrofishy = False # this is a flag we set if we find something fishy... like observation in daylight etc...
 	astrocomment = ""
@@ -74,7 +74,7 @@ for i,image in enumerate(images):
 	djd = float(image['jd']) - 2415020.0 # jd is a string !
 	telescope.date = djd
 	calctime = str(telescope.date)
-	print("UTC datetime : %s" % calctime)
+	print "UTC datetime : %s" % calctime
 
 	lens = ephem.readdb(xephemlens)
 	lens.compute(telescope)
@@ -82,7 +82,7 @@ for i,image in enumerate(images):
 	if (airmassvalue < 1.0) or (airmassvalue > 5.0):
 		astrofishy = True
 		astrocomment = astrocomment + "Altitude : %s (airmass %5.2f). " % (lens.alt, airmassvalue)	
-	print("Altitude : %s (airmass %5.2f)." % (lens.alt, airmassvalue))
+	print "Altitude : %s (airmass %5.2f)." % (lens.alt, airmassvalue)
 	
 	lensalt = float(lens.alt) * 180.00 / math.pi
 	lensaz = float(lens.az) * 180.00 / math.pi
@@ -92,11 +92,11 @@ for i,image in enumerate(images):
 
 	moonsep = ephem.separation(moon, lens)
 	moondist = math.degrees(float(moonsep))
-	print("Separation to the Moon is %.2f degrees." % moondist)
+	print "Separation to the Moon is %.2f degrees." % moondist
 	moonpercent = float(moon.phase)
-	print("Moon illumation : %5.2f %%" % moonpercent)
+	print "Moon illumation : %5.2f %%" % moonpercent
 	moonalt=math.degrees(float(moon.alt))
-	print('Moon altitude [degrees]: %.2f' % moonalt)
+	print 'Moon altitude [degrees]: %.2f' % moonalt
 
 	sun = ephem.Sun()
 	sun.compute(telescope)
@@ -105,8 +105,8 @@ for i,image in enumerate(images):
 	if sunalt > 0.0 :
 		astrofishy = True
 		astrocomment = astrocomment + "Sun altitude : %.2f " % sunalt
-	print("Sun altitude : %.2f" % sunalt)
-	print("Sun position : RA %s / Dec %s" % (sun.ra, sun.dec))
+	print "Sun altitude : %.2f" % sunalt
+	print "Sun position : RA %s / Dec %s" % (sun.ra, sun.dec)
 	# http://en.wikipedia.org/wiki/Heliocentric_Julian_Day
 	# If the Sun's celestial coordinates are (ra0,dec0) and the coordinates of the observed object or event are (ra,dec),
 	# and if the distance between the Sun and Earth is d, then
@@ -120,7 +120,7 @@ for i,image in enumerate(images):
 	declens = float(lens.dec)
 	sundist = math.degrees(float(ephem.separation(sun, lens)))
 
-	print("Separation to the Sun is %.2f degrees." % sundist)
+	print "Separation to the Sun is %.2f degrees." % sundist
 
 	hjd = float(image['jd']) - dc * (math.sin(declens)*math.sin(decsun) + math.cos(declens)*math.cos(decsun)*math.cos(ralens-rasun))
 	# So we calculate hjd based on the julian date that we got somehow from the header.
@@ -152,9 +152,9 @@ for i,image in enumerate(images):
 db.pack(imgdb) # to erase the blank lines
 
 
-print("Ok, done.")
+print "Ok, done."
 
-print("By the way, did you know that %s is located in the constellation %s ?"%(lens.name, ephem.constellation(lens)[1]))
+print "By the way, did you know that %s is located in the constellation %s ?"%(lens.name, ephem.constellation(lens)[1])
 
 
 

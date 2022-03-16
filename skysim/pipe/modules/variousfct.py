@@ -11,7 +11,7 @@ def writepickle(obj, filepath, verbose=True):
 	pickle.dump(obj, outputfile)
 	outputfile.close()
 	if verbose:
-		print("Wrote %s" % filepath)
+		print "Wrote %s" % filepath
 
 
 def readpickle(filepath, verbose=True):
@@ -24,7 +24,7 @@ def readpickle(filepath, verbose=True):
 	obj = pickle.load(pkl_file)
 	pkl_file.close()
 	if verbose:
-		print("Read %s" % filepath)
+		print "Read %s" % filepath
 	return obj
 
 

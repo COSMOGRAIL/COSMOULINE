@@ -36,12 +36,12 @@ class regions:
 		Reads a ds9 region file and adds its content to self.circles and self.boxes.
 		"""
 		if verbose:
-			print("Reading DS9 region file ...")
+			print "Reading DS9 region file ..."
 		
 		if not os.path.isfile(ds9regfilepath):
-			print("Error : the DS9 region file")
-			print(ds9regfilepath)
-			print("does not exist.")
+			print "Error : the DS9 region file"
+			print ds9regfilepath
+			print "does not exist."
 			sys.exit()
 		
 		ds9regfile = open(ds9regfilepath, "r")
@@ -70,7 +70,7 @@ class regions:
 				self.boxes.append({"centerx": float(centerx), "centery": float(centery), "sizex": float(sizex), "sizey":float(sizey)})
 
 			else:
-				print("WARNING : unknown region in line : %s" % line.strip())
+				print "WARNING : unknown region in line : %s" % line.strip()
 				continue
 			
 		
@@ -81,7 +81,7 @@ class regions:
 		"""
 		
 		if verbose:
-			print("Building region mask ...")
+			print "Building region mask ..."
 		
 		for i in range(self.mask.shape[0]):
 			for j in range(self.mask.shape[1]):
@@ -101,7 +101,7 @@ class regions:
 		"""
 
 		if verbose:
-			print("Building inverted region mask ...")
+			print "Building inverted region mask ..."
 
 
 

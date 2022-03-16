@@ -155,23 +155,23 @@ class Bar(ProgressBarWidgetHFill):
         self.left = left
         self.right = right
     def _format_marker(self, pbar):
-        if isinstance(self.marker, str):
+        if isinstance(self.marker, (str, unicode)):
             return self.marker
         else:
             return self.marker.update(pbar)
     def update(self, pbar, width):
         percent = pbar.percentage()
-        cwidth = int(width - len(self.left) - len(self.right))
+        cwidth = width - len(self.left) - len(self.right)
         marked_width = int(percent * cwidth / 100)
         m = self._format_marker(pbar)
-        bar = (self.left + (m*marked_width).ljust(int(cwidth)) + self.right)
+        bar = (self.left + (m*marked_width).ljust(cwidth) + self.right)
         return bar
 
 class ReverseBar(Bar):
     "The reverse bar of progress, or bar of regress. :)"
     def update(self, pbar, width):
         percent = pbar.percentage()
-        cwidth = int(width - len(self.left) - len(self.right))
+        cwidth = width - len(self.left) - len(self.right)
         marked_width = int(percent * cwidth / 100)
         m = self._format_marker(pbar)
         bar = (self.left + (m*marked_width).rjust(cwidth) + self.right)
@@ -249,7 +249,7 @@ class ProgressBar(object):
                 r.append(w)
                 hfill_inds.append(i)
                 num_hfill += 1
-            elif isinstance(w, str):
+            elif isinstance(w, (str, unicode)):
                 r.append(w)
                 currwidth += len(w)
             else:
@@ -318,7 +318,7 @@ if __name__=='__main__':
             # do something
             pbar.update(10*i+1)
         pbar.finish()
-        print()
+        print
 
     def example2():
         class CrazyFileTransferSpeed(FileTransferSpeed):
@@ -337,7 +337,7 @@ if __name__=='__main__':
             # do something
             pbar.update(5*i+1)
         pbar.finish()
-        print()
+        print
 
     def example3():
         widgets = [Bar('>'), ' ', ETA(), ' ', ReverseBar('<')]
@@ -346,7 +346,7 @@ if __name__=='__main__':
             # do something
             pbar.update(10*i+1)
         pbar.finish()
-        print()
+        print
 
     def example4():
         widgets = ['Test: ', Percentage(), ' ',
@@ -358,7 +358,7 @@ if __name__=='__main__':
             time.sleep(0.2)
             pbar.update(i)
         pbar.finish()
-        print()
+        print
 
 
     example1()

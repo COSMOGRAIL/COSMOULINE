@@ -26,16 +26,16 @@ decompdir = "/home/epfl/tewes/unsaved/liverdecomp/"
 ##########################################################
 
 
-print("HELLO LIVERPOOOOOOOOL !")
+print "HELLO LIVERPOOOOOOOOL !"
 
 globfiles = glob.glob(datadir + "????/????????/*.*")
-print("I've found", len(globfiles), "files.")
+print "I've found", len(globfiles), "files."
 
 found_extensions = set()
 for eachfile in globfiles:
 	found_extensions.add(eachfile.split('.')[-1])
-print("Extensions of the files :")
-print(found_extensions)
+print "Extensions of the files :"
+print found_extensions
 
 for extension in found_extensions:
 	os.system("mkdir " + decompdir + extension)
@@ -44,7 +44,7 @@ for eachfile in globfiles:
 	extension = eachfile.split('.')[-1]
 	cmd = "cp " + eachfile + " " + decompdir + extension + "/."
 	os.system(cmd)
-	print(eachfile)
+	print eachfile
 
-print("Bye !")
+print "Bye !"
 exit()

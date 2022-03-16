@@ -14,7 +14,7 @@ $HeadURL: $
 __version__ = "Version 1.0 $LastChangedRevision: 113 $"
 
 import unittest
-from . import asciidata, asciifunction
+import asciidata, asciifunction
 import os, string
 
 class Test_AsciiNumpy(unittest.TestCase):
@@ -119,19 +119,19 @@ class Test_AsciiNumpyNone(unittest.TestCase):
         numpy_col = self.tdata[0].tonumpy()    
 
         # check against the template
-        self.assertTrue(isinstance(numpy_col, numpy.core.ma.MaskedArray))
+        self.assert_(isinstance(numpy_col, numpy.core.ma.MaskedArray))
 
         # create a numpy object from the second column
         numpy_col = self.tdata[1].tonumpy()    
 
          # check against the template
-        self.assertTrue(isinstance(numpy_col, numpy.core.ma.MaskedArray))
+        self.assert_(isinstance(numpy_col, numpy.core.ma.MaskedArray))
 
         # create a numpy object from the second column
         numpy_col = self.tdata[3].tonumpy()    
 
         # check against the template
-        self.assertTrue(isinstance(numpy_col, numpy.core.ma.MaskedArray))        
+        self.assert_(isinstance(numpy_col, numpy.core.ma.MaskedArray))        
 
 
     def testBasicsNumpy(self):

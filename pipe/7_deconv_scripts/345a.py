@@ -1,11 +1,7 @@
-from subprocess import call
+import os
 
-exec (open("../config.py").read())
+execfile("../config.py")
+os.system("python 3_fillinfile_NU.py")
+os.system("python 4_deconv_NU.py")
+os.system("python 5a_decpngcheck_NU.py")
 
-call([python,  "3_fillinfile_NU.py"])
-call([python, "4_deconv_NU.py"])
-call([python, "5a_decpngcheck_NU.py"])
-
-pngkey = deckey + "_png"
-pngdir = os.path.join(workdir, pngkey)
-os.system(f'xdg-open {pngdir}/00001.png')

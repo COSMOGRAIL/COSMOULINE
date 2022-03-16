@@ -2,7 +2,7 @@
 #	Control png of the image and sky
 #
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
@@ -16,20 +16,20 @@ manual = False
 
 db = KirbyBase()
 if thisisatest:
-    print("This is a test run.")
+    print "This is a test run."
     images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict',
                        sortFields=['setname', 'mjd'])
 elif update:
-    print("This is an update.")
+    print "This is an update."
     images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict',
                        sortFields=['setname', 'mjd'])
     askquestions = False
 else:
-    print("I will create sky png only for a sample of images.")
+    print "I will create sky png only for a sample of images."
     images = []
     if manual:
-        set_number = int(eval(input("How many set of images do you have ? ")))
-        im_number = int(eval(input("How many images per set do you want to take ? ")))
+        set_number = int(input("How many set of images do you have ? "))
+        im_number = int(input("How many images per set do you want to take ? "))
     else:
         set_number = 3
         im_number = 10
@@ -39,26 +39,26 @@ else:
         images = images + im
 
 nbrimages = len(images)
-print("Number of images to treat :", nbrimages)
+print "Number of images to treat :", nbrimages
 proquest(askquestions)
 
 pngdirpath = os.path.join(workdir,
                           "sky_png")  # this is where you will put the png images (maybe move the whole name architecture into a single parameterfile ?)
 
 if update:
-    print("I will complete the existing sky folder. Or create it if you deleted it to save space")
+    print "I will complete the existing sky folder. Or create it if you deleted it to save space"
     if not os.path.isdir(pngdirpath):
         os.mkdir(pngdirpath)
 
 else:
     if os.path.isdir(pngdirpath):
         if redofromscratch:
-            print("I will delete existing stuff.")
+            print "I will delete existing stuff."
             proquest(askquestions)
             shutil.rmtree(pngdirpath)
             os.mkdir(pngdirpath)
         else:
-            print("I will complete the existing folder")
+            print "I will complete the existing folder"
             proquest(askquestions)
     else:
         os.mkdir(pngdirpath)
@@ -68,19 +68,16 @@ starttime = datetime.now()
 errmsg = ''
 for i, image in enumerate(images):
     try:
-        print("+ " * 30)
-        print("%5i/%i : %s" % (i + 1, nbrimages, image["imgname"]))
+        print "+ " * 30
+        print "%5i/%i : %s" % (i + 1, nbrimages, image["imgname"])
 
         pngpath = os.path.join(pngdirpath, "%s_sky.png" % image['imgname'])
         if os.path.isfile(pngpath) and not redofromscratch:
-            print("File exists, I skip...")
+            print "File exists, I skip..."
             continue
 
         skyimagepath = os.path.join(alidir, image["imgname"] + "_sky.fits")
-        if defringed :
-            skysubimagepath = os.path.join(alidir, image["imgname"] + "_defringed.fits")
-        else :
-            skysubimagepath = os.path.join(alidir, image["imgname"] + "_skysub.fits")
+        skysubimagepath = os.path.join(alidir, image["imgname"] + "_skysub.fits")
 
         skyimage = f2n.fromfits(skyimagepath)
         skyimage.setzscale("ex", "ex")
@@ -132,8 +129,8 @@ for i, image in enumerate(images):
         errmsg += "%s \n" % image["imgname"]
 
 if errmsg != '':
-    print("\n Problem with the following images:\n" + errmsg)
-    print("Check the fits !!")
+    print "\n Problem with the following images:\n" + errmsg
+    print "Check the fits !!"
 
 if update:  # remove all the symlink and redo it again with the new images
     allimages = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname', 'mjd'])

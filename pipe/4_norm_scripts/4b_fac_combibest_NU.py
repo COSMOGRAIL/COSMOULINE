@@ -8,17 +8,16 @@
 #	in fact this is not true, it still crashes if combining many images.
 #	Viva iraf...
 #
-from astropy.io import fits
 
 exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-# from pyraf import iraf
+from pyraf import iraf
 from kirbybase import KirbyBase, KBError
 import shutil
 from variousfct import *
 import time
 
 
-print(("combibestname : %s" % combibestname))
+print("combibestname : %s" % combibestname)
 proquest(askquestions)
 
 
@@ -29,20 +28,12 @@ combidir = os.path.join(workdir, combibestkey)
 if not os.path.isdir(combidir):
 	raise mterror("I cannot find the images ... check the combination name !")
 	
-
-
-#^we try to replace IRAF with some numpy operations.
-# from the parameters below, it seems that no rejection method is used.
-# this makes our life very simple. 
-
-
-###############################################################################
-############################### old iraf parameters ###########################
-###############################################################################
-# iraf.unlearn(iraf.images.immatch.imcombine)
-# iraf.images.immatch.imcombine.combine = "median"
+	
+iraf.unlearn(iraf.images.immatch.imcombine)
+iraf.images.immatch.imcombine.combine = "median"
 
 # For your info, the default parameters are :
+
 """
 input   =                       List of images to combine
 output  =                       List of output images
@@ -86,9 +77,6 @@ output  =                       List of output images
 (grow   =                   0.) Radius (pixels) for neighbor rejection
 (mode   =                   ql)
 """
-###############################################################################
-###############################################################################
-###############################################################################
 
 os.chdir(combidir)
 
@@ -98,15 +86,7 @@ if os.path.isfile(outputname):
 	os.remove(outputname)
 
 
-combinearray = []
-with open('irafinput.txt', 'r') as f:
-    for line in f.readlines():
-        combinearray.append(fits.getdata(line.strip()))
-
-resultimage = np.median(combinearray, axis=0)
-fits.writeto(outputname, resultimage, overwrite=1)
-    
-# iraf.images.immatch.imcombine("@irafinput.txt", output = outputname)
+iraf.images.immatch.imcombine("@irafinput.txt", output = outputname)
 
 shutil.move(outputname, "../.")
 

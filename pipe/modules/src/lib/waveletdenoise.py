@@ -100,7 +100,7 @@ def cyclespin(inimg, nb_lvl, ts=None, shiftlevel=None):
 	"""
 	if ts is None:
 		ts = inimg.std()
-	ts = [ts*0.7**i for i in range(nb_lvl)]
+	ts = [ts*0.7**i for i in xrange(nb_lvl)]
 	
 	if shiftlevel == None:
 		shiftlevel = len(ts)
@@ -160,7 +160,7 @@ def cyclespinmap(img, denoisingfct, n, **kwargs):
 	# We build a list of shifts to perform :
 	shifts = [np.array([a, b]) for a in range(2**n) for b in range(2**n)]
 	# Apply the denoising :
-	denoised = [denoisingfct(img, csshift=shift, **kwargs) for shift in shifts]
+	denoised = map(lambda shift: denoisingfct(img, csshift=shift, **kwargs), shifts)
 	# Return the mean image :
 	return np.mean(denoised, axis = 0)
 

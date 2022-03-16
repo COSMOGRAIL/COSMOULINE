@@ -1,16 +1,16 @@
-from PyPDF2 import PdfFileWriter, PdfFileReader
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+from pyPdf import PdfFileWriter, PdfFileReader
+execfile("../config.py")
 from variousfct import *
 import glob
 
 if os.path.isfile(plotdir + "Combined_pdf.pdf"):
-	print("Removing existing stuff")
-	print("rm "+plotdir+"Combined_pdf.pdf")
+	print "Removing existing stuff"
+	print "rm "+plotdir+"Combined_pdf.pdf"
 	os.system("rm "+plotdir+"Combined_pdf.pdf")
 	
 
 files = sorted(glob.glob(plotdir + "*.pdf"))
-print("I will create a single pdf file with all the plots") 
+print "I will create a single pdf file with all the plots" 
 
 # Creating a routine that appends files to the output file
 def append_pdf(inp,out):
@@ -29,8 +29,8 @@ for fil in files :
 output.write(open(plotdir + "Combined_pdf.pdf","wb"))
     
 if computer == "regor4" :
-		print("I can copy the result in your visudir if you want ?")
+		print "I can copy the result in your visudir if you want ?"
 		proquest(askquestions)
-		print("I'll copy the png to your visudir !")
-		print("cp " +plotdir + "Combined_pdf.pdf " + visudir)
+		print "I'll copy the png to your visudir !"
+		print "cp " +plotdir + "Combined_pdf.pdf " + visudir
 		os.system("cp " +plotdir + "Combined_pdf.pdf " + visudir)

@@ -3,7 +3,7 @@ Create the obj_star.cat files from the photomstar catalog.
 """
 
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import star
@@ -15,8 +15,8 @@ import f2n
 photomstarscatpath = os.path.join(configdir, "photomstars.cat")
 photomstars = star.readmancat(photomstarscatpath)
 
-print("I will write individual coordinates catalogs for the following stars:")
-print([star.name for star in photomstars])
+print "I will write individual coordinates catalogs for the following stars:"
+print [star.name for star in photomstars]
 proquest(askquestions)
 
 # the stars

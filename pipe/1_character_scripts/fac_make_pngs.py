@@ -6,7 +6,7 @@
 #	- the sorting and naming of the images
 #
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from star import *
@@ -20,8 +20,8 @@ from datetime import datetime, timedelta
 # This pngkey is nothing more than the name of a directory in which the pngs will be written.
 # Change it to avoid overwriting an existing set of pngs.
 
-print("You want to make pngs for the following setname:")
-print(setname)
+print "You want to make pngs for the following setname:"
+print setname
 proquest(askquestions)
 
 pngkey = setname
@@ -37,9 +37,9 @@ z2 = "auto"
 
 # - - - - - - - - - - - - -
 
-print("You can configure some lines of this script.")
-print("(e.g. to produce full frame pngs, or zoom on the lens, etc)")
-print("I respect thisisatest, so you can use this to try your settings...")
+print "You can configure some lines of this script."
+print "(e.g. to produce full frame pngs, or zoom on the lens, etc)"
+print "I respect thisisatest, so you can use this to try your settings..."
 
 proquest(askquestions)
 
@@ -47,7 +47,7 @@ pngdir = os.path.join(workdir, pngkey + "_png")
 
 # We check for potential existing stuff :
 if os.path.isdir(pngdir):
-	print("I will delete existing stuff.")
+	print "I will delete existing stuff."
 	proquest(askquestions)
 	shutil.rmtree(pngdir)
 os.mkdir(pngdir)
@@ -55,7 +55,7 @@ os.mkdir(pngdir)
 # We select the images to treat :
 db = KirbyBase()
 if thisisatest :
-	print("This is a test run.")
+	print "This is a test run."
 	#images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict', sortFields=['mjd'])
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist', 'setname'], [True, True, True, setname], returnType='dict', sortFields=['setname','mjd'])
 else :
@@ -68,7 +68,7 @@ else :
 #images = db.select(imgdb, ['gogogo', 'ell'], [True, ">0.65"], returnType='dict', sortFields=['mjd'])
 #images = db.select(imgdb, ['recno'], ['*'], returnType='dict', sortFields=['mjd'])
 
-print("I will treat", len(images), "images.")
+print "I will treat", len(images), "images."
 proquest(askquestions)
 
 
@@ -77,8 +77,8 @@ starttime = datetime.now()
 
 for i, image in enumerate(images):
 	
-	print("- " * 40)
-	print(i+1, "/", len(images), ":", image['imgname'])
+	print "- " * 40
+	print i+1, "/", len(images), ":", image['imgname']
 
 	
 	fitsfile = image['rawimg']
@@ -105,7 +105,7 @@ for i, image in enumerate(images):
 
 
 	# try to add new stuff: plot sextracted objects.
-	print("WARNING: if you want to display these images, you need to change your default.param output parameters to: NUMBER / X_IMAGE / Y_IMAGE only you can use the imgplot.param as the PARAMETERS_NAME of your default_see_template.sex file")
+	print "WARNING: if you want to display these images, you need to change your default.param output parameters to: NUMBER / X_IMAGE / Y_IMAGE only you can use the imgplot.param as the PARAMETERS_NAME of your default_see_template.sex file"
 
 	starcat = os.path.join(alidir,image["imgname"]+'.cat')
 	import star
@@ -123,8 +123,8 @@ for i, image in enumerate(images):
 	os.symlink(pngpath, orderlink)
 
 	if i==0:
-		print("Here is the first image:")
-		print(pngpath)
+		print "Here is the first image:"
+		print pngpath
 		proquest(askquestion)
 
 
@@ -140,8 +140,8 @@ for i, image in enumerate(images):
 endtime = datetime.now()
 timetaken = nicetimediff(endtime - starttime)
 notify(computer, withsound, "I'm done. %s ." % timetaken)
-print("PNGs are written into")
-print(pngdir)
+print "PNGs are written into"
+print pngdir
 
 if makejpgarchives :
 	makejpgtgz(pngdir, workdir, askquestions = askquestions)

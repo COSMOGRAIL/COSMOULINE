@@ -3,7 +3,7 @@ Look for strange flux values...
 
 """
 
-exec (open("../config.py").read())
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 import star
@@ -20,9 +20,9 @@ images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegE
 
 ptsrcs = star.readmancat(ptsrccat)
 nbptsrcs = len(ptsrcs)
-print("Number of point sources :", nbptsrcs)
-print("Names of sources : ")
-for src in ptsrcs: print(src.name)
+print "Number of point sources :", nbptsrcs
+print "Names of sources : "
+for src in ptsrcs: print src.name
 
 
 
@@ -60,10 +60,10 @@ for src in ptsrcs:
 	rejlines.extend("%s\t\t%s" % (image["imgname"], "normcoeff = %.3f" % image[decnormfieldname]) for image in rejectimages)
 	
 	if len(rejlines) == 0:
-		print("# All images have positive %s fluxes and normcoefficients." % (src.name))
+		print "# All images have positive %s fluxes and normcoefficients." % (src.name)
 	
 	else:
-		print("# These images have negative %s fluxes and/or a negative normcoefficient :" % (src.name))
-		print("\n".join(rejlines))
-		print("# Please put them on your kicklist!")
+		print "# These images have negative %s fluxes and/or a negative normcoefficient :" % (src.name)
+		print "\n".join(rejlines)
+		print "# Please put them on your kicklist!"
 	

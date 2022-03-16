@@ -78,8 +78,7 @@ for rec in records:
 print HTML(head+BODY(title+table))
 """
 
-import io
-from functools import reduce
+import cStringIO
 
 class TAG:
     """Generic class for tags"""
@@ -91,7 +90,7 @@ class TAG:
         self.brothers = []
     
     def __str__(self):
-        res=io.StringIO()
+        res=cStringIO.StringIO()
         w=res.write
         if self.tag != "TEXT":
             w("<%s" %self.tag.lower())
@@ -142,7 +141,7 @@ class TAG:
         if isinstance(other,str):
             return TEXT(other)+self
         else:
-            raise ValueError("Can't concatenate %s and instance" %other)
+            raise ValueError,"Can't concatenate %s and instance" %other
 
     def __mul__(self,n):
         """Replicate self n times, with tag first : TAG * n"""

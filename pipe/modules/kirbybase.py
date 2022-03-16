@@ -225,21 +225,16 @@ History:
          columns to a table and remove existing columns from the table.
          Thanks to Pierre Quentel for the code for these two enhancements.     
 """
-
-from __future__ import print_function
 import re
 import socket
 import os.path
 import datetime
-import pickle
-import io
+import cPickle
+import cStringIO
 import operator
 import tempfile
 import shutil
 
-
-def cmp(a, b):
-    return (a > b) - (a < b)
 
 #--------------------------------------------------------------------------
 # KirbyBase Class
@@ -627,7 +622,7 @@ class KirbyBase:
         # updates list and a filters list.  This will allow us to use the
         # same routines for validation and updating.
         elif isinstance(updates, dict):
-            filter = [k for k in list(updates.keys()) if k in 
+            filter = [k for k in updates.keys() if k in 
              self.field_names[1:]]
             updates = [updates[i] for i in filter]
         # If updates is an object, we are going to convert it into an
@@ -654,8 +649,8 @@ class KirbyBase:
         # Create a list with each member being a list made up of a
         # fieldname and the corresponding update value, converted to a
         # safe string.
-        filter_updates = list(zip(filter, 
-         [self._encodeString(str(u)) for u in updates]))
+        filter_updates = zip(filter, 
+         [self._encodeString(str(u)) for u in updates])
 
         updated = 0
         # Step through the match list.
@@ -930,8 +925,9 @@ class KirbyBase:
             reversedSortFields.reverse()
             for sortField in reversedSortFields:
                 i = filter.index(sortField)
-                result_set.sort(key = lambda x:x[i],
-                     reverse = [sortField in sortDesc][0])
+                result_set.sort( lambda x,y:
+                    cmp(*[(x[i], y[i]), (y[i], x[i])]
+                     [sortField in sortDesc]))
 
         # If returnType is 'object', then convert each result record
         # to a Record object before returning the result list.
@@ -941,7 +937,7 @@ class KirbyBase:
         # a dictionary with the keys being the field names before returning
         # the result list.
         elif returnType == 'dict':
-            return [dict(list(zip(filter, rec))) for rec in result_set]
+            return [dict(zip(filter, rec)) for rec in result_set]
         # If returnType is 'report', then return a pretty print version of
         # the result set.
         elif returnType == 'report':
@@ -952,7 +948,7 @@ class KirbyBase:
             delim = ' | '
 
             # columns of physical rows
-            columns = list(zip(*[filter] + result_set))
+            columns = apply(zip, [filter] + result_set)
 
             # get the maximum of each column by the string length of its 
             # items
@@ -973,7 +969,7 @@ class KirbyBase:
             self.field_types)])
 
             # Create a StringIO to hold the print out.
-            output=io.StringIO()
+            output=cStringIO.StringIO()
 
             # Variable to hold how many records have been printed on the
             # current page.
@@ -983,16 +979,16 @@ class KirbyBase:
             for row in result_set:
                 # If top of page, print the header and a dashed line.
                 if recsOnPageCount == 0:
-                    print(headerLine, file=output)
-                    print(rowDashes, file=output)
+                    print >> output, headerLine
+                    print >> output, rowDashes
 
                 # Print a record.
-                print(delim.join([justifyDict[fieldType](
+                print >> output, delim.join([justifyDict[fieldType](
                  str(item),width) for item,width,fieldType in 
-                 zip(row,maxWidths,self.field_types)]), file=output)
+                 zip(row,maxWidths,self.field_types)])
 
                 # If rowSeparator is True, print a dashed line.
-                if rowSeparator: print(rowDashes, file=output)
+                if rowSeparator: print >> output, rowDashes
 
                 # Add one to the number of records printed so far on
                 # the current page.
@@ -1003,7 +999,7 @@ class KirbyBase:
                 # reset records printed variable.
                 if numRecsPerPage > 0 and (recsOnPageCount ==
                  numRecsPerPage):
-                    print('\f', end=' ', file=output)
+                    print >> output, '\f',
                     recsOnPageCount = 0
             # Return the contents of the StringIO.
             return output.getvalue()
@@ -1248,7 +1244,7 @@ class KirbyBase:
         else:
             insert_after = field_names.index(after)
         # build the modified fields list
-        old_fields = list(zip(field_names,self.getFieldTypes(name)))
+        old_fields = zip(field_names,self.getFieldTypes(name))
         new_fields = []
         for (n,t) in old_fields[1:]:
             if t.__name__ in ['date','datetime']:
@@ -1315,7 +1311,7 @@ class KirbyBase:
             if field not in field_names:
                 raise KBError('Invalid field name : %s' %field)
         # build the modified fields list
-        old_fields = list(zip(field_names,self.getFieldTypes(name)))
+        old_fields = zip(field_names,self.getFieldTypes(name))
         new_fields = []
         dropped_indeces = []
         for i,(n,t) in enumerate(old_fields[1:]):
@@ -1430,7 +1426,7 @@ class KirbyBase:
     def _strToDate(self, dateString):
         # Split the date string up into pieces and create a
         # date object.
-        return datetime.date(*list(map(int, dateString.split('-')))) 
+        return datetime.date(*map(int, dateString.split('-'))) 
         
     #----------------------------------------------------------------------
     # _strToDateTime
@@ -1574,7 +1570,7 @@ class KirbyBase:
             if (self.field_types[self.field_names.index(field)] in  
              [int, float, datetime.date, datetime.datetime]):
                 r = re.search('[\s]*[\+-]?\d', pattern)
-                if pattern[:r.start()] not in self.cmpFuncs:
+                if not self.cmpFuncs.has_key(pattern[:r.start()]):
                     raise KBError('Invalid comparison syntax: %s'
                      % pattern[:r.start()])
 
@@ -1713,7 +1709,7 @@ class KirbyBase:
                      [self.cmpFuncs[pattern[:r.start()]], patternValue]
                     ) 
 
-            fieldPos_new_patterns = list(zip(fieldNrs, new_patterns))
+            fieldPos_new_patterns = zip(fieldNrs, new_patterns)
             maxfield = max(fieldNrs)+1
 
             # Record current position in table. Then read first detail
@@ -1988,7 +1984,7 @@ class KirbyBase:
             
         # Convert pickled binary data back into it's original format
         # (usually a list).
-        data = pickle.loads(data[:recv_length])
+        data = cPickle.loads(data[:recv_length])
 
         # If the server passed back an error object, re-raise that error
         # here on the client side, otherwise, just return the data to the
@@ -2012,7 +2008,7 @@ class Record(object):
     # init
     #----------------------------------------------------------------------
     def __init__(self,names,values):
-        self.__dict__ = dict(list(zip(names, values)))
+        self.__dict__ = dict(zip(names, values))
 
 
 #--------------------------------------------------------------------------
@@ -2031,7 +2027,7 @@ class KBError(Exception):
         self.value = value
 
     def __str__(self):
-        return repr(self.value)
+        return `self.value`
 
     # I overrode repr so I could pass error objects from the server to the
     # client across the network.
@@ -2056,7 +2052,7 @@ class KBnomatch(Exception):
         #print self.value
 
     def __str__(self):
-        return repr(self.value)
+        return `self.value`
         
     # Don't know if I need this, but anyway.
     def __repr__(self):

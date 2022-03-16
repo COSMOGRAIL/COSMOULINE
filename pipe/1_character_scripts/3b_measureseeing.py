@@ -6,7 +6,7 @@
 
 forceseeingpixels = True
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 
 from variousfct import *
@@ -18,17 +18,17 @@ if checkplots:
 
 db = KirbyBase()
 if thisisatest:
-    print("This is a test !")
+    print "This is a test !"
     images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict')
 elif update:
-    print("This is an update !")
+    print "This is an update !"
     images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], returnType='dict')
     askquestions = False
 else:
     images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict')
 
 nbrofimages = len(images)
-print("Number of images to treat :", nbrofimages)
+print "Number of images to treat :", nbrofimages
 proquest(askquestions)
 
 if not checkplots:
@@ -53,8 +53,8 @@ if not checkplots:
 
 for i, image in enumerate(images):
 
-    print("- " * 40)
-    print(i + 1, "/", nbrofimages, ":", image['imgname'])
+    print "- " * 40
+    print i + 1, "/", nbrofimages, ":", image['imgname']
 
     catfilename = alidir + image['imgname'] + ".cat"
 
@@ -107,7 +107,7 @@ for i, image in enumerate(images):
             # print "FWHMs ="
             # print "\n".join(["%.3f" % (fwhm) for fwhm in fwhms])
             # raise mterror("This FWHM distribution is anormal (many cosmics). Something is wrong with sextractor... Problematic img: " + image['imgname'])
-            print("This image has many low-FWHM objects (cosmics ?)")
+            print "This image has many low-FWHM objects (cosmics ?)"
             seeingpixels = np.median(fwhms)
             if forceseeingpixels:
                 if seeingpixels < 2:
@@ -115,8 +115,8 @@ for i, image in enumerate(images):
             seeing = seeingpixels * image['pixsize']
 
         elif maxpos == len(hist) - 1:
-            print("This image if funny, it seems to have many high-FWHM objects.")
-            print("I can only make a crude guess ...")
+            print "This image if funny, it seems to have many high-FWHM objects."
+            print "I can only make a crude guess ..."
             seeingpixels = np.median(fwhms)
             if forceseeingpixels:
                 if seeingpixels < 2:
@@ -149,7 +149,7 @@ for i, image in enumerate(images):
 
     elif len(fwhms) > 0:
 
-        print("Only %i stars, using the median ..." % (len(fwhms)))
+        print "Only %i stars, using the median ..." % (len(fwhms))
         seeingpixels = np.median(fwhms)
         if forceseeingpixels:
             if seeingpixels < 2:
@@ -157,12 +157,12 @@ for i, image in enumerate(images):
         seeing = seeingpixels * image['pixsize']
 
     else:
-        print("Are you kidding ? No stars at all !")
+        print "Are you kidding ? No stars at all !"
         seeing = -1.0
         seeingpixels = -1.0
 
-    print("Measured seeing [pixels] :", seeingpixels)
-    print("Measured seeing [arcsec] :", seeing)
+    print "Measured seeing [pixels] :", seeingpixels
+    print "Measured seeing [arcsec] :", seeing
 
     if checkplots:
         # plt.hist(fwhms, bins=np.linspace(0,10,50), facecolor='green')
@@ -181,15 +181,15 @@ for i, image in enumerate(images):
     ells = np.array([s.ell for s in sortedsexstars])
     starells = np.array([s.ell for s in sortedsexstars if abs(s.fwhm - seeingpixels) < 1.0])
 
-    print("I found", len(ells), "stars for ellipticity measure.")
+    print "I found", len(ells), "stars for ellipticity measure."
 
     if len(starells) > 0:
         ell = np.median(starells)
     else:
-        print("Bummer ! No stars for ellipticity measure.")
+        print "Bummer ! No stars for ellipticity measure."
         ell = -1.0
 
-    print("Measured ellipticity :", ell)
+    print "Measured ellipticity :", ell
     if checkplots:
         plt.hist(ells, bins=np.linspace(0, 1, 50), facecolor='grey')
         plt.hist(starells, bins=np.linspace(0, 1, 50), facecolor='green')
@@ -210,7 +210,7 @@ for i, image in enumerate(images):
     else:
         pa = -1.0
         pastd = 0.0
-    print("Measured position angle :", pa, pastd)
+    print "Measured position angle :", pa, pastd
 
     # same for the minor and major axis
     bimgs = np.array([s.props["B_IMAGE"] for s in sortedsexstars])
@@ -223,13 +223,13 @@ for i, image in enumerate(images):
         bimage = np.median(starbimgs)
     else:
         bimage = -1
-    print("Measured minor axis :", bimage)
+    print "Measured minor axis :", bimage
 
     if len(starbimgs) > 0:
         aimage = np.median(staraimgs)
     else:
         aimage = -1
-    print("Measured major axis :", aimage)
+    print "Measured major axis :", aimage
 
     if not checkplots:
         db.update(imgdb, ['recno'], [image['recno']],
@@ -237,9 +237,9 @@ for i, image in enumerate(images):
                    'seeingpixels': float(seeingpixels), 'pa': float(pa), 'pastd': float(pastd), 'bimage': float(bimage),
                    'aimage': float(aimage)})
 
-print("- " * 40)
+print "- " * 40
 
 if not checkplots:
     db.pack(imgdb)
 
-print("Done with seeing determination.")
+print "Done with seeing determination."

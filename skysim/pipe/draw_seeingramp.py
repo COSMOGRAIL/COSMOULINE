@@ -1,4 +1,4 @@
-exec(compile(open("./config.py", "rb").read(), "./config.py", 'exec'))
+execfile("./config.py")
 
 import skysim_sources
 import skysim_images

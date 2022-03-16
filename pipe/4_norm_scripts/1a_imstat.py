@@ -11,13 +11,11 @@
 #	sumlens : sum of the pixels in the small region around the lens
 #
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
-# from pyraf import iraf
+execfile("../config.py")
+from pyraf import iraf
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from datetime import datetime, timedelta
-
-from astropy.io import fits
 
 # As we will tweak the database, do a backup first
 backupfile(imgdb, dbbudir, "imstat")
@@ -25,67 +23,98 @@ backupfile(imgdb, dbbudir, "imstat")
 db = KirbyBase()
 
 if update:
-	print("This is an update.")
-	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], 
-                              [ True,     True,      True], 
-                              ['recno','imgname'], 
-                              sortFields=['imgname'], returnType='dict')
+	print "This is an update."
+	images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], [True, True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
 	askquestions=False
 else:
-	images = db.select(imgdb, ['gogogo', 'treatme'], 
-                              [ True,     True], 
-                              ['recno','imgname'], 
-                              sortFields=['imgname'], returnType='dict')
+	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], ['recno','imgname'], sortFields=['imgname'], returnType='dict')
 
 
-print("OK, we have", len(images), "images to treat.")
+print "OK, we have", len(images), "images to treat."
 proquest(askquestions)
 
 if "stddev" not in db.getFieldNames(imgdb) or "emptymean" not in db.getFieldNames(imgdb):
-	print("I will add some fields to the database.")
+	print "I will add some fields to the database."
 	proquest(askquestions)
 	#db.addFields(imgdb, ['stddev:float', 'maxlens:float', 'sumlens:float'])
 	db.addFields(imgdb, ['stddev:float', 'emptymean:float'])
 
+iraf.imutil()
 
 starttime = datetime.now()
 tokicklist = []
-
-
-### before we start, a utility function that clips data:
-def clipData(image, nsigma=3):
-    m = np.nanmean(image)
-    s = np.nanstd(image)
-    image[image>m+3*s] = np.nan 
-    image[image<m-3*s] = np.nan
-    
-    
 for i, image in enumerate(images):
 	
-	print(i+1, "/", len(images), ":", image['imgname'])
+	print i+1, "/", len(images), ":", image['imgname']
 	
-
+	# iraf examples that were used :
+	#imstatistics images="@list-qso.txt" fields="npix,mean,stddev" nclip=0 format=no >> stat.qso
+	#imstatistics images="@list-sigma.txt" fields="stddev" lower=INDEF upper=INDEF nclip="3" lsigma="3.0" usigma="3.0" binwidth="0.1" format=no >> stat.sigma
+	#imstatistics images="@list-sigma.txt" fields="image, stddev" lower=INDEF upper=INDEF nclip="3" lsigma="3.0" usigma="3.0" binwidth="0.1" format=no >> statEtImage.sigma
+	#
+	
 	filename = alidir + image['imgname'] + "_ali.fits"
-	data = fits.getdata(filename)
-    # unpack the coordinates of "emptyregion" found in the settings:
-	coords = emptyregion.replace('[', '').replace(']', '').split(',')
-	xrange = [int(e.strip()) for e in coords[0].split(':')]
-	yrange = [int(e.strip()) for e in coords[1].split(':')]
-    # single out the empty region:
-	emptyregiondata = data[yrange[0]:yrange[1],xrange[0]:xrange[1]]
-    
-    # now we calculate. 
-	clipData(emptyregiondata)
-	mean = float(np.nanmean(emptyregiondata))
-	midpt = float(np.nanmedian(emptyregiondata))
-	stddev = float(np.nanstd(emptyregiondata))
-    
+##################### empty region ########################
+
+	iraf.unlearn(iraf.imutil.imstat)	
+	iraf.imutil.imstat.fields = "image,npix,mean,midpt,stddev,min,max" # Fields to be printed
+	iraf.imutil.imstat.lower = "INDEF" # Lower limit for pixel values
+	iraf.imutil.imstat.upper = "INDEF" # Upper limit for pixel values
+	iraf.imutil.imstat.nclip = 2 # nbr of clipping iterations
+	iraf.imutil.imstat.lsigma = 3. # Lower side clipping factor in sigma
+	iraf.imutil.imstat.usigma = 3. # Upper side clipping factor in sigma
+	iraf.imutil.imstat.binwidt = 0.1 # Bin width of histogram in sigma
+	iraf.imutil.imstat.format = "yes" # Format output and print column labels ?
+	iraf.imutil.imstat.cache = "no" # Cache image in memory ?
+	
+	imstatblabla = iraf.imutil.imstat(images = filename + emptyregion, Stdout=1)
+	
+	#for line in imstatblabla:
+	#	print line
+	try:
+		elements = imstatblabla[-1].split()
+		npix = int(elements[1])
+		mean = float(elements[2])
+		midpt = float(elements[3])
+		stddev = float(elements[4])
+		minval = float(elements[5])
+		maxval = float(elements[6])
+	except:
+		tokicklist.append(image['imgname'])
 	
 	#print image['imgname'], npix, mean, midpt, stddev, minval, maxval
-	print("Empty region stddev : %8.2f, median %8.2f, mean %8.2f" % (stddev, midpt, mean))
+	print "Empty region stddev : %8.2f, median %8.2f, mean %8.2f" % (stddev, midpt, mean)
 	db.update(imgdb, ['recno'], [image['recno']], {'stddev': stddev, 'emptymean': mean})
 
+##################### qso region ########################
 
+# 	
+# 	iraf.unlearn(iraf.imutil.imstat)	
+# 	iraf.imutil.imstat.fields = "image,npix,mean,midpt,stddev,min,max" # Fields to be printed
+# 	iraf.imutil.imstat.lower = "INDEF" # Lower limit for pixel values
+# 	iraf.imutil.imstat.upper = "INDEF" # Upper limit for pixel values
+# 	iraf.imutil.imstat.nclip = 3 # nbr of clipping iterations
+# 	iraf.imutil.imstat.lsigma = 6. # Lower side clipping factor in sigma
+# 	iraf.imutil.imstat.usigma = 6. # Upper side clipping factor in sigma
+# 	iraf.imutil.imstat.binwidt = 0.1 # Bin width of histogram in sigma
+# 	iraf.imutil.imstat.format = "yes" # Format output and print column labels ?
+# 	iraf.imutil.imstat.cache = "no" # Cache image in memory ?
+# 
+# 	imstatblabla = iraf.imutil.imstat(images = filename + lensregion, Stdout=1)
+# 
+# 	elements = imstatblabla[-1].split()
+# 	npix = int(elements[1])
+# 	mean = float(elements[2])
+# 	midpt = float(elements[3])
+# 	stddev = float(elements[4])
+# 	minval = float(elements[5])
+# 	maxval = float(elements[6])
+# 	
+# 	sumlens = float(mean * npix)
+# 	
+# 	print image['imgname'], npix, mean, midpt, stddev, minval, maxval
+# 	db.update(imgdb, ['recno'], [image['recno']], {'maxlens': maxval, 'sumlens': sumlens})
+# 
 
 db.pack(imgdb) # to erase the blank lines
 
@@ -94,16 +123,19 @@ timetaken = nicetimediff(endtime - starttime)
 
 notify(computer, withsound, "I computed some statistics for %i images. It took %s" %(len(images), timetaken))
 
-print(len(tokicklist), 'IRAF crashed on these guys:')
+print len(tokicklist), 'IRAF crashed on these guys:'
 for imgname in tokicklist:
-	print(imgname)
+	print imgname
 
-print("Copy the names above to your kicklist! (or investigate the problems if half of the images are rejected...)")
-print("I can do it for you if you want")
+print "Copy the names above to your kicklist! (or investigate the problems if half of the images are rejected...)"
+print "I can do it for you if you want"
 proquest(askquestions)
 kicklist = open(imgkicklist, "a")
 for imgname in tokicklist:
 	kicklist.write("\n" + imgname)
 kicklist.close()
-print('Ok, done.')
-print("Do not forget to update your kicklist manually !")
+print 'Ok, done.'
+print "Do not forget to update your kicklist manually !"
+
+
+

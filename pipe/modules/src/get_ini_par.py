@@ -103,9 +103,9 @@ def set_ini(data, params, savedir='results/'):
     show, USE_CUDA, nb_src = params['SHOW'], params['CUDA'], params['NB_SRC']
     box_size, src_range, fftdiv = params['BOX_SIZE'], params['SRC_RANGE'], params['FFT_DIV']
     
-    obj = [data['objs'][i][0].astype('float64') for i in range(nimg)]
-    sigma = [data['objssig'][i][0].astype('float64') for i in range(nimg)]
-    psf = [data['psfs'][i][0].astype('float64') for i in range(nimg)]
+    obj = [data['objs'][i][0].astype('float64') for i in xrange(nimg)]
+    sigma = [data['objssig'][i][0].astype('float64') for i in xrange(nimg)]
+    psf = [data['psfs'][i][0].astype('float64') for i in xrange(nimg)]
     bshape = obj[0].shape
     sshape = (int(bshape[0]*sfact), int(bshape[1]*sfact))
     
@@ -130,7 +130,7 @@ def set_ini(data, params, savedir='results/'):
     sigmai = []
     flux_o = []
     flux_s = []
-    for i in range(nimg):
+    for i in xrange(nimg):
         d_filt = signal.signaltools.wiener(obj[i], [3,3])
 #        psf[i] = signal.signaltools.medfilt2d(psf[i], [3,3])
 #        psf[i] /= psf[i].sum()
@@ -175,10 +175,10 @@ def main(argv=None):
         out.level = 3
         out(1, '~~~ DEBUG MODE ~~~')
     if 'b' in opt: 
-        from . import prepare
+        import prepare
         prepare.main(['deconv.py', '-b', cfg])
     if 'e' in opt: 
-        from . import prepare
+        import prepare
         prepare.main(['deconv.py', '-ce', cfg])
     if 'h' in opt:
         out(1, 'No help page yet!')
@@ -188,7 +188,7 @@ def main(argv=None):
     #TODO: check workspace
     CONV_IT = MAXPOS_STEP = MAX_IRATIO_STEP = SHOW = None
     f = open(cfg, 'r')
-    exec(f.read())
+    exec f.read()
     f.close()
     vars = ['FILENAME', 'CONV_IT', 'S_FACT', 'G_RES', 'SIGMA_SKY',
             'MOF_PARAMS', 'G_STRAT', 'G_PARAMS', 'G_POS', 'CENTER']

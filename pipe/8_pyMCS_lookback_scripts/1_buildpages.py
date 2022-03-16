@@ -6,7 +6,7 @@
 #	
 #
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 import shutil
 from kirbybase import KirbyBase, KBError
 import variousfct
@@ -35,17 +35,17 @@ lookbackkey = deckey	# This could be hardcoded to any other string.
 lookbackdir = os.path.join(workdir, "lookback_" + deckey)
 
 # Greeting ...
-print("So you want to build lookback pages for", deckey, "?")
+print "So you want to build lookback pages for", deckey, "?"
 
 # We read in the point sources that should be available
 ptsrc = [src.name for src in star.readmancat(ptsrccat)]
-print("Sources : ", ptsrc)
+print "Sources : ", ptsrc
 
 variousfct.proquest(askquestions)
 
 if os.path.isdir(lookbackdir) and redofromscratch:
-	print("The lookbackdir exists.")
-	print("I would delete existing stuff.")
+	print "The lookbackdir exists."
+	print "I would delete existing stuff."
 	variousfct.proquest(askquestions)
 	shutil.rmtree(lookbackdir)
 
@@ -57,12 +57,12 @@ db = KirbyBase()
 
 # We sort by setname, then by mhjd. So we will group sets together. Later code could rely on this sorting, so keep it like this please.
 if thisisatest:
-	print("This is a test run.")
+	print "This is a test run."
 	images = db.select(imgdb, [deckeyfilenum, 'testlist'], ['\d\d*', True], returnType='dict', useRegExp=True, sortFields=['setname', 'mhjd'])
 else:
 	images = db.select(imgdb, [deckeyfilenum], ['\d\d*'], returnType='dict', useRegExp=True, sortFields=['setname', 'mhjd'])
 
-print("I've will go for", len(images), "images, this is the last question.")
+print "I've will go for", len(images), "images, this is the last question."
 variousfct.proquest(askquestions)
 
 # We copy some files in our new lookbackdir :
@@ -87,7 +87,7 @@ setlinkline = "&nbsp;" + " | ".join(setlinks)
 
 # We measure the night limits :
 nights = combibynight_fct.groupbynights(images, separatesetnames=True)
-nightlengths = list(map(len, nights))
+nightlengths = map(len, nights)
 nightlims = np.add.accumulate(np.array(nightlengths)) + 0.5
 
 
@@ -113,8 +113,8 @@ for j, image in enumerate(images):
 	if j < startat:
 		continue
 	
-	print("- "*40)
-	print("%i / %i : [%s] %s"%(j+1, len(images), image[deckeyfilenum], image["imgname"]))
+	print "- "*40
+	print "%i / %i : [%s] %s"%(j+1, len(images), image[deckeyfilenum], image["imgname"])
 	
 	# The directory that will contain everything I will produce for this image :
 	destdir = os.path.join(lookbackdir, image["imgname"])
@@ -352,15 +352,15 @@ for j, image in enumerate(images):
 
 	
 	if j == 0:
-		print("First image done :")
-		print(os.path.join(lookbackdir, image["imgname"], "index.html"))
+		print "First image done :"
+		print os.path.join(lookbackdir, image["imgname"], "index.html")
 		variousfct.proquest(askquestions)
 
 
-print("- "*40)
+print "- "*40
 variousfct.notify(computer, withsound, "Lookback page building done.")
-print("You can visit the results here :")
-print(os.path.join(lookbackdir, "index.html"))
+print "You can visit the results here :"
+print os.path.join(lookbackdir, "index.html")
 
 
 

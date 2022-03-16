@@ -4,7 +4,7 @@ Now that the coeffs are in the db, you might want to plot curves
 not involved in the renormalization.
 """
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 import variousfct
 import star
@@ -14,11 +14,11 @@ import matplotlib.dates
 import sys
 
 
-print("I will plot lightcurves using renormalization coefficient called :")
-print(renormname)
+print "I will plot lightcurves using renormalization coefficient called :"
+print renormname
 
-print("I take command line arguments, example usage :")
-print("python 3_interact_star_curve.py dec_full_e_medcoeff_pyMCSabcdefg3 e")
+print "I take command line arguments, example usage :"
+print "python 3_interact_star_curve.py dec_full_e_medcoeff_pyMCSabcdefg3 e"
 
 deckey = sys.argv[1]
 sourcename = sys.argv[2]
@@ -26,7 +26,7 @@ sourcename = sys.argv[2]
 
 db = KirbyBase()
 allimages = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['mjd'])
-print("%i images in total." % len(allimages))
+print "%i images in total." % len(allimages)
 
 
 
@@ -37,7 +37,7 @@ errorfieldname = "out_" + deckey + "_" + sourcename + "_shotnoise"
 decnormfieldname = "decnorm_" + deckey
 	
 images = [image for image in allimages if image[deckeyfilenumfield] != None]
-print("%i images" % len(images))
+print "%i images" % len(images)
 
 fluxes = np.array([image[fluxfieldname] for image in images])
 errors = np.array([image[errorfieldname] for image in images])

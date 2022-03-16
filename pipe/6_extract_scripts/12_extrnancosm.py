@@ -7,7 +7,7 @@
 
 
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 from variousfct import *
 from readandreplace_fct import *
@@ -18,7 +18,7 @@ import cosmics
 
 
 db = KirbyBase()
-print("objkey =", objkey)
+print "objkey =", objkey
 	
 # read the position of the object to extract
 
@@ -29,8 +29,8 @@ if len(objcoords) != 1 : raise mterror("Oh boy ... one extraction at a time plea
 #print "name = ", objcoords[0]['name']
 objcoordtxt = "%7.2f %7.2f\n" % (objcoords[0]['x'], objcoords[0]['y'])
 
-print("Source name (I don't use it, just for you to check) = ", objcoords[0]['name'])
-print("coords = ", objcoordtxt)
+print "Source name (I don't use it, just for you to check) = ", objcoords[0]['name']
+print "coords = ", objcoordtxt
 
 proquest(askquestions)
 
@@ -39,34 +39,34 @@ proquest(askquestions)
 db = KirbyBase()
 
 if thisisatest :
-	print("This is a test run.")
+	print "This is a test run."
 	images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], [True, True, True], returnType='dict', sortFields=['setname', 'mjd'])
 else :
 	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname', 'mjd'])
 
 nbrofimages = len(images)
 
-print("I will extract, replace NaN, and mask cosmics on ", nbrofimages, "images.")
+print "I will extract, replace NaN, and mask cosmics on ", nbrofimages, "images."
 
 
-print("I will start by updating the database.")
-print("Thus, wait for this progressbar to be done before launching e.g. another extraction.")
+print "I will start by updating the database."
+print "Thus, wait for this progressbar to be done before launching e.g. another extraction."
 proquest(askquestions)
 
 
 if os.path.isdir(objdir):	# start from empty directory
-	print("Ok, this objdir already exists :")
-	print(objdir)
+	print "Ok, this objdir already exists :"
+	print objdir
 	
 	if objkeyflag not in db.getFieldNames(imgdb) :
 		raise mterror("... but your corresponding objkey is not in the database !")
 	
-	print("I will add or rebuild images within this objdir.")
+	print "I will add or rebuild images within this objdir."
 	proquest(askquestions)
 else :
 	
-	print("I will create a NEW objdir/objkey !")
-	print(objdir)
+	print "I will create a NEW objdir/objkey !"
+	print objdir
 	proquest(askquestions)
 	if objkeyflag not in db.getFieldNames(imgdb) :
 		db.addFields(imgdb, ['%s:bool' % objkeyflag, '%s:int' % objcosmicskey])
@@ -93,7 +93,7 @@ db.pack(imgdb)
 
 
 notify(computer, withsound, "Ok, done with updating the database !")
-print("If the rest of this script fails somehow, it might be safe to go on from the last db backup.")
+print "If the rest of this script fails somehow, it might be safe to go on from the last db backup."
 
 
 	# read the template files
@@ -102,12 +102,12 @@ extract_template = justread(extract_template_filename)
 origdir = os.getcwd() # Is used by all steps !
 
 for i, image in enumerate(images):
-	print("Extraction %s %i/%i : %s" % (objkey, i+1, len(images), image["imgname"]))
+	print "Extraction %s %i/%i : %s" % (objkey, i+1, len(images), image["imgname"])
 	
 	imgobjdir = os.path.join(objdir, image['imgname'])
 	
 	if os.path.isdir(imgobjdir):
-		print("Deleting existing stuff.")
+		print "Deleting existing stuff."
 		shutil.rmtree(imgobjdir)
 	os.mkdir(imgobjdir)
 	
@@ -135,7 +135,7 @@ for i, image in enumerate(images):
 		os.remove(os.path.join(imgobjdir, "in.fits"))
 	
 
-print("Done with extraction.")
+print "Done with extraction."
 
 if refimgname in [img["imgname"] for img in images]:
 	
@@ -144,10 +144,10 @@ if refimgname in [img["imgname"] for img in images]:
 	destpath = os.path.join(workdir, objkey + "_ref_input.fits")
 	copyorlink(sourcepath, destpath, uselinks)
 	
-	print("I have linked the extraction from the reference image here :")
-	print(destpath)	
+	print "I have linked the extraction from the reference image here :"
+	print destpath	
 else:
-	print("Warning : the reference image was not in your selection !")
+	print "Warning : the reference image was not in your selection !"
 
 
 
@@ -160,7 +160,7 @@ def replaceNaN(filename, value):
 	sigstars = pyfits.open(filename, mode='update')
 	scidata = sigstars[0].data
 	if True in isNaN(scidata):
-		print("Yep, some work for me : ", len(scidata[isNaN(scidata)]), "pixels.")
+		print "Yep, some work for me : ", len(scidata[isNaN(scidata)]), "pixels."
 	scidata[isNaN(scidata)] = value
 	sigstars.flush()
 	
@@ -170,13 +170,13 @@ def replacezeroes(filename, value):
 	for x in range(len(scidata)):
 		for y in range(len(scidata[0])):
 			if scidata[x][y] < 1.0e-8:
-				print("Nearly zero at ", x, y)
+				print "Nearly zero at ", x, y
 				scidata[x][y] = value
 	myfile.flush()
 	
 
 for i, image in enumerate(images):
-	print("NaN replacement %s %i/%i : %s" % (objkey, i+1, len(images), image["imgname"]))
+	print "NaN replacement %s %i/%i : %s" % (objkey, i+1, len(images), image["imgname"])
 	
 	imgobjdir = os.path.join(objdir, image['imgname'])
 	
@@ -185,7 +185,7 @@ for i, image in enumerate(images):
 	replacezeroes("sig.fits", 1.0e-7)
 	os.chdir(origdir)
 	
-print("Done with NaN replacment.")
+print "Done with NaN replacment."
 
 
 # And finally the cosmics :
@@ -194,7 +194,7 @@ print("Done with NaN replacment.")
 
 for i, image in enumerate(images):
 	
-	print("Cosmics %s %i/%i : %s" % (objkey, i+1, len(images), image["imgname"]))
+	print "Cosmics %s %i/%i : %s" % (objkey, i+1, len(images), image["imgname"])
 	
 	imgobjdir = os.path.join(objdir, image['imgname'])
 	os.chdir(imgobjdir)
@@ -216,7 +216,7 @@ for i, image in enumerate(images):
 	# We gather some parameters :
 	
 	pssl = image['skylevel'] # The Previously Subtracted Sky Level
-	print("PSSL (TM): %.2f" % pssl)
+	print "PSSL (TM): %.2f" % pssl
 	gain = image['gain']
 	readnoise = image['readnoise']
 	
@@ -235,7 +235,7 @@ for i, image in enumerate(images):
 	ncosmics = np.sum(c.mask)
 	
 	if ncosmics != 0:
-		print("--- %i pixels ---" % ncosmics)
+		print "--- %i pixels ---" % ncosmics
 	
 	# We do the rest anyway (easier): 
 	

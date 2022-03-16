@@ -2,7 +2,7 @@
 We group the points per night.
 """
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
+execfile("../config.py")
 from kirbybase import KirbyBase, KBError
 import combibynight_fct
 import headerstuff
@@ -12,26 +12,26 @@ import matplotlib.pyplot as plt
 import matplotlib.dates
 import rdbexport
 
-print("You want to analyze the deconvolution %s" % deckey)
-print("Deconvolved object : %s" % decobjname)
+print "You want to analyze the deconvolution %s" % deckey
+print "Deconvolved object : %s" % decobjname
 if plotnormfieldname == None:
-    print("I will use the normalization coeffs used for the deconvolution.")
+    print "I will use the normalization coeffs used for the deconvolution."
 else:
-    print("Using %s for the normalization." % (plotnormfieldname))
+    print "Using %s for the normalization." % (plotnormfieldname)
     deckeynormused = plotnormfieldname
 
 ptsources = star.readmancat(ptsrccat)
 
-print("Number of point sources : %i" % len(ptsources))
-print("Names of sources : %s" % ", ".join([s.name for s in ptsources]))
+print "Number of point sources : %i" % len(ptsources)
+print "Names of sources : %s" % ", ".join([s.name for s in ptsources])
 
 db = KirbyBase()
 
 images = db.select(imgdb, [deckeyfilenum,'gogogo'], ['\d\d*', True], returnType='dict', useRegExp=True, sortFields=['mjd'])
-print("%i images" % len(images))
+print "%i images" % len(images)
 
 groupedimages = combibynight_fct.groupbynights(images)
-print("%i nights" % len(groupedimages))
+print "%i nights" % len(groupedimages)
 
 fieldnames = db.getFieldNames(imgdb)
 
@@ -118,11 +118,11 @@ magerrtot = np.asarray(magerrtot)
 magtot = np.asarray(magtot)
 fluxvalstot = np.asarray(fluxvalstot)
 fluxvalserrtot = np.asarray(fluxvalserrtot)
-print(np.shape(magtot))
+print np.shape(magtot)
 
 if not lc_to_sum == None:
     if not len(lc_to_sum) == 2:
-        print("I can sum only two light curves !")
+        print "I can sum only two light curves !"
         exit()
     magtot_sum = np.zeros((len(magtot[:, 0])-1,len(magtot[0,:])))
     magerrortot_sum = np.zeros((len(magtot[:, 0])-1,len(magtot[0,:])))
@@ -194,7 +194,7 @@ yearx.set_xlabel("Date")
 
 
 #compute the dispersion estimator :
-print(ptsources_str)
+print ptsources_str
 nsource = len(magtot[:, 0])
 color = ['b', 'g' , 'r' , 'm', 'k', 'y']
 n_source = len(ptsources_str)
@@ -235,20 +235,20 @@ for k, s in enumerate(ptsources_str):
     wei = np.asarray(wei)
     chi_vec[k] = chi / count
     med_vec[k] = np.median(wei)
-    print("#####################")
-    print("SOURCE ", s)
-    print("number of points taken : ", len(wei))
-    print("chi :", chi)
-    print("chi red (mean weight):", chi / count)
-    print("median weight :", np.median(wei))
+    print "#####################"
+    print "SOURCE ", s
+    print "number of points taken : ", len(wei)
+    print "chi :", chi
+    print "chi red (mean weight):", chi / count
+    print "median weight :", np.median(wei)
 
-print("#####################")
-print("ALL LIGHTCURVES :")
-print("number of points taken : ", len(weitot))
-print("chi :", chitot)
-print("chi red (mean weight):", chitot / counttot)
-print("median weight :", np.median(weitot))
-print("I wasn't able to compue the chi2 for %i datapoints (NaN)"%countnan)
+print "#####################"
+print "ALL LIGHTCURVES :"
+print "number of points taken : ", len(weitot)
+print "chi :", chitot
+print "chi red (mean weight):", chitot / counttot
+print "median weight :", np.median(weitot)
+print "I wasn't able to compue the chi2 for %i datapoints (NaN)"%countnan
 
 pos = 0.03
 titletext4 = ""
@@ -272,7 +272,7 @@ if savefigs:
         else :
             plotfilepath = os.path.join(plotdir, "%s_lc_by_night_sum.pdf" % (deckey))
     plt.savefig(plotfilepath)
-    print("Wrote %s" % (plotfilepath))
+    print "Wrote %s" % (plotfilepath)
     plt.show()
 else:
     plt.show()

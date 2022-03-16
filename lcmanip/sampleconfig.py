@@ -30,14 +30,14 @@ import rdbexport
 
 
 
-exec(compile(open(os.path.join(lcmanipdir, lcmanipfile), "rb").read(), os.path.join(lcmanipdir, lcmanipfile), 'exec'))
+execfile(os.path.join(lcmanipdir, lcmanipfile))
 
-print("    ### Working on %s ###" % dbfilename)
+print "    ### Working on %s ###" % dbfilename
 outputname = os.path.splitext(lcmanipfile)[0]
 
 dbfilepath = os.path.join(lcmanipdir, dbfilename)
 
-print("    Deconvolution : %s" % (deconvname))
-print("    Point sources : %s" % ", ".join(sourcenames))
+print "    Deconvolution : %s" % (deconvname)
+print "    Point sources : %s" % ", ".join(sourcenames)
 
 
