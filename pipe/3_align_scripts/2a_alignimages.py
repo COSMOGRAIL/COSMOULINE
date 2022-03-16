@@ -48,7 +48,14 @@ proquest(askquestions)
 starttime = datetime.now()
 
 # we'll still need the reference image, see below.
-refimage = fits.getdata(db.select(imgdb, ['imgname'], [refimgname], returnType='dict')[0]['rawimg'])
+refimage_db = db.select(imgdb, ['imgname'], [refimgname], returnType='dict')[0]
+if update:
+    # again, if update: pass the already aligned image to astroalign.
+    refimagepath = os.path.join(alidir, refimage_db['imgname'] + "_ali.fits")
+else:
+    refimagepath = refimage_db['rawimg']
+
+refimage = fits.getdata(refimagepath)
 
 
 def alignImage(image):

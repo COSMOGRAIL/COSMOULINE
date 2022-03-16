@@ -25,6 +25,7 @@ images = db.select(imgdb, ['gogogo'], [False], returnType='dict', sortFields=['s
 print("I will make pngs for %i rejected images." % len(images))
 proquest(askquestions)
 
+skipimage = 0
 for i, image in enumerate(images):
 	
 	print("- " * 40)
@@ -33,8 +34,15 @@ for i, image in enumerate(images):
 	
 	fitsfile = os.path.join(alidir, image['imgname'] + "_skysub.fits")
 	if not os.path.exists(fitsfile):
-		print("You removed the non-aligned images...")
-		continue
+		print("You removed the non-aligned images... I'll try the aligned image")
+		fitsfile = os.path.join(alidir, image['imgname'] + "_ali.fits")
+		if not os.path.exists(fitsfile):
+			print("You also removed the aligned image... I'll look at the raw image")
+			fitsfile = os.path.join(image['rawimg'])
+			if not os.path.exists(fitsfile):
+				print("You also removed the raw image... I'll have to skip it")
+				skipimage +=1
+				continue
 	
 	f2nimg = f2n.fromfits(fitsfile)
 	f2nimg.setzscale("auto", "auto", satlevel = 5000000)
@@ -62,6 +70,7 @@ print("- " * 40)
 
 print("The PNG files of the kicked images are written into")
 print(pngdir)
+print('I could not find the original image for %i images.'%skipimage)
 
 if makejpgarchives :
 	makejpgtgz(pngdir, workdir, askquestions = askquestions)

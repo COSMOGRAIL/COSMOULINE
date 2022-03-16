@@ -108,6 +108,10 @@ fits.writeto(outputname, resultimage, overwrite=1)
     
 # iraf.images.immatch.imcombine("@irafinput.txt", output = outputname)
 
+if os.path.isfile(os.path.join('..', outputname)):
+    print('Removing previous deep field.')
+    os.remove(os.path.join('..', outputname))
+
 shutil.move(outputname, "../.")
 
 print("Done.")
