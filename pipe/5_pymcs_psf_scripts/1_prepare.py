@@ -4,7 +4,9 @@ from kirbybase import KirbyBase, KBError
 from variousfct import *
 from readandreplace_fct import *
 import star
-
+from astropy.io import fits
+import matplotlib.pyplot as plt
+import numpy as np
 
 db = KirbyBase()
 
@@ -17,6 +19,7 @@ print("You want to use stars :")
 for star in psfstars:
 	print(star.name)
 
+check_star_in_field = True
 
 if update:
 	askquestions = False
@@ -73,10 +76,6 @@ proquest(askquestions)
 # Read the config template
 config_template = justread(os.path.join(configdir, "template_pyMCS_psf_config.py"))
 
-# Format the psf stars catalog
-nbrpsf = len(psfstars)
-starscouplelist = repr([(int(s.x), int(s.y)) for s in psfstars])
-
 for i,image in enumerate(images):
 
 	print("- " * 40)
@@ -105,15 +104,38 @@ for i,image in enumerate(images):
 	stddev = "%f" % (image["stddev"])
 	numpsfrad = "%f" % (6.0 * float(image["seeing"]))
 	lambdanum = "%f" % (0.001) # image["seeing"]
+
+	goodpsfstar = []
+	if check_star_in_field :
+		imdata = fits.getdata(os.path.join(alidir, image['imgname'] + "_ali.fits"))
+		for s in psfstars:
+			cutout1 = imdata[int(s.y)-32 : int(s.y), int(s.x)-32 : int(s.x)] #inverted compare to cosmouline conversion LL quadrant
+			cutout2 = imdata[int(s.y) : int(s.y)+32, int(s.x)-32 : int(s.x)] #inverted compare to cosmouline conversion LR quadrant
+			cutout3 = imdata[int(s.y)-32 : int(s.y), int(s.x) : int(s.x)+32] #inverted compare to cosmouline conversion UL quadrant
+			cutout4 = imdata[int(s.y) : int(s.y)+32, int(s.x) : int(s.x)+32] #inverted compare to cosmouline conversion UR quadrant
+			threshold = image["stddev"]
+			if np.nanstd(cutout1) < threshold or np.nanstd(cutout2) < threshold or np.nanstd(cutout3) < threshold or np.nanstd(cutout4) < threshold:
+				print('Star %s is not in the field. Removing this image for image %s'%(s.name, image["imgname"]))
+			else :
+				goodpsfstar.append(s)
+	else :
+		goodpsfstar = psfstars
+
+	nbrpsf = len(psfstars)
+	starscouplelist = repr([(int(s.x), int(s.y)) for s in goodpsfstar])
 	
-	repdict = {'$gain$':gain, '$sigmasky$':stddev, '$starscouplelist$':starscouplelist, '$numpsfrad$':numpsfrad, '$lambdanum$' : lambdanum}	
+	repdict = {'$gain$':gain, '$sigmasky$':stddev, '$starscouplelist$':starscouplelist, '$numpsfrad$':numpsfrad, '$lambdanum$' : lambdanum}
 	
 	pyMCS_config = justreplace(config_template, repdict)
 	extractfile = open(os.path.join(imgpsfdir, "pyMCS_psf_config.py"), "w")
 	extractfile.write(pyMCS_config)
 	extractfile.close()
-	
-	
+
+	#write teh psf star catalog :
+	with open(os.path.join(imgpsfdir, "psf_goodstar_%s.cat" % psfname), 'w') as handle :
+		for star in goodpsfstar:
+			handle.write(star.name + '\t' + str(star.x) + '\t' + str(star.y) + '\t' + str(star.flux)+'\n')
+
 	# and we update the database with a "True" for field psfkeyflag :
 	db.update(imgdb, ['recno'], [image['recno']], [True], [psfkeyflag])
 	

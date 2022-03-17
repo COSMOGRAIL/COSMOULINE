@@ -108,9 +108,19 @@ def main ():
 		img["execi"] = (i+1) # We do not write this into the db, it's just for this particular run.
 
 	# We see how many stars we have :
-	psfstars = star.readmancat(psfstarcat)
+	psfstars_vec = []
+	for i, image in enumerate(images):
+		imgpsfdir = os.path.join(psfdir, image['imgname'])
+		goodpsfstar_filename = os.path.join(imgpsfdir, "psf_goodstar_%s.cat" % psfname)
 
-	args = [(im, psfstars, sigclip, sigfrac, objlim) for im in images]
+		if os.path.isfile(goodpsfstar_filename):
+			goodpsfstar = star.readmancat(goodpsfstar_filename)
+		else:
+			goodpsfstar = star.readmancat(psfstarcat)
+
+		psfstars_vec.append(goodpsfstar)
+
+	args = [(im, psfstars_vec[i], sigclip, sigfrac, objlim) for i,im in enumerate(images)]
 	pool = multiprocessing.Pool(processes=ncorestouse)
 	pool.map(multi_findcosmics, args)
 

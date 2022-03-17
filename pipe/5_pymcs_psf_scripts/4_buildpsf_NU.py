@@ -79,12 +79,6 @@ def main():
 	redofromscratch = True
 	####
 
-	if rewriteconfig == True:
-		psfstars = star.readmancat(psfstarcat)
-		nbrpsf = len(psfstars)
-		starscouplelist = repr([(int(s.x), int(s.y)) for s in psfstars])
-		config_template = justread(os.path.join(configdir, "template_pyMCS_psf_config.py"))
-
 	# Select images to treat
 	db = KirbyBase()
 
@@ -107,8 +101,18 @@ def main():
 	print("For this I will run on %i cores." % ncorestouse)
 	proquest(askquestions)
 
-	psfstars = star.readmancat(psfstarcat)  # this is only used if nofitnum
-	print("We have %i stars" % (len(psfstars)))
+	starscouplelist_vec = []
+	for i, image in enumerate(images):
+		imgpsfdir = os.path.join(psfdir, image['imgname'])
+		goodpsfstar_filename = os.path.join(imgpsfdir, "psf_goodstar_%s.cat" % psfname)
+
+		if os.path.isfile(goodpsfstar_filename):
+			goodpsfstar = star.readmancat(goodpsfstar_filename)
+		else:
+			goodpsfstar = star.readmancat(psfstarcat)
+
+		starscouplelist_vec.append(repr([(int(s.x), int(s.y)) for s in goodpsfstar]))
+	config_template = justread(os.path.join(configdir, "template_pyMCS_psf_config.py"))
 
 	errorimglist = []
 
@@ -117,12 +121,12 @@ def main():
 	
 	starttime = datetime.now()
 	if ncorestouse > 1 :
-		args = [(im, rewriteconfig,starscouplelist, config_template,errorimglist,nofitnum,redofromscratch) for im in images]
+		args = [(im, rewriteconfig,starscouplelist_vec[i], config_template,errorimglist,nofitnum,redofromscratch) for i,im in enumerate(images)]
 		pool = multiprocess.Pool(processes=ncorestouse)
 		pool.map(multi_buildpsf, args)
 	else :
-		for im in images:
-			buildpsf(im, rewriteconfig, starscouplelist, config_template,errorimglist,nofitnum,redofromscratch)
+		for i,im in enumerate(images):
+			buildpsf(im, rewriteconfig, starscouplelist_vec[i], config_template,errorimglist,nofitnum,redofromscratch)
 	endtime = datetime.now()
 	timetaken = nicetimediff(endtime - starttime)
 

@@ -59,9 +59,15 @@ for i, image in enumerate(images):
 	print("%i : %s" % (i+1, image['imgname']))
 	imgpsfdir = os.path.join(psfdir, image['imgname'])
 	os.chdir(os.path.join(imgpsfdir, "results"))
-			
-	for s in psfstars:
-		
+
+	goodpsfstar_filename = os.path.join(imgpsfdir,"psf_goodstar_%s.cat" % psfname)
+
+	if os.path.isfile(goodpsfstar_filename):
+		goodpsfstar = star.readmancat(goodpsfstar_filename)
+	else :
+		goodpsfstar = psfstars
+
+	for s in goodpsfstar:
 		if not hasattr(s, 'reg'): # If there is no mask for this star
 			continue
 		# We modify the sigma image
