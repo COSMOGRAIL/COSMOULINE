@@ -38,7 +38,7 @@ proquest(askquestions)
 backupfile(imgdb, dbbudir, "identcoord")
 
 # Prepare database : add new fields
-if "flagali" not in db.getFieldNames(imgdb):
+if "flagali" not in db.getFieldNames(imgdb) or "angle" not in db.getFieldNames(imgdb):
     print("I will add some fields to the database.")
     proquest(askquestions)
     db.addFields(imgdb, ['flagali:int', 'nbralistars:int', 'maxalistars:int', 

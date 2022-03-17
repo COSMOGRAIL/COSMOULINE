@@ -10,7 +10,8 @@ if os.path.isfile(plotdir + "Combined_pdf.pdf"):
 	
 
 files = sorted(glob.glob(plotdir + "*.pdf"))
-print("I will create a single pdf file with all the plots") 
+files =[file for file in files if 'sexphotom' in file or 'histo' in file]
+print("I will create a single pdf file with all the plots")
 
 # Creating a routine that appends files to the output file
 def append_pdf(inp,out):

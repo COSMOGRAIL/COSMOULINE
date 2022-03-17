@@ -24,9 +24,9 @@ for (fieldname, plotrange) in [("medcoeff", [0.5, 3.0]), ("skylevel", [0.0, 1000
 	for image in allimages:
 		if image[fieldname] is None:
 			if fieldname == 'medcoeff':
-				raise RuntimeError('Field %s is missing for image %s. Are you sure script 3a_calccoeff was run ?'%(fieldname, image['name']))
+				raise RuntimeError('Field %s is missing for image %s. Are you sure script 3a_calccoeff was run ?'%(fieldname, image['imgname']))
 			else :
-				raise RuntimeError('Field %s is missing for image %s.' % (fieldname, image['name']))
+				raise RuntimeError('Field %s is missing for image %s.' % (fieldname, image['imgname']))
 
 	images = [image for image in allimages if image[fieldname] > 0.0]
 	print("%s : %i images" % (fieldname, len(images)))

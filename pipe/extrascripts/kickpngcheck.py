@@ -46,7 +46,8 @@ for i, image in enumerate(images):
 	infotextlist = [
 	"%s UTC" % image['datet'],
 	"Telescope : %s, setname : %s" % (image['telescopename'], image['setname']),
-	"Rejection comment : %s" % image["whynot"]
+	"Rejection comment : %s" % image["whynot"],
+	"Seeing : %2.2f" % image["seeing"]
 	]
 	
 	f2nimg.writeinfo(infotextlist)
