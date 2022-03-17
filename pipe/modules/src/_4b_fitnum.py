@@ -12,7 +12,7 @@ import numpy as np
 import copy, sys
 out = fn.Verbose()
 
-def fitnum(fit_id, data, params, savedir = 'results/', liveplot=False):
+def fitnum(fit_id, data, params, savedir = 'results/', liveplot=False, figure=False):
     starpos, npix, sfactor, mpar = params['STARS'], params['NPIX'], params['S_FACT'], copy.deepcopy(params['MOF_PARAMS'])
     gres, fitrad, psf_size, itnb =  params['G_RES'], params['FIT_RAD'], params['PSF_SIZE'], params['MAX_IT_N']
     nbruns, show, _lambda, stepfact = params['NB_RUNS'], params['SHOW'], params['LAMBDA_NUM'], params['BKG_STEP_RATIO_NUM']
@@ -113,18 +113,19 @@ def fitnum(fit_id, data, params, savedir = 'results/', liveplot=False):
         out(2, 'Displaying results...')
         for i, im in enumerate(imgs):
             fn.array2ds9(im, name=names[i], frame=i+1)
-            
-    import pylab as p
-    p.figure()
-    trace = np.array(dec.trace)
-    X = np.arange(trace.shape[0])
-    p.title('Error evolution')
-    p.plot(X, trace)
-#    p.legend()
-    p.draw()
-    p.savefig(savedir+'trace_fitnum%(fnb)02d.png'% {'fnb':fit_id+1})
-    if show == True:
-        p.show()
+
+    if figure:
+        import pylab as p
+        p.figure()
+        trace = np.array(dec.trace)
+        X = np.arange(trace.shape[0])
+        p.title('Error evolution')
+        p.plot(X, trace)
+    #    p.legend()
+        p.draw()
+        p.savefig(savedir+'trace_fitnum%(fnb)02d.png'% {'fnb':fit_id+1})
+        if show == True:
+            p.show()
 
     if cuda:
         out(2, 'Freeing CUDA context...')
