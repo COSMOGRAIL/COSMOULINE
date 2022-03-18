@@ -36,6 +36,9 @@ import progressbar
 import numpy as np
 import variousfct
 import scipy
+from astropy.io import fits
+
+check_star_not_cut=True
 
 if update:
     # override config settings...
@@ -166,11 +169,24 @@ for image in images:
         flux = mcsint * ( fwhm**2 / 4.0 ) * pi / (4.0 * ln2)
 
 
-        # We check if the flux is positive :
-        if flux < 0.0:
-            negfluxes.append("%s\t%s, %s : flux = %f " % (image["imgname"], image["datet"], src.name, flux))
-
         # the shot noise
+        if check_star_not_cut:
+            code = image[deckeyfilenum]
+            imdata = fits.getdata(os.path.join(decdir, "g" + code + "_notnorm.fits")) # take the not normalised input image
+            sizex, sizey = np.shape(imdata)
+            cutout1 = imdata[0:20,0:20]  # inverted compare to cosmouline conversion LL quadrant
+            cutout2 = imdata[sizex-20:,0:20]
+            cutout3 = imdata[0:20,sizey-20:]
+            cutout4 = imdata[sizex-20:,sizey-20:]
+            threshold = 0.3*image["stddev"]
+            if np.nanstd(cutout1) < threshold or np.nanstd(cutout2) < threshold or np.nanstd(
+                    cutout3) < threshold or np.nanstd(cutout4) < threshold:
+                print('Star %s is not entirely in the field. I will put negative flux for image %s' % (src, image["imgname"]))
+                flux = -99
+
+        # We check if the flux is positive :
+        if flux <= 0.0:
+            negfluxes.append("%s\t%s, %s : flux = %f " % (image["imgname"], image["datet"], src.name, flux))
 
         # version 1.0 : gives to large errorbars. We are not doing aperture photometry here, but psf fitting.
         #skyflux = 64.0*64.0*image["skylevel"]	# this is the flux of the sky in a box of the size of the frame used to deconvole objects
@@ -178,6 +194,7 @@ for image in images:
 
         shotnoise = float(np.sqrt(flux + ((image["skylevel"] + image["readnoise"]**2.0)/sharpness)))
 
+        if flux == 0: flux = -99
         print("\t%s : \t%9.2f +/- %5.2f %%" % (src.name, flux, 100*shotnoise/flux))
 
         # We *** denormalize *** :
@@ -217,6 +234,11 @@ db.pack(imgdb)
 # Note that it seems to be better to pack the database before "changing a changed" entry !
 
 notify(computer, withsound, "The results of %s are now in the database." % deckey)
+
+if len(negfluxes) > 0 :
+    print("WARNING : I have negative flux for the following %i images : "% len(negfluxes))
+    for neg in negfluxes:
+        print(neg)
 
 
 
