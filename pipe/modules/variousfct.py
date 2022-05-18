@@ -1,4 +1,5 @@
-
+import math
+import datetime
 import os
 import numpy as np
 import astropy.io.fits as pyfits
@@ -371,5 +372,93 @@ def tofits(outfilename, pixelarray, hdr = None, verbose = True):
         print(("Wrote %s" % outfilename))
 
 
+def DateFromJulianDay(JD):
+	"""
+
+	Returns the Gregorian calendar
+	Based on wikipedia:de and the interweb :-)
+	"""
+
+	if JD < 0:
+		raise ValueError('Julian Day must be positive')
+
+	dayofwk = int(math.fmod(int(JD + 1.5),7))
+	(F, Z) = math.modf(JD + 0.5)
+	Z = int(Z)
+    
+	if JD < 2299160.5:
+		A = Z
+	else:
+		alpha = int((Z - 1867216.25)/36524.25)
+		A = Z + 1 + alpha - int(alpha/4)
+
+
+	B = A + 1524
+	C = int((B - 122.1)/365.25)
+	D = int(365.25 * C)
+	E = int((B - D)/30.6001)
+
+	day = B - D - int(30.6001 * E) + F
+	nday = B-D-123
+	if nday <= 305:
+		dayofyr = nday+60
+	else:
+		dayofyr = nday-305
+	if E < 14:
+		month = E - 1
+	else:
+		month = E - 13
+
+	if month > 2:
+		year = C - 4716
+	else:
+		year = C - 4715
+
+	
+	# a leap year?
+	leap = 0
+	if year % 4 == 0:
+		leap = 1
+  
+	if year % 100 == 0 and year % 400 != 0: 
+		print(year % 100, year % 400)
+		leap = 0
+	if leap and month > 2:
+		dayofyr = dayofyr + leap
+	
+    
+	# Convert fractions of a day to time    
+	(dfrac, days) = math.modf(day/1.0)
+	(hfrac, hours) = math.modf(dfrac * 24.0)
+	(mfrac, minutes) = math.modf(hfrac * 60.0)
+	seconds = round(mfrac * 60.0) # seconds are rounded
+    
+	if seconds > 59:
+		seconds = 0
+		minutes = minutes + 1
+	if minutes > 59:
+		minutes = 0
+		hours = hours + 1
+	if hours > 23:
+		hours = 0
+		days = days + 1
+
+	return datetime.datetime(year,month,int(days),int(hours),int(minutes),int(seconds))
+
+
+def measure_rms_scatter(mhjds, mags, magerrs, time_chunk=20):
+    rms = []
+    date = mhjds[0]
+    mean_error = []
+
+    while date < mhjds[-1]:
+        ind = [i for i,x in enumerate(mhjds) if date < x < date + time_chunk]
+        st = np.std(mags[ind])
+        rms.append(st)
+        mean_error.append(np.mean(magerrs[ind]))
+        date += time_chunk
+
+
+    return rms, mean_error
 
 
