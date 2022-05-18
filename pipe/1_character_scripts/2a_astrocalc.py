@@ -181,8 +181,8 @@ db.pack(imgdb) # to erase the blank lines
 
 
 print("Ok, done.")
-print("By the way, did you know that {lens.name}",
-      "is located in the constellation {ephem.constellation(lens)[1]}?")
+print(f"By the way, did you know that {lens.name}",
+      f"is located in the constellation {ephem.constellation(lens)[1]}?")
 
 
 
