@@ -10,7 +10,7 @@ else:
 from config import python
 
 # os.system(f"{python} 0_facult_autoskiplist_NU.py")
-#os.system(f"{python} 1_prepfiles.py")
+os.system(f"{python} 1_prepfiles.py")
 os.system(f"{python} 2_applynorm_NU.py")
 os.system(f"{python} 3_fillinfile_NU.py")
 os.system(f"{python} 4_deconv_NU.py")
