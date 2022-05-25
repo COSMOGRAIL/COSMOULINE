@@ -157,7 +157,7 @@ for setname in usedsetnames:
         sexcat = os.path.join(alidir, image['imgname'] + ".alicat")
         
         # read sextractor catalog
-        catstars = star.readsexcat(sexcat, maxflag = 0, posflux = True)
+        catstars = star.readsexcat(sexcat, maxflag=0, posflux=True)
         if len(catstars) == 0:
             print("No stars in catalog !")
             db.update(imgdb, ['recno'], 

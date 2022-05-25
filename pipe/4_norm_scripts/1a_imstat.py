@@ -92,7 +92,6 @@ for i, image in enumerate(images):
 	stddev = float(np.nanstd(emptyregiondata))
     
 	
-	#print image['imgname'], npix, mean, midpt, stddev, minval, maxval
 	print("Empty region stddev : %8.2f, median %8.2f, mean %8.2f" % (stddev, midpt, mean))
 	db.update(imgdb, ['recno'], [image['recno']], {'stddev': stddev, 'emptymean': mean})
 
