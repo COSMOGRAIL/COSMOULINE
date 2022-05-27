@@ -9,6 +9,7 @@ else:
     sys.path.append('..')
 from config import python 
 
+os.system(f"{python} 1a_addtodatabase.py")
 os.system(f"{python} 1b_copyconvert_NU.py")
 os.system(f"{python} 1c_report_NU.py")
 os.system(f"{python} 2a_astrocalc.py")
