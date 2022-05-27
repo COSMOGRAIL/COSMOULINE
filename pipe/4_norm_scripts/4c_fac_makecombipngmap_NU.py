@@ -10,8 +10,7 @@ else:
     # if ran interactively, append the parent manually as sys.path[0] 
     # will be emtpy.
     sys.path.append('..')
-from config import alidir, alistarscat, settings, combibestkey, imgdb
-from modules.variousfct import proquest
+from config import alidir, settings, combibestkey, imgdb
 from modules.kirbybase import KirbyBase
 db = KirbyBase(imgdb)
 from modules import star, f2n
@@ -35,27 +34,16 @@ refautostars = star.readsexcat(refsexcat)
 refautostars = star.sortstarlistbyflux(refautostars)
 refscalingfactor = refimage['scalingfactor']
 
-# read and identify the manual reference catalog
-refmanstars = star.readmancat(alistarscat) # So these are the "manual" star coordinates
-id = star.listidentify(refmanstars, refautostars, tolerance=identtolerance) # We find the corresponding precise sextractor coordinates
-preciserefmanstars = star.sortstarlistbyflux(id["match"])
-maxalistars = len(refmanstars)
 
-
-print("%i stars in your manual star catalog." % (len(refmanstars)))
-print("%i stars among them could be found in the sextractor catalog." % (len(preciserefmanstars)))
 
 # We convert the star objects into dictionnaries, to plot them using f2n.py
 # (f2n.py does not use these "star" objects...)
-refmanstarsasdicts = [{"name":s.name, "x":s.x, "y":s.y} for s in refmanstars]
-preciserefmanstarsasdicts = [{"name":s.name, "x":s.x, "y":s.y} for s in preciserefmanstars]
 refautostarsasdicts = [{"name":s.name, "x":s.x, "y":s.y} for s in refautostars]
 
 usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], ['*'], ['setname'])])
 
 for setname in usedsetnames:
     combifitsfile = os.path.join(workdir, f"{setname}_{combibestkey}.fits")
-    #combifitsfile = os.path.join(workdir, "ali", "%s_ali.fits" % refimgname)
     f2nimg = f2n.fromfits(combifitsfile)
     f2nimg.setzscale(z1=-5, z2=1000)
     #f2nimg.rebin(2)
@@ -66,10 +54,8 @@ for setname in usedsetnames:
     # We draw the rectangles around qso and empty region :
     
     lims = [list(map(int,x.split(':'))) for x in lensregion[1:-1].split(',')]
-    #f2nimg.drawrectangle(lims[0][0], lims[0][1], lims[1][0], lims[1][1], colour=(0,255,0), label = "Lens")
     
     lims = [list(map(int,x.split(':'))) for x in emptyregion[1:-1].split(',')]
-    #f2nimg.drawrectangle(lims[0][0], lims[0][1], lims[1][0], lims[1][1], colour=(0,255,0), label = "Empty")
     
     
     f2nimg.writetitle("%s / %s" % (xephemlens.split(",")[0], combibestkey))
@@ -80,9 +66,4 @@ for setname in usedsetnames:
     print("I have written the map into :")
     print(pngpath)
 
-# print "Do you want to clean the selected image to save some space on the disk ? "
-# proquest(True)
-#
-# combidir = os.path.join(workdir, combibestkey)
-# os.remove(combidir)
 

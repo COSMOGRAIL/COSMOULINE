@@ -1481,3 +1481,71 @@ def LCOheader(rawimg, setname):
                   }
 
     return returndict
+
+
+##############################################################################################################
+
+
+def wfiheader(rawimg, setname):
+	"""
+	Version for 2.2m WFI images
+	Experimental
+	Written by Vivien, 02.2016
+	"""
+	imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0] # drop extension
+
+	# From WFI User Manual
+	pixsize = 0.238  # 0.12 for 1x1 binning
+	gain = 2.0  # varies between 1.31 and 1.34...
+	readnoise = 4.5  # varies between 8.5 and 9.8
+	scalingfactor = 1.0  # no need for it right now...
+	saturlevel = 65535.0  # in ADU
+	rotator = 0.0  # ??
+
+	telescopelongitude = "-70:44:04.543"
+	telescopelatitude = "-29:15:15.433"
+	telescopeelevation = 2335.0
+
+	header = pyfits.getheader(rawimg)
+	# availablekeywords = header.keys()  # not used anyway
+
+	treatme = True
+	gogogo = True
+	whynot = "na"
+	testlist = False
+	testcomment = "na"
+
+	pythondt = datetime.datetime.strptime(header["DATE-OBS"][0:19], "%Y-%m-%dT%H:%M:%S") # This is the start of the exposure.
+	exptime = float(header['EXPTIME']) # in seconds.
+
+	pythondt = pythondt + datetime.timedelta(seconds = exptime/2.0) # This is the middle of the exposure.
+
+	# Now we produce the date and datet fields, middle of exposure :
+
+	date = pythondt.strftime("%Y-%m-%d")
+	datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+	myownjdfloat = juliandate(pythondt) # The function from headerstuff.py
+	myownmjdfloat = myownjdfloat - 2400000.5
+	jd = "%.6f" % myownjdfloat
+	mjd = myownmjdfloat
+
+
+	# The pre-reduction info :
+	# May be useful one day...can be used.
+	preredcomment1 = "None"
+	preredcomment2 = "None"
+	preredfloat1 = 0.0
+	preredfloat2 = 0.0
+
+
+	# We return a dictionnary containing all this info, that is ready to be inserted into the database.
+	returndict = {'imgname':imgname, 'treatme':treatme, 'gogogo':gogogo, 'whynot':whynot, 'testlist':testlist,'testcomment':testcomment ,
+	'telescopename':telescopename, 'setname':setname, 'rawimg':rawimg,
+	'scalingfactor':scalingfactor, 'pixsize':pixsize, 'date':date, 'datet':datet, 'jd':jd, 'mjd':mjd,
+	'telescopelongitude':telescopelongitude, 'telescopelatitude':telescopelatitude, 'telescopeelevation':telescopeelevation,
+	'exptime':exptime, 'gain':gain, 'readnoise':readnoise, 'rotator':rotator, 'saturlevel':saturlevel,
+	'preredcomment1':preredcomment1, 'preredcomment2':preredcomment2, 'preredfloat1':preredfloat1, 'preredfloat2':preredfloat2
+	}
+
+	return returndict
