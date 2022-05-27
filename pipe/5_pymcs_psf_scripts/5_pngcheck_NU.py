@@ -5,7 +5,6 @@
 #
 
 import shutil
-import ds9reg
 import sys
 import os
 if sys.path[0]:
@@ -20,7 +19,7 @@ from config import configdir, settings, psfstarcat, psfkeyflag, imgdb,\
 from modules.variousfct import proquest, readimagelist, fromfits, readpickle,\
                                makejpgtgz
 from modules.kirbybase import KirbyBase
-from modules import star, f2n
+from modules import star, f2n, ds9reg
 
 
 workdir = settings['workdir']

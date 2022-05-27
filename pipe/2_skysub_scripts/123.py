@@ -12,6 +12,7 @@ from config import defringed, python, settings
 from modules.variousfct import proquest
 
 os.system(f"{python} 1_skysub_NU.py")
+
 if defringed:
     os.system(f"{python} 1b_compute_fringes.py")
 

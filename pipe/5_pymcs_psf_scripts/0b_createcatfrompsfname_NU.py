@@ -13,7 +13,7 @@ else:
     # if ran interactively, append the parent manually as sys.path[0] 
     # will be emtpy.
     sys.path.append('..')
-from config import configdir, settings
+from config import configdir, settings, normstarscat
 from modules.variousfct import proquest
 from modules import star
 
@@ -22,13 +22,12 @@ psfname = settings['psfname']
 askquestions = settings['askquestions']
 
 # Read the manual star catalog :
-alistarscatpath = os.path.join(configdir, "psfstars.cat")
-alistars = star.readmancat(alistarscatpath)
+psfstars = star.readmancat(normstarscat)
 # we assume psfname is only the list of stars, named with only 1 letter 
 # (no aa or other funny stuff)
 psfnamestars = [e for e in psfname] 
 
-mystars = [s for s in alistars if s.name in psfnamestars]
+mystars = [s for s in psfstars if s.name in psfnamestars]
 
 print("I will write individual coordinates catalogs for the following stars:")
 print([star.name for star in mystars])

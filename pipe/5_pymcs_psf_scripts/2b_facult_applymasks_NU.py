@@ -1,6 +1,5 @@
 #	We look for the ds9 region files, read them, 
 #   and mask corresponding regions in the sigma images.
-import ds9reg
 import numpy as np
 import sys
 import os
@@ -16,6 +15,7 @@ from config import configdir, settings, psfstarcat, psfkeyflag, imgdb, psfdir,\
 from modules.variousfct import proquest, fromfits, tofits
 from modules.kirbybase import KirbyBase
 from modules import star
+from modules import ds9reg
 
 
 
