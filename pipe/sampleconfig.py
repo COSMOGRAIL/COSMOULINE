@@ -1,5 +1,6 @@
 import os
 import sys
+import datetime 
 
 from settingsReader import Settings
 
@@ -120,6 +121,7 @@ testlist = os.path.join(configdir, "testlist.txt")
 
 # File with the normalisation stars
 normstarscat = os.path.join(configdir, "normstars.cat")
+photomstarscat = os.path.join(configdir, "photomstars.cat")
 
 
 # ------------------------------ DEFRINGING ---------------------------------
@@ -128,14 +130,7 @@ if settings['telescopename'] in ["WFI", "LCO"]:
     defringed = True
 else :
     defringed = False
-    
-# dimensions you want for the aligned images (you have to start at pixels (1,1), no choice)
-if settings['telescopename'] in ["WFI", "VST"]:
-    dimx = 2022
-    dimy = 4000
-else :
-    dimx = 3600
-    dimy = 3600
+
 
 # ------------------------ BEST IMAGE COMBINATION ---------------------------
 
@@ -261,6 +256,18 @@ if not os.path.isdir(dbbudir):
     os.mkdir(dbbudir)
 # ---------------------------------------------------------------------------
 
+############ Building the filenames ##############
+lensName = settings['lensName']
+now = datetime.datetime.now()
+datestr = now.strftime("%Y-%m-%d")
+filename = f"{datestr}_{lensName}"
+
+readmefilepath = os.path.join(configdir, filename + "_readme.txt")
+pklfilepath = os.path.join(configdir, filename + "_db.pkl")
+pklgenericfilepath = os.path.join(configdir, f"{lensName}_db.pkl")
+dbcopyfilepath = os.path.join(configdir, filename + "_db.dat")
+
+# ---------------------------------------------------------------------------
 
 
 print(f"### Config dir: {configdir} ###")

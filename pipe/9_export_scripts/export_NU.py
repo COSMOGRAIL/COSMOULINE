@@ -1,4 +1,3 @@
-import datetime
 import shutil
 import sys
 import os
@@ -9,35 +8,20 @@ else:
     # if ran interactively, append the parent manually as sys.path[0] 
     # will be emtpy.
     sys.path.append('..')
-from config import imgdb, settings, configdir
+from config import imgdb, settings, pklfilepath, readmefilepath, \
+                   pklgenericfilepath, dbcopyfilepath
 from modules.variousfct import proquest, writepickle
 from modules.kirbybase import KirbyBase
 
 db = KirbyBase(imgdb)
 
 xephemlens = settings['xephemlens']
+lensName   = settings['lensName']
 refimgname = settings['refimgname']
 askquestions = settings['askquestions']
 
 print("I am the only script that writes into your configdir.")
 print("But I will try to be careful.")
-
-
-
-############ Building the filenames ##############
-
-now = datetime.datetime.now()
-datestr = now.strftime("%Y-%m-%d")
-configstr = os.path.basename(os.path.normpath(configdir))
-filename = f"{datestr}_{configstr}"
-
-readmefilepath = os.path.join(configdir, filename + "_readme.txt")
-pklfilepath = os.path.join(configdir, filename + "_db.pkl")
-pklgenericfilepath = os.path.join(configdir, f"{configstr}_db.pkl")
-dbcopyfilepath = os.path.join(configdir, filename + "_db.dat")
-
-
-print(f"My basename : {filename}")
 
 
 
@@ -100,7 +84,7 @@ readme.extend(renorms)
 
 
 readmetxt = "\n".join(readme)
-print(f"Here is the readme text : \n\n{readmetxt}\n\n")
+# print(f"Here is the readme text : \n\n{readmetxt}\n\n")
 
 print("I will now write the files.")
 proquest(askquestions)
@@ -140,4 +124,4 @@ writepickle(images, pklgenericfilepath, verbose=True)
 shutil.copy(imgdb, dbcopyfilepath)
 
 
-print("Done !")
+print("Done!")

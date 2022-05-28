@@ -236,9 +236,8 @@ def writepickle(obj, filepath, verbose=True):
     """
     I write your python object into a pickle file at filepath.
     """
-    outputfile = open(filepath, 'wb')
-    pickle.dump(obj, outputfile)
-    outputfile.close()
+    with open(filepath, "wb") as outputfile:
+        pickle.dump(obj, outputfile)
     if verbose:
         print(("Wrote %s" % filepath))
 
@@ -249,9 +248,8 @@ def readpickle(filepath, verbose=True):
     """
     I read a pickle file and return whatever object it contains.
     """
-    pkl_file = open(filepath, 'rb')
-    obj = pickle.load(pkl_file)
-    pkl_file.close()
+    with open(filepath, "rb") as pkl_file:
+        obj = pickle.load(pkl_file)
     if verbose:
         print(("Read %s" % filepath))
     return obj
