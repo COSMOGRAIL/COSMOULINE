@@ -60,6 +60,7 @@ if "testlist" not in db.getFieldNames(imgdb) :
 # Make a backup
 backupfile(imgdb, dbbudir, "updatetestlistflag")
 
+db.update(imgdb, ['testlist'], ['*'], [False], ['testlist'])
 for image in testlisttxt:
     print(image[0])
     nbupdate = db.update(imgdb, ['imgname'], 
@@ -71,7 +72,6 @@ for image in testlisttxt:
     else:
         print("########### P R O B L E M ##########")
     
-# get the total number (including previous ones... ) of test images.
 testimages = db.select(imgdb, ['testlist'], [True], returnType='dict')    
 
 print("We have %i test-images in the database." % len(testimages))

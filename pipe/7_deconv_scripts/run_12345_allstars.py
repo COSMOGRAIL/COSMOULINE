@@ -11,7 +11,7 @@ from config import python, configdir, settings
 from modules.variousfct import proquest
 import star
 
-
+maxcores = settings['maxcores']
 
 PARALLEL = True
 
@@ -39,7 +39,7 @@ def runAll(s):
 if PARALLEL:
     def main():
         from multiprocessing import Pool
-        pool = Pool(3)
+        pool = Pool(maxcores)
         pool.map(runAll, photomstars)
 else:
     def main():

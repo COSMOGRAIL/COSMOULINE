@@ -4,7 +4,6 @@ Now that the coeffs are in the db, you might want to plot curves
 not involved in the renormalization.
 """
 
-exec(compile(open("../config.py", "rb").read(), "../config.py", 'exec'))
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
