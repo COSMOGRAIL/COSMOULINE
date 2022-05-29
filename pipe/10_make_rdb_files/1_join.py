@@ -21,7 +21,7 @@ from modules import variousfct, groupfct, rdbexport
 from config import settings, configdir, pklfilepath
 
 
-setnames = settings['setnames']
+setnames = settings['exportsetnames']
 telescopenames = settings['telescopenames']
 deconvname = settings['deconvname']
 normcoeffname = settings['normcoeffname']

@@ -370,7 +370,7 @@ normcoeffname = "renorm_1"
 # Telescope- and set- names that you want to process "together" :
 # Do not forget some image sets, check the README to see what you have in your db !
 telescopenames = ["WFI"]
-setnames = ["844"]
+exportsetnames = ["844"]
 
 # Narrow the range of images you want to use (images beyond these limits are disregarded,
 # i.e., not included in the nights).
