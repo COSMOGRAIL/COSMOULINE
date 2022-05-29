@@ -32,15 +32,15 @@ lcsnames       = settings['sourcenames']
 # and better display the variations
 globalmagshift = 30
 # individual shift of each curve: one shift per lcsname. 
-shifts         = [0, -0.5]
+shifts         = [0, -0.1, -0.55, -0.73]
 # limits of the axes:
-jdrange        = [59360, 59600]
-magrange       = [18.09, 17.77]
+jdrange        = [58858, 58935]
+magrange       = [18.17, 17.6]
 # paths to your data directory and rdb file:
 rdbfile        = os.path.join(configdir, settings['outputname'] + '.rdb')
 # path to where the plots will be saved 
 # (the file extension, e.g. `pdf` will be added automatically!)
-plotpath       = os.path.join(configdir, f"{settings['outputname']}_Nice_Plot")
+plotpath       = os.path.join(configdir, f"{settings['outputname']}_Light_Curve")
 ##############################################################################
 ##############################################################################
 ##############################################################################
