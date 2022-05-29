@@ -53,7 +53,7 @@ if decpsfnames[0] == psfname :
         refimgname = refimgname_per_band[setname]
         refpsfpng = join(workdir, f"psf_{psfname}_png", f"{refimgname}.png")
         copytopath = join(exportdir, f"{telescopename}_psf_{psfname}_ref.png")
-        copy(refdeconvpng, copytopath)
+        copy(refpsfpng, copytopath)
 else :
     print("I don't know which psf name to chose : CHANGE the psfname or decpsfnames in your setting.py")
 #%%
