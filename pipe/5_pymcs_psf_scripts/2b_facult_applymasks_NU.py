@@ -3,7 +3,7 @@
 import numpy as np
 import sys
 import os
-from glob import glob
+import glob 
 if sys.path[0]:
     # if ran as a script, append the parent dir to the path
     sys.path.append(os.path.dirname(sys.path[0]))
