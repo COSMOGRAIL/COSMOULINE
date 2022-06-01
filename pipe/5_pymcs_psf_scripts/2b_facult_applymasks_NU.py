@@ -82,19 +82,17 @@ if not update:
     text += "Want me to open DS9 on each star so that you can build a mask?\n"
     text += "Btw for each star the path to where the mask needs to be saved\n"
     text += "will be copied to your clipboard.   So, open DS9? (yes/no) "
-    if input(text) != 'yes':
-        sys.exit()
-    
-    import pyperclip 
-    from subprocess import call
-    for starfile, maskfile in zip(starfiles, maskfilepaths):
-        # copy the mask file to the clipboard:
-        pyperclip.copy(maskfile)
-        print(f'save your region file to \n{maskfile}')
-        # open with ds9
-        call(['ds9', starfile])
-        # now mask the companion stars in ds9, and save the regions
-        # to the file copied in the cilpboard.
+    if input(text) == 'yes':
+        import pyperclip 
+        from subprocess import call
+        for starfile, maskfile in zip(starfiles, maskfilepaths):
+            # copy the mask file to the clipboard:
+            pyperclip.copy(maskfile)
+            print(f'save your region file to \n{maskfile}')
+            # open with ds9
+            call(['ds9', starfile])
+            # now mask the companion stars in ds9, and save the regions
+            # to the file copied in the cilpboard.
 
 
 
