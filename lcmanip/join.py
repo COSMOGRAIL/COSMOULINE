@@ -67,12 +67,12 @@ print("We keep %i images among %i." % (len(images), ava))
 # Checking for negative fluxes and normalizations, before combining by nights.
 # We do not crash, just print out info to write on skiplist ...
 bad_index=[]
-for image in images:
+for i,image in enumerate(images):
     for sourcename in sourcenames:
         fluxfieldname = "out_%s_%s_flux" % (deconvname, sourcename)
         if float(image[fluxfieldname]) < 0.0:
             print("%s ERROR, negative flux for source %s" % (image["imgname"], sourcename))
-            print("Please, put this image on a skiplist and re-export the database.")
+            # print("Please, put this image on a skiplist and re-export the database.")
             bad_index.append(i)
 
         # We also check the normalizations :

@@ -207,8 +207,9 @@ weitot = []
 for k, s in enumerate(ptsources_str):
     mags = magtot[k, :]
     magerrorbars = magerrtot[k, :]
+    magerrorbars_toplot = np.nan_to_num(magerrorbars, nan =0.0)
     plt.figure(2)
-    plt.errorbar(mhjds, mags, yerr=magerrorbars, fmt='+', color=color[k])
+    plt.errorbar(mhjds, mags, yerr=magerrorbars_toplot, fmt='+', color=color[k])
     chi = 0.0
     count = 0.0
     countnan =0.0
@@ -255,7 +256,7 @@ titletext4 = ""
 for i,s in enumerate(ptsources_str):
     titletext4 += "$\chi^2_{" + s + "}$" + " = " + str(round(chi_vec[i]*1000)/1000.0) + " , $med_{" + s + "}$= " + str(round(med_vec[i]*1000)/1000.) + ", "
 
-titletext4 += "all lightcurves : $\chi^2_{tot}$" + " = " + str(round((chitot/counttot)*1000)/1000.0) + " ,  $med_{tot}$= "  + str(round(np.median(weitot)*1000)/1000.0)
+titletext4 += "all : $\chi^2_{tot}$" + " = " + str(round((chitot/counttot)*1000)/1000.0) + " ,  $med_{tot}$= "  + str(round(np.median(weitot)*1000)/1000.0)
 
 plt.figure(1)
 ax.text(0.02, pos, titletext4, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
