@@ -48,7 +48,7 @@ proquest(askquestions)
 starttime = datetime.now()
 
 # we'll still need the reference image, see below.
-refimage = fits.getdata(db.select(imgdb, ['imgname'], [refimgname], returnType='dict')[0]['rawimg'])
+refimage = fits.getdata(os.path.join(alidir, refimgname + "_skysub.fits"))
 
 
 def alignImage(image):
