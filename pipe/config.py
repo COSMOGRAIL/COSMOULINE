@@ -19,7 +19,7 @@ pipedir = "/Users/martin/Desktop/COSMO3b/pipe"
 # The configuration directory that contains the configuration files :
 # ("small-precious-frequently-backuped-disk")
 # The scripts do only read, but never write, from here !
-configdir = "/Users/martin/Desktop/COSMO3b/config/DES2038_WFI"
+configdir = "/Users/martin/Desktop/COSMO3b/config/J1721_NOT"
 
 #---------------------------------------------------------------------------
 # All further settings are made into the configdir.
