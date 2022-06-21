@@ -181,6 +181,7 @@ else :
 		rawimg = os.path.join(rawdir, fitsfile)	
 		
 		dbdict = readheader(telescopename, rawimg)
+		print(dbdict)
 		dbdict["updating"] = False  # always False when the database does not exists yet...
 		
 		table.append(dbdict) # In this case we build a big list for batch insertion.

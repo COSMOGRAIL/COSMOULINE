@@ -156,7 +156,7 @@ def DateFromJulianDay(JD):
 ###############################################################################################
 
 def eulerc2header(rawimg):
-    print(rawimg)
+    print (rawimg)
     imgname = setname + "_" + os.path.splitext(os.path.basename(rawimg))[0]  # drop extension
 
     pixsize = 0.344
@@ -169,7 +169,6 @@ def eulerc2header(rawimg):
     telescopeelevation = 2347.0
 
     header = pyfits.getheader(rawimg)
-    availablekeywords = list(header.keys())
 
     treatme = True
     gogogo = True
@@ -177,26 +176,95 @@ def eulerc2header(rawimg):
     testlist = False
     testcomment = "na"
 
-    if "DATE-OBS" in availablekeywords:  # This should be the default way of doing it.
+    if "DATE-OBS" in header:  # This should be the default way of doing it.
         pythondt = datetime.datetime.strptime(header["DATE-OBS"][0:19],
                                               "%Y-%m-%dT%H:%M:%S")  # This is the start of the exposure.
     else:
-        if "TUNIX_DP" in availablekeywords:  # For the very first images
+        if "TUNIX_DP" in header:  # For the very first images
             pythondt = datetime.datetime.utcfromtimestamp(float(header["TUNIX_DP"]))
-            print("I have to use TUNIX_DP :", pythondt)
+            print ("I have to use TUNIX_DP :", pythondt)
 
-    if "EXPTIME" in availablekeywords:  # Nearly always available.
+    if "EXPTIME" in header:  # Nearly always available.
         exptime = float(header['EXPTIME'])  # in seconds.
-    elif "TIMEFF" in availablekeywords:
+    elif "TIMEFF" in header:
         exptime = float(header['TIMEFF'])
-        print("I have to use TIMEFF :", exptime)
+        print ("I have to use TIMEFF :", exptime)
     else:
-        print("WTF ! No exptime !")
+        print ("WTF ! No exptime !")
         exptime = 360.0
 
     pythondt = pythondt + datetime.timedelta(seconds=exptime / 2.0)  # This is the middle of the exposure.
 
     # Now we produce the date and datet fields, middle of exposure :
+
+    date = pythondt.strftime("%Y-%m-%d")
+    datet = pythondt.strftime("%Y-%m-%dT%H:%M:%S")
+
+    myownjdfloat = juliandate(pythondt)  # The function from headerstuff.py
+    myownmjdfloat = myownjdfloat - 2400000.5
+
+    # We perform some checks with other JD-like header keywords if available :
+    if "MJD-OBS" in header:
+        headermjdfloat = float(header['MJD-OBS'])  # should be the middle of exposure, according to hdr comment.
+        if abs(headermjdfloat - myownmjdfloat) > 0.0001:
+            raise mterror("MJD-OBS disagrees !")
+
+    jd = "%.6f" % myownjdfloat
+    mjd = myownmjdfloat
+
+    rotator = 0.0
+
+    # The gain, we need to read 3 headers.
+    # The options are written in order of "trust", the most trusted first.
+    gain = 0.0
+    if "CCD_SGAI" in header:  # old images
+        gain = float(header['CCD_SGAI'])
+        print ("Reading gain from CCD_SGAI")
+    elif "OGE DET SGAI" in header:  # intermediary, just after the header format change
+        gain = float(header['HIERARCH OGE DET SGAI'])
+        print ("Reading gain from OGE DET SGAI")
+    elif "ESO CAM CCD SGAI" in header:  # The current format
+        gain = float(header['HIERARCH ESO CAM CCD SGAI'])
+        print ("Reading gain from ESO CAM CCD SGAI")
+    elif "ESO CAM2 CCD GAIN" in header:  # was also used once in the transition phase 04/2009
+        gain = float(header["HIERARCH ESO CAM2 CCD GAIN"])
+        print ("Reading gain from ESO CAM2 CCD GAIN")
+    elif "ESO CAM CCD GAIN" in header:  # was also used once in the transition phase 04/2009
+        gain = float(header["HIERARCH ESO CAM CCD GAIN"])
+        print ("Reading gain from ESO CAM CCD GAIN")
+    elif "CCD_FGAI" in header:  # Very very old ones ... Be careful, this was in ADU/e
+        gain = 1.0 / float(header["CCD_FGAI"])
+
+    # We do a quick check :
+    if gain < 0.5 or gain > 3.0:
+        print (header)
+        raise mterror("gain = %f ???" % gain)
+
+    # The pre-reduction info :
+    # preredcomment1 = "None"
+    # preredcomment2 = "None"
+    # preredfloat1 = 0.0
+    # preredfloat2 = 0.0
+    preredcomment1 = str(header["PR_NFLAT"])
+    preredcomment2 = str(header["PR_NIGHT"])
+    preredfloat1 = float(header["PR_FSPAN"])
+    preredfloat2 = float(header["PR_FDISP"])
+
+    # We return a dictionnary containing all this info, that is ready to be inserted into the database.
+    returndict = {'imgname': imgname, 'treatme': treatme, 'gogogo': gogogo, 'whynot': whynot, 'testlist': testlist,
+                  'testcomment': testcomment,
+                  'telescopename': telescopename, 'setname': setname, 'rawimg': rawimg,
+                  'scalingfactor': scalingfactor, 'pixsize': pixsize, 'date': date, 'datet': datet, 'jd': jd,
+                  'mjd': mjd,
+                  'telescopelongitude': telescopelongitude, 'telescopelatitude': telescopelatitude,
+                  'telescopeelevation': telescopeelevation,
+                  'exptime': exptime, 'gain': gain, 'readnoise': readnoise, 'rotator': rotator,
+                  'saturlevel': saturlevel,
+                  'preredcomment1': preredcomment1, 'preredcomment2': preredcomment2, 'preredfloat1': preredfloat1,
+                  'preredfloat2': preredfloat2
+                  }
+
+    return returndict
 
 
 ###############################################################################################
