@@ -9,7 +9,7 @@ if sys.path[0]:
     # if ran as a script, append the parent dir to the path
     sys.path.append(os.path.dirname(sys.path[0]))
 else:
-    # if ran interactively, append the parent manually as sys.path[0] 
+    # if ran interactively, append the parent manually as sys.path[0]
     # will be emtpy.
     sys.path.append('..')
 
@@ -26,7 +26,7 @@ refimgname = settings['refimgname']
 maxcores = settings['maxcores']
 
 
-        
+
 def alignImage(image, tupleref, refimage):
 
     """
@@ -91,22 +91,22 @@ def alignImage(image, tupleref, refimage):
 
 def multi_alignImage(args):
    return alignImage(*args)
-   
-   
+
+
 
 def updateDB(db, retdict, image):
     if 'geomapscale' in retdict:
-        db.update(imgdb, ['recno'], [image['recno']], 
-                  {'geomapangle': retdict["geomapangle"], 
-                   'geomaprms'  : retdict["geomaprms"], 
+        db.update(imgdb, ['recno'], [image['recno']],
+                  {'geomapangle': retdict["geomapangle"],
+                   'geomaprms'  : retdict["geomaprms"],
                    'geomapscale': retdict["geomapscale"],
                    'maxalistars': retdict['maxalistars'],
                    'nbralistars': retdict['nbralistars'],
                    'flagali' : 1})
     else:
         db.update(imgdb, ['recno'], [image['recno']], {'flagali': 0})
-        
-        
+
+
 
 def main():
     # As we will tweak the database, let's do a backup
@@ -170,7 +170,10 @@ def main():
     # we'll still need the reference image: astroalign needs it only to
     # get the dimension of the target. Could pass the image to align itself
     # if everything has the same shape.
-    refimage = os.path.join(alidir, refimgname + "_skysub.fits")
+    refimgsuffix = '_ali.fits' if settings['update'] else '_skysub.fits'
+    # (here we use the aligned image if it's an update, as the _skysub version
+    #  of the ref image has probably been deleted in the initial run.)
+    refimage = os.path.join(alidir, refimgname + refimgsuffix)
     refimage = fits.getdata(refimage)
 
 
