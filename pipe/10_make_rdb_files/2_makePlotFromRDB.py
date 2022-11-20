@@ -4,6 +4,9 @@
 """
 
 import pycs3
+import pycs3.gen
+import pycs3.gen.lc_func
+import pycs3.gen.mrg
 import sys
 import os
 if sys.path[0]:
@@ -20,7 +23,7 @@ from config import settings, configdir
 ##############################################################################
 ##############################################################################
 # first plot without transformation to get the idea of the time range, etc:
-roughplot      = 0
+roughplot      = 1
 # import the data - execute the script once for each dataset separately. 
 fullname       = settings['lensName']
 telescopename  = settings['telescopename']
