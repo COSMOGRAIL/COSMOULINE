@@ -10,7 +10,8 @@ else:
     # if ran interactively, append the parent manually as sys.path[0] 
     # will be emtpy.
     sys.path.append('..')
-from config import alidir, settings, combibestkey, imgdb
+from config import alidir, settings, combibestkey, imgdb, normstarscat
+
 from modules.kirbybase import KirbyBase
 db = KirbyBase(imgdb)
 from modules import star, f2n
@@ -34,11 +35,13 @@ refautostars = star.readsexcat(refsexcat)
 refautostars = star.sortstarlistbyflux(refautostars)
 refscalingfactor = refimage['scalingfactor']
 
-
+normstars = star.readmancat(normstarscat)
+normstars = star.sortstarlistbyflux(normstars)
 
 # We convert the star objects into dictionnaries, to plot them using f2n.py
 # (f2n.py does not use these "star" objects...)
 refautostarsasdicts = [{"name":s.name, "x":s.x, "y":s.y} for s in refautostars]
+normstarsasdicts = [{"name":s.name, "x":s.x, "y":s.y} for s in normstars]
 
 usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'], ['*'], ['setname'])])
 
@@ -47,16 +50,19 @@ for setname in usedsetnames:
     f2nimg = f2n.fromfits(combifitsfile)
     f2nimg.setzscale(z1=-5, z2=1000)
     #f2nimg.rebin(2)
-    f2nimg.makepilimage(scale = "log", negative = False)
+    f2nimg.makepilimage(scale="log", negative=False)
+    f2nimg.drawstarlist(normstarsasdicts, r=30, colour=(150, 150, 150))
     
     
     
     # We draw the rectangles around qso and empty region :
     
     lims = [list(map(int,x.split(':'))) for x in lensregion[1:-1].split(',')]
-    
+    f2nimg.drawrectangle(lims[0][0], lims[0][1], lims[1][0], lims[1][1], colour=(0,255,0), label = "Lens")
+ 
     lims = [list(map(int,x.split(':'))) for x in emptyregion[1:-1].split(',')]
-    
+    f2nimg.drawrectangle(lims[0][0], lims[0][1], lims[1][0], lims[1][1], colour=(0,255,0), label = "Empty")
+
     
     f2nimg.writetitle("%s / %s" % (xephemlens.split(",")[0], combibestkey))
     
