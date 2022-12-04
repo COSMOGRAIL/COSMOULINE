@@ -25,15 +25,23 @@ from modules import cosmics
 askquestions = settings['askquestions']
 cosmicssigclip = settings['cosmicssigclip']
 withsound = settings['withsound']
+thisisatest = settings['thisisatest']
 
 def maskCosmics(objkey, objkeyflag, objdir):
 
     # Select images to treat
     db = KirbyBase(imgdb)
-    images = db.select(imgdb, ['gogogo', 'treatme', objkeyflag], 
-                              [True, True, True], 
-                              returnType='dict', 
-                              sortFields=['setname', 'mjd'])
+    if thisisatest:
+        images = db.select(imgdb, ['gogogo', 'treatme','testlist', objkeyflag], 
+                                  [True, True, True, True], 
+                                  returnType='dict', 
+                                  sortFields=['setname', 'mjd'])
+    else: 
+        images = db.select(imgdb, ['gogogo', 'treatme', objkeyflag], 
+                                  [True, True, True], 
+                                  returnType='dict', 
+                                  sortFields=['setname', 'mjd'])
+    
     print("Number of images to analyse for cosmics: ", len(images))
     print("You have set cosmicssigclip to %f" % cosmicssigclip)
     proquest(askquestions)

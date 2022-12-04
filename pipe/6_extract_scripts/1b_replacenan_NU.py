@@ -21,7 +21,7 @@ from modules.kirbybase import KirbyBase
 
 askquestions = settings['askquestions']
 withsound = settings['withsound']
-
+thisisatest = settings['thisisatest']
     
 
 def isNaN(x):
@@ -53,9 +53,15 @@ def replaceNaN(objkey, objkeyflag, objdir):
     origdir = os.getcwd()
     # select the images to treat:
     db = KirbyBase(imgdb)
-    images = db.select(imgdb, ['gogogo', 'treatme', objkeyflag], 
-                              [True, True, True], 
-                              returnType='dict')
+    if thisisatest:
+        images = db.select(imgdb, ['gogogo', 'treatme','testlist', objkeyflag], 
+                                  [True, True, True, True], 
+                                  returnType='dict')
+    else:
+        images = db.select(imgdb, ['gogogo', 'treatme', objkeyflag], 
+                                  [True, True, True], 
+                                  returnType='dict')
+
     print("Number of images to treat :", len(images))
     proquest(askquestions)
     for i, image in enumerate(images):
