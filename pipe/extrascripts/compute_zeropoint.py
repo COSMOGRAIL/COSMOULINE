@@ -10,10 +10,11 @@ norm_field = ['medcoeff' for s in ref_star]
 
 # panstarr_mag = np.asarray([16.62470054626465]) #rPSFmag 2M1134 star a
 # panstarr_mag = np.asarray([17.158700942993164]) #rPSFmag HE0047 star b
-panstarr_mag = np.asarray([20.1326]) #rPSFmag DES2325 star a from DES
+# panstarr_mag = np.asarray([20.1326]) #rPSFmag DES2325 star a from DES
 # panstarr_mag = np.asarray([18.1021]) #rPSFmag DES0407 star a from DES
 # panstarr_mag = np.asarray([18.78380012512207]) #rPSFmag WG0214 star b
 # panstarr_mag = np.asarray([17.769899368286133]) #rPSFmag PS1606 star a
+panstarr_mag = np.asarray([17.6733894348]) #DES mag for DESJ0602
 
 f = open(os.path.join(configdir, "zeropoint.txt"), "w")
 f.write('Absolute Calibration using %i stars : \n'%len(ref_star))

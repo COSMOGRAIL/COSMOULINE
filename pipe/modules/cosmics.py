@@ -178,7 +178,7 @@ class cosmicsimage:
         sizes = ndimage.measurements.sum(self.mask.ravel(), labels.ravel(), list(range(1, n + 1, 1)))
         # If there is only one cosmic, the function returns a float instead of an array, and the zip below complains.
         # So a special tweak :
-        if np.alen(np.asarray(sizes)) == 1:
+        if len(np.asarray(sizes)) == 1:
             sizes = [sizes]
         retdictlist = [{"name": "%i" % size, "x": center[0], "y": center[1]} for (size, center) in zip(sizes, centers)]
 
@@ -253,12 +253,11 @@ class cosmicsimage:
             # print cutout
             # Now we have our 25 pixels, some of them are np.Inf, and we want to take the median
             goodcutout = cutout[cutout != np.Inf]
-            # print np.alen(goodcutout)
 
-            if np.alen(goodcutout) >= 25:
+            if len(goodcutout) >= 25:
                 # This never happened, but you never know ...
                 raise RuntimeError("Mega error in clean !")
-            elif np.alen(goodcutout) > 0:
+            elif len(goodcutout) > 0:
                 replacementvalue = np.median(goodcutout)
             else:
                 # i.e. no good pixels : Shit, a huge cosmic, we will have to improvise ...
