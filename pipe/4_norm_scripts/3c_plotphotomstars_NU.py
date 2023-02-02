@@ -9,7 +9,12 @@ import matplotlib.pyplot as plt
 
 
 db = KirbyBase()
-images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields = ["mhjd"])
+try :
+	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields = ["mhjd"])
+	date_key = "mhjd"
+except:
+	images = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=["mjd"])
+	date_key = "mjd"
 
 if update:
 	askquestions = False
@@ -29,7 +34,7 @@ print("I respect treatme and will treat", nbrofimages, "images.")
 proquest(askquestions)
 
 
-mhjds = np.array([image["mhjd"] for image in images])
+mhjds = np.array([image[date_key] for image in images])
 medcoeffs = np.array([image["medcoeff"] for image in images])
 
 
@@ -67,7 +72,7 @@ for s in photomstars :
 	
 	ax1.set_ylim((0.78, 1.22))
 	ax1.set_ylabel("Flux * medcoeff / median")
-	ax1.set_xlabel("MHJD")
+	ax1.set_xlabel(date_key)
 	ax1.legend()
 	
 	ax2.plot(mhjds, medcoeffs, "gray")

@@ -10,7 +10,10 @@ import os,sys
 
 
 # Read the manual star catalog :
-alistarscatpath = os.path.join(configdir, "psfstars.cat")
+if os.path.exists(os.path.join(configdir, "psfstars.cat")):
+	alistarscatpath = os.path.join(configdir, "psfstars.cat")
+else:
+	alistarscatpath = os.path.join(configdir, "alistars.cat")
 alistars = star.readmancat(alistarscatpath)
 
 psfnamestars = [e for e in psfname] # we assume psfname is only the list of stars, named with only 1 letter (no aa or other funny stuff)
