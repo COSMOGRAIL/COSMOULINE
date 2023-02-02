@@ -47,7 +47,7 @@ class Image:
             if noisemap is not None:
                 self.noiseMap = noisemap
 
-        self.mask = mask.astype(bool) if mask is not None else np.zeros(self.array.shape, dtype=np.bool)
+        self.mask = mask.astype(bool) if mask is not None else np.zeros(self.array.shape, dtype=bool)
 
     def __str__(self):
         return_string = ["Shape : ", str(self.array.shape), "\nPixel type : ", str(self.array.dtype.name),

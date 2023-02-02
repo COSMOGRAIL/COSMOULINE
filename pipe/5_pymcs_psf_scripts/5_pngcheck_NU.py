@@ -123,8 +123,15 @@ for i, image in enumerate(images):
     seeing = "Seeing : %4.2f [arcsec]" % image['seeing']
     ell = "Ellipticity : %4.2f" % image['ell']
     nbralistars = "Nb alistars : %i" % image['nbralistars']
-    airmass = "Airmass : %4.2f" % image['airmass']
-    az = "Azimuth : %6.2f [deg]" % image['az']
+    if "airmass" in image.keys():
+        airmass = "Airmass : %4.2f" %  image['airmass']
+    else :
+        airmass = "Airmass : ??"
+
+    if "az" in image.keys():
+        az = "Azimuth : %6.2f [deg]" % image['az']
+    else :
+        az = "Azimuth : ??"
 
     stddev = "Sky stddev : %4.2f [ADU]" % image['stddev']
     skylevel = "Sky level : %7.1f [ADU]" % image['skylevel']

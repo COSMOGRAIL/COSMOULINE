@@ -150,9 +150,7 @@ class LoadImage:
                 size = 300,300
         else:
             size = 300,200
-            x, y = self.canvas.canvasx(event.x), self.canvas.canvasy(
-                event.y)  # to get the real coordinate of the star even after scrolling
-            tmp = self.orig_img
+            # tmp = self.orig_img
             self.zimg = ImageTk.PhotoImage(tmp.resize(size))
             self.zimg_id = self.canvas.create_image(x,y,image=self.zimg)
 
