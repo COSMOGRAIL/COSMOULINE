@@ -17,7 +17,13 @@ for renormsource in renormsources:
 db = KirbyBase()
 
 # Sort them like this, to ensure that points of one night are side by side (looks better on graphs ...)
-allimages = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname', 'mhjd'])
+if 'mhjd' in db.getFieldNames(imgdb):
+    jdkey = 'mhjd'
+else :
+    jdkey = 'mjd'
+
+allimages = db.select(imgdb, ['gogogo', 'treatme'], [True, True], returnType='dict', sortFields=['setname', jdkey])
+
 
 telescopenames = sorted(list(set([image["telescopename"] for image in allimages])))
 

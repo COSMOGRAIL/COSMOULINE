@@ -1,4 +1,5 @@
 import os
+exec (open("../config.py").read())
 
 # os.system(f"{python} 0_facult_autoskiplist_NU.py")
 os.system(f"{python} 1_prepfiles.py")

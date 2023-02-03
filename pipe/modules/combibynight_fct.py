@@ -34,8 +34,11 @@ def groupbynights(imagelist, separatesetnames=True):
 	nighttable = []	# this is the big list we will return.
 	
 	for imageset in imagesbysets:
-		
-		jd = [float(x['mhjd']) for x in imageset]
+
+		if 'mhjd' in imageset[0].keys():
+			jd = [float(x['mhjd']) for x in imageset]
+		else :
+			jd = [float(x['mjd']) for x in imageset]
 		#images = map(lambda x: x['imgname'], imageset)
 	
 		nbimg = len(imageset)

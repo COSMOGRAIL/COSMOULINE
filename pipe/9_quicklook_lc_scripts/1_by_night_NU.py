@@ -27,7 +27,11 @@ print("Names of sources : %s" % ", ".join([s.name for s in ptsources]))
 
 db = KirbyBase()
 
-images = db.select(imgdb, [deckeyfilenum,'gogogo'], ['\d\d*', True], returnType='dict', useRegExp=True, sortFields=['mjd'])
+if 'mhjd' in db.getFieldNames(imgdb):
+    jdkey = 'mhjd'
+else :
+    jdkey = 'mjd'
+images = db.select(imgdb, [deckeyfilenum,'gogogo'], ['\d\d*', True], returnType='dict', useRegExp=True, sortFields=[jdkey])
 print("%i images" % len(images))
 
 groupedimages = combibynight_fct.groupbynights(images)
@@ -37,7 +41,7 @@ fieldnames = db.getFieldNames(imgdb)
 
 plt.figure(figsize=(15, 15))
 
-mhjds = combibynight_fct.values(groupedimages, 'mhjd', normkey=None)['mean']
+mhjds = combibynight_fct.values(groupedimages, jdkey, normkey=None)['mean']
 
 """
 medairmasses = combibynight_fct.values(groupedimages, 'airmass', normkey=None)['median']
@@ -91,12 +95,15 @@ for j, s in enumerate(ptsources):
     upmags = -2.5 * np.log10(fluxvals + absfluxerrors)
     downmags = -2.5 * np.log10(fluxvals - absfluxerrors)
     magerrorbars = (downmags - upmags) / 2.0
+    upmagerror = mags - upmags
+    downmagerror = downmags - mags
+
     if lc_to_sum != None :
         if s.name != lc_to_sum[0] and s.name!=lc_to_sum[1] :
             plt.figure(1)
-            plt.errorbar(mhjds, mags, yerr=[upmags - mags, mags - downmags], linestyle="None", marker=".", label=s.name)
+            plt.errorbar(mhjds, mags, yerr=[upmagerror, downmagerror], linestyle="None", marker=".", label=s.name)
     else :
-        plt.errorbar(mhjds, mags, yerr=[upmags - mags, mags - downmags], linestyle="None", marker=".", label=s.name)
+        plt.errorbar(mhjds, mags, yerr=[upmagerror, downmagerror], linestyle="None", marker=".", label=s.name)
     # exportcols.extend([{"name":"mag_%s" % ptsrc.name, "data":mags}, {"name":"magerr_%s" % ptsrc.name, "data":2.0*magerrorbars}])
     magtot.append(mags)
     magerrtot.append(magerrorbars)

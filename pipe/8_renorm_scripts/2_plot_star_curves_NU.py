@@ -40,7 +40,10 @@ for renormsource in renormsources:
 	fluxes = np.array([image[fluxfieldname] for image in images])
 	errors = np.array([image[errorfieldname] for image in images])
 	decnormcoeffs = np.array([image[decnormfieldname] for image in images])
-	airmasses = np.array([image["airmass"] for image in images])
+	if "airmass" in images[0].keys():
+		airmasses = np.array([image["airmass"] for image in images])
+	else :
+		airmasses = np.ones_like(images)
 	skylevels = np.array([image["skylevel"] for image in images])
 
 	renormcoeffs = np.array([image[renormname] for image in images])
@@ -48,8 +51,11 @@ for renormsource in renormsources:
 	renormfluxes = fluxes*renormcoeffs
 	renormerrors = errors*renormcoeffs
 	ref = np.median(renormfluxes)
-	
-	mhjds = np.array([image["mhjd"] for image in images])
+
+	try:
+		mhjds = np.array([image["mhjd"] for image in images])
+	except:
+		mhjds = np.array([image["mjd"] for image in images])
 	
 	plt.figure(figsize=(15,15))
 
