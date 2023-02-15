@@ -220,6 +220,8 @@ combinightrenormcoeff = 'medcoeff'
 # THESE ARE TAKEN FROM YOUR normstars.cat CATALOGUE BUILT IN 4_norm_scripts!
 psfname = "abijlt"
 
+psfstampsize = 64
+
 
 # The otherway round, do not put "new" in that string
 # if you build your PSF with the old codes !
