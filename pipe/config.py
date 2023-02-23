@@ -1,7 +1,8 @@
 import os
 import sys
-import datetime 
+import datetime
 from pathlib import Path
+
 from settingsReader import Settings
 
 # ---------------------------------------------------------------------------
@@ -12,12 +13,12 @@ from settingsReader import Settings
 computer = "fred"
 
 # The pipeline dir that contains all the scripts (and this "config.py" ) :
-pipedir = "/home/fred/Documents/COSMOULINE/pipe/"
+pipedir = "/home/fred/cosmouline/pipe/"
 
 # The configuration directory that contains the configuration files :
 # ("small-precious-frequently-backuped-disk")
 # The scripts do only read, but never write, from here !
-configdir = "/scratch/COSMOULINE/WFI_PSJ0030-1525/config/"
+configdir = "/home/fred/Desktop/DES2038_tmp/config/"
 #---------------------------------------------------------------------------
 # All further settings are made into the configdir.
 # You should normally not have to change other lines of this config.py
@@ -68,6 +69,7 @@ if computer=="martin":
 # ---------------------------------------------------------------------------
 if computer=="fred":
     sex = "/usr/bin/sex"
+    python = "/home/fred/miniconda3/envs/herculens-env/bin/python"
     python = "/home/fred/anaconda3/bin/python"
 
 
@@ -96,26 +98,26 @@ workdir = settings['workdir']
 # This will be an sqlite base.
 imgdb = os.path.join(workdir, "database.dat")
 # The database is automatically backuped here.
-dbbudir = os.path.join(workdir, "backups")    
+dbbudir = os.path.join(workdir, "backups")
 
 # Alignment etc is done here
-alidir = os.path.join(workdir, "ali/")      
-# Some plots will go here (not used anymore)  
-plotdir = os.path.join(workdir, "plots/")    
+alidir = os.path.join(workdir, "ali/")
+# Some plots will go here (not used anymore)
+plotdir = os.path.join(workdir, "plots/")
 
-# Image lists (line format : imgname comment 
+# Image lists (line format : imgname comment
 # (you can leave blank lines and use "#" to comment a line !)) :
-imgkicklist = os.path.join(configdir, "kicklist.txt")    
+imgkicklist = os.path.join(configdir, "kicklist.txt")
 # Images that get "gogogo" set to False by the extrascript "kickimg.py",
 # as they simply cannot be used (too faint, cosmic on lens, etc)
 # No other script uses that list.
 
 
-testlist = os.path.join(configdir, "testlist.txt")            
+testlist = os.path.join(configdir, "testlist.txt")
 # This is an "allow list" for test runs (e.g. psf construction, ...).
 # Write images + comments on this list, and use the extrascript "set_testlist.py"
 # to set the "testlist" and "testcomment" flags in the database.
-# This list is also handy if you want to rebuild some handpicked psfs after 
+# This list is also handy if you want to rebuild some handpicked psfs after
 # a change of some parameters for instance !
 
 
@@ -151,6 +153,7 @@ psfdir = os.path.join(workdir, psfkey)    # Don't touch
 psfkeyflag = "flag_" + psfkey             # Don't touch
 psfcosmicskey = psfkey + "_cosmics"       # Don't touch
 
+
 # files
 psfdirc = Path(psfdir)
 starsfile = psfdirc / 'stars.h5'
@@ -160,10 +163,11 @@ psfsfile = psfdirc / 'psfs.h5'
 psfsplotsdir = psfdirc / 'plots'
 if not psfsplotsdir.exists():
     psfsplotsdir.mkdir()
+
 extracteddir = Path(workdir) / 'extracteddir'
 if not extracteddir.exists():
     extracteddir.mkdir()
-
+    
 # file with psf star coordinates (lineformat : "somename x y")
 psfstarcat = os.path.join(configdir, psfkey + ".cat")
 psfkicklist = os.path.join(configdir, psfkey + "_skiplist.txt")
@@ -203,9 +207,9 @@ deckeys = [ "dec" \
 
 
 # where the initial position and intensities are written
-ptsrccats = [os.path.join(configdir, deckey + "_ptsrc.cat") 
+ptsrccats = [os.path.join(configdir, deckey + "_ptsrc.cat")
                  for deckey in deckeys]
-# put here images that you do not want to include 
+# put here images that you do not want to include
 # in this particular deconvolution.
 decskiplists = [os.path.join(configdir, deckey + "_skiplist.txt")
                  for deckey in deckeys]
@@ -215,12 +219,12 @@ deckeyfilenums = ["decfilenum_" + deckey
 # the name of the field to contain the used psfname for "this particular image"
 deckeypsfuseds = ["decpsf_" + deckey
                     for deckey in deckeys]
-# the name of the field to contain the normalization 
+# the name of the field to contain the normalization
 # coeff that was actually used
 deckeynormuseds = ["decnorm_" + deckey
                     for deckey in deckeys]
 # Don't even think of changing this last one (hard coded in : renorm)
-decdirs = [os.path.join(workdir, deckey) 
+decdirs = [os.path.join(workdir, deckey)
                 for deckey in deckeys]
 
 

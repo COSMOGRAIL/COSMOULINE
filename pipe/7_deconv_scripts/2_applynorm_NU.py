@@ -57,7 +57,7 @@ for deckey, decskiplist, deckeyfilenum, setname, \
     
     print(f"I've selected {len(images)} images (ref image is duplicated).")
     proquest(askquestions)
-    
+                  
     for image in images:
     		
     	print(image[deckeyfilenum], image['imgname'])

@@ -10,7 +10,6 @@ Here we use STARRED to build our PSF.
 
 import sys
 import os
-from   pathlib import Path
 import numpy as np
 import h5py
 
@@ -32,40 +31,60 @@ else:
     # if ran interactively, append the parent manually as sys.path[0] 
     # will be emtpy.
 sys.path.append('..')
-from config import settings, psfstarcat, psfkeyflag, imgdb, psfdir,\
-                   computer
+from config import settings, psfdir, psfsplotsdir, psfsfile, starsfile,\
+                   cosmicsmasksfile, noisefile
 from modules.variousfct import proquest, notify
 from modules.kirbybase import KirbyBase
 
-psfdir = Path(psfdir)
-
-psfstampsize = settings['psfstampsize']
-
-starsfile = psfdir / 'stars.h5'
-noisefile = psfdir / 'noisemaps.h5'
-cosmicsmasksfile = psfdir / 'cosmics_masks.h5'
-psfsfile = psfdir / 'psfs.h5'
 
 
+###############################################################################
+###############################################################################
+###################### PARAMS
+redo = 1
 
 # Parameters
-subsampling_factor = 4
-n_iter_initial = 20
+subsampling_factor = 2
+n_iter_initial = 30
 n_iter = 1000 #epoch for adabelief
+
 
 lambda_scales = 1.
 lambda_hf = 1.
-lambda_positivity = 0. #prevent the background to have a median value much below 0. In case this is happening, you can remove degeneracy with the moffat profile with this parameter. 
+lambda_positivity = 0. 
 include_moffat = True
-regularize_full_psf = False #If True, regularise [m(x)+b(x)]. Regularise only the b(x) if False. 
+regularize_full_psf = True
 convolution_method = 'fft'
 method_analytical = 'trust-constr'
+
+###############################################################################
+###############################################################################
+
+# params from settings.py
+dopsfplots = settings['dopsfplots']
+
+
+
+
+if dopsfplots:
+    import matplotlib.pyplot as plt
+    plt.switch_backend('agg')
+
+# if h5 file storing psf has never been created,
+if not psfsfile.exists():
+    # just create it.
+    with h5py.File(psfsfile, 'w') as f:
+        pass
+
+
 
 
 # get all image names: (we refered to the data with them in the hdf5 file):
 with h5py.File(starsfile, 'r') as f:
     imgnames = list(f.keys())
-
+    
+    
+# a utility to load the data of one image:
 def getData(imgname):
     with h5py.File(starsfile, 'r') as f:
         image = np.array(f[imgname])
@@ -73,27 +92,58 @@ def getData(imgname):
         cosmicsmask = np.array(f[imgname+'_mask'])
     with h5py.File(noisefile, 'r') as f:
         noisemap = np.array(f[imgname])
-        
-    # mask cosmics
+    
+    # mask cosmics here.
     noisemap[cosmicsmask] = 1e8
 
     return image, noisemap
   
 
 # get an example:
-image, noisemap = getData(imgnames[0])
+_image, _ = getData(imgnames[0])
 
-# so we can define a model here (instead of in the loop, avoids recompinling
+# so we can define a model here (instead of in the loop, avoids recompiling
 # every time.)
-model = PSF(image_size=psfstampsize, number_of_sources=len(image), 
+model = PSF(image_size=_image[0].shape[0], number_of_sources=len(_image), 
             upsampling_factor=subsampling_factor, 
             convolution_method=convolution_method,
             include_moffat=include_moffat)
   
 
-
 # main routine:
 def buildPSF(image, noisemap, loss=None, optim=None, lossfull=None, optimfull=None):
+    """
+    
+
+    Parameters
+    ----------
+    image : array, shape (imageno, nx, ny)
+        array containing the data
+    noisemap : array, shape (imageno, nx, ny)
+        array containing the noisemaps.
+    loss : starred.psf.loss, optional
+        This 
+    optim : TYPE, optional
+        DESCRIPTION. The default is None.
+    lossfull : TYPE, optional
+        DESCRIPTION. The default is None.
+    optimfull : TYPE, optional
+        DESCRIPTION. The default is None.
+
+    Returns
+    -------
+    kwargs_final : TYPE
+        DESCRIPTION.
+    narrowpsf : TYPE
+        DESCRIPTION.
+    numpsf : TYPE
+        DESCRIPTION.
+    moffat : TYPE
+        DESCRIPTION.
+    optimtools : TYPE
+        DESCRIPTION.
+
+    """
     
     # Parameter initialization. 
     kwargs_init, kwargs_fixed, kwargs_up, kwargs_down = model.smart_guess(image, 
@@ -187,13 +237,15 @@ def buildPSF(image, noisemap, loss=None, optim=None, lossfull=None, optimfull=No
                   restart_from_init=False, stop_at_loss_increase=False,
                   progress_bar=True, return_param_history=True
                   )
-    import matplotlib.pyplot as plt
-    plt.figure()
-    plt.plot(extra_fields['loss_history'])
-    plt.show()
     
     kwargs_final = parametersfull.args2kwargs(best_fit)
     
+    if dopsfplots:
+        for n_psf in range(image.shape[0]):
+            fig = pltf.single_PSF_plot(model, image, noisemap**2, kwargs_final, 
+                                       n_psf=n_psf, units='e-')
+            fig.savefig(psfsplotsdir / ( imgname + f'_{n_psf}.png' ) )
+            plt.close()
     narrowpsf = model.get_narrow_psf(**kwargs_final, norm=True)
     numpsf    = model.get_background(kwargs_final['kwargs_background'])
     moffat    = model.get_moffat(kwargs_final['kwargs_moffat'], norm=True)
@@ -202,23 +254,32 @@ def buildPSF(image, noisemap, loss=None, optim=None, lossfull=None, optimfull=No
                   'optim': optim, 'optimfull': optimfull}
     
     #######################################################################
-    # kwargs_final = kwargs_partial
-    # narrowpsf = model.get_narrow_psf(**kwargs_final, norm=True)
-    # numpsf    = model.get_background(kwargs_final['kwargs_background'])
-    # moffat    = model.get_moffat(kwargs_final['kwargs_moffat'], norm=True)
     return kwargs_final, narrowpsf, numpsf, moffat, optimtools
-#%%
+
+
+# decoy for first loop
 optimtools = {'loss': None, 'lossfull': None,
               'optim': None, 'optimfull': None}
 
-for image
-kwargs_final, narrowpsf, numpsf, moffat, optimtools = buildPSF(image, noisemap)
+
+for imgname in imgnames:
+    # load stamps and noise maps for this image
+    image, noisemap = getData(imgname)
+    
+    # open the file in which we'll store the result
+    with h5py.File(psfsfile, 'r+') as f:
+        # check if we need to build again
+        if not redo and imgname in f.keys():
+            continue
+        
+        # call the routine defined above 
+        kwargs_final, narrowpsf, numpsf, moffat, optimtools = buildPSF(image, 
+                                                                       noisemap, 
+                                                                       **optimtools)
+        # time for storage. If key already exists, gotta delete it since
+        # h5py does not like overwriting
+        if imgname in f.keys():
+            del f[imgname]
+        f[imgname] = narrowpsf
 
 
-pltf.single_PSF_plot(model, image, noisemap**2, kwargs_final, n_psf=0, units='e-')
-
-#%%
-image, noisemap = getData('844_WFI.2022-10-14T23:47:22.175')
-kwargs_final2, narrowpsf2, numpsf2, moffat2, optimtools2 = buildPSF(image, noisemap, **optimtools)
-
-pltf.single_PSF_plot(model, image, noisemap**2, kwargs_final2, n_psf=0, units='e-')

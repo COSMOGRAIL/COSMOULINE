@@ -185,4 +185,5 @@ def extractObj(objkey, objcoordcat, objdir, objkeyflag, objcosmicskey):
 
 if __name__ == "__main__":
     from config import objkey, objcoordcat, objdir, objkeyflag, objcosmicskey
+    
     extractObj(objkey, objcoordcat, objdir, objkeyflag, objcosmicskey)

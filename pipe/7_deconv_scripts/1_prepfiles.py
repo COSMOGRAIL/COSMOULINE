@@ -39,6 +39,9 @@ and add brakets [ ] around their assigned value to make them lists.
 import shutil
 import sys
 import os
+import h5py
+import numpy as np
+from pathlib import Path
 if sys.path[0]:
     # if ran as a script, append the parent dir to the path
     sys.path.append(os.path.dirname(sys.path[0]))
@@ -46,7 +49,8 @@ else:
     # if ran interactively, append the parent manually as sys.path[0] 
     # will be emtpy.
     sys.path.append('..')
-from config import dbbudir, imgdb, settings, configdir, computer
+from config import dbbudir, imgdb, settings, configdir, computer, psfdir,\
+                   psfsfile, extracteddir
 from modules.variousfct import proquest, readimagelist, mterror, mcsname,\
                                backupfile, notify
 from modules.kirbybase import KirbyBase
@@ -330,7 +334,18 @@ for deckey, decskiplist, deckeyfilenum, setname, \
     readyimages.insert(0, refimage)
     # readyimages now contains n+1 images !!!!
     
+    
+    # we'll read the different parts we need for each image in the next
+    # loop
+    # stamps and noies maps of the object at hand:
+    extractedh5 = h5py.File(extracteddir / f'{setname}_extracted.h5', 'r')
+    psfsh5 = h5py.File(psfsfile, 'r')
+    # psfs in `psfsfile`
+    stamplist = []
+    noisestamplist = []
+    psflist = []
     for i, image in enumerate(readyimages):
+        imgname = image['imgname']
         # so we start at i = 1!!!
         # i = 1 is reserved for the copy of the ref image:
         decfilenum = mcsname(i+1); 
@@ -353,27 +368,20 @@ for deckey, decskiplist, deckeyfilenum, setname, \
                 image["choosennormcoeff"] = 1.0
         print(f"Norm. coefficient : {image['choosennormcoeff']:.3f}")
             
-            
-        psfdir = os.path.join(workdir, "psf_" + image['choosenpsf'])
-        # this should not have changed:
-        objdir = os.path.join(workdir, "obj_" + decobjname)    
-        # we take the psf from here:
-        imgpsfdir = os.path.join(psfdir, image['imgname'])
-        # and the g.fits + sig.fits here:
-        imgobjdir = os.path.join(objdir, image['imgname'])    
-    
-    
-        # fix here : go back to the original file 
-        # instead of the alias that might be corrupted:
-        os.symlink(os.path.join(imgpsfdir +"/results","s_1.fits") , 
-                   os.path.join(decdir, f"s{decfilenum}.fits")) 
         
-        os.symlink(os.path.join(imgobjdir, "g.fits") , 
-                   os.path.join(decdir, f"g{decfilenum}_notnorm.fits"))
+  
         
-        os.symlink(os.path.join(imgobjdir, "sig.fits") , 
-                   os.path.join(decdir, f"sig{decfilenum}_notnorm.fits"))
-    
+        
+        normcoeff = image["choosennormcoeff"]
+        
+        stamp = normcoeff * np.array(extractedh5[f"{decobjname}_{imgname}"])
+        stampnoise = normcoeff * np.array(extractedh5[f"{decobjname}_{imgname}_noise"])
+        psf = psfsh5[imgname]
+        
+        stamplist.append(stamp)
+        noisestamplist.append(stampnoise)
+        psflist.append(psf)
+ 
     
         # For the duplicated ref image, we do not update the database !
         # As in fact, there is no duplicated ref image in the database...
@@ -385,6 +393,16 @@ for deckey, decskiplist, deckeyfilenum, setname, \
                               deckeynormused: image["choosennormcoeff"]})
     
         # numbers in the db start with 0002
+    # ok, save the array of stamps
+    decfile = Path(decdir) / 'stamps-noisemaps-psfs.h5'
+    with h5py.File(decfile, 'w') as f:
+        f['stamps'] = np.array(stamplist)
+        f['noisemaps'] = np.array(noisestamplist)
+        f['psfs'] = np.array(psflist)
+    
+    # close open files
+    extractedh5.close()
+    psfsh5.close()
     
     print("- " * 40)
     db.pack(imgdb)

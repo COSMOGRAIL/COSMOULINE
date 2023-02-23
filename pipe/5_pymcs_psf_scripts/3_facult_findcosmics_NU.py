@@ -111,7 +111,7 @@ def main():
     sigclip = cosmicssigclip
     sigfrac = 0.3
     # 5.0 seems good for VLT. 1.0 works fine with Euler. Change with caution
-    objlim = 1.0 
+    objlim = 3.0
 
     ###########
 

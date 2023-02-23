@@ -90,7 +90,7 @@ else :
     print("psfdir :", psfdir)
     proquest(askquestions)
     if psfkeyflag not in db.getFieldNames(imgdb) :
-        db.addFields(imgdb, ['%s:bool' % psfkeyflag])
+        db.addFields(imgdb, [f'{psfkeyflag}:bool'])
     else:
         raise mterror("...funny: the psfkey was in the DB! Please clean psfdir and psfkey!")
     os.mkdir(psfdir)    

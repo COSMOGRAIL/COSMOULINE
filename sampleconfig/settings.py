@@ -222,6 +222,9 @@ psfname = "abijlt"
 
 psfstampsize = 64
 
+# create a summary plot for each image as we build the psfs
+dopsfplots = True
+
 
 # The otherway round, do not put "new" in that string
 # if you build your PSF with the old codes !
