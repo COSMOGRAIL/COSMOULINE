@@ -159,10 +159,14 @@ cosmicsmasksfile = psfdirc / 'cosmics_masks.h5'
 psfsfile = psfdirc / 'psfs.h5'
 psfsplotsdir = psfdirc / 'plots'
 if not psfsplotsdir.exists():
-    psfsplotsdir.mkdir()
+    psfsplotsdir.mkdir(parents=True, exist_ok=True)
 extracteddir = Path(workdir) / 'extracteddir'
 if not extracteddir.exists():
-    extracteddir.mkdir()
+    extracteddir.mkdir(parents=True, exist_ok=True)
+
+
+cosmicslabelfile = os.path.join(psfdir,  'cosmics_labels.json')
+
 
 # file with psf star coordinates (lineformat : "somename x y")
 psfstarcat = os.path.join(configdir, psfkey + ".cat")
@@ -220,8 +224,11 @@ deckeypsfuseds = ["decpsf_" + deckey
 deckeynormuseds = ["decnorm_" + deckey
                     for deckey in deckeys]
 # Don't even think of changing this last one (hard coded in : renorm)
-decdirs = [os.path.join(workdir, deckey) 
+decdirs  = [os.path.join(workdir, deckey) 
                 for deckey in deckeys]
+decfiles = [os.path.join(decf, 'stamps-noisemaps-psfs.h5') 
+                for decf in decdirs]
+
 
 
 # ------------------------ RENORMALIZATION ----------------------------------

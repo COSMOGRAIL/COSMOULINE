@@ -48,10 +48,11 @@ if sys.path[0]:
 else:
     # if ran interactively, append the parent manually as sys.path[0] 
     # will be emtpy.
-    sys.path.append('..')
-from config import dbbudir, imgdb, settings, configdir, computer, psfdir,\
+    pass
+sys.path.append('..')
+from config import dbbudir, imgdb, settings, configdir, computer,\
                    psfsfile, extracteddir
-from modules.variousfct import proquest, readimagelist, mterror, mcsname,\
+from modules.variousfct import proquest, readimagelist, mterror,\
                                backupfile, notify
 from modules.kirbybase import KirbyBase
 from settings_manager import importSettings
@@ -77,16 +78,18 @@ if settings['update']:
     askquestions = False
     
 deckeyfilenums, deckeynormuseds, deckeys, decdirs,\
-           decskiplists, deckeypsfuseds, ptsrccats = importSettings(scenario)
+           decfiles, decskiplists, deckeypsfuseds, ptsrccats = importSettings(scenario)
+           
+#%%
 
 # an awful for loop on all the bands:
 # this will prepare one deconvolution per setname. 
 # (e.g. a deconvolution directory, a key that identifies it for the database,
 # and all that stuff.)
 for deckey, decskiplist, deckeyfilenum, setname, \
-        deckeypsfused, deckeynormused, decdir in \
+        deckeypsfused, deckeynormused, decdir, decfile in \
     zip(deckeys, decskiplists, deckeyfilenums, setnames, \
-        deckeypsfuseds, deckeynormuseds, decdirs):
+        deckeypsfuseds, deckeynormuseds, decdirs, decfiles):
         
     # we're working in some band/setname now. the ref img of this particular
     # band is:
@@ -317,7 +320,7 @@ for deckey, decskiplist, deckeyfilenum, setname, \
                             # simple presence of these numbers to identify 
                             # images used in this deconvolution !
         
-    db.addFields(imgdb, [f'{deckeyfilenum}:str', 
+    db.addFields(imgdb, [f'{deckeyfilenum}:int', 
                          f'{deckeypsfused}:str', 
                          f'{deckeynormused}:float'])
         
@@ -346,11 +349,9 @@ for deckey, decskiplist, deckeyfilenum, setname, \
     psflist = []
     for i, image in enumerate(readyimages):
         imgname = image['imgname']
-        # so we start at i = 1!!!
-        # i = 1 is reserved for the copy of the ref image:
-        decfilenum = mcsname(i+1); 
+        decfilenum = i
         print("- " * 40)
-        print(decfilenum, "/", len(readyimages), ":", image['imgname'])
+        print(decfilenum+1, "/", len(readyimages), ":", image['imgname'])
         
         # We know which psf to use :
         print(f"PSF : {image['choosenpsf']}")
@@ -376,7 +377,7 @@ for deckey, decskiplist, deckeyfilenum, setname, \
         
         stamp = normcoeff * np.array(extractedh5[f"{decobjname}_{imgname}"])
         stampnoise = normcoeff * np.array(extractedh5[f"{decobjname}_{imgname}_noise"])
-        psf = psfsh5[imgname]
+        psf = psfsh5[imgname+'_narrow']
         
         stamplist.append(stamp)
         noisestamplist.append(stampnoise)
@@ -394,7 +395,7 @@ for deckey, decskiplist, deckeyfilenum, setname, \
     
         # numbers in the db start with 0002
     # ok, save the array of stamps
-    decfile = Path(decdir) / 'stamps-noisemaps-psfs.h5'
+    
     with h5py.File(decfile, 'w') as f:
         f['stamps'] = np.array(stamplist)
         f['noisemaps'] = np.array(noisestamplist)

@@ -169,6 +169,9 @@ if refimgname in starsarray:
 else:
     raise RuntimeError('The reference image was not found in your PSF set of images.')
 
+
+
+#%%
 if not update:
     text = 5*"\n"
     text += "Now we need to mask our PSF star stamps from contaminant stars.\n"
@@ -195,7 +198,11 @@ if not update:
         tmpdirr.cleanup()
 
 
-# ok, building the masks
+starsarray.close()
+noisearray.close()
+#%%
+
+
 for i, s in enumerate(psfstars):
     print('---------------PSF STAR------------------')
     print(s.name)
@@ -217,25 +224,32 @@ for i, s in enumerate(psfstars):
         
 
 
+# ok, building the masks
+# starsarray = h5py.File(psfdir / 'stars.h5', 'r+')
+# noisearray = h5py.File(psfdir / 'noisemaps.h5', 'r+')
+
 # now, applying the masks:
 print('Applying the masks!')
 for i, image in enumerate(images):
     
     print("%i : %s" % (i+1, image['imgname']))
     
-    for s, sigarray in zip(psfstars, noisearray[image['imgname']]):
+    for i, s in enumerate(psfstars):
         
         if not hasattr(s, 'reg'): # If there is no mask for this star
             continue
 
-        sigarray[s.reg.mask] = 1.0e8
+        # sigarray = noisearray[image['imgname']][i]
+        # sigarray[s.reg.mask] = 1e8
+        # noisearray[image['imgname']][i,:,:] = sigarray
+        with h5py.File(psfdir / 'noisemaps.h5', 'r+') as noisearray:
+            sig = noisearray[image['imgname']][i]
+            sig[s.reg.mask] = 1e8
+            noisearray[image['imgname']][i, :, :] = sig
     
 
 print("- " * 40)
 
-# now, we finalize our stars and noise maps by closing the files.
-starsarray.close()
-noisearray.close()
 
 # the decoy in case someone uses the old KirbyBase... one day to be removed.
 db.pack(imgdb)

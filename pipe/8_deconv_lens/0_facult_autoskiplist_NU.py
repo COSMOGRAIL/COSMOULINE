@@ -39,8 +39,8 @@ showhist = False
 
 if 1:
     # Normal rejection stuff :
-    maxseeing = 1.2
-    maxell = 0.25
+    maxseeing = 5
+    maxell = 0.5
     maxmedcoeff = 3.0
     maxsky = 8000.0
  

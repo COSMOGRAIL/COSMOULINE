@@ -31,7 +31,8 @@ else:
     # will be emtpy.
 sys.path.append('..')
 from config import settings, psfstarcat, psfkeyflag, imgdb, psfdir,\
-                   computer
+                   computer, cosmicslabelfile
+
 from modules.variousfct import proquest, notify
 from modules.kirbybase import KirbyBase
 from modules import cosmics
@@ -159,9 +160,8 @@ def main():
     pool = multiprocessing.Pool(processes=ncorestouse)
     results = pool.map(multi_findcosmics, args)
     
-    labelfile = psfdir / 'cosmics_labels.json'
     labels = {im['imgname']:j[1] for im, j in zip(images, results)}
-    with open(labelfile, 'w') as fp:
+    with open(cosmicslabelfile, 'w') as fp:
         json.dump(labels, fp)
     
     with h5py.File(psfdir / 'cosmics_masks.h5', 'w') as cosmicsh5:

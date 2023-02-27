@@ -10,9 +10,10 @@ if sys.path[0]:
     # if ran as a script, append the parent dir to the path
     sys.path.append(os.path.dirname(sys.path[0]))
 else:
+    pass
     # if ran interactively, append the parent manually as sys.path[0] 
     # will be emtpy.
-    sys.path.append('..')
+sys.path.append('..')
 from config import configdir, settings, normstarscat
 from modules.variousfct import proquest
 from modules import star

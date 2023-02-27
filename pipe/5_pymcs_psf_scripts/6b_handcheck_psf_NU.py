@@ -22,7 +22,7 @@ else:
     # will be emtpy.
     sys.path.append('..')
 
-from config import computer, settings, imgdb, psfkey, psfkicklist
+from config import computer, settings, imgdb, psfkey, psfkicklist, psfsplotsdir
 from modules.kirbybase import KirbyBase
 from modules.variousfct import notify
 

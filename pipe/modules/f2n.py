@@ -577,12 +577,13 @@ class f2nimage:
 
         self.checkforpilimage()
 
-        if type(factor) != type(0):
-            raise RuntimeError("Upsample factor must be an integer !")
+        # if type(factor) != type(0):
+            # raise RuntimeError("Upsample factor must be an integer !")
 
         if self.verbose:
             print(("Upsampling by a factor of %i" % factor))
-        self.pilimage = self.pilimage.resize((self.pilimage.size[0] * factor, self.pilimage.size[1] * factor))
+        self.pilimage = self.pilimage.resize((int(self.pilimage.size[0] * factor),
+                                              int(self.pilimage.size[1] * factor)))
         self.upsamplefactor = factor
 
         self.draw = None

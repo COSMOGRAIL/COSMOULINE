@@ -203,7 +203,7 @@ def nicetimediff(td):
 # a function to transform an int like 13 into a string like "0013" to use in filenames.
 # for the backward transformation, just use int("0013")
 def mcsname(i):
-    if i >= 10000 or i <= 0:
+    if i >= 20000 or i < 0:
         raise mterror("MCS filename out of bounds !")
     return "%04i"%int(i)
 

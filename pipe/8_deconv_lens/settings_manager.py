@@ -40,7 +40,7 @@ def importSettings(scenario):
     
     if scenario == "normal":
         from config import deckeyfilenums, deckeynormuseds, deckeys, decdirs,\
-                           decskiplists, deckeypsfuseds, ptsrccats
+                           decfiles, decskiplists, deckeypsfuseds, ptsrccats
     elif scenario == "allstars":
         # this script can be ran with an object to deconvolve as an argument.
         # in this case, force the rebuild of all the keys
@@ -81,5 +81,5 @@ def importSettings(scenario):
         raise AssertionError(f"No settings for scenario {scenario}.")
     
     return deckeyfilenums, deckeynormuseds, deckeys, decdirs,\
-           decskiplists, deckeypsfuseds, ptsrccats
+           decfiles, decskiplists, deckeypsfuseds, ptsrccats
 
