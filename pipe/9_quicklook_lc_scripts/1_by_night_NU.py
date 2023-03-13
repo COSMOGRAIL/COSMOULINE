@@ -99,12 +99,13 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
         if lc_to_sum != None :
             if s.name != lc_to_sum[0] and s.name!=lc_to_sum[1] :
                 plt.figure(1)
-                plt.errorbar(mhjds, mags, yerr=[upmags - mags, mags - downmags], 
+                plt.errorbar(mhjds, mags, yerr=np.abs([upmags-mags,mags-downmags]), 
                                           linestyle="None", 
                                           marker=".", 
                                           label=s.name)
         else :
-            plt.errorbar(mhjds, mags, yerr=[upmags - mags, mags - downmags], 
+            print(upmags -mags)
+            plt.errorbar(mhjds, mags, yerr=np.abs([upmags-mags,mags-downmags]), 
                                       linestyle="None", 
                                       marker=".", 
                                       label=s.name)
