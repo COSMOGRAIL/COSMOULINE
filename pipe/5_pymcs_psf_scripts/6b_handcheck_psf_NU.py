@@ -264,8 +264,9 @@ else:
 
 
 frame = Frame(t)
-frame.pack()
+frame.focus_force()
 
+frame.bind("l", lambda event: keep())
 
 photoimage = ImageTk.PhotoImage(file=image)
 
@@ -287,4 +288,5 @@ bouton2.place(relx = 0.6, rely = 0.01)
 bouton3.place(relx = 0.3, rely = 0.01)
 bouton4.place(relx = 0.85, rely = 0.01)
 decompte.place(relx = 0.1, rely = 0.01)
+frame.pack()
 t.mainloop()
