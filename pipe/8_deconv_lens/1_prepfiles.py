@@ -78,7 +78,7 @@ if settings['update']:
     askquestions = False
     
 deckeyfilenums, deckeynormuseds, deckeys, decdirs,\
-           decfiles, decskiplists, deckeypsfuseds, ptsrccats = importSettings(scenario)
+           decfiles, decskiplists, deckeypsfuseds, ptsrccats = importSettings(decobjname)
            
 #%%
 
@@ -231,26 +231,7 @@ for deckey, decskiplist, deckeyfilenum, setname, \
           "(again, before looking at decskiplist) :", 
           len(havepsfimages))
     
-    # we do now a check for the object extraction
-    # Missing objects are not tolerated. We would simply stop.
-    
-    print("Now looking for the object itself ...")
-    
-    objkey = "obj_" + decobjname
-    objkeyflag = "flag_" + objkey
-    
-    if objkeyflag not in db.getFieldNames(imgdb):
-        raise mterror(f"Your object {decobjname} is not yet extracted !")
-    noobjimages = [image['imgname'] for image in images 
-                              if image[objkeyflag] != True]
-    if len(noobjimages) > 0:
-        raise mterror(f"{len(noobjimages)} images have no objects extracted !")
-    
-    objimages = [image['imgname'] for image in images 
-                              if image[objkeyflag] == True] 
-    print("I've found", len(objimages), "extracted objects.")
-    # (In fact this is trivial, will not be used later.)
-    
+
     # havepsfimages are for now the ones to go.
     # It's time to look at the decskipimages.
     
@@ -262,10 +243,7 @@ for deckey, decskiplist, deckeyfilenum, setname, \
     print("Images with valid PSF not on decskiplist :", len(readyimages))
     print("(i.e. I will prepare the deconvolution for this last category !)")
     
-    if len(readyimages) >= 2500:
-        print("This is too much, MCS in fortran can only",
-              "handle less than 2500 images.")
-        sys.exit()
+
     
     # But while we are at it let's check if there are any "typos" 
     # in the decskiplist :
@@ -281,7 +259,6 @@ for deckey, decskiplist, deckeyfilenum, setname, \
             print(error)
         raise mterror("Fix this (see above output).")
     
-    #proquest(askquestions)
     
     
     # a check about the reference image:
@@ -382,7 +359,8 @@ for deckey, decskiplist, deckeyfilenum, setname, \
         stamplist.append(stamp)
         noisestamplist.append(stampnoise)
         psflist.append(psf)
- 
+        print(decfilenum)
+
     
         # For the duplicated ref image, we do not update the database !
         # As in fact, there is no duplicated ref image in the database...

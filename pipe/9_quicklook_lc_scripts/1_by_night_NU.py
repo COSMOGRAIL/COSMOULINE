@@ -4,6 +4,7 @@ We group the points per night.
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates
+plt.switch_backend('tkAgg')
 
 import sys
 import os
@@ -29,6 +30,8 @@ decobjname = settings['decobjname']
 lc_to_sum = settings['lc_to_sum']
 xephemlens = settings['xephemlens']
 savefigs = settings['savefigs']
+ptsources = settings['pointsourcesnames']
+
 
 for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
               zip(deckeys, ptsrccats, deckeyfilenums, deckeynormuseds):
@@ -40,17 +43,16 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
         print(f"Using {plotnormfieldname} for the normalization.")
         deckeynormused = plotnormfieldname
     
-    ptsources = star.readmancat(ptsrccat)
     
     print(f"Number of point sources : {len(ptsources)}")
-    print(f"Names of sources : {', '.join([s.name for s in ptsources])}")
+    print(f"Names of sources : {', '.join([s for s in ptsources])}")
     
     db = KirbyBase(imgdb)
     
-    images = db.select(imgdb, [deckeyfilenum,'gogogo'], 
-                              ['\d\d*', True], 
+    images = db.select(imgdb, [deckeyfilenum, 'gogogo'], 
+                              ['>0', True], 
                               returnType='dict', 
-                              useRegExp=True, 
+                              # useRegExp=True, 
                               sortFields=['mjd'])
     print(f"{len(images)} images")
     
@@ -72,8 +74,8 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
     
     # colors = ["red", "blue", "purple", "green"]
     for j, s in enumerate(ptsources):
-        fluxfieldname = f"out_{deckey}_{s.name}_flux"
-        randomerrorfieldname = f"out_{deckey}_{s.name}_shotnoise"
+        fluxfieldname = f"out_{deckey}_{s}_flux"
+        randomerrorfieldname = f"out_{deckey}_{s}_shotnoise"
     
         mags = combibynight_fct.mags(groupedimages, 
                                      fluxfieldname, 
@@ -97,17 +99,17 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
         downmags = -2.5 * np.log10(fluxvals - absfluxerrors)
         magerrorbars = (downmags - upmags) / 2.0
         if lc_to_sum != None :
-            if s.name != lc_to_sum[0] and s.name!=lc_to_sum[1] :
+            if s != lc_to_sum[0] and s!=lc_to_sum[1] :
                 plt.figure(1)
-                plt.errorbar(mhjds, mags, yerr=[upmags - mags, mags - downmags], 
+                plt.errorbar(mhjds, mags, yerr=np.abs([upmags - mags, mags - downmags]),
                                           linestyle="None", 
                                           marker=".", 
-                                          label=s.name)
+                                          label=s)
         else :
-            plt.errorbar(mhjds, mags, yerr=[upmags - mags, mags - downmags], 
+            plt.errorbar(mhjds, mags, yerr=np.abs([upmags - mags, mags - downmags]), 
                                       linestyle="None", 
                                       marker=".", 
-                                      label=s.name)
+                                      label=s)
         magtot.append(mags)
         magerrtot.append(magerrorbars)
         fluxvalstot.append(fluxvals)
@@ -131,10 +133,10 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
         ptsources_str = []
     
         i = [i for i,source in enumerate(ptsources) 
-                    if source.name==lc_to_sum[0] or source.name==lc_to_sum[1]]
+                    if source==lc_to_sum[0] or source==lc_to_sum[1]]
         
         fluxvalstot_sum = [fluxvalstot[i[0]]+fluxvalstot[i[1]]]
-        ptsources_str = [ptsources[i[0]].name + "+"+ptsources[i[1]].name]
+        ptsources_str = [ptsources[i[0]] + "+"+ptsources[i[1]]]
         magtot_sum[0,:] = -2.5*np.log10(fluxvalstot_sum)
         fluxerr_sum = [np.sqrt(fluxvalserrtot[i[0]]**2+fluxvalserrtot[i[1]]**2)]
         fluxerr_sum= np.asarray(fluxerr_sum)
@@ -153,14 +155,14 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
             if j != i[0] and j!=i[1]:
                 magtot_sum[z,:] = magtot[j,:]
                 magerrortot_sum[z,:] = magerrtot[j,:]
-                ptsources_str.append(ptsources[j].name)
+                ptsources_str.append(ptsources[j])
                 z+=1
     
         magerrtot = magerrortot_sum
         magtot = magtot_sum
     
     else :
-        ptsources_str = [s.name for s in ptsources]
+        ptsources_str = [s for s in ptsources]
     
     #make the plots :
     plt.grid(True)

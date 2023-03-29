@@ -40,7 +40,7 @@ def plot_psf(image, noise, lossplot):
         noise: array (npsfstars, shapex, shapey) the effective noisemap used in the deconv
         lossplot: 256x256 array containing a plot of the loss history
     """
-    
+    psfsplotsdir.mkdir(exist_ok=True, parents=True)
     imgname = image['imgname']
     
     # load all the stuff
@@ -95,20 +95,20 @@ def plot_psf(image, noise, lossplot):
     
     date = image['datet']
     telname = "Telescope : %s" % image["telescopename"]
-    medcoeff = "Medcoeff : %.2f" % image["medcoeff"]
+    # medcoeff = "Medcoeff : %.2f" % image["medcoeff"]
     seeing = "Seeing : %4.2f [arcsec]" % image['seeing']
     ell = "Ellipticity : %4.2f" % image['ell']
-    nbralistars = "Nb alistars : %i" % image['nbralistars']
+    # nbralistars = "Nb alistars : %i" % image['nbralistars']
     airmass = "Airmass : %4.2f" % image['airmass']
     az = "Azimuth : %6.2f [deg]" % image['az']
-    stddev = "Sky stddev : %4.2f [ADU]" % image['stddev']
+    stddev = "Sky stddev : %4.2f [ADU]" % image['prealistddev']
     skylevel = "Sky level : %7.1f [ADU]" % image['skylevel']
     # we write long image names on two lines ...
     if len(image['imgname']) >= 27:
         infolist = [image['imgname'][0:20]+"...", "   "+image['imgname'][20:]]
     else:
         infolist = [image['imgname']]
-    infolist.extend([date, telname, medcoeff, seeing, ell, nbralistars, \
+    infolist.extend([date, telname, seeing, ell, \
                      stddev, skylevel, airmass, az])
     if settings['thisisatest']:
         testcomment = 'Testcomment: %s' %image['testcomment']

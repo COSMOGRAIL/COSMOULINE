@@ -62,7 +62,7 @@ def extractRegionsFromImages(images, regions, storagefile):
         alidata = fits.getdata(alifile)
         
         # noise map
-        stddev = image['stddev']
+        stddev = image['prealistddev']
         noise = np.zeros_like(alidata) + stddev + np.sqrt(np.abs(alidata))
         
         # more info for cosmics later:
@@ -111,10 +111,6 @@ usedsetnames = set([x[0] for x in db.select(imgdb, ['recno'],
                                             ['*'], ['setname'])])
 
 
-# read stars
-
-# Read the manual star catalog :
-photomstars = star.readmancat(photomstarscat)
 
 regions = {}
 psfstampsize = settings['psfstampsize']
@@ -128,12 +124,6 @@ xlens = (float(lenscoords[0][0][1:]) + float(lenscoords[0][1])) // 2
 ylens = (float(lenscoords[1][0]) + float(lenscoords[1][1][:-1])) // 2
 
 regions['lens'] =  (xlens-hh, xlens+hh, ylens-hh, ylens+hh)
-    
-# the stars
-for s in photomstars:
-    regions[s.name] = (s.x-hh, s.x+hh, s.y-hh, s.y+hh)
-
-
 
 
 for setname in usedsetnames:

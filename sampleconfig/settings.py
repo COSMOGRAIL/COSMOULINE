@@ -299,6 +299,9 @@ makeautoskiplist = True
 # set of parameters defined here there will be e.g. 4 deconvolutions
 # happening at once if you have 4 setnames. 
 
+# name of your point sources in order:
+pointsourcesnames = ['A', 'B', 'C', 'D']
+
 #------------------------ RENORMALIZATION ----------------------------------
 
 # Choose a name for the new renormalization coefficient:

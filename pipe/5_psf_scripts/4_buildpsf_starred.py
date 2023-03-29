@@ -96,7 +96,6 @@ else :
                               [True, True], returnType='dict')
 
 
-#%%
 
 # get all image names: (we refered to the data with them in the hdf5 file):
 with h5py.File(starsfile, 'r') as f:
@@ -327,7 +326,7 @@ def buildPSF(image, noisemap):
     residuals = image - fullmodel
     
     ###########################################################################
-    return kwargs_final, narrowpsf, numpsf, moffat, residuals, extra_fields
+    return kwargs_final, narrowpsf, numpsf, moffat, fullmodel, residuals, extra_fields
 #%%
 
 # decoy for first loop: we don't have compiled models yet.
@@ -341,8 +340,6 @@ times = []
 for i,image in enumerate(images):
     
     imgname = image['imgname']
-    if not '2021-02-25T04:45:41.000' in imgname:
-        continue
     t0 = time()
     
     
@@ -355,12 +352,12 @@ for i,image in enumerate(images):
             continue
         
         # call the routine defined above 
-        kwargs_final, narrowpsf, numpsf, moffat, residuals, extra_fields = buildPSF(data, 
-                                                                                    noisemap)
+        kwargs_final, narrowpsf, numpsf, moffat, fullmodel, residuals, extra_fields = buildPSF(data, 
+                                                                                               noisemap)
         # time for storage. If key already exists, gotta delete it since
         # h5py does not like overwriting
-        for tostore, name in zip([narrowpsf, numpsf, moffat, residuals], 
-                                 ['narrow', 'num', 'moffat', 'residuals']):
+        for tostore, name in zip([narrowpsf, numpsf, moffat, fullmodel, residuals], 
+                                 ['narrow', 'num', 'moffat', 'model', 'residuals']):
             key = f"{imgname}_{name}"
             if key in f.keys():
                 del f[key]

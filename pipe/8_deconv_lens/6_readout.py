@@ -13,6 +13,7 @@
 import progressbar
 import numpy as np
 import scipy
+import h5py
 # in some scipy versions, need to import this explicitly:
 import scipy.ndimage
 import sys
@@ -20,17 +21,17 @@ import os
 if sys.path[0]:
     # if ran as a script, append the parent dir to the path
     sys.path.append(os.path.dirname(sys.path[0]))
-else:
-    # if ran interactively, append the parent manually as sys.path[0] 
-    # will be emtpy.
-    sys.path.append('..')
-from config import dbbudir, imgdb, settings, computer
+sys.path.append('..')
+
+from config import dbbudir, imgdb, settings, computer, decfiles, settings
 from modules.variousfct import notify, mcsname, fromfits, backupfile
 from modules.kirbybase import KirbyBase
 from modules.readandreplace_fct import readouttxt 
 from modules import star
 from settings_manager import importSettings
 
+
+pointsourcesnames = settings['pointsourcesnames']
 
 
 backupfile(imgdb, dbbudir, "readout")
@@ -44,21 +45,14 @@ decnormfieldname = settings['decnormfieldname']
 decpsfnames = settings['decpsfnames']
 decobjname = settings['decobjname']
 refimgname_per_band = settings['refimgname_per_band']
-setnames = settings['setnames']
+setnames = settings['setnames'] 
 sample_only = settings['sample_only']
 uselinks = settings['uselinks']
 
-# import the right deconvolution identifiers:
-scenario = "normal"
-if len(sys.argv)==2:
-    scenario = "allstars"
-    decobjname = sys.argv[1]
-if settings['update']:
-    scenario = "update"
-    askquestions = False
+
     
 deckeyfilenums, deckeynormuseds, deckeys, decdirs,\
-           decskiplists, deckeypsfuseds, ptsrccats = importSettings(scenario)
+           decfiles, decskiplists, deckeypsfuseds, ptsrccats = importSettings('lens')
 
 
 def rebin(a, newshape):
@@ -79,74 +73,88 @@ def rebin(a, newshape):
              [f'/factor[{int(i)}]' for i in range(lenShape)]
     return eval(''.join(evList))
 
+
+
+
 for deckey, decskiplist, deckeyfilenum, setname, ptsrccat, \
-        deckeypsfused, deckeynormused, decdir in \
+        deckeypsfused, deckeynormused, decdir, decfile in \
             zip(deckeys, decskiplists, deckeyfilenums, setnames, ptsrccats, \
-                deckeypsfuseds, deckeynormuseds, decdirs):
+                deckeypsfuseds, deckeynormuseds, decdirs, decfiles):
                 
     refimgname = refimgname_per_band[setname]
     # We select only the images that are deconvolved 
     # (and thus have a deckeyfilenum)
     images = db.select(imgdb, [deckeyfilenum], 
-                              ['\d\d*'], 
-                              returnType='dict', 
-                              useRegExp=True) # the sorting is not  important
+                              ['>0'], 
+                              returnType='dict')
+                              # useRegExp=True) # the sorting is not  important
     
     # We duplicate the ref image, this will be easier for the output reading.
     refimage = [image for image in images if image['imgname'] == refimgname][0]
     images.insert(0, refimage.copy()) # This copy is important !!!
-    # The duplicated ref image gets number 1:
-    images[0][deckeyfilenum] = mcsname(1) 
+    # The duplicated ref image gets number 0:
+    images[0][deckeyfilenum] = 0
     
     nbimg = len(images)
     print(f"Number of images (including duplicated reference) : {nbimg}")
     
-    # read params of point sources
-    ptsrcs = star.readmancat(ptsrccat)
-    nbptsrcs = len(ptsrcs)
-    print("Number of point sources :", nbptsrcs)
-    print("Names of sources: ")
-    for src in ptsrcs: print(src.name)
+
     
     # The readout itself is fast :
-    intpostable, zdeltatable = readouttxt(os.path.join(decdir, "out.txt"), 
-                                          nbimg)
+    # intpostable, zdeltatable = readouttxt(os.path.join(decdir, "out.txt"), 
+                                          # nbimg)
     # We give nbimg, so the readouttxt fct does not know 
     # that the first image is a duplication of the ref.
-    
+    with h5py.File(decfile, 'r') as f:
+        psfs = np.array(f['psfs'])
+        light_curves = np.array(f['light_curves'])
+        data = np.array(f['stamps'])
+        psfsize = psfs[0].shape[0]
+        imsize = data[0].shape[0]
+        resamplefac = psfsize // imsize
     print("Ok, I've read the deconvolution output.\n")
     
+    if len(light_curves) == 1:
+        # probably deconvolving a star:
+        pointsourcesnames = ['S']
+            
     
-    
+    # read params of point sources
+    nbptsrcs = len(pointsourcesnames)
+    print("Number of point sources :", nbptsrcs)
+    print("Names of sources: ")
+    for src in pointsourcesnames: print(src)
     
     # We now prepare a list of dictionnaries to be written into the database, 
     # as well as a list of fields to add to the db.
     
     newfields = []
-    for src in ptsrcs:
+    for src in pointsourcesnames:
         # This will contain the flux (as would be measured by aperture  
         # photometry on the original raw image):
-        newfields.append({"fieldname": f"out_{deckey}_{src.name}_flux", 
+        newfields.append({"fieldname": f"out_{deckey}_{src}_flux", 
                           "type": "float"})
-        newfields.append({"fieldname": f"out_{deckey}_{src.name}_x", 
-                          "type": "float"})
-        newfields.append({"fieldname": f"out_{deckey}_{src.name}_y", 
-                          "type": "float"})
+    #     newfields.append({"fieldname": f"out_{deckey}_{src.name}_x", 
+    #                       "type": "float"})
+    #     newfields.append({"fieldname": f"out_{deckey}_{src.name}_y", 
+    #                       "type": "float"})
         # this will contain the shot noise of the flux
         # (including sky level, psf shape)
-        newfields.append({"fieldname": f"out_{deckey}_{src.name}_shotnoise", 
+        newfields.append({"fieldname": f"out_{deckey}_{src}_shotnoise", 
                           "type": "float"}) 
         
-    newfields.append({"fieldname": f"out_{deckey}_z1", "type":"float"})
-    newfields.append({"fieldname": f"out_{deckey}_z2", "type":"float"})
-    newfields.append({"fieldname": f"out_{deckey}_delta1", "type":"float"})
-    newfields.append({"fieldname": f"out_{deckey}_delta2", "type":"float"})
+    # newfields.append({"fieldname": f"out_{deckey}_z1", "type":"float"})
+    # newfields.append({"fieldname": f"out_{deckey}_z2", "type":"float"})
+    # newfields.append({"fieldname": f"out_{deckey}_delta1", "type":"float"})
+    # newfields.append({"fieldname": f"out_{deckey}_delta2", "type":"float"})
     
     
     #print "Negative fluxes :"
     negfluxes = []
     
-    for image in images:
+
+        
+    for ii, image in enumerate(images):
     
         print(f"{image[deckeyfilenum]} : {image['imgname']}")
     
@@ -154,31 +162,35 @@ for deckey, decskiplist, deckeyfilenum, setname, ptsrccat, \
         # So this guy is starting at 0, even if the first image is 0001.
         outputindex = int(image[deckeyfilenum]) - 1 
     
-        image["updatedict"][f"out_{deckey}_z1"] = zdeltatable[outputindex][0]
-        image["updatedict"][f"out_{deckey}_z2"] = zdeltatable[outputindex][1]
-        image["updatedict"][f"out_{deckey}_delta1"] = zdeltatable[outputindex][2]
-        image["updatedict"][f"out_{deckey}_delta2"] = zdeltatable[outputindex][3]
+        # image["updatedict"][f"out_{deckey}_z1"] = zdeltatable[outputindex][0]
+        # image["updatedict"][f"out_{deckey}_z2"] = zdeltatable[outputindex][1]
+        # image["updatedict"][f"out_{deckey}_delta1"] = zdeltatable[outputindex][2]
+        # image["updatedict"][f"out_{deckey}_delta2"] = zdeltatable[outputindex][3]
     
     
         # Reading the PSF, to calculate shotnoise:
-        psffilepath = os.path.join(decdir, f"s{image[deckeyfilenum]}.fits")
-        (mcspsf, h) = fromfits(psffilepath, verbose=False)
+        # psffilepath = os.path.join(decdir, f"s{image[deckeyfilenum]}.fits")
+        # (mcspsf, h) = fromfits(psffilepath, verbose=False)
+        psf = psfs[ii]
     
         # We rearrange the PSF quadrants so to have it in the center of the image.
-        ramcspsf = np.zeros((128, 128))
-        ramcspsf[0:64, 0:64] = mcspsf[64:128, 64:128]
-        ramcspsf[64:128, 64:128] = mcspsf[0:64, 0:64]
-        ramcspsf[64:128, 0:64] = mcspsf[0:64, 64:128]
-        ramcspsf[0:64, 64:128] = mcspsf[64:128, 0:64]
+        # ramcspsf = np.zeros((128, 128))
+        # ramcspsf[0:64, 0:64] = mcspsf[64:128, 64:128]
+        # ramcspsf[64:128, 64:128] = mcspsf[0:64, 0:64]
+        # ramcspsf[64:128, 0:64] = mcspsf[0:64, 64:128]
+        # ramcspsf[0:64, 64:128] = mcspsf[64:128, 0:64]
     
         # We convolve it with a gaussian of width = 2.0 "small pixels".
-        smallpixpsf = scipy.ndimage.filters.gaussian_filter(ramcspsf, 2.0)
+        smallpixpsf = scipy.ndimage.filters.gaussian_filter(psf, 2.0)
         #print "Sum of PSF : %.6f" % np.sum(smallpixpsf)
-        # We rebin it, 2x2 :
-        psf = 4.0*rebin(smallpixpsf, (64, 64))
+        # We rebin it
+        
+        psf = resamplefac**2 * rebin(smallpixpsf, (imsize, imsize))
         #print "Sum of rebinned PSF : %.6f" % np.sum(psf)
         # We calculate the sharpness :
         sharpness = np.sum(psf * psf)
+        
+        norm = np.sum(psf)
         print(f"Equivalent pixels : {float(1.0 / sharpness):.2f}")
     
         # For info about this, see :
@@ -187,12 +199,12 @@ for deckey, decskiplist, deckeyfilenum, setname, ptsrccat, \
         # http://www.stsci.edu/hst/observatory/etcs/etc_user_guide/1_3_optimal_snr.html
     
     
-        for i, src in enumerate(ptsrcs):
+        for j, src in enumerate(pointsourcesnames):
     
-            image["updatedict"][f"out_{deckey}_{src.name}_x"] = \
-                        intpostable[i][outputindex][1]
-            image["updatedict"][f"out_{deckey}_{src.name}_y"] = \
-                        intpostable[i][outputindex][2]
+            # image["updatedict"][f"out_{deckey}_{src.name}_x"] = \
+                        # intpostable[j][outputindex][1]
+            # image["updatedict"][f"out_{deckey}_{src.name}_y"] = \
+                        # intpostable[j][outputindex][2]
     
             # We calculate the flux :
     
@@ -204,14 +216,17 @@ for deckey, decskiplist, deckeyfilenum, setname, ptsrccat, \
             pi = 3.141592653589793
             ln2 = 0.693147180559945
     
-            mcsint = intpostable[i][outputindex][0] # the mcs intensity
-            flux = mcsint * ( fwhm**2 / 4.0 ) * pi / (4.0 * ln2)
+            # mcs intensity, now starred intensity ...
+            mcsint =  light_curves[j][ii] * norm
+            # no multiplying by some weird constants, the starred psf
+            # is already normalized to 1.
+            flux = mcsint #* ( fwhm**2 / 4.0 ) * pi / (4.0 * ln2)
     
     
             # We check if the flux is positive :
             if flux < 0.0:
                 negtxt = f"{image['imgname']}\t{image['datet']}, "
-                negtxt += f"{src.name}: flux = {flux:f} "
+                negtxt += f"{src}: flux = {flux:f} "
                 negfluxes.append(negtxt)
     
             # the shot noise
@@ -222,14 +237,16 @@ for deckey, decskiplist, deckeyfilenum, setname, ptsrccat, \
             shotnoise = np.sqrt(flux + ((skylevel + readnoise**2.0)/sharpness))
             shotnoise = float(shotnoise)
     
-            print(f"\t{src.name} : \t{flux:9.2f} +/- {100 * shotnoise / flux:5.2f} %")
+            print(f"\t{src} : \t{flux:9.2f} +/- {100 * shotnoise / flux:5.2f} %")
     
             # We *** denormalize *** :
+            if image[deckeynormused] == 0.:
+                image[deckeynormused] = 1e-8
             flux = flux / image[deckeynormused]
             shotnoise = shotnoise / image[deckeynormused]
     
-            image["updatedict"][f"out_{deckey}_{src.name}_flux"] = flux
-            image["updatedict"][f"out_{deckey}_{src.name}_shotnoise"] = float(shotnoise)
+            image["updatedict"][f"out_{deckey}_{src}_flux"] = flux
+            image["updatedict"][f"out_{deckey}_{src}_shotnoise"] = float(shotnoise)
     
     #print "\nI would now update the database."
     #proquest(askquestions)
@@ -263,6 +280,5 @@ for deckey, decskiplist, deckeyfilenum, setname, ptsrccat, \
     
     notify(computer, settings['withsound'],
            f"The results of {deckey} are now in the database.")
-
 
 

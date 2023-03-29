@@ -137,7 +137,7 @@ for i,image in enumerate(images):
     alidata = fits.getdata(alifile)
     
     # noise map
-    stddev = image['stddev']
+    stddev = image['prealistddev']#image['stddev']
     noise = np.zeros_like(alidata) + stddev + np.sqrt(np.abs(alidata))
     
     # extract the stars

@@ -1,30 +1,39 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Feb 13 21:38:36 2023
-
-@author: fred
-"""
-
 """
 We use cosmics.py to locate cosmics in the extracted images.
 We do not clean them, but mask them in the corresponding sigma images.
 We do not update the database.
+
+OUTPUT:
+    - an hdf5 file containing all the cosmic masks (one per image and per star)
+      at `psfdir / cosmics_masks.h5`.
+    - a json file containing the description of each cosmic (useful for plots)
+      at `psfdir / cosmics_labels.json`. 
+      
+Unlike the case of the user masking in 1_prepare.py, we do not mask
+the stars directly. Instead we store the cosmic masks in the separate
+file mentioned above. (This is fully automatic, and hence can go wrong
+                       -- we are being careful.)
 """
-import multiprocessing
-import numpy as np
+
 import sys
 import os
+from   pathlib import Path
+import multiprocessing
+import numpy as np
+import h5py
+import json
 if sys.path[0]:
     # if ran as a script, append the parent dir to the path
     sys.path.append(os.path.dirname(sys.path[0]))
 else:
+    pass
     # if ran interactively, append the parent manually as sys.path[0] 
     # will be emtpy.
-    sys.path.append('..')
+sys.path.append('..')
 from config import settings, psfstarcat, psfkeyflag, imgdb, psfdir,\
-                   computer
-from modules.variousfct import proquest, notify, writepickle
+                   computer, cosmicslabelfile
+
+from modules.variousfct import proquest, notify
 from modules.kirbybase import KirbyBase
 from modules import cosmics
 # weird looking import for star: that is because pickle
@@ -40,42 +49,30 @@ psfname = settings['psfname']
 update = settings['update']
 cosmicssigclip = settings['cosmicssigclip']
 
+psfdir = Path(psfdir)
+
+starsh5 = h5py.File(psfdir / 'stars.h5', 'r')
+noiseh5 = h5py.File(psfdir / 'noisemaps.h5', 'r')
+
 psfstars = star.readmancat(psfstarcat)
 
 def findcosmics(image, psfstars, sigclip, sigfrac, objlim):
-    imgpsfdir = os.path.join(psfdir, image['imgname'])
-    print("Image %i : %s" % (image["execi"], imgpsfdir))
-
-    os.chdir(os.path.join(imgpsfdir, "results"))
 
     pssl = image['skylevel']
     gain = image['gain']
     # satlevel = image['saturlevel']*gain*maxpixelvaluecoeff
     satlevel = -1.0
     readnoise = image['readnoise']
-    print("Gain %.2f, PSSL %.2f, Readnoise %.2f" % (gain, pssl, readnoise))
+    
+    stars = starsh5[image['imgname']]
 
+
+    cosmicmasks = []
+    cosmiclabels = []
+    
     for i in range(len(psfstars)):
-        starfilename = "star_%03i.fits" % (i + 1)
-        sigfilename = "starsig_%03i.fits" % (i + 1)
-        origsigfilename = "origstarsig_%03i.fits" % (i + 1)
-        starmaskfilename = "starmask_%03i.fits" % (i + 1)
-        starcosmicspklfilename = "starcosmics_%03i.pkl" % (i + 1)
-
-        # We reset everyting
-        if os.path.isfile(origsigfilename):
-            # Then we reset the original sigma image :
-            if os.path.isfile(sigfilename):
-                os.remove(sigfilename)
-            os.rename(origsigfilename, sigfilename)
-
-        if os.path.isfile(starmaskfilename):
-            os.remove(starmaskfilename)
-        if os.path.isfile(starcosmicspklfilename):
-            os.remove(starcosmicspklfilename)
-
-        # We read array and header of that fits file :
-        (a, h) = cosmics.fromfits(starfilename, verbose=False)
+        
+        a = stars[i]
 
         # Creating the object :
         c = cosmics.cosmicsimage(a, pssl=pssl, gain=gain, readnoise=readnoise, 
@@ -85,26 +82,19 @@ def findcosmics(image, psfstars, sigclip, sigfrac, objlim):
                                     # I put a correct satlevel instead of -1, 
                                     # to treat VLT images.
 
-        # print pssl, gain, readnoise, sigclip, sigfrac, objlim
 
         c.run(maxiter=3)
 
-        ncosmics = np.sum(c.mask)
+        cosmicmask = c.getdilatedmask(size=5)
+        cosmiclist = c.labelmask()
+        
+        cosmicmasks.append(cosmicmask)
+        cosmiclabels.append(cosmiclist)
+        
 
-        # We write the mask :
-        cosmics.tofits(starmaskfilename, c.getdilatedmask(size=5), 
-                       verbose=False)
+    return np.array(cosmicmasks), cosmiclabels
+    # cosmicsh5[image['imgname']+'_labels'] = cosmiclist
 
-        # And the labels (for later png display) :
-        cosmicslist = c.labelmask()
-        writepickle(cosmicslist, starcosmicspklfilename, verbose=False)
-
-        # We modify the sigma image, but keep a copy of the original :
-        os.rename(sigfilename, origsigfilename)
-        (sigarray, sigheader) = cosmics.fromfits(origsigfilename, 
-                                                 verbose=False)
-        sigarray[c.getdilatedmask(size=5)] = 1.0e8
-        cosmics.tofits(sigfilename, sigarray, sigheader, verbose=False)
 
 def multi_findcosmics(args):
    return findcosmics(*args)
@@ -122,7 +112,7 @@ def main():
     sigclip = cosmicssigclip
     sigfrac = 0.3
     # 5.0 seems good for VLT. 1.0 works fine with Euler. Change with caution
-    objlim = 1.0 
+    objlim = 1.0
 
     ###########
 
@@ -168,7 +158,17 @@ def main():
 
     args = [(im, psfstars, sigclip, sigfrac, objlim) for im in images]
     pool = multiprocessing.Pool(processes=ncorestouse)
-    pool.map(multi_findcosmics, args)
+    results = pool.map(multi_findcosmics, args)
+    
+    labels = {im['imgname']:j[1] for im, j in zip(images, results)}
+    with open(cosmicslabelfile, 'w') as fp:
+        json.dump(labels, fp)
+    
+    with h5py.File(psfdir / 'cosmics_masks.h5', 'w') as cosmicsh5:
+        for res, image in zip(results, images):
+            mask, _ = res
+            cosmicsh5[image['imgname']+'_mask'] = mask
+        
 
     notify(computer, withsound, f"Cosmics masked for psfname {psfname}.")
 

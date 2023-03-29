@@ -199,7 +199,7 @@ class f2nimage:
             calcarray.shape = calcarray.size # We flatten the 2D array
             if calcarray.size > samplesizelimit :
                 #selectionindices = np.random.random_integers(low = 0, high = calcarray.size - 1, size=samplesizelimit)
-                selectionindices = np.linspace(0, calcarray.size-1, samplesizelimit).astype(np.int)
+                selectionindices = np.linspace(0, calcarray.size-1, samplesizelimit).astype(int)
                 statsel = calcarray[selectionindices]
             else :
                 statsel = calcarray
@@ -978,7 +978,7 @@ def rainbow(data, autoscale=False):
     bcalcarray = np.ones(calcarray.shape)
 
     h = calcarray/60.0 # sector 0 to 5
-    i = np.floor(h).astype(np.int)
+    i = np.floor(h).astype(int)
 
     v = 1.0 * np.ones(calcarray.shape)
     s = 1.0 * np.ones(calcarray.shape)
