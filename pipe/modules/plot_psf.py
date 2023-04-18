@@ -17,17 +17,19 @@ else:
     # will be emtpy.
     sys.path.append('..')
 from config import settings, psfstarcat, psfkey, psfsfile, psfsplotsdir,\
-                   starsfile, noisefile, cosmicslabelfile
+                   starsfile, noisefile, cosmicslabelfile, extracteddir
 from modules import star, f2n
 
 
 workdir = settings['workdir']
 update = settings['update']
 askquestions = settings['askquestions']
+psfstars = settings['psfname']
 
 pngdir = os.path.join(workdir, psfkey + "_png")
-psfstars = star.readmancat(psfstarcat)
 nbrpsf = len(psfstars)
+
+regfile = extracteddir / 'regions.h5'
 
 
 with open(cosmicslabelfile, 'r') as f:
@@ -48,16 +50,14 @@ def plot_psf(image, noise, lossplot):
         psf = np.array(f[imgname + '_narrow'])
         # numpsf = np.array(f[imgname + '_num'])
         residuals = np.array(f[imgname + '_residuals'])
-    with h5py.File(starsfile, 'r') as f:
-        stars = np.array(f[imgname])
-    # with h5py.File(noisefile, 'r') as f:
-        # noise = np.array(f[imgname])
+        stars = np.array(f[imgname + '_data'])
+
     
     tilesize = 256
     imsizeup = psf[0].shape[0]
     imsize   = stars[0].shape[0]
     
-    cosmicslist = cosmicsdic[imgname]
+    cosmicslist = [cosmicsdic[imgname + '_' + s] for s in psfstars]
             
 
         
@@ -124,11 +124,7 @@ def plot_psf(image, noise, lossplot):
         f2nimg.makepilimage(scale = "log", negative = False)
         f2nimg.upsample(tilesize/imsize)
         f2nimg.drawstarlist(cosmicslist[j], r=3)
-        if hasattr(psfstars[j], "reg"):
-            for circle in psfstars[j].reg.circles:
-                f2nimg.drawcircle(circle["x"], circle["y"], r=circle["r"], 
-                                  colour=(170))
-        f2nimg.writetitle("%s" % (psfstars[j].name))
+        f2nimg.writetitle("%s" % (psfstars[j]))
         psfstarimglist.append(f2nimg)
     
     psfstarimglist.append(txtendpiece)

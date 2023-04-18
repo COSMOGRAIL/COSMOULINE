@@ -31,7 +31,7 @@ else:
     # if ran interactively, append the parent manually as sys.path[0] 
     # will be emtpy.
 sys.path.append('..')
-from config import settings, psfsfile, starsfile,\
+from config import settings, psfsfile, extracteddir,\
                    cosmicsmasksfile, noisefile, imgdb
 from modules.variousfct import mterror
 from modules.kirbybase import KirbyBase
@@ -42,7 +42,7 @@ from modules.plot_psf import plot_psf
 ###############################################################################
 ###############################################################################
 ###################### PARAMS
-redo = 1
+redo = 0
 
 # Parameters
 subsampling_factor = 2
@@ -63,7 +63,8 @@ method_analytical = 'trust-constr'
 
 # params from settings.py
 dopsfplots = settings['dopsfplots'] 
-
+psfname = settings['psfname']
+psfstars = psfname
 
 
 
@@ -96,9 +97,10 @@ else :
                               [True, True], returnType='dict')
 
 
+regionsfile = extracteddir / 'regions.h5'
 
 # get all image names: (we refered to the data with them in the hdf5 file):
-with h5py.File(starsfile, 'r') as f:
+with h5py.File(regionsfile, 'r') as f:
     imgnames = list(f.keys())
     
 for image in images:
@@ -109,15 +111,21 @@ for image in images:
     
 # a utility to load the data of one image:
 def getData(imgname):
-    with h5py.File(starsfile, 'r') as f:
-        image = np.array(f[imgname])
-    with h5py.File(cosmicsmasksfile, 'r') as f:
-        cosmicsmask = np.array(f[imgname+'_mask'])
-    with h5py.File(noisefile, 'r') as f:
-        noisemap = np.array(f[imgname])
-    
+    data, noise, cosmicsmasks = [], [], []
+    with h5py.File(regionsfile, 'r') as f:
+        container = f[imgname]
+        for s in psfstars:
+            data.append(container['stamps'][s][()])
+            noise.append(container['noise'][s][()])
+            cosmicsmasks.append(container['cosmicsmasks'][s][()])
+
+            
+
+    cosmicsmasks = np.array(cosmicsmasks)
+    data = np.array(data)
+    noise = np.array(noise)
     # mask cosmics here.
-    noisemap[cosmicsmask] = 1e8
+    noise[cosmicsmasks] = 1e8
     # for each image, if huge cosmic, discard image (probably a star trail)
     # for im, no in zip(noisemap, cosmicsmask):
         # print(no.sum())
@@ -125,8 +133,8 @@ def getData(imgname):
         # if no.sum() > 40:
             # im[...] = 1e8
 
-    return image, noisemap
-#%%  
+    return data, noise
+
 
 # get an example:
 _image, _ = getData(imgnames[0])
@@ -356,8 +364,8 @@ for i,image in enumerate(images):
                                                                                                noisemap)
         # time for storage. If key already exists, gotta delete it since
         # h5py does not like overwriting
-        for tostore, name in zip([narrowpsf, numpsf, moffat, fullmodel, residuals], 
-                                 ['narrow', 'num', 'moffat', 'model', 'residuals']):
+        for tostore, name in zip([data, noisemap, narrowpsf, numpsf, moffat, fullmodel, residuals], 
+                                 ['data', 'noisemap', 'narrow', 'num', 'moffat', 'model', 'residuals']):
             key = f"{imgname}_{name}"
             if key in f.keys():
                 del f[key]

@@ -35,6 +35,7 @@ from modules import star
 askquestions = settings['askquestions']
 refimgname = settings['refimgname']
 workdir = settings['workdir']
+stampsize = settings['stampsize']
 
 #%%
 
@@ -58,7 +59,7 @@ import sys
 
 
 class LoadImage:
-    def __init__(self,root,image, alistars, alphabet):
+    def __init__(self,root,image, regioncat, alphabet):
         global frame
         global top
         global ax
@@ -79,7 +80,7 @@ class LoadImage:
         self.zoomcycle = 0
         self.zimg_id = None
         
-        self.alistars = alistars
+        self.regioncat = regioncat
         self.alphabet = alphabet
         
         
@@ -180,6 +181,19 @@ class LoadImage:
             self.zimg = ImageTk.PhotoImage(tmp.resize(size))
             self.zimg_id = self.canvas.create_image(x,y,image=self.zimg)
 
+
+    def writeRegion(self, event, name):
+        x,y = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y) #to get the real coordinate of the star even after scrolling
+        reg = open(self.regioncat, "a")
+        reg.write("\n" + name + "\t"+str((float(x))) + "\t" + str((float(height-y))) + "    10000")
+        reg.close()
+        self.canvas.create_rectangle(x - stampsize//2, 
+                                     y - stampsize//2,
+                                     x + stampsize//2,
+                                     y + stampsize//2,
+                                     outline='red')
+
+
     def select(self,event):
         global compteurs
         global choice
@@ -191,100 +205,23 @@ class LoadImage:
         global bl_text
         global carre
         if choice == "star":
-            x,y = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y) #to get the real coordinate of the star even after scrolling
-            ali = open(self.alistars, "a")
-            ali.write("\n" + str(self.alphabet[compteurs[0]-1]) + "\t"+str((float(x))) + "\t" + str((float(height-y))) + "    10000")
-            ali.close()
-
-            self.canvas.create_oval(x+15, y-15, x-15,y+15,outline = "red")
-            self.canvas.create_text(x+6,y+6,text=str(self.alphabet[compteurs[0]-1]),fill="green")
+            name = str(self.alphabet[compteurs[0]-1])
+            self.writeRegion(event, name)
+  
             compteurs[0] += 1
-        elif choice == "lense":
-            x,y = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y) #to get the real coordinate of the star even after scrolling
-
-            compteurs[1] +=1
-            if compteurs[1]%3 ==1:
-                bl_corner = self.canvas.create_oval(x+1,y-1, x-1,y+1,outline = "red")
-                bl_text = self.canvas.create_text(x+6,y+6,text="Bottom left corner",fill="green")
-                lenscoord.append(x)
-                lenscoord.append(y)
-            elif compteurs[1]%3 ==2:
-                if x> lenscoord[0] and y<lenscoord[1]:
-                    self.canvas.delete(bl_corner)
-                    self.canvas.delete(bl_text)
-                    lenscoord.append(x)
-                    lenscoord.append(y)
-
-                    carre=self.canvas.create_rectangle(lenscoord[0],lenscoord[3], lenscoord[2], lenscoord[1],outline="blue")
-                    if askyesno("Satisfied ?", "I can write the coordinates of the lensregion in settings.py if you wish"):
-                        settings = os.path.join(configdir, "settings.py")
-                        set = open(settings, "r")
-                        set_c = set.read()
-                        set_line = set_c.split("\n")
-                        set.close()
-                        for i,elem in enumerate(set_line):
-                            if "lensregion" in set_line[i]:
-                                new_set = 'lensregion = "['+ str(lenscoord[0]).split('.')[0] + ':' +str(lenscoord[2]).split('.')[0]+' , '+ str(height-lenscoord[1]).split('.')[0]+':'+   str(height-lenscoord[3]).split('.')[0]+']"'
-                                set_line[i]=new_set
-
-                        set = open(settings,"w")
-                        set.write("\n".join(set_line))
-                        set.close()
-
-                else:
-                    showwarning("You had only one job ..." , "Please select the the top right corner of your region")
-                    compteurs[1]-=1
-            elif compteurs[1]%3 ==0:
-                self.canvas.delete(carre)
-                lenscoord = []
-
-        elif choice == "empty":
-            x,y = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y)#to get the real coordinate of the star even after scrolling
-            print("selection of the empty region")
-            compteurs[2] +=1
-            if compteurs[2]%3 ==1:
-                bl_corner = self.canvas.create_oval(x+1, y-1, x-1,y+1,outline = "red")
-                bl_text = self.canvas.create_text(x+6,y+6,text="Bottom left corner",fill="green")
-                emptycoord.append(x)
-                emptycoord.append(y)
-                print(bl_corner, bl_text, emptycoord)
-
-
-
-            elif compteurs[2]%3 ==2:
-                self.canvas.delete(bl_corner)
-                self.canvas.delete(bl_text)
-                emptycoord.append(x)
-                emptycoord.append(y)
-                carre=self.canvas.create_rectangle(emptycoord[0],emptycoord[3], emptycoord[2], emptycoord[1],outline="green")
-                if askyesno("Satisfied ?", "I can write the coordinates of the emptyregion in settings.py if you wish"):
-                    #settings = "/home/epfl/paic/Desktop/alistar_maker/"+dir+"/settings.py"
-                    settings = os.path.join(configdir, "settings.py")
-                    set = open(settings,"r")
-                    set_c = set.read()
-                    set_line = set_c.split("\n")
-                    set.close()
-                    for i,elem in enumerate(set_line):
-                        if "emptyregion" in set_line[i]:
-                            new_set = 'emptyregion = "['+ str(emptycoord[0]).split('.')[0] + ':' +str(emptycoord[2]).split('.')[0]+' , '+ str(height-emptycoord[1]).split('.')[0]+':'+   str(height-emptycoord[3]).split('.')[0]+']"'
-                            set_line[i]=new_set
-
-                    set = open(settings,"w")
-                    set.write("\n".join(set_line))
-                    set.close()
-            elif compteurs[2]%3 ==0:
-                self.canvas.delete(carre)
-                emptycoord = []
+        else:
+            name = choice
+            self.writeRegion(event, name)
 
 def Stars():
     global choice
     choice = "star"
     print("star")
     
-def Lense():
+def lens():
     global choice
-    choice = "lense"
-    print("lense")
+    choice = "lens"
+    print("lens")
 
 def Empty():
     global choice
@@ -301,7 +238,7 @@ def opencat(starcatalogue):
     os.system(cmd)
 
 
-def main(starcatalogue, workonali=False, z2=1000):
+def main(regioncat, workonali=False, z2=1000):
     
     global compteurs
     global choice
@@ -313,7 +250,7 @@ def main(starcatalogue, workonali=False, z2=1000):
     global bl_text
     global carre
     
-    lenscoord = [] # at the end it will contain the coordinates of the bottom left corner and the top right corner of the lense region in the following order [x_bl, y_bl, x_tr, y_tr] 
+    lenscoord = [] # at the end it will contain the coordinates of the bottom left corner and the top right corner of the lens region in the following order [x_bl, y_bl, x_tr, y_tr] 
     
     emptycoord = [] # at the end it will contain the coordinates of the bottom left corner and the top right corner of the empty region in the following order [x_bl, y_bl, x_tr, y_tr]
     
@@ -327,7 +264,6 @@ def main(starcatalogue, workonali=False, z2=1000):
             fitsfile = os.path.join(alidir, refimgname + "_ali.fits")
     
     image = os.path.join(workdir, "refimg_skysub.fits") #path to the png that will be created from the img_skysub.fits
-    alistars = starcatalogue #path to the alistars catalogue
     
     # Creation of the list of names for the stars [a, b , ... , z, aa, ab, ..., az]
     def multiletters(seq):
@@ -341,60 +277,33 @@ def main(starcatalogue, workonali=False, z2=1000):
     alphabet.append('staaaaaaaaaaaaaaaaaaaaaaaaaaaaars')
     
     compteurs= [1,0,0] # first term counts the number of stars selected the second one the number of clicks you did to select the lens region and the third the same number for the empty region
-
-    #if os.path.isfile(alistars):
-     #    ali_f = open(alistars, "r")
-        #ali_l = ali_f.read()
-        #ali_c = ali_l.split("\n")
-        #ali_f.close()
-        #last = ali_c[len(ali_c)-2].split('\t')[0]
-        #compteurs[0] = alphabet.index(str(last)) + 1        
-        #print "The last star you selected is" + last + " I am now gonna draw all the stars you have already selected"
-    
     
     #Parameters for conversion from fits to png
     
     (imagea, imageh) = fromfits(fitsfile, verbose = False)
     haut = float(imageh["NAXIS1"]) # Be careful with this if you're not on ECAM, you might have to look for another header ...
-    larg = float(imageh["NAXIS2"])
-    
-    #Conversion from fits to png
-    if os.path.isfile(alistars):
-        refmanstars = star.readmancat(alistars)
-    
+    larg = float(imageh["NAXIS2"])    
     
     z1 = 0    
     f2nimg = f2n.fromfits(fitsfile)
     f2nimg.setzscale(z1, z2)
-    f2nimg.makepilimage(scale = "log", negative = False)
-    if os.path.isfile(alistars):
-        f2nimg.drawstarlist(refmanstars, r = 5, colour = (255, 0, 0))
+    f2nimg.makepilimage(scale="log", negative=False)
     f2nimg.tonet(image)
     
-    #else:
-        #print "let's go"
+
     
     
     #Storing the value of each pixel of the image
     pxlvalue = pyfits.getdata(fitsfile)
     
-    
 
     
-    #factWidth = width/larg
-    #factHeight = height/haut
-    #fact = [factWidth, factHeight]
-    
-    #print height, haut
-    #
-    
-    if os.path.isfile(alistars):
-        print("The alistars catalogue already exists :")
+    if os.path.isfile(regioncat):
+        print("The region catalogue already exists :", regioncat)
     else:
-        cmd = "touch " + alistars
+        cmd = "touch " + regioncat
         os.system(cmd)
-        print("I have just touched the alistars.cat for you :")
-    print(alistars)
+        print("I have just touched the region catalogue for you :", regioncat)
         
     
     
@@ -405,7 +314,7 @@ def main(starcatalogue, workonali=False, z2=1000):
     Catalogue = Menu(menu)
     menu.add_cascade(label="Selection", menu=filemenu)
     filemenu.add_command(label="Stars", command=Stars)
-    filemenu.add_command(label="Lense", command=Lense)
+    filemenu.add_command(label="lens", command=lens)
     filemenu.add_command(label="Empty", command=Empty)
     filemenu.add_command(label="Nothing", command=Nothing)
     filemenu.add_separator()
@@ -414,7 +323,7 @@ def main(starcatalogue, workonali=False, z2=1000):
     Catalogue.add_command(label="Open star catalogue", command=opencat)
 
     root.title("Select stars")
-    App = LoadImage(root, image, alistars, alphabet)
+    App = LoadImage(root, image, regioncat, alphabet)
 
     root.mainloop()
 

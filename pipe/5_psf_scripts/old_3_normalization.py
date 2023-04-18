@@ -76,7 +76,7 @@ with h5py.File(psfsfile, 'r') as f:
     for image in images:
         imgname = image['imgname']
         fullmodel = f[f"{imgname}_model"]
-        coeffs = np.sum(fullmodel, axis=(1,2)) / refintensities
+        coeffs =  np.sum(fullmodel, axis=(1,2)) / refintensities
         image[renorm_coeff_name] = np.mean(coeffs)
         image[renormerrfieldname] = np.std(coeffs)
 

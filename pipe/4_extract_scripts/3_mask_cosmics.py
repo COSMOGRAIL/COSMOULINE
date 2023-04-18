@@ -5,13 +5,13 @@ We do not update the database.
 
 OUTPUT:
     - an hdf5 file containing all the cosmic masks (one per image and per star)
-      at `psfdir / cosmics_masks.h5`.
+      at `extracteddir / cosmics_masks.h5`.
     - a json file containing the description of each cosmic (useful for plots)
-      at `psfdir / cosmics_labels.json`. 
+      at `extracteddir / cosmics_labels.json`. 
       
-Unlike the case of the user masking in 1_prepare.py, we do not mask
+Unlike the case of the user masking in 2_manual_masking.py, we do not mask
 the stars directly. Instead we store the cosmic masks in the separate
-file mentioned above. (This is fully automatic, and hence can go wrong
+file mentioned above. (Because this is fully automatic and can hence go wrong
                        -- we are being careful.)
 """
 
@@ -30,8 +30,7 @@ else:
     # if ran interactively, append the parent manually as sys.path[0] 
     # will be emtpy.
 sys.path.append('..')
-from config import settings, psfstarcat, psfkeyflag, imgdb, psfdir,\
-                   computer, cosmicslabelfile
+from config import settings, imgdb, computer, cosmicslabelfile, extracteddir
 
 from modules.variousfct import proquest, notify
 from modules.kirbybase import KirbyBase
@@ -45,55 +44,45 @@ import modules.star as star
 askquestions = settings['askquestions']
 maxcores = settings['maxcores']
 withsound = settings['withsound']
-psfname = settings['psfname']
 update = settings['update']
 cosmicssigclip = settings['cosmicssigclip']
 
-psfdir = Path(psfdir)
 
-starsh5 = h5py.File(psfdir / 'stars.h5', 'r')
-noiseh5 = h5py.File(psfdir / 'noisemaps.h5', 'r')
 
-psfstars = star.readmancat(psfstarcat)
+regionsfile = h5py.File(extracteddir / 'regions.h5', 'r+')
 
-def findcosmics(image, psfstars, sigclip, sigfrac, objlim):
 
-    pssl = image['skylevel']
-    gain = image['gain']
-    # satlevel = image['saturlevel']*gain*maxpixelvaluecoeff
+def findcosmics(imgdbentry, name, sigclip, sigfrac, objlim):
+    """
+    imgdbentry: dictionary with the database row of the image at hand
+    name: current object name (string)
+    sigclip, sigfrac, objlim: floats, params of the cosmics routine.
+    """
+    pssl = imgdbentry['skylevel']
+    gain = imgdbentry['gain']
     satlevel = -1.0
-    readnoise = image['readnoise']
-    
-    stars = starsh5[image['imgname']]
-
-
-    cosmicmasks = []
-    cosmiclabels = []
-    
-    for i in range(len(psfstars)):
+    readnoise = imgdbentry['readnoise']
+    imgname = imgdbentry['imgname']
         
-        a = stars[i]
+    # now we load the stamp of the object.
+    a = regionsfile[imgname]['stamps'][name][()]
 
-        # Creating the object :
-        c = cosmics.cosmicsimage(a, pssl=pssl, gain=gain, readnoise=readnoise, 
-                                    sigclip=sigclip, sigfrac=sigfrac,
-                                    objlim=objlim, satlevel=satlevel,
-                                    verbose=False)  
-                                    # I put a correct satlevel instead of -1, 
-                                    # to treat VLT images.
+    # Creating the object :
+    c = cosmics.cosmicsimage(a, pssl=pssl, gain=gain, readnoise=readnoise, 
+                                sigclip=sigclip, sigfrac=sigfrac,
+                                objlim=objlim, satlevel=satlevel,
+                                verbose=False)  
+                                # I put a correct satlevel instead of -1, 
+                                # to treat VLT images.
 
 
-        c.run(maxiter=3)
+    c.run(maxiter=3)
 
-        cosmicmask = c.getdilatedmask(size=5)
-        cosmiclist = c.labelmask()
-        
-        cosmicmasks.append(cosmicmask)
-        cosmiclabels.append(cosmiclist)
-        
+    cosmicmask = c.getdilatedmask(size=5)
+    cosmiclist = c.labelmask()
 
-    return np.array(cosmicmasks), cosmiclabels
-    # cosmicsh5[image['imgname']+'_labels'] = cosmiclist
+
+    return imgdbentry, name, cosmicmask, cosmiclist
 
 
 def multi_findcosmics(args):
@@ -101,6 +90,7 @@ def multi_findcosmics(args):
 
 def main():
     
+
     ###########
     # make these two switches local variables since they are potentially
     # modified within this function.
@@ -121,21 +111,21 @@ def main():
 
     if settings['thisisatest'] :
         print("This is a test run.")
-        images = db.select(imgdb, ['gogogo', 'treatme', 'testlist' ,psfkeyflag], 
-                                  [True, True, True, True], 
+        images = db.select(imgdb, ['gogogo', 'treatme', 'testlist'], 
+                                  [True, True, True], 
                                   returnType='dict', 
                                   sortFields=['setname', 'mjd'])
     elif settings['update']:
         print("This is an update")
-        images = db.select(imgdb, ['gogogo', 'treatme', 'updating', psfkeyflag], 
-                                  [True, True, True, True],
+        images = db.select(imgdb, ['gogogo', 'treatme', 'updating'], 
+                                  [True, True, True],
                                   returnType='dict', 
                                   sortFields=['setname', 'mjd'])
         askquestions = False
         withsound = False
     else :
-        images = db.select(imgdb, ['gogogo', 'treatme', psfkeyflag], 
-                                  [True, True, True], 
+        images = db.select(imgdb, ['gogogo', 'treatme'], 
+                                  [True, True], 
                                   returnType='dict', 
                                   sortFields=['setname', 'mjd'])
 
@@ -149,28 +139,43 @@ def main():
     print(f"For this I will run on {ncorestouse} cores.")
     proquest(askquestions)
 
+
+    args = []
     for i, img in enumerate(images):
-        # We do not write this into the db, it's just for this particular run.
-        img["execi"] = (i+1) 
+        # let us prepare the run by assembling the arguments
+        
+        # objects in this image:
+        objects = regionsfile[img['imgname']]['stamps'].keys()
+        for obj in objects:
+            # one stamp per object.
+            args.append((img, obj, sigclip, sigfrac, objlim))
 
-    # We see how many stars we have :
-    psfstars = star.readmancat(psfstarcat)
 
-    args = [(im, psfstars, sigclip, sigfrac, objlim) for im in images]
+
+
     pool = multiprocessing.Pool(processes=ncorestouse)
     results = pool.map(multi_findcosmics, args)
     
-    labels = {im['imgname']:j[1] for im, j in zip(images, results)}
+    # now writing our results.
+
+    labels = {}
+    
+    for res in results:
+        imgdbentry, name, mask, label = res
+        imgname = imgdbentry['imgname']
+        if not name in regionsfile[imgname]['cosmicsmasks']:
+            regionsfile[imgname]['cosmicsmasks'][name] = mask
+        else:
+            regionsfile[imgname]['cosmicsmasks'][name][...] = mask
+        
+        labels[imgname + '_' + name] = label
+
     with open(cosmicslabelfile, 'w') as fp:
         json.dump(labels, fp)
-    
-    with h5py.File(psfdir / 'cosmics_masks.h5', 'w') as cosmicsh5:
-        for res, image in zip(results, images):
-            mask, _ = res
-            cosmicsh5[image['imgname']+'_mask'] = mask
-        
 
-    notify(computer, withsound, f"Cosmics masked for psfname {psfname}.")
+    notify(computer, withsound, f"Cosmics masked.")
 
 if __name__ == '__main__':
     main()
+
+regionsfile.close()

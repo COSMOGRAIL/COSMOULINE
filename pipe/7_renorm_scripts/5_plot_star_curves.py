@@ -48,8 +48,8 @@ for setname, renormsources in zip(setnames, allrenormsources):
         print(deckey)
         
         deckeyfilenumfield = "decfilenum_" + deckey
-        fluxfieldname = "out_" + deckey + "_" + sourcename + "_flux"
-        errorfieldname = "out_" + deckey + "_" + sourcename + "_shotnoise"
+        fluxfieldname = "out_" + deckey + "_S_flux"
+        errorfieldname = "out_" + deckey + "_S_shotnoise"
         decnormfieldname = "decnorm_" + deckey
         
         images = [image for image in allimages 

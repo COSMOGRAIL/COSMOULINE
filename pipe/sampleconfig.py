@@ -113,16 +113,14 @@ imgkicklist = os.path.join(configdir, "kicklist.txt")
 
 testlist = os.path.join(configdir, "testlist.txt")            
 # This is an "allow list" for test runs (e.g. psf construction, ...).
-# Write images + comments on this list, and use the extrascript "set_testlist.py"
+# Write images + comments on this list, and use the extrascri   pt "set_testlist.py"
 # to set the "testlist" and "testcomment" flags in the database.
 # This list is also handy if you want to rebuild some handpicked psfs after 
 # a change of some parameters for instance !
 
 
-# File with the normalisation stars
-normstarscat = os.path.join(configdir, "normstars.cat")
-photomstarscat = os.path.join(configdir, "photomstars.cat")
-
+# File with the coordinates of the regions
+regionscat = os.path.join(configdir, 'regions.cat')
 
 # ------------------------------ DEFRINGING ---------------------------------
 # do you want to work on defringed images (if they exists ?)
@@ -165,7 +163,7 @@ if not extracteddir.exists():
     extracteddir.mkdir(parents=True, exist_ok=True)
 
 
-cosmicslabelfile = os.path.join(psfdir,  'cosmics_labels.json')
+cosmicslabelfile = extracteddir / 'cosmics_labels.json'
 
 
 # file with psf star coordinates (lineformat : "somename x y")

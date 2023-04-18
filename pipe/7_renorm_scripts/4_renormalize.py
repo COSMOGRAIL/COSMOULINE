@@ -67,8 +67,8 @@ for setname, renormsources in zip(setnames, allrenormsources):
             deckey = renormsource[0]
             sourcename = renormsource[1]
             deckeyfilenumfield = f"decfilenum_{deckey}"
-            fluxfieldname = f"out_{deckey}_{sourcename}_flux"
-            errorfieldname = f"out_{deckey}_{sourcename}_shotnoise"
+            fluxfieldname = f"out_{deckey}_S_flux"
+            errorfieldname = f"out_{deckey}_S_shotnoise"
             
             sourcetelimages = [image for image in telimages 
                                      if image[deckeyfilenumfield] != None]
@@ -155,14 +155,10 @@ for setname, renormsources in zip(setnames, allrenormsources):
     # sets figure size
     plt.figure(figsize=(15,15))
     
-    medcoeffs = np.array([image["medcoeff"] for image in bandimages])
     renormcoeffs = np.array([image["renormcoeff"] for image in bandimages])
     errs = np.array([image["renormcoefferr"] for image in bandimages])
     
-    plt.plot(medcoeffs, linestyle="None", 
-                            marker=".", 
-                            label="medcoeff", 
-                            color="black")
+
     
     plt.plot(renormcoeffs, linestyle="None", 
                                marker=".", 
@@ -180,7 +176,7 @@ for setname, renormsources in zip(setnames, allrenormsources):
     
     if settings['savefigs']:
         plotfilepath = os.path.join(plotdir, 
-                           f"renorm_{setname}_{renormname}_medcoeffcompa.pdf")
+                           f"renorm_{setname}_{renormname}.pdf")
         plt.savefig(plotfilepath)
         print(f"Wrote {plotfilepath}")
     else:

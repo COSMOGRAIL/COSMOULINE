@@ -220,7 +220,8 @@ combinightrenormcoeff = 'medcoeff'
 # THESE ARE TAKEN FROM YOUR normstars.cat CATALOGUE BUILT IN 4_norm_scripts!
 psfname = "abijlt"
 
-psfstampsize = 64
+stampsize = 64
+subsampling_factor = 2
 
 # create a summary plot for each image as we build the psfs
 dopsfplots = True
@@ -306,6 +307,7 @@ pointsourcesnames = ['A', 'B', 'C', 'D']
 
 # Choose a name for the new renormalization coefficient:
 renormname = "renorm_1"	
+renorm_stars = "acd"
 # (something that reflects the sources... like "renormabc")
 # Make it short ... but start it with the letters renorm
 

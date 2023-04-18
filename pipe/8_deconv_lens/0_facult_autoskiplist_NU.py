@@ -39,16 +39,14 @@ showhist = False
 
 if 1:
     # Normal rejection stuff :
-    maxseeing = 5
-    maxell = 0.5
-    maxmedcoeff = 3.0
+    maxseeing = 1.2
+    maxell = 0.2
     maxsky = 8000.0
  
 if 0:
     # strict rejection stuff :
     maxseeing = 1.
     maxell = 0.2
-    maxmedcoeff = 3.0
     maxsky = 8000.0 
     
     
@@ -58,7 +56,6 @@ if 0:
     # The very best frames to draw a good background :
     maxseeing = 0.8
     maxell = 0.12
-    maxmedcoeff = 1.28
     maxsky = 550.0
 
 
@@ -156,15 +153,8 @@ for setname, decskiplist in zip(setnames, decskiplists):
         plt.axvline(maxell, color="red")
         plt.xlabel("Ellipticity")
     
-        plt.figure(3)
-        medcoefflists = [np.array([image["medcoeff"] for image in images 
-                                             if image["setname"] == setname]) 
-                                                      for setname in setnames]
-        plt.hist(medcoefflists, bins=30)
-        plt.axvline(maxmedcoeff, color="red")
-        plt.xlabel("Medcoeff")
     
-        plt.figure(4)
+        plt.figure(3)
         skylists = [np.array([image["skylevel"] for image in images 
                                            if image["setname"] == setname]) 
                                                       for setname in setnames]
@@ -193,10 +183,6 @@ for setname, decskiplist in zip(setnames, decskiplists):
     images = [image for image in images if image not in rejectimages] 
     
     
-    rejectimages = [image for image in images if image["medcoeff"] > maxmedcoeff]
-    rejlines.extend([f"{image['imgname']}\t\tmedcoeff = {image['medcoeff']:.2f}" 
-                                                        for image in rejectimages])
-    images = [image for image in images if image not in rejectimages] 
     
     
     rejectimages = [image for image in images if image["skylevel"] > maxsky]
@@ -206,14 +192,14 @@ for setname, decskiplist in zip(setnames, decskiplists):
     
     
     print(f"# Autoskiplist made with maxseeing = {maxseeing:.3f},",
-          f"maxell = {maxell:.3f}, maxmedcoeff = {maxmedcoeff:.3f},",
+          f"maxell = {maxell:.3f}, ",
           f"maxsky = {maxsky:.1f} .")
     
     print(f"# It contains {len(rejlines)} images.")
     print("\n".join(rejlines))
     
     print(f"\n\n\nAutoskiplist made with maxseeing = {maxseeing:.3f},",
-          f"maxell = {maxell:.3f}, maxmedcoeff = {maxmedcoeff:.3f},",
+          f"maxell = {maxell:.3f}, ",
           f"maxsky = {maxsky:.1f} .")
     print(f"It contains {len(rejlines)} images, out of {nbtot}")
     print(f"Number of images potentially left : {nbtot - len(rejlines)}")
