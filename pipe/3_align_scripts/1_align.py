@@ -44,6 +44,11 @@ def alignImage(image, tupleref, refimage):
         We will run this in parallel, and update the database later.
 
     """
+    aliimg = os.path.join(alidir, image['imgname'] + "_ali.fits")
+    if os.path.exists(aliimg):
+        print(f"Image {image['imgname']} already aligned.")
+        return
+
     print("Processing", image['imgname'], "with recno", image['recno'])
     if defringed:
         imgtorotate = os.path.join(alidir, image['imgname'] + "_defringed.fits")
@@ -54,12 +59,15 @@ def alignImage(image, tupleref, refimage):
     sexcat = os.path.join(alidir, image['imgname'] + ".cat")
     autostars = star.readsexcat(sexcat, maxflag=16, posflux=True, verbose=False)
     autostars = star.sortstarlistbyflux(autostars)
-    tuplealign = [(s.x, s.y) for s in autostars]
 
+    if len(autostars)<13:
+        print(f"Could not align image {image['imgname']}: zero star detected.")
+        return {'recno': image['recno'], 'flagali': 0}
+    tuplealign = [(s.x, s.y) for s in autostars[10:15]]
     try:
         transform, (match1, match2) = aa.find_transform(tuplealign, tupleref)
     except aa.MaxIterError:
-        print(f"Could not align image {image['imgname']}.")
+        print(f"Could not align image {image['imgname']}: max iterations reached before solution.")
         return {'recno': image['recno'], 'flagali': 0}
 
     # assign the different parts of the transformation:
@@ -77,7 +85,6 @@ def alignImage(image, tupleref, refimage):
                                           target=refimage)
     # thus we convert it before applying the transformation, and now we
     # go back as we write the result:
-    aliimg = os.path.join(alidir, image['imgname'] + "_ali.fits")
     fits.writeto(aliimg, aligned_image.astype(np.float32), overwrite=1)
 
     return {'recno': image['recno'], 'geomapangle': geomapangle,
@@ -95,6 +102,10 @@ def multi_alignImage(args):
 
 
 def updateDB(db, retdict, image):
+    if not retdict:
+        # already aligned case, we returned nothing.
+        db.update(imgdb, ['recno'], [image['recno']], {'flagali': 1})
+        return
     if 'geomapscale' in retdict:
         db.update(imgdb, ['recno'], [image['recno']],
                   {'geomapangle': retdict["geomapangle"],
@@ -158,7 +169,13 @@ def main():
     refautostars = star.sortstarlistbyflux(refautostars)
     refscalingfactor = refimage['scalingfactor']
     # astroalign likes tuples, so let's simplify our star objects to (x,y) tuples:
+    refautostars = [e for e in refautostars if e.flux > 60000]
+    print(refautostars)
     tupleref = [(s.x, s.y) for s in refautostars]
+
+
+
+
 
 
     nbrofimages = len(images)
@@ -177,6 +194,17 @@ def main():
     refimage = fits.getdata(refimage)
 
 
+    import matplotlib.pyplot as plt
+
+
+    import numpy as np
+    m,M = np.nanpercentile(refimage, [0.1, 99.7])
+    plt.imshow(refimage, vmin=m, vmax=M)
+    xs = [s[0] for s in tupleref]
+    ys = [s[1] for s in tupleref]
+    plt.plot(xs,ys, 'o', mfc='None', ls='None', ms=8, color='red')
+
+    plt.waitforbuttonpress()
     ### here we do the alignment in parallel.
     ###############################################################################
     ###############################################################################

@@ -6,6 +6,7 @@ and exports the resulting lightcurves as plain rdb lists.
 # exec(compile(open("config.py", "rb").read(), "config.py", 'exec'))
 import numpy as np
 import matplotlib.pyplot as plt
+plt.switch_backend('tkAgg')
 import matplotlib.dates
 import sys
 import os
@@ -39,6 +40,7 @@ nightmaxnormcoeff = settings['nightmaxnormcoeff']
 nightminnbimg = settings['nightminnbimg']
 writeheader = settings['writeheader']
 showplots = settings['showplots']
+renormname = settings['renormname']
 
 
 
@@ -75,12 +77,9 @@ images = [image for image in images if image["ell"] <= imgmaxell]
 print(f"Rejected because ell > {imgmaxell:.2f} : {int(before - len(images))}")
 
 before = len(images)
-images = [image for image in images if image["skylevel"]*image["medcoeff"] <= imgmaxrelskylevel] # We rescale the sky level in the same way as for source fluxes.
+images = [image for image in images if image["skylevel"]*image[renormname] <= imgmaxrelskylevel] # We rescale the sky level in the same way as for source fluxes.
 print(f"Rejected because relskylevel > {imgmaxrelskylevel:.2f} : {int(before - len(images))}")
 
-before = len(images)
-images = [image for image in images if image["medcoeff"] <= imgmaxmedcoeff]
-print(f"Rejected because medcoeff > {imgmaxmedcoeff:.2f} : {int(before - len(images))}")
 
 # Rejecting according to an eventual skiplist :
 if imgskiplistfilename != None:
@@ -129,9 +128,7 @@ print(f"We keep {len(images)} images among {int(ava)}.")
 
 for image in images:
 
-    # - the field normcoeffname+"_err" contains the dispersion of the coeffs from the different stars, not the error !
-    #    -> we divide this by sqrt(nstars) to get the actual error on each normcoeff.
-    image[normcoeffname + "_sigma"] = image[normcoeffname + "_err"] / np.sqrt(float(image[normcoeffname + "_comment"]))
+    image[normcoeffname + "_sigma"] = image[normcoeffname + "_err"] 
 
     # - Combining shotnoise and renormsigma *per image*, in preparation for later calculations
     # Error on f(x*y) = sqrt(x**2 * y_err**2 + y**2 * x_err**2)
@@ -213,11 +210,6 @@ if min(mednormcoeffsigmas) <= 0.0001:
     print("####### WARNING : some normcoefferrs seem to be zero ! #############")
     print("Check/redo the normalization (with more stars ?), otherwise some of my error bars might be too small.")
     
-meannormcoeffnbs = np.fabs(np.array(groupfct.values(nights, normcoeffname+"_comment", normkey=None)['mean'])) # Number of stars for coeff (mean -> float !)
-print("Histogram of mean number of normalization stars per night :")
-h = ["%4i nights with %i stars" % (list(meannormcoeffnbs).count(c), c) for c in sorted(list(set(list(meannormcoeffnbs))))]
-for l in h:
-    print(l)
 
 # We rescale the sky level in the same way as for source fluxes :
 medrelskylevels = np.asarray(medskylevels) * np.asarray(mednormcoeffs)
