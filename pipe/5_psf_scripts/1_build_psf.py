@@ -32,7 +32,8 @@ else:
     # will be emtpy.
 sys.path.append('..')
 from config import settings, psfsfile, extracteddir,\
-                   cosmicsmasksfile, noisefile, imgdb
+                   cosmicsmasksfile, noisefile, imgdb,\
+                   psfkeyflag
 from modules.variousfct import mterror
 from modules.kirbybase import KirbyBase
 from modules.plot_psf import plot_psf
@@ -73,6 +74,8 @@ if dopsfplots:
     plt.switch_backend('agg')
 
 # if h5 file storing psf has never been created,
+psfdir = psfsfile.parent
+psfdir.mkdir(parents=1, exist_ok=1)
 if not psfsfile.exists():
     # just create it.
     with h5py.File(psfsfile, 'w') as f:
@@ -107,7 +110,18 @@ for image in images:
     if not image['imgname'] in imgnames:
         raise mterror(f"{image['imgname']} not found in prepared images!")
 
-#%%
+
+# add the psf key flag in the database:
+if psfkeyflag not in db.getFieldNames(imgdb) :
+    db.addFields(imgdb, [f'{psfkeyflag}:bool'])
+
+# set the flag to 0 ...
+db.update(imgdb, ['gogogo'], ['True'], {psfkeyflag: False})
+# and set the flag of the images for which we potentially build the psf to True:
+for imgname in imgnames:
+    db.update(imgdb, ['imgname'], [imgname], {psfkeyflag: True})
+
+
     
 # a utility to load the data of one image:
 def getData(imgname):

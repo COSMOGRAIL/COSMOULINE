@@ -69,6 +69,7 @@ if computer=="martin":
 if computer=="fred":
     sex = "/usr/bin/sex"
     python = "/home/fred/anaconda3/bin/python"
++   python = "/home/fred/anaconda3/envs/starred-env/bin/python"
 
 
 # Path to compiled programs :

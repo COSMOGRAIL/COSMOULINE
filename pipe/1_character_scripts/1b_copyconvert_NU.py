@@ -46,6 +46,7 @@ nbrofimages = len(images)
 print("I will copy/convert %i images." % (nbrofimages))
 proquest(askquestions)
 
+trim_vertical = settings['trim_vertical']
 
 
 for i, image in enumerate(images):
@@ -64,6 +65,9 @@ for i, image in enumerate(images):
         
 
     pixelarray, header = fromfits(image['rawimg'])
+    
+    if trim_vertical > 0:
+        pixelarray = pixelarray[:, trim_vertical:-trim_vertical]
     
     pixelarray = pixelarray * image['gain']
     # so that we have an image in electrons and not in ADU

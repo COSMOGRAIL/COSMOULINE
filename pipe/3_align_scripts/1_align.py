@@ -1,5 +1,6 @@
 import multiprocessing
 import numpy as np
+import matplotlib.pyplot as plt
 from astropy.io import fits
 import astroalign as aa
 from datetime import datetime
@@ -25,7 +26,13 @@ askquestions = settings['askquestions']
 refimgname = settings['refimgname']
 maxcores = settings['maxcores']
 
+debug = False
+if debug:
+    maxcores = 1
 
+# use debug to see what stars you are using for your alignment
+# with this min flux:
+MINFLUX = 200_000
 
 def alignImage(image, tupleref, refimage):
 
@@ -59,11 +66,31 @@ def alignImage(image, tupleref, refimage):
     sexcat = os.path.join(alidir, image['imgname'] + ".cat")
     autostars = star.readsexcat(sexcat, maxflag=16, posflux=True, verbose=False)
     autostars = star.sortstarlistbyflux(autostars)
+    autostars = [s for s in autostars if s.flux > MINFLUX]
+    tuplealign = [(s.x, s.y) for s in autostars]
 
-    if len(autostars)<13:
+
+
+    if debug:
+        m,M = np.nanpercentile(refimage, [0.1, 99.7])
+        plt.figure()
+        plt.imshow(fits.getdata(imgtorotate), vmin=m, vmax=M)
+        xs = [s.x for s in autostars]
+        ys = [s.y for s in autostars]
+        print([s.flux for s in autostars])
+        plt.plot(xs,ys, 'o', mfc='None', ls='None', ms=8, color='red')
+        plt.title(image['imgname'])
+        plt.show()
+                                                                       
+        plt.waitforbuttonpress()
+    
+
+
+
+    if len(autostars)<1:
         print(f"Could not align image {image['imgname']}: zero star detected.")
         return {'recno': image['recno'], 'flagali': 0}
-    tuplealign = [(s.x, s.y) for s in autostars[10:15]]
+
     try:
         transform, (match1, match2) = aa.find_transform(tuplealign, tupleref)
     except aa.MaxIterError:
@@ -169,12 +196,7 @@ def main():
     refautostars = star.sortstarlistbyflux(refautostars)
     refscalingfactor = refimage['scalingfactor']
     # astroalign likes tuples, so let's simplify our star objects to (x,y) tuples:
-    refautostars = [e for e in refautostars if e.flux > 60000]
-    print(refautostars)
-    tupleref = [(s.x, s.y) for s in refautostars]
-
-
-
+    tupleref = [(s.x, s.y) for s in refautostars if s.flux > MINFLUX]
 
 
 
@@ -194,17 +216,15 @@ def main():
     refimage = fits.getdata(refimage)
 
 
-    import matplotlib.pyplot as plt
-
-
-    import numpy as np
-    m,M = np.nanpercentile(refimage, [0.1, 99.7])
-    plt.imshow(refimage, vmin=m, vmax=M)
-    xs = [s[0] for s in tupleref]
-    ys = [s[1] for s in tupleref]
-    plt.plot(xs,ys, 'o', mfc='None', ls='None', ms=8, color='red')
-
-    plt.waitforbuttonpress()
+    if debug:
+        m,M = np.nanpercentile(refimage, [0.1, 99.7])
+        plt.imshow(refimage, vmin=m, vmax=M)
+        xs = [s[0] for s in tupleref]
+        ys = [s[1] for s in tupleref]
+        plt.plot(xs,ys, 'o', mfc='None', ls='None', ms=8, color='red')
+        plt.title('ref img')
+        plt.show(block=False)
+    
     ### here we do the alignment in parallel.
     ###############################################################################
     ###############################################################################

@@ -95,6 +95,16 @@ rawdirs = [join(baseraw, setname) for setname in setnames]
 # Also they should be in a coherent "orientation" 
 # (rotations are ok, but no mirror flips).
 
+# USEFUL FOR VLT OR WFI images, which are HUGE.
+# during copy convert, will trim this many lines
+# from the top and the bottom.
+# e.g., if trim_vertical = 1000:
+# init height: 4000, final height: 2000
+# shape (2000, 4000) --> shape (2000, 2000)
+trim_vertical = 1000
+# set to zero to not use.
+if trim_vertical > 0 and not telescopename in ['WFI', 'VST']:
+	raise RuntimeError("Are you sure you want to trim??? comment me out if yes.")
 
 #------------------------ ASTROCALC ----------------------------------------
 
