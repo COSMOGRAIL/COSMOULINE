@@ -316,8 +316,9 @@ pointsourcesnames = ['A', 'B', 'C', 'D']
 #------------------------ RENORMALIZATION ----------------------------------
 
 # Choose a name for the new renormalization coefficient:
-renormname = "renorm_1"	
-renorm_stars = "acd"
+renormname = "renorm_acd"	
+
+renorm_stars = renormname.split('_')[1]
 # (something that reflects the sources... like "renormabc")
 # Make it short ... but start it with the letters renorm
 
@@ -325,13 +326,11 @@ renorm_stars = "acd"
 # (give (deckey, sourcename) ):
 # NEW : the FIRST one of the sources below will be used as a reference 
 # to scale the coeffs between different telescopes!
-starstouse1 = ['a','b','f','i','l','n','o','q','r',
-              's','t','u','w','z','aa','ab','ac','ad']
-psftouse1 = 'abijlt'
+psftouse = 'abijlt'
 renormsources = [
    [
-    (f'dec_{setname}_noback_{starname}_medcoeff_{psftouse1}', starname)
-       for starname in starstouse1
+    (f'dec_{setname}_noback_{starname}_None_{psftouse}', starname)
+       for starname in renorm_stars
    ] for setname in setnames
 ]
 
