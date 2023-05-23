@@ -7,6 +7,8 @@ Created on Wed Jun  1 14:15:08 2022
 """
 
 import pycs3
+import pycs3.gen
+import pycs3.gen.lc_func
 import sys
 import os
 from pathlib import Path
