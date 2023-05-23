@@ -25,6 +25,7 @@ from modules.variousfct import proquest, fromfits, tofits
 
 redofromscratch = False
 askquestions = settings["askquestions"]
+trimheight = settings['trimheight']
 
 db = KirbyBase(imgdb)
 
@@ -64,6 +65,9 @@ for i, image in enumerate(images):
         
 
     pixelarray, header = fromfits(image['rawimg'])
+    if trimheight >= 1:
+        trimheight = int(trimheight) # just to make sure ...
+        pixelarray = pixelarray[:, trimheight:-trimheight]
     
     pixelarray = pixelarray * image['gain']
     # so that we have an image in electrons and not in ADU

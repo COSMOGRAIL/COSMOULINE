@@ -124,15 +124,9 @@ refimgname_per_band = {"844": "844_WFI.2021-09-10T04:53:56.457"}
 
 
 
-# dimensions you want for the aligned images (you have to start at pixels (1,1), no choice)
-if telescopename == "WFI" or telescopename == "VST":
-    dimx = 2022
-    dimy = 4000
-else :
-    dimx = 3600
-    dimy = 3600
-# currently this is NOT BEING USED ANYWHERE. Remove in the future? 
-# or implement a crop of the data to save space. 
+
+trimheight = 1000 if telescopename in ['WFI', 'VST'] else 0
+# trims the top and bottom of the image if VST or WFI.
 
 # Where is the lens? THESE CAN BE AUTO-FILLED BY 
 # THE SCRIPT 4_norm_scripts/0_pick_normstars.py 
