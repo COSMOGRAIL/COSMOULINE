@@ -96,6 +96,10 @@ def alignImage(image, tupleref, refimage):
     except aa.MaxIterError:
         print(f"Could not align image {image['imgname']}: max iterations reached before solution.")
         return {'recno': image['recno'], 'flagali': 0}
+    except ValueError as VV:
+        print(f"Image {image['imgname']}: error, ", VV)
+        return {'recno': image['recno'], 'flagali': 0}
+
 
     # assign the different parts of the transformation:
     geomapscale = transform.scale
