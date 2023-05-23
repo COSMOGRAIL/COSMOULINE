@@ -13,12 +13,12 @@ from settingsReader import Settings
 computer = "fred"
 
 # The pipeline dir that contains all the scripts (and this "config.py" ) :
-pipedir = "/home/fred/cosmouline/pipe/"
+pipedir = "/storage/COSMOGRAIL/WFI_J0924+0219/cosmouline/pipe/"
 
 # The configuration directory that contains the configuration files :
 # ("small-precious-frequently-backuped-disk")
 # The scripts do only read, but never write, from here !
-configdir = "/home/fred/Desktop/DES2038_tmp/config/"
+configdir = "/storage/COSMOGRAIL/WFI_J0924+0219/config"
 #---------------------------------------------------------------------------
 # All further settings are made into the configdir.
 # You should normally not have to change other lines of this config.py
@@ -71,6 +71,7 @@ if computer=="fred":
     sex = "/usr/bin/sex"
     python = "/home/fred/miniconda3/envs/herculens-env/bin/python"
     python = "/home/fred/anaconda3/bin/python"
+    python = "/home/fred/anaconda3/envs/starred-env/bin/python"
 
 
 # Path to compiled programs :
@@ -121,6 +122,9 @@ testlist = os.path.join(configdir, "testlist.txt")
 # a change of some parameters for instance !
 
 
+# File with the coordinates of the regions
+regionscat = os.path.join(configdir, 'regions.cat')
+
 # File with the normalisation stars
 normstarscat = os.path.join(configdir, "normstars.cat")
 photomstarscat = os.path.join(configdir, "photomstars.cat")
@@ -161,13 +165,17 @@ noisefile = psfdirc / 'noisemaps.h5'
 cosmicsmasksfile = psfdirc / 'cosmics_masks.h5'
 psfsfile = psfdirc / 'psfs.h5'
 psfsplotsdir = psfdirc / 'plots'
-if not psfsplotsdir.exists():
-    psfsplotsdir.mkdir()
+#if not psfsplotsdir.exists():
+#    psfsplotsdir.mkdir()
 
 extracteddir = Path(workdir) / 'extracteddir'
 if not extracteddir.exists():
     extracteddir.mkdir()
     
+
+cosmicslabelfile = extracteddir / 'cosmics_labels.json'
+
+
 # file with psf star coordinates (lineformat : "somename x y")
 psfstarcat = os.path.join(configdir, psfkey + ".cat")
 psfkicklist = os.path.join(configdir, psfkey + "_skiplist.txt")
@@ -226,7 +234,8 @@ deckeynormuseds = ["decnorm_" + deckey
 # Don't even think of changing this last one (hard coded in : renorm)
 decdirs = [os.path.join(workdir, deckey)
                 for deckey in deckeys]
-
+decfiles = [os.path.join(decf, 'stamps-noisemaps-psfs.h5') 
+                for decf in decdirs]
 
 # ------------------------ RENORMALIZATION ----------------------------------
 

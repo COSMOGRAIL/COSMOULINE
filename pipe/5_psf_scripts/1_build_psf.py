@@ -370,7 +370,8 @@ for i,image in enumerate(images):
     # open the file in which we'll store the result
     with h5py.File(psfsfile, 'r+') as f:
         # check if we need to build again
-        if not redo and imgname in f.keys():
+        if not redo and (imgname+'_residuals') in f.keys():
+            print(imgname, 'already done and redo is False.')
             continue
         
         # call the routine defined above 
