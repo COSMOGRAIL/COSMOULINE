@@ -52,6 +52,18 @@ from modules.prepare_deconvolution import prepare_deconvolution
 
 
 decnormfieldname = settings['decnormfieldname']
+decname = settings['decname']
+decnormfieldname = settings['decnormfieldname']
+
+if decname == 'noback' or  decnormfieldname == 'None':
+    print("Your decname is 'noback' or your decnormfieldname is 'None'.")
+    print("You will include a background while deconvolving the lens, so no 'noback' please.")
+    print("Because of the background, the images must be well calibrated in flux. So use a normalization, not 'None'.")
+    sys.exit()
+
+
+
+
 
 
 prepare_deconvolution('lens', decnormfieldname) 
