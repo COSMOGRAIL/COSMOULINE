@@ -44,14 +44,17 @@ if decobjname == "lens" :
         refimgname = refimgname_per_band[setname]
         refdeconvpng = join(workdir, f"{deckey}_png", f"{refimgname}.png")
         copytopath = join(exportdir, f"{telescopename}_{deckey}_ref.png")
-        copy(refdeconvpng, copytopath)
+        try:
+            copy(refdeconvpng, copytopath)
+        except:
+            print('No deconv image file!')
 else:
     print("I didn't copy the deconvolution of the ref image : CHANGE the decobjname in setting.py ! ")
-#%%
+
 if decpsfnames[0] == psfname :
     for deckey, setname in zip(deckeys, setnames):
         refimgname = refimgname_per_band[setname]
-        refpsfpng = join(workdir, f"psf_{psfname}_png", f"{refimgname}.png")
+        refpsfpng = join(workdir, f"psf_{psfname}", 'plots',  f"{refimgname}.png")
         copytopath = join(exportdir, f"{telescopename}_psf_{psfname}_ref.png")
         copy(refpsfpng, copytopath)
 else :
@@ -62,9 +65,9 @@ main_name = settings['outputname']
 # 844_combi_best1
 ### copying the stacks
 for setname in setnames:
-    combipathbase = join(workdir, f"{setname}_combi_{combibestname}")
-    newcombibase = join(exportdir, f"{telescopename}_{setname}_combi_{combibestname}")
-    for ext in ['.fits', '.png']:
+    combipathbase = join(workdir, f"{setname}_stack")
+    newcombibase = join(exportdir, f"{telescopename}_{setname}_stack")
+    for ext in ['.fits']:
         copy(combipathbase+ext, newcombibase+ext)
 #%%
     
