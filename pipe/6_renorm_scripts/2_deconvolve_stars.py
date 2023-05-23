@@ -37,6 +37,15 @@ setnames = settings['setnames']
 renorm_stars = settings['renorm_stars']
 subsampling_factor = settings['subsampling_factor']
 
+decname = settings['decname']
+decnormfieldname = settings['decnormfieldname']
+
+if not decname == 'noback' or not decnormfieldname == 'None':
+    print("Your decname is not 'noback' or your decnormfieldname is not 'None'.")
+    print("Please make set them this way to be consistent with the COSMOULINE tradition.")
+    print("Also, during the normalization we will looks for deconvs named `noback`.")
+    sys.exit()
+
 def doOneDeconvolution(decfile):
     
     # load data
