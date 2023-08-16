@@ -40,10 +40,8 @@ and add brakets [ ] around their assigned value to make them lists.
 #
 import sys
 import os
-if sys.path[0]:
-    # if ran as a script, append the parent dir to the path
-    sys.path.append(os.path.dirname(sys.path[0]))
-
+# if ran as a script, append the parent dir to the path
+sys.path.append(os.path.dirname(sys.path[0]))
 sys.path.append('..')
 
 

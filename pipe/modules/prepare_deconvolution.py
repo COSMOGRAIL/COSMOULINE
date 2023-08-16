@@ -41,14 +41,10 @@ import sys
 import os
 import h5py
 import numpy as np
-from pathlib import Path
-if sys.path[0]:
-    # if ran as a script, append the parent dir to the path
-    sys.path.append(os.path.dirname(sys.path[0]))
-else:
-    # if ran interactively, append the parent manually as sys.path[0] 
-    # will be emtpy.
-    pass
+# if ran as a script, append the parent dir to the path
+sys.path.append(os.path.dirname(sys.path[0]))
+# if ran interactively, append the parent manually as sys.path[0] 
+# will be emtpy.
 sys.path.append('..')
 from config import dbbudir, imgdb, settings, configdir, computer,\
                    psfsfile, extracteddir

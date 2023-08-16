@@ -184,9 +184,7 @@ for setname, renormsources in zip(setnames, allrenormsources):
     
     
     
-# If you want, you can now write this into the database.
-
-print("Ok, I could now add these coefficients to the database.")
+print("Ok, I will now add these coefficients to the database.")
 proquest(askquestions)
 
 # As we will tweak the database, do a backup first
