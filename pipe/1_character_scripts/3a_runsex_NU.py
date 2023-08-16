@@ -5,13 +5,12 @@
 
 import sys
 import os
-if sys.path[0]:
-    # if ran as a script, append the parent dir to the path
-    sys.path.append(os.path.dirname(sys.path[0]))
-else:
-    # if ran interactively, append the parent manually as sys.path[0] 
-    # will be emtpy.
-    sys.path.append('..')
+import multiprocessing
+# if ran as a script, append the parent dir to the path
+sys.path.append(os.path.dirname(sys.path[0]))
+# if ran interactively, append the parent manually as sys.path[0] 
+# will be emtpy.
+sys.path.append('..')
 
 from config import alidir, computer, imgdb, settings, sex
 from modules.kirbybase import KirbyBase
@@ -20,6 +19,7 @@ from datetime import datetime
 
 
 askquestions = settings['askquestions']
+maxcores = settings['maxcores']
 
 db = KirbyBase(imgdb)
 if settings['thisisatest']:
@@ -42,12 +42,8 @@ proquest(askquestions)
 
 starttime = datetime.now()
 
+def run_sex(image):
 
-for i,image in enumerate(images):
-
-    print("- " * 30)
-    print(i+1, "/", nbrofimages, ":", image['imgname'])
-    
     imagepath = os.path.join(alidir, image['imgname']+".fits")
     catfilename = os.path.join(alidir, image['imgname']+".cat")
 
@@ -65,6 +61,9 @@ for i,image in enumerate(images):
         cmd += f"-SATUR_LEVEL {saturlevel:.3f} "
         cmd += f"-CATALOG_NAME {catfilename}"
     os.system(cmd)
+
+pool = multiprocessing.Pool(processes=maxcores)
+pool.map(run_sex, images)
 
 timetaken = nicetimediff(datetime.now() - starttime)
 
