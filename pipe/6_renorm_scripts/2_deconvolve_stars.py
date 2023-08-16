@@ -4,13 +4,9 @@
 import sys
 import os
 import matplotlib.pyplot as plt
-if sys.path[0]:
-    # if ran as a script, append the parent dir to the path
-    sys.path.append(os.path.dirname(sys.path[0]))
-else:
-    # if ran interactively, append the parent manually as sys.path[0] 
-    # will be emtpy.
-    sys.path.append('..')
+
+sys.path.append(os.path.dirname(sys.path[0]))
+sys.path.append('..')
     
     
 import h5py
@@ -72,11 +68,12 @@ def doOneDeconvolution(decfile):
     initial_c_x = xs * subsampling_factor 
     initial_c_y = ys * subsampling_factor 
     # initial intensity:
-    a_est = [1.5 * np.nanpercentile(data[0], 99.5)]
+    a_est = epochs*[1.5 * np.nanpercentile(data[0], 99.5)]
 
     model, kwargs_init, kwargs_up, kwargs_down, kwargs_fixed = setup_model(data, sigma_2, s,
-                                                                           xs, ys, a_est,
-                                                                           subsampling_factor)
+                                                                           xs, ys,
+                                                                           subsampling_factor,
+                                                                           a_est)
     
     # fix the background. (except the mean component)
     kwargs_fixed['kwargs_background']['h'] = kwargs_init['kwargs_background']['h']

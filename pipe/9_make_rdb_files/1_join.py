@@ -2,21 +2,16 @@
 Joins images by night, automatically splitting according to different telescope names, 
 and exports the resulting lightcurves as plain rdb lists.
 """
-
-# exec(compile(open("config.py", "rb").read(), "config.py", 'exec'))
 import numpy as np
 import matplotlib.pyplot as plt
-plt.switch_backend('tkAgg')
 import matplotlib.dates
 import sys
 import os
-if sys.path[0]:
-    # if ran as a script, append the parent dir to the path
-    sys.path.append(os.path.dirname(sys.path[0]))
-else:
-    # if ran interactively, append the parent manually as sys.path[0] 
-    # will be emtpy.
-    sys.path.append('..')
+# if ran as a script, append the parent dir to the path
+sys.path.append(os.path.dirname(sys.path[0]))
+# if ran interactively, append the parent manually as sys.path[0] 
+# will be emtpy.
+sys.path.append('..')
 
 from modules import variousfct, groupfct, rdbexport
 from config import settings, configdir, pklfilepath

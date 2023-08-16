@@ -21,7 +21,7 @@ decnormfieldname = settings['decnormfieldname']
 if not decname == 'noback' or not decnormfieldname == 'None':
     print("Your decname is not 'noback' or your decnormfieldname is not 'None'.")
     print("Please make set them this way to be consistent with the COSMOULINE tradition.")
-    print("Also, during the normalization we will looks for deconvs named `noback`.")
+    print("Also, during the normalization we will look for deconvs named `noback`.")
     sys.exit()
 
 for star in renorm_stars:

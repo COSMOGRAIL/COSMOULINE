@@ -1,5 +1,5 @@
 #
-#	write a report how the alignment went
+#	write a report how the WCS updates went
 #
 
 import sys

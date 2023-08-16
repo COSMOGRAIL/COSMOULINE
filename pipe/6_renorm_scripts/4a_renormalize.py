@@ -3,13 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 import os
-if sys.path[0]:
-    # if ran as a script, append the parent dir to the path
-    sys.path.append(os.path.dirname(sys.path[0]))
-else:
-    # if ran interactively, append the parent manually as sys.path[0] 
-    # will be emtpy.
-    sys.path.append('..')
+from astropy.stats import sigma_clipped_stats
+sys.path.append(os.path.dirname(sys.path[0]))
+sys.path.append('..')
 from config import imgdb, settings, plotdir, dbbudir,\
                    renormerrfieldname, renormcommentfieldname
 from modules.variousfct import proquest, backupfile
@@ -104,8 +100,9 @@ for setname, renormsources in zip(setnames, allrenormsources):
                 
             else :
                 # median of multiplicative factors
-                renormcoeff = np.median(np.array(image["tmp_indivcoeffs"])) 
-                renormcoefferr = np.std(np.array(image["tmp_indivcoeffs"]))
+                _coeffs = np.array(image["tmp_indivcoeffs"])
+                renormcoeff, _, renormcoefferr = sigma_clipped_stats(_coeffs,
+                                                                     sigma=2.5)
             
             #  the important value at this step:
             image["tmp_coeff"] = renormcoeff 
@@ -160,10 +157,12 @@ for setname, renormsources in zip(setnames, allrenormsources):
     
 
     
-    plt.plot(renormcoeffs, linestyle="None", 
-                               marker=".", 
-                               label=renormname, 
-                               color="red")
+    plt.errorbar(np.arange(len(renormcoeffs)), 
+                 renormcoeffs, yerr=errs,
+                 linestyle="None", 
+                 marker=".", 
+                 label=renormname, 
+                 color="red")
     
     # and show the plot
     

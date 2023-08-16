@@ -43,7 +43,7 @@ from modules.plot_psf import plot_psf
 ###############################################################################
 ###############################################################################
 ###################### PARAMS
-redo = 0
+redo = 1
 
 # Parameters
 subsampling_factor = 2
@@ -143,7 +143,6 @@ def getData(imgname):
     # for each image, if huge cosmic, discard image (probably a star trail)
     # for im, no in zip(noisemap, cosmicsmask):
         # print(no.sum())
-# 
         # if no.sum() > 40:
             # im[...] = 1e8
 
@@ -385,9 +384,8 @@ for i,image in enumerate(images):
             if key in f.keys():
                 del f[key]
             f[key] = tostore
-            
+       
     # write plots
-    #%%
     if dopsfplots:
         
         try:

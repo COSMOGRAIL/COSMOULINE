@@ -8,7 +8,7 @@ Created on Mon Feb 13 17:46:31 2023
 
 This file 
  - selects all the images matching our settings.py configuration,
- - extracts the wanted regions fromt hem
+ - extracts the wanted regions from them
  - at the same time, builds a noise map for each region of each image
  - helps the user create masks with ds9
  - applies the created masks to our noise maps (sets noise to 1e8 for masked pixels)
@@ -18,26 +18,19 @@ This file
 import os
 import sys
 import h5py
-from   tempfile   import TemporaryDirectory
 from   pathlib    import Path
-import pyperclip 
-from   subprocess import call
 import numpy      as     np
 from   astropy.io import fits
+from astropy.wcs import WCS
+from astropy.nddata import Cutout2D
+import astropy.units as u
+from astropy.coordinates import SkyCoord
+from astropy.table import Table
 
-if sys.path[0]:
-    # if ran as a script, append the parent dir to the path
-    sys.path.append(os.path.dirname(sys.path[0]))
-else:
-    # if ran interactively, append the parent manually as sys.path[0] 
-    # will be emtpy.
-    pass
+sys.path.append(os.path.dirname(sys.path[0]))
 sys.path.append('..')
-from config import configdir, settings, imgdb, dbbudir,\
-                   alidir, extracteddir, regionscat
-from modules.variousfct import proquest, backupfile, mterror
-from modules import star
-from modules import ds9reg
+from config import settings, imgdb, alidir, extracteddir, \
+                   filtered_gaia_filename
 from modules.kirbybase import KirbyBase
 
 
@@ -52,25 +45,45 @@ refimgname = settings['refimgname']
 db = KirbyBase(imgdb)
 
  
-regions = star.readmancat(regionscat)
+gaia_stars = Table.read(filtered_gaia_filename)
 
 
-# now to calculate the noise maps, we need an estimation of the background noise!
-# so the "empty" region must be in regions:
-if not 'empty' in [s.name for s in regions]:
-    raise mterror(
+def extract_stamp(data, header, ra, dec, cutout_size=6):
     """
-    I do not have an empty region to calculate 
-    the standard deviation of the background from!
-                        
-    Please select an empty region in the `0_pick_regions.py` script
-    and re-run this one.
+    :param data: 2d numpy array containing the full image
+    :param header: fits header for WCS info
+    :param ra: float, degrees
+    :param dec: float, degrees
+    :param cutout_size: float, arcseconds
+    :return: 2d cutout array, 2d cutout noisemap array, wcs string of cutout
     """
-    )
 
-# split the empty region and other objects:
-empty = [reg for reg in regions if reg.name == 'empty'][0]
-objects = [reg for reg in regions if not reg.name == 'empty']
+    cutout_size = (cutout_size, cutout_size) * u.arcsec
+    coord = SkyCoord(ra*u.deg, dec*u.deg)
+
+    wcs = WCS(header)
+    datacutout = Cutout2D(data, coord, cutout_size, wcs=wcs, mode='partial')
+    # let's also carry the WCS of the cutouts, will be useful for the intial guess of
+    # the positions of the lensed images later.
+    wcs_header = datacutout.wcs.to_header()
+    wcs_header_string = wcs_header.tostring()
+    
+    # now just take the numpy array
+    datacutout = datacutout.data
+
+
+    
+    # noise map given that the data is in electrons ...
+    stddev = 0.25 * (  np.nanstd(datacutout[:, 0]) \
+                     + np.nanstd(datacutout[0, :]) \
+                     + np.nanstd(datacutout[:, -1]) \
+                     + np.nanstd(datacutout[-1, :])
+                    )
+    nmap = stddev + np.sqrt(np.abs(datacutout))
+    # remove zeros if there are any ...
+    nmap[nmap < 1e-7] = 1e-7
+
+    return datacutout, nmap, wcs_header_string
 
 
 # We select the images, according to "thisisatest".
@@ -90,8 +103,6 @@ else :
 
 
 print(f"I will treat {len(images)} images.")
-proquest(askquestions)
-
 
 # where we'll save our stamps
 regionsfile = extracteddir / 'regions.h5'
@@ -105,39 +116,44 @@ for i,image in enumerate(images):
     print(40*"- ")
     print("%i / %i : %s" % (i+1, len(images), image['imgname']), end= ' ')
     
-    alifile = alidir / f"{image['imgname']}_ali.fits"
+    image_file = alidir / f"{image['imgname']}_skysub.fits"
     
-    # aligned images are in e-
+    # skysub images are in e-
     try:
-       alidata = fits.getdata(alifile)
-    except:
+       data, header = fits.getdata(image_file), fits.getheader(image_file)
+    except Exception as E:
        db.update(imgdb, ['recno'], [image['recno']], [False], ['gogogo'])
+       print("Eliminated image", image['imgname'], '. Exception:', E)
        continue
     
-    # noise map
-    # first need to read the noise level of the image. 
-    h = stampsize // 2
-    x, y = int(empty.x), int(empty.y)
-    emptyarray = alidata[y-h:y+h, x-h:x+h]
-    stddev = np.nanstd(emptyarray)
-    print(f'(stddev of background: {stddev:.01f})')
     with h5py.File(regionsfile, 'a') as regf:
         # organize hdf5 file
         imset = regf.create_group(image['imgname'])
         stampset = imset.create_group('stamps')
         noiseset = imset.create_group('noise')
+        wcsset = imset.create_group('wcs')
         # useful when masking cosmics.
         _ = imset.create_group('cosmicsmasks')
 
-        # extract the regions
-        for obj in objects:
-            x, y = int(obj.x), int(obj.y)
-            reg = alidata[y-h:y+h, x-h:x+h]
-            # noise map given that the data is in electrons ...
-            nmap = stddev + np.sqrt(np.abs(reg))
-            # remove zeros if there are any ...
-            nmap[nmap < 1e-7] = 1e-7
+        # extract the stars
+        for row in gaia_stars:
+            ra, dec = row['ra'], row['dec']
+            
+            reg, nmap, wcsstr = extract_stamp(data, header, ra, dec, stampsize)
 
-            stampset[obj.name] = reg
-            noiseset[obj.name] = nmap
-
+            sourceid = str(row['name'])
+            stampset[sourceid] = reg
+            noiseset[sourceid]= nmap
+            wcsset[sourceid] = wcsstr
+            
+        # aand extract the lens.
+        lens_coord = SkyCoord(ra=settings['lensRA'], 
+                              dec=settings['lensDEC'], 
+                              unit=(u.hourangle, u.deg))
+        reg, nmap,  wcsstr = extract_stamp(data, header, 
+                                           lens_coord.ra.value,
+                                           lens_coord.dec.value,
+                                           stampsize)
+        stampset['lens'] = reg
+        noiseset['lens'] = nmap
+        wcsset['lens'] = wcsstr

@@ -1,18 +1,20 @@
+# in this file, we're transforming the WCS header of the refimg.
+# We will only include translations!! but rotations / scalings are very easy
+# to add if ever needed.
+# so anyways we'll use astroalign to find the transformation (translation)
+# between each image and the ref image.
 import multiprocessing
 import numpy as np
 import matplotlib.pyplot as plt
 from astropy.io import fits
 import astroalign as aa
+from astropy.wcs import WCS
 from datetime import datetime
 import sys
 import os
-if sys.path[0]:
-    # if ran as a script, append the parent dir to the path
-    sys.path.append(os.path.dirname(sys.path[0]))
-else:
-    # if ran interactively, append the parent manually as sys.path[0]
-    # will be emtpy.
-    sys.path.append('..')
+
+sys.path.append(os.path.dirname(sys.path[0]))
+sys.path.append('..')
 
 from config import alidir, dbbudir, computer, imgdb, settings, defringed
 from modules.kirbybase import KirbyBase
@@ -29,12 +31,13 @@ maxcores = settings['maxcores']
 debug = False
 if debug:
     maxcores = 1
-
 # use debug to see what stars you are using for your alignment
 # with this min flux:
 MINFLUX = 200_000
 
-def alignImage(image, tupleref, refimage):
+
+
+def alignImage(image, tupleref, refimage, wcs_ref):
 
     """
         input: database row, "image"
@@ -85,8 +88,6 @@ def alignImage(image, tupleref, refimage):
         plt.waitforbuttonpress()
     
 
-
-
     if len(autostars)<1:
         print(f"Could not align image {image['imgname']}: zero star detected.")
         return {'recno': image['recno'], 'flagali': 0}
@@ -106,17 +107,18 @@ def alignImage(image, tupleref, refimage):
     geomaprms = np.sqrt(np.sum(transform.residuals(match1, match2)) / len(match1))
     geomapangle = transform.rotation
 
-    # apply the said transformation to the image.
-    # astroalign still wants a reference to the target image: that is in case
-    # it has a different shape. Thus we provide it for generality.
-    imgtorotatedata = fits.getdata(imgtorotate)
-    # aaand for some reason, this doesn't work with 32 bits data.
-    aligned_image, _ = aa.apply_transform(transform,
-                                          source=imgtorotatedata.astype(np.float64),
-                                          target=refimage)
-    # thus we convert it before applying the transformation, and now we
-    # go back as we write the result:
-    fits.writeto(aliimg, aligned_image.astype(np.float32), overwrite=1)
+    # Get the translation from the transform object
+    translation = transform.translation
+    
+    # Apply the translation to the CRPIX values
+    wcs_new = wcs_ref.deepcopy()
+    wcs_new.wcs.crpix -= translation
+
+    
+    # Open the target fits and update the WCS
+    with fits.open(imgtorotate, mode="update") as hdul:
+        hdul[0].header.update(wcs_new.to_header())
+        hdul.flush()
 
     return {'recno': image['recno'], 'geomapangle': geomapangle,
             'geomaprms': float(geomaprms),
@@ -155,6 +157,23 @@ def main():
     backupfile(imgdb, dbbudir, "before_alignimages_onestep")
 
     db = KirbyBase(imgdb)
+    # get the info from the reference frame
+    refimage = db.select(imgdb, ['imgname'], [refimgname], returnType='dict')
+    if len(refimage) != 1:
+        print("Reference image identification problem !")
+        sys.exit()
+    refimage = refimage[0]
+    
+    
+    
+    # Load the WCS of the ref img (plate solved in previous script)
+    refimagepath = os.path.join(alidir, refimage['imgname'] + "_skysub.fits")
+    with fits.open(refimagepath) as hdul:
+        wcs_ref = WCS(hdul[0].header)
+        # Removing the SIP distortion information,
+        wcs_ref.sip = None
+        # because won't apply to other images
+    
     if settings['thisisatest']:
         print("This is a test.")
         images = db.select(imgdb, ['gogogo','treatme', 'testlist'],
@@ -176,7 +195,8 @@ def main():
                                   sortFields=['imgname'],
                                   returnType='dict')
 
-
+    # filter out the refimg
+    images = [img for img in images if not img['imgname'] == refimgname]
     # add the useful fields:
     if "geomapangle" not in db.getFieldNames(imgdb) :
         print("I will add some fields to the database.")
@@ -186,22 +206,12 @@ def main():
                              'maxalistars:int', 'flagali:int'])
 
 
-
-    # get the info from the reference frame
-    refimage = db.select(imgdb, ['imgname'], [refimgname], returnType='dict')
-    if len(refimage) != 1:
-        print("Reference image identification problem !")
-        sys.exit()
-    refimage = refimage[0]
-
     # load the reference sextractor catalog
     refsexcat = os.path.join(alidir, refimage['imgname'] + ".cat")
     refautostars = star.readsexcat(refsexcat, maxflag=16, posflux=True)
     refautostars = star.sortstarlistbyflux(refautostars)
-    refscalingfactor = refimage['scalingfactor']
     # astroalign likes tuples, so let's simplify our star objects to (x,y) tuples:
     tupleref = [(s.x, s.y) for s in refautostars if s.flux > MINFLUX]
-
 
 
     nbrofimages = len(images)
@@ -213,7 +223,7 @@ def main():
     # we'll still need the reference image: astroalign needs it only to
     # get the dimension of the target. Could pass the image to align itself
     # if everything has the same shape.
-    refimgsuffix = '_ali.fits' if settings['update'] else '_skysub.fits'
+    refimgsuffix = '_skysub.fits'
     # (here we use the aligned image if it's an update, as the _skysub version
     #  of the ref image has probably been deleted in the initial run.)
     refimage = os.path.join(alidir, refimgname + refimgsuffix)
@@ -237,12 +247,12 @@ def main():
         cpus = multiprocessing.cpu_count()
     if cpus > 1 :
         pool = multiprocessing.Pool(processes=cpus)
-        args = [(im, tupleref, refimage) for im in images]
+        args = [(im, tupleref, refimage, wcs_ref) for im in images]
         retdicts = pool.map(multi_alignImage, args)
     else :
         retdicts = []
         for im in images :
-            retdicts.append(alignImage(im, tupleref, refimage))
+            retdicts.append(alignImage(im, tupleref, refimage, wcs_ref))
     ###############################################################################
     ###############################################################################
 

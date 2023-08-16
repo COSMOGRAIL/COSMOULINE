@@ -645,7 +645,7 @@ class f2nimage:
         if label != None:
             # The we write it :
             self.loadlabelfont()
-            textwidth = self.draw.textsize(label, font = self.labelfont)[0]
+            textwidth = self.draw.textlength(label, font = self.labelfont)
             self.draw.text((pilx - float(textwidth)/2.0 + 2, pily + pilr + 4), label, fill = colour, font = self.labelfont)
 
 
@@ -669,7 +669,7 @@ class f2nimage:
         if label != None:
             # The we write it :
             self.loadlabelfont()
-            textwidth = self.draw.textsize(label, font = self.labelfont)[0]
+            textwidth = self.draw.textlength(label, font = self.labelfont)
             self.draw.text(((pilxa + pilxb)/2.0 - float(textwidth)/2.0 + 1, pilya + 2), label, fill = colour, font = self.labelfont)
 
     def drawline(self, x=None, y=None, l=10, t=0.0, width=None, colour=None, label = None):
@@ -753,7 +753,7 @@ class f2nimage:
 # 		pilr = self.pilscale(r)
 # 		
 # 		self.loadlabelfont()
-# 		textwidth = self.draw.textsize(string, font = self.labelfont)[0]
+# 		textwidth = self.draw.textlength(string, font = self.labelfont)
 # 		self.draw.text((pilx - float(textwidth)/2.0 + 1, pily + pilr + 1), string, fill = colour, font = self.labelfont)
 # 		
 
@@ -771,7 +771,7 @@ class f2nimage:
 
         imgwidth = self.pilimage.size[0]
         imgheight = self.pilimage.size[1]
-        textwidth = self.draw.textsize(titlestring, font = self.titlefont)[0]
+        textwidth = self.draw.textlength(titlestring, font = self.titlefont)
         textxpos = imgwidth/2.0 - textwidth/2.0
         textypos = imgheight - 30
 

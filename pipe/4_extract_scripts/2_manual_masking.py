@@ -33,8 +33,8 @@ else:
     # will be emtpy.
     pass
 sys.path.append('..')
-from config import configdir, settings, imgdb, extracteddir
-from modules.variousfct import proquest, mterror
+from config import configdir, settings, extracteddir
+from modules.variousfct import mterror, proquest
 from modules import ds9reg
 
 
@@ -78,35 +78,33 @@ and re-run this script.
 
 
 
-    #%%
     if not update:
         text = 5*"\n"
         text += "Want me to open DS9 on each object so that you can build a mask?\n"
         text += "Btw for each object the path to where the mask needs to be saved\n"
         text += "will be copied to your clipboard.   So, open DS9? (yes/no) "
-        if input(text) == 'yes':
-            tmpdirr = TemporaryDirectory()
-            tmpdir = Path(tmpdirr.name)
+        print(text)
+        proquest(settings['askquestions'])
+        tmpdirr = TemporaryDirectory()
+        tmpdir = Path(tmpdirr.name)
+        
+        for obj, maskfile in zip(objects, maskfilepaths):
+            data = stamps[obj][()]
+            # copy the mask file to the clipboard:
+            pyperclip.copy(maskfile)
+            print(f'save your region file to \n{maskfile}')
+            # store star data in file:
+            mfname = Path(maskfile).name
+            starfile = tmpdir / (mfname + '.fits')
+            fits.writeto(starfile, data)
+            # open with ds9
+            call(['ds9', '-cmap', 'heat', '-scale', 'log', starfile])
+            # now mask the companion stars in ds9, and save the regions
+            # to the file copied in the cilpboard.
             
-            for obj, maskfile in zip(objects, maskfilepaths):
-                data = stamps[obj][()]
-                # copy the mask file to the clipboard:
-                pyperclip.copy(maskfile)
-                print(f'save your region file to \n{maskfile}')
-                # store star data in file:
-                mfname = Path(maskfile).name
-                starfile = tmpdir / (mfname + '.fits')
-                fits.writeto(starfile, data)
-                # open with ds9
-                call(['ds9', starfile])
-                # now mask the companion stars in ds9, and save the regions
-                # to the file copied in the cilpboard.
-                
-            tmpdirr.cleanup()
+        tmpdirr.cleanup()
 
 
-
-    #%%
 
     ds9masks = {}
     for i, s in enumerate(objects):

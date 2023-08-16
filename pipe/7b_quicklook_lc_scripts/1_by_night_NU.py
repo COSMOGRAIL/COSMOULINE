@@ -4,24 +4,20 @@ We group the points per night.
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates
-plt.switch_backend('tkAgg')
 
 import sys
 import os
-if sys.path[0]:
-    # if ran as a script, append the parent dir to the path
-    sys.path.append(os.path.dirname(sys.path[0]))
-else:
-    # if ran interactively, append the parent manually as sys.path[0] 
-    # will be emtpy.
-    sys.path.append('..')
+# if ran as a script, append the parent dir to the path
+sys.path.append(os.path.dirname(sys.path[0]))
+# if ran interactively, append the parent manually as sys.path[0] 
+# will be emtpy.
+sys.path.append('..')
 from config import imgdb, settings, plotdir, deckeys, ptsrccats,\
                    deckeyfilenums, deckeynormuseds
 from modules.kirbybase import KirbyBase
 
 from modules import combibynight_fct
 from modules import headerstuff
-from modules import star
 
 
 
@@ -90,11 +86,6 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
                                                     fluxfieldname,
                                                     normkey=deckeynormused)['median'])
     
-        # relfluxerrors = absfluxerrors / fluxvals
-        # magerrorbars = -2.5*np.log10(relfluxerrors)
-    
-        # print magerrorbars
-    
         upmags = -2.5 * np.log10(fluxvals + absfluxerrors)
         downmags = -2.5 * np.log10(fluxvals - absfluxerrors)
         magerrorbars = (downmags - upmags) / 2.0
@@ -122,7 +113,6 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
     magtot = np.asarray(magtot)
     fluxvalstot = np.asarray(fluxvalstot)
     fluxvalserrtot = np.asarray(fluxvalserrtot)
-    print(np.shape(magtot))
     
     if not lc_to_sum == None:
         if not len(lc_to_sum) == 2:
@@ -265,7 +255,7 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
     print("chi :", chitot)
     print("chi red (mean weight):", chitot / counttot)
     print("median weight :", np.median(weitot))
-    print("I wasn't able to compue the chi2 for %i datapoints (NaN)"%countnan)
+    print("I wasn't able to compute the chi2 for %i datapoints (NaN)"%countnan)
     
     pos = 0.03
     titletext4 = ""

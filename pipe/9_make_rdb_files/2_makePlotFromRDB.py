@@ -33,12 +33,12 @@ lcsnames       = settings['sourcenames']
 # Huge shift (30) to make the mag positive, roughly about the expectation (19)
 # Small shift (-0.6) to make the lcs closer to each other 
 # and better display the variations
-globalmagshift = 30
+globalmagshift = 31
 # individual shift of each curve: one shift per lcsname. 
-shifts         = [0, -0.1, -0.55, -0.73]
+shifts         = [0, 0.2, 0.3, -0.5]
 # limits of the axes:
-jdrange        = [58858, 58935]
-magrange       = [18.17, 17.6]
+jdrange        = [59420, 59630]
+magrange       = [20.6, 20.]
 # paths to your data directory and rdb file:
 rdbfile        = os.path.join(configdir, settings['outputname'] + '.rdb')
 # path to where the plots will be saved 
@@ -77,7 +77,7 @@ for ind, (lc, shift) in enumerate(zip(lcs, shifts)):
     firstpt = (lc.getjds()[0], lc.getmags()[0])
    
     # name of the curve:
-    xcoord = (firstpt[0] - 90 - jdrange[0]) / (jdrange[1] - jdrange[0])
+    xcoord = (firstpt[0] - 20 - jdrange[0]) / (jdrange[1] - jdrange[0])
     ycoord = (firstpt[1] + 0.02 - magrange[0]) / (magrange[1] - magrange[0])
     txt    = lcsnames[ind]
     colour = lc.plotcolour
@@ -85,7 +85,7 @@ for ind, (lc, shift) in enumerate(zip(lcs, shifts)):
     disptext.append((xcoord, ycoord, txt, kwargs))
     
     # additional text (here shift of the curve)
-    xcoordadd = (firstpt[0]  - 90 - jdrange[0])  / (jdrange[1] - jdrange[0])
+    xcoordadd = (firstpt[0]  - 20 - jdrange[0])  / (jdrange[1] - jdrange[0])
     ycoordadd = (firstpt[1] +0.09 - magrange[0]) / (magrange[1] - magrange[0])
     txtadd    = shift
     colouradd = lc.plotcolour
