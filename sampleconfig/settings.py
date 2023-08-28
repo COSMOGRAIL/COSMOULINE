@@ -230,7 +230,7 @@ combinightrenormcoeff = 'medcoeff'
 # THESE ARE TAKEN FROM YOUR normstars.cat CATALOGUE BUILT IN 4_norm_scripts!
 psfname = "abijlt"
 
-stampsize = 64
+stampsize = 8 # arcsecond
 subsampling_factor = 2
 
 # create a summary plot for each image as we build the psfs
