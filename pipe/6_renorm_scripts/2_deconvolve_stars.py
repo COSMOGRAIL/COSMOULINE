@@ -74,8 +74,7 @@ def doOneDeconvolution(decfile):
     kwargs_fixed['kwargs_background']['h'] = kwargs_init['kwargs_background']['h']
     
 
-    parameters = ParametersDeconv(model, 
-                                  kwargs_init=kwargs_init, 
+    parameters = ParametersDeconv(kwargs_init=kwargs_init, 
                                   kwargs_fixed=kwargs_fixed, 
                                   kwargs_up=kwargs_up, 
                                   kwargs_down=kwargs_down)
