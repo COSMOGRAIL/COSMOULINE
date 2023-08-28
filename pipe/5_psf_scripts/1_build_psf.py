@@ -20,16 +20,8 @@ from starred.utils.optimization import Optimizer
 from starred.psf.parameters import ParametersPSF
 from starred.utils.noise_utils import propagate_noise
 
-# from jax.config import config; config.update("jax_enable_x64", True) #we require double digit precision
 
-
-if sys.path[0]:
-    # if ran as a script, append the parent dir to the path
-    sys.path.append(os.path.dirname(sys.path[0]))
-else:
-    pass
-    # if ran interactively, append the parent manually as sys.path[0] 
-    # will be emtpy.
+sys.path.append(os.path.dirname(sys.path[0]))
 sys.path.append('..')
 from config import settings, psfsfile, extracteddir,\
                    cosmicsmasksfile, noisefile, imgdb,\
@@ -305,8 +297,8 @@ def buildPSF(image, noisemap):
     lossfull = Loss(image, model, parametersfull, 
                     noisemap**2, len(image), 
                     regularization_terms='l1_starlet',
-                    regularization_strength_scales=5,#lambda_scales, 
-                    regularization_strength_hf=10,
+                    regularization_strength_scales=8.,#lambda_scales, 
+                    regularization_strength_hf=35.,
                     regularization_strength_positivity=lambda_positivity, 
                     # W=W, 
                     regularize_full_psf=regularize_full_psf)

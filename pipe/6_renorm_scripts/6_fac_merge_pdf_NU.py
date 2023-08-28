@@ -2,13 +2,11 @@ from PyPDF2 import PdfWriter, PdfReader
 import glob
 import sys
 import os
-if sys.path[0]:
-    # if ran as a script, append the parent dir to the path
-    sys.path.append(os.path.dirname(sys.path[0]))
-else:
-    # if ran interactively, append the parent manually as sys.path[0] 
-    # will be emtpy.
-    sys.path.append('..')
+# if ran as a script, append the parent dir to the path
+sys.path.append(os.path.dirname(sys.path[0]))
+# if ran interactively, append the parent manually as sys.path[0] 
+# will be emtpy.
+sys.path.append('..')
 from config import plotdir, settings
 
 renormname = settings['renormname']

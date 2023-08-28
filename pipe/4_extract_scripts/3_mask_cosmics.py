@@ -17,28 +17,19 @@ file mentioned above. (Because this is fully automatic and can hence go wrong
 
 import sys
 import os
-from   pathlib import Path
 import multiprocessing
-import numpy as np
 import h5py
 import json
-if sys.path[0]:
-    # if ran as a script, append the parent dir to the path
-    sys.path.append(os.path.dirname(sys.path[0]))
-else:
-    pass
-    # if ran interactively, append the parent manually as sys.path[0] 
-    # will be emtpy.
+# if ran as a script, append the parent dir to the path
+sys.path.append(os.path.dirname(sys.path[0]))
+# if ran interactively, append the parent manually as sys.path[0] 
+# will be emtpy.
 sys.path.append('..')
 from config import settings, imgdb, computer, cosmicslabelfile, extracteddir
 
 from modules.variousfct import proquest, notify
 from modules.kirbybase import KirbyBase
 from modules import cosmics
-# weird looking import for star: that is because pickle
-# makes a difference between "from a import b" and "import a.b as b":
-# it will refuse to pickle the former case sometimes. 
-import modules.star as star
 
 
 askquestions = settings['askquestions']
@@ -173,7 +164,7 @@ def main():
     with open(cosmicslabelfile, 'w') as fp:
         json.dump(labels, fp)
 
-    notify(computer, withsound, f"Cosmics masked.")
+    notify(computer, withsound, "Cosmics masked.")
 
 if __name__ == '__main__':
     main()

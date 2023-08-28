@@ -1,15 +1,4 @@
-#
-#	Read the produced out.txt
-#	And write it into the database, using nice custom field names (using deckey and the source names)
-#	*proud*
-#	Final victory over this lovely deconv.exe output file ...
-#
-# For each source we insert x, y, flux = the acutal flux, calculated with a bizarre formula from the MCS intensity.
-# Plus there is z1, z2, delta1, delta2 and the photonic shot noise.
-#
-#	WARNING  : the flux is "denormalized" by whatever normalization coeff you had used.
-#	So we write raw fluxes into the db, not normalized ones !
-#
+
 import progressbar
 import numpy as np
 import scipy
@@ -18,26 +7,13 @@ import h5py
 import scipy.ndimage
 import sys
 import os
-if sys.path[0]:
-    # if ran as a script, append the parent dir to the path
-    sys.path.append(os.path.dirname(sys.path[0]))
+
+sys.path.append(os.path.dirname(sys.path[0]))
 sys.path.append('..')
 
-from config import dbbudir, imgdb, settings, computer, decfiles, settings
-from modules.variousfct import notify, mcsname, fromfits, backupfile
+from config import dbbudir, imgdb, settings, computer
+from modules.variousfct import notify, backupfile
 from modules.kirbybase import KirbyBase
-from modules.readandreplace_fct import readouttxt 
-from modules import star
-from settings_manager import importSettings
-
-
-
-
-    
-
-
-
-
 
 def importSettings(decobjname):
     """
@@ -109,16 +85,8 @@ def readout_object(object_name):
 
     db = KirbyBase(imgdb, fast=True)
 
-    askquestions = settings['askquestions']
-    workdir = settings['workdir']
-    decname = settings['decname']
-    decnormfieldname = settings['decnormfieldname']
-    decpsfnames = settings['decpsfnames']
-    decobjname = settings['decobjname']
     refimgname_per_band = settings['refimgname_per_band']
     setnames = settings['setnames'] 
-    sample_only = settings['sample_only']
-    uselinks = settings['uselinks']
 
 
     
@@ -183,22 +151,11 @@ def readout_object(object_name):
             # photometry on the original raw image):
             newfields.append({"fieldname": f"out_{deckey}_{src}_flux", 
                             "type": "float"})
-        #     newfields.append({"fieldname": f"out_{deckey}_{src.name}_x", 
-        #                       "type": "float"})
-        #     newfields.append({"fieldname": f"out_{deckey}_{src.name}_y", 
-        #                       "type": "float"})
             # this will contain the shot noise of the flux
             # (including sky level, psf shape)
             newfields.append({"fieldname": f"out_{deckey}_{src}_shotnoise", 
                             "type": "float"}) 
             
-        # newfields.append({"fieldname": f"out_{deckey}_z1", "type":"float"})
-        # newfields.append({"fieldname": f"out_{deckey}_z2", "type":"float"})
-        # newfields.append({"fieldname": f"out_{deckey}_delta1", "type":"float"})
-        # newfields.append({"fieldname": f"out_{deckey}_delta2", "type":"float"})
-        
-        
-        #print "Negative fluxes :"
         negfluxes = []
         
 
@@ -208,26 +165,11 @@ def readout_object(object_name):
             print(f"{image[deckeyfilenum]} : {image['imgname']}")
         
             image["updatedict"] = {}
-            # So this guy is starting at 0, even if the first image is 0001.
-            outputindex = int(image[deckeyfilenum]) - 1 
-        
-            # image["updatedict"][f"out_{deckey}_z1"] = zdeltatable[outputindex][0]
-            # image["updatedict"][f"out_{deckey}_z2"] = zdeltatable[outputindex][1]
-            # image["updatedict"][f"out_{deckey}_delta1"] = zdeltatable[outputindex][2]
-            # image["updatedict"][f"out_{deckey}_delta2"] = zdeltatable[outputindex][3]
-        
         
             # Reading the PSF, to calculate shotnoise:
             # psffilepath = os.path.join(decdir, f"s{image[deckeyfilenum]}.fits")
             # (mcspsf, h) = fromfits(psffilepath, verbose=False)
             psf = psfs[ii]
-        
-            # We rearrange the PSF quadrants so to have it in the center of the image.
-            # ramcspsf = np.zeros((128, 128))
-            # ramcspsf[0:64, 0:64] = mcspsf[64:128, 64:128]
-            # ramcspsf[64:128, 64:128] = mcspsf[0:64, 0:64]
-            # ramcspsf[64:128, 0:64] = mcspsf[0:64, 64:128]
-            # ramcspsf[0:64, 64:128] = mcspsf[64:128, 0:64]
         
             # We convolve it with a gaussian of width = 2.0 "small pixels".
             smallpixpsf = scipy.ndimage.filters.gaussian_filter(psf, 2.0)
@@ -235,7 +177,6 @@ def readout_object(object_name):
             # We rebin it
             
             psf = resamplefac**2 * rebin(smallpixpsf, (imsize, imsize))
-            #print "Sum of rebinned PSF : %.6f" % np.sum(psf)
             # We calculate the sharpness :
             sharpness = np.sum(psf * psf)
             
@@ -249,21 +190,6 @@ def readout_object(object_name):
         
         
             for j, src in enumerate(pointsourcesnames):
-        
-                # image["updatedict"][f"out_{deckey}_{src.name}_x"] = \
-                            # intpostable[j][outputindex][1]
-                # image["updatedict"][f"out_{deckey}_{src.name}_y"] = \
-                            # intpostable[j][outputindex][2]
-        
-                # We calculate the flux :
-        
-                
-                # this is the width of the "output gaussian", 
-                # that we choose to be of 2 small pixels
-                fwhm = 2.0 
-                
-                pi = 3.141592653589793
-                ln2 = 0.693147180559945
         
                 # mcs intensity, now starred intensity ...
                 mcsint =  light_curves[j][ii] * norm

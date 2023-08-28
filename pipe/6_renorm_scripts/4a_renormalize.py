@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 import os
-from astropy.stats import sigma_clipped_stats
+from astropy.stats import sigma_clip
 sys.path.append(os.path.dirname(sys.path[0]))
 sys.path.append('..')
 from config import imgdb, settings, plotdir, dbbudir,\
@@ -48,6 +48,7 @@ for setname, renormsources in zip(setnames, allrenormsources):
     
     for image in bandimages:
         image["tmp_indivcoeffs"] = []
+        image["tmp_indivcoeffserr"] = []
     
     
     for telescopename in telescopenames:
@@ -72,9 +73,10 @@ for setname, renormsources in zip(setnames, allrenormsources):
                    "deconvolutions available")
         
             # So these are raw fluxes in electrons, not normalized:
-            fluxes = np.array([image[fluxfieldname] 
-                                    for image in sourcetelimages]) 
-            
+            fluxes  = np.array([image[fluxfieldname] 
+                                  for image in sourcetelimages]) 
+            dfluxes = np.array([image[errorfieldname] 
+                                  for image in sourcetelimages]) 
             # This is the plain simple unnormalized ref flux
             # that we will use for this star.
             medflux = np.median(fluxes) 
@@ -86,8 +88,10 @@ for setname, renormsources in zip(setnames, allrenormsources):
         
             for image in sourcetelimages:
                     # the "new" absolute coeff for that image and star
-                    indivcoeff = (medflux / image[fluxfieldname])
+                    indivcoeff = medflux / image[fluxfieldname]
+                    dindivcoeff = medflux / image[fluxfieldname]**2 * image[errorfieldname]
                     image["tmp_indivcoeffs"].append(indivcoeff)
+                    image["tmp_indivcoeffserr"].append(dindivcoeff)
                 
     
         for i, image in enumerate(telimages):
@@ -99,10 +103,19 @@ for setname, renormsources in zip(setnames, allrenormsources):
                 renormcoefferr = 0.0
                 
             else :
-                # median of multiplicative factors
+                # weighted average with rejection
                 _coeffs = np.array(image["tmp_indivcoeffs"])
-                renormcoeff, _, renormcoefferr = sigma_clipped_stats(_coeffs,
-                                                                     sigma=2.5)
+                _dcoeffs = np.array(image["tmp_indivcoeffserr"])
+                clipped = sigma_clip(_coeffs, sigma=3)
+                
+                filtered_weights = 1./_dcoeffs[~clipped.mask]
+                filtered_values = _coeffs[~clipped.mask]
+                renormcoeff = np.average(filtered_values,
+                                         weights=filtered_weights)
+                weighted_variance = np.sum(filtered_weights * (filtered_values - renormcoeff) ** 2) / np.sum(filtered_weights)
+                renormcoefferr = weighted_variance**0.5
+                
+                
             
             #  the important value at this step:
             image["tmp_coeff"] = renormcoeff 

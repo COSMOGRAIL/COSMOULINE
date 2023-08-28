@@ -30,7 +30,7 @@ from astropy.table import Table
 sys.path.append(os.path.dirname(sys.path[0]))
 sys.path.append('..')
 from config import settings, imgdb, alidir, extracteddir, \
-                   filtered_gaia_filename
+                   filtered_gaia_filename, defringed
 from modules.kirbybase import KirbyBase
 
 
@@ -111,12 +111,16 @@ if regionsfile.exists():
     # delete if exists.
     regionsfile.unlink()
 
+# selecting the right image... (later in the loop)
+extf = 'defringed' if defringed else 'skysub'
+
 
 for i,image in enumerate(images):
     print(40*"- ")
     print("%i / %i : %s" % (i+1, len(images), image['imgname']), end= ' ')
     
-    image_file = alidir / f"{image['imgname']}_skysub.fits"
+   
+    image_file = alidir / f"{image['imgname']}_{extf}.fits"
     
     # skysub images are in e-
     try:

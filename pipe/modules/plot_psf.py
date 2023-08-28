@@ -1,5 +1,5 @@
 #
-#    generates overview pngs related to the pyMCS psf construction
+#    generates overview pngs related to the psf construction
 #    NEW : add a imgname to jpgnumber report,
 #    to help the construction of the skiplist
 #
@@ -9,16 +9,14 @@ import numpy as np
 import json
 import sys
 import os
-if sys.path[0]:
-    # if ran as a script, append the parent dir to the path
-    sys.path.append(os.path.dirname(sys.path[0]))
-else:
-    # if ran interactively, append the parent manually as sys.path[0] 
-    # will be emtpy.
-    sys.path.append('..')
-from config import settings, psfstarcat, psfkey, psfsfile, psfsplotsdir,\
-                   starsfile, noisefile, cosmicslabelfile, extracteddir
-from modules import star, f2n
+# if ran as a script, append the parent dir to the path
+sys.path.append(os.path.dirname(sys.path[0]))
+# if ran interactively, append the parent manually as sys.path[0] 
+# will be emtpy.
+sys.path.append('..')
+from config import settings, psfkey, psfsfile, psfsplotsdir,\
+                   cosmicslabelfile, extracteddir
+from modules import f2n
 
 
 workdir = settings['workdir']
@@ -101,7 +99,6 @@ def plot_psf(image, noise, lossplot):
     # nbralistars = "Nb alistars : %i" % image['nbralistars']
     airmass = "Airmass : %4.2f" % image['airmass']
     az = "Azimuth : %6.2f [deg]" % image['az']
-    stddev = "Sky stddev : %4.2f [ADU]" % image['prealistddev']
     skylevel = "Sky level : %7.1f [ADU]" % image['skylevel']
     # we write long image names on two lines ...
     if len(image['imgname']) >= 27:
@@ -109,7 +106,7 @@ def plot_psf(image, noise, lossplot):
     else:
         infolist = [image['imgname']]
     infolist.extend([date, telname, seeing, ell, \
-                     stddev, skylevel, airmass, az])
+                     skylevel, airmass, az])
     if settings['thisisatest']:
         testcomment = 'Testcomment: %s' %image['testcomment']
         infolist.append(testcomment)

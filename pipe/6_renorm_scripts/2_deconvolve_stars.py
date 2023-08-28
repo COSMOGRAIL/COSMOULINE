@@ -12,17 +12,13 @@ sys.path.append('..')
 import h5py
 import numpy as np    
 
-from starred.deconvolution.deconvolution import Deconv, setup_model
+from starred.deconvolution.deconvolution import setup_model
 from starred.deconvolution.loss import Loss
 from starred.utils.optimization import Optimizer
 from starred.deconvolution.parameters import ParametersDeconv
-from starred.utils.noise_utils import propagate_noise
     
 
-from config import imgdb, settings, computer, deconvexe
-from modules.variousfct import proquest, notify, nicetimediff
-from modules.kirbybase import KirbyBase
-from modules.prepare_deconvolution import prepare_deconvolution
+from config import settings
 from modules.deconv_utils import importSettings
 
 
@@ -35,6 +31,9 @@ subsampling_factor = settings['subsampling_factor']
 
 decname = settings['decname']
 decnormfieldname = settings['decnormfieldname']
+
+
+redo = False
 
 if not decname == 'noback' or not decnormfieldname == 'None':
     print("Your decname is not 'noback' or your decnormfieldname is not 'None'.")
@@ -62,11 +61,7 @@ def doOneDeconvolution(decfile):
     xs = np.array([0.])
     ys = np.array([0.])
     
-    # number of point sources .... 1
-    M = xs.size 
     
-    initial_c_x = xs * subsampling_factor 
-    initial_c_y = ys * subsampling_factor 
     # initial intensity:
     a_est = epochs*[1.5 * np.nanpercentile(data[0], 99.5)]
 
@@ -97,7 +92,7 @@ def doOneDeconvolution(decfile):
 
 
     optimiser_optax_option = {
-                                'max_iterations':5000, 'min_iterations':None,
+                                'max_iterations':1500, 'min_iterations':None,
                                 'init_learning_rate':5e-3, 'schedule_learning_rate':True,
                                 'restart_from_init':True, 'stop_at_loss_increase':False,
                                 'progress_bar':True, 'return_param_history':True
@@ -124,6 +119,11 @@ for star in renorm_stars:
             decfiles, decskiplists, deckeypsfuseds, ptsrccats = importSettings(star)
 
     for decfile, decdir in zip(decfiles, decdirs):
+        plotfile = os.path.join(decdir, f"deconv_star_{star}_loss_history.jpg")
+        if os.path.exists(plotfile) and not redo:
+            print("Well the loss plot is already made, and redo is False.")
+            print("skipping.")
+            continue
         # one decfile per setname
         kwargs_final, extra_fields = doOneDeconvolution(decfile)
         
@@ -132,17 +132,6 @@ for star in renorm_stars:
         plt.plot(extra_fields['loss_history'])
         plt.xlabel('iteration number')
         plt.ylabel('loss')
-        plt.savefig(os.path.join(decdir, f"deconv_star_{star}_loss_history.jpg"))
-           
-
-
-
-
+        plt.savefig(plotfile)
     
     
-
-
-for decfile in decfiles:
-    pass
-
-

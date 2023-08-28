@@ -92,7 +92,6 @@ if __name__ == "__main__":
     moriginal = fits.getdata(fringed) 
     defringed = moriginal - fringes
     print(f"Took {time()-t0} to defringe {fringed}.")
-       #%%
     vmino, vmaxo = np.percentile(moriginal, (2,99.5))
     import matplotlib.pyplot as plt
     plt.subplot(131)

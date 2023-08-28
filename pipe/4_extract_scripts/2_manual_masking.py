@@ -25,13 +25,7 @@ from   subprocess import call
 import numpy      as     np
 from   astropy.io import fits
 
-if sys.path[0]:
-    # if ran as a script, append the parent dir to the path
-    sys.path.append(os.path.dirname(sys.path[0]))
-else:
-    # if ran interactively, append the parent manually as sys.path[0] 
-    # will be emtpy.
-    pass
+sys.path.append(os.path.dirname(sys.path[0]))
 sys.path.append('..')
 from config import configdir, settings, extracteddir
 from modules.variousfct import mterror, proquest
