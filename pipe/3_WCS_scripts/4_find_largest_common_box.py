@@ -64,9 +64,14 @@ dec_max_common = min(dec_maxs)
 
 # The largest common box
 common_box = (ra_min_common, ra_max_common, dec_min_common, dec_max_common)
+print("adding this box to DB:", common_box)
+fields = ['ra_min:float', 'ra_max:float', 
+          'dec_min:float', 'dec_max:float']
 
-db.create(imgdb, fields=['ra_min:float', 'ra_max:float', 
-                         'dec_min:float', 'dec_max:float'],
+
+db.execute(imgdb, 'DROP TABLE IF EXISTS common_wcs')
+
+db.create(imgdb, fields=fields,
                  tablename="common_wcs")
 
 db.insert(imgdb, tablename='common_wcs',
