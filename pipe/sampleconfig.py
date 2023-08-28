@@ -123,6 +123,10 @@ testlist = os.path.join(configdir, "testlist.txt")
 # File with the coordinates of the regions
 regionscat = os.path.join(configdir, 'regions.cat')
 
+# File with the gaia regions
+all_gaia_filename = os.path.join(workdir, 'all_gaia_detections.csv')
+filtered_gaia_filename = os.path.join(workdir, 'filtered_gaia_detections.csv')
+
 # ------------------------------ DEFRINGING ---------------------------------
 # do you want to work on defringed images (if they exists ?)
 if settings['telescopename'] in ["WFI", "LCO"]:
