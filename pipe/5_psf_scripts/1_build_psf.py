@@ -208,8 +208,7 @@ def buildPSF(image, noisemap):
     kwargs_down['kwargs_gaussian']['y0'] = [-e for e in cc]
     
     """
-    parameters = ParametersPSF(model, 
-                               kwargs_init, 
+    parameters = ParametersPSF(kwargs_init, 
                                kwargs_fixed, 
                                kwargs_up=kwargs_up, 
                                kwargs_down=kwargs_down)
@@ -263,8 +262,7 @@ def buildPSF(image, noisemap):
                         method='SLIT', num_samples=100,
                         seed=1, likelihood_type='chi2', 
                         verbose=False, 
-                        upsampling_factor=subsampling_factor, 
-                        debug=False)[0]
+                        upsampling_factor=subsampling_factor)[0]
     
     # Release backgound, fix the moffat
     kwargs_fixed = {
@@ -280,27 +278,29 @@ def buildPSF(image, noisemap):
         'kwargs_gaussian': {},
         'kwargs_background': {},
     }
-    parametersfull = ParametersPSF(model, 
-                                   kwargs_init, 
+    parametersfull = ParametersPSF(kwargs_init, 
                                    kwargs_fixed, 
                                    kwargs_up, 
                                    kwargs_down)
+
+    W = None
     
-    # W = propagate_noise(model, noisemap, kwargs_init, 
-    #                     wavelet_type_list=['starlet'], 
-    #                     method='SLIT', num_samples=100,
-    #                     seed=1, likelihood_type='chi2', 
-    #                     verbose=False, 
-    #                     upsampling_factor=subsampling_factor, 
-    #                     debug=False)[0]
+    topass = np.nanmedian(noisemap, axis=0)
+    topass = np.expand_dims(topass, (0,))
+    W = propagate_noise(model, topass, kwargs_init, 
+                        wavelet_type_list=['starlet'], 
+                        method='SLIT', num_samples=100,
+                        seed=1, likelihood_type='chi2', 
+                        verbose=False, 
+                        upsampling_factor=subsampling_factor)[0]
     
     lossfull = Loss(image, model, parametersfull, 
                     noisemap**2, len(image), 
                     regularization_terms='l1_starlet',
-                    regularization_strength_scales=8.,#lambda_scales, 
-                    regularization_strength_hf=35.,
+                    regularization_strength_scales=1.,#lambda_scales, 
+                    regularization_strength_hf=30.,
                     regularization_strength_positivity=lambda_positivity, 
-                    # W=W, 
+                    W=W, 
                     regularize_full_psf=regularize_full_psf)
     
 
@@ -310,7 +310,7 @@ def buildPSF(image, noisemap):
         
     optimiser_optax_option = {
                                 'max_iterations':n_iter, 'min_iterations':None,
-                                'init_learning_rate':1e-3, 'schedule_learning_rate':True,
+                                'init_learning_rate':3e-4, 'schedule_learning_rate':True,
                                 # important: restart_from_init True
                                 'restart_from_init':True, 'stop_at_loss_increase':False,
                                 'progress_bar':True, 'return_param_history':True
