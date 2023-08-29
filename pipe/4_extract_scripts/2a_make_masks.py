@@ -22,14 +22,12 @@ from   tempfile   import TemporaryDirectory
 from   pathlib    import Path
 import pyperclip 
 from   subprocess import call
-import numpy      as     np
 from   astropy.io import fits
 
 sys.path.append(os.path.dirname(sys.path[0]))
 sys.path.append('..')
 from config import configdir, settings, extracteddir
 from modules.variousfct import mterror, proquest
-from modules import ds9reg
 
 
 stampsize = settings['stampsize']
@@ -98,50 +96,4 @@ and re-run this script.
             
         tmpdirr.cleanup()
 
-
-
-    ds9masks = {}
-    for i, s in enumerate(objects):
-        print('--------------- OBJECT ------------------')
-        print(s)
-        print('-----------------------------------------')
-        
-        possiblemaskfilepath = os.path.join(configdir, f"mask_{s}.reg")
-        print('mask file path is: ', possiblemaskfilepath)
-        if os.path.exists(possiblemaskfilepath):
-
-            mask = ds9reg.regions(stampsize, stampsize) 
-            mask.readds9(possiblemaskfilepath, verbose=False)
-            mask.buildmask(verbose=False)
-            
-            print("You masked %i pixels of star %s." % (np.sum(mask.mask), s))
-            ds9masks[s] = mask.mask
-        else:
-            print("No mask file for star %s." % (s))
-            
-            
-
-
-# ok, building the masks
-# starsarray = h5py.File(psfdir / 'stars.h5', 'r+')
-# noisearray = h5py.File(psfdir / 'noisemaps.h5', 'r+')
-
-# now, applying the masks:
-print('Applying the masks!')
-for i, imgname in enumerate(imgnames):
-    #print("%i : %s" % (i+1, imgname))
-
-    for i, s in enumerate(objects):
-        
-        if not s in ds9masks: # If there is no mask for this star
-            continue
-
-        with h5py.File(regionsfile, 'r+') as f:
-            noisemaps = f[imgname]['noise']
-            sig = noisemaps[s][()]
-            sig[ds9masks[s]] = 1e8
-            noisemaps[s][()] = sig
-    
-
-print("- " * 40)
 
