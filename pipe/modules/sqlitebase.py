@@ -199,8 +199,7 @@ class KirbyBase():
             
         if tablename in self.getTableNames(dbname):
             if exist_ok:
-                for field in fields:
-                    self.addFields(dbname, fields, tablename=tablename)
+                self.addFields(dbname, fields, tablename=tablename)
                 return []
             else:
                 raise RuntimeError(f"table {tablename} already exists!")
@@ -240,14 +239,14 @@ class KirbyBase():
             else:
                 self.execute(dbname, f"alter table {tablename} add {name} {typ}")
                 
-    def dropFields(self, dbname, fields, talbename=None):
+    def dropFields(self, dbname, fields, tablename=None):
         """
         soooo sqlite 3.35 can do this. 
         But not sure we'll  have it on everyone's computer ...
         hence we copy the table without those columns, destroy the old table
         and rename the new one to the old name.
         """
-        if not talbename:
+        if not tablename:
             tablename = self.defaulttable
         tmptable = tablename+"___tmp___"
         allfields = self.getFieldNames(dbname, tablename)
