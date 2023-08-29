@@ -229,8 +229,8 @@ class KirbyBase():
                 if exist_ok:
                     matchindex = colnames.index(name)
                     oldtyp = coltypes[matchindex]
-                    if not oldtyp == typ:
-                        raise RuntimeError(f"can't change type of existing column: {col}!")
+                    if not oldtyp.lower() == typ.lower():
+                        raise RuntimeError(f"can't change type of existing column: {col}! existing: {oldtyp}. New: {typ}")
                     # if column exists, and we fine with that and the type matches:
                     # go to next.
                     continue
