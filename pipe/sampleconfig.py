@@ -113,7 +113,7 @@ combinightdirpath = os.path.join(workdir, combinightdirname)
 # ------------------------ PSF CONSTRUCTION ---------------------------------
 
 psfkey = "psf_" + settings['psfname']     # Don't touch (all this is hard-coded in the first dec prepfiles script !)
-psfdir = os.path.join(workdir, psfkey)    # Don't touch
+psfdir = os.path.join(workdir, "PSFs", psfkey)    # Don't touch
 psfkeyflag = "flag_" + psfkey             # Don't touch
 psfcosmicskey = psfkey + "_cosmics"       # Don't touch
 
@@ -124,8 +124,7 @@ noisefile = psfdirc / 'noisemaps.h5'
 cosmicsmasksfile = psfdirc / 'cosmics_masks.h5'
 psfsfile = psfdirc / 'psfs.h5'
 psfsplotsdir = psfdirc / 'plots'
-if not psfsplotsdir.exists():
-    psfsplotsdir.mkdir(parents=True, exist_ok=True)
+
 extracteddir = Path(workdir) / 'extracteddir'
 if not extracteddir.exists():
     extracteddir.mkdir(parents=True, exist_ok=True)
