@@ -10,13 +10,13 @@ sys.path.append(os.path.dirname(sys.path[0]))
 sys.path.append('..')
 from config import plotdir, settings
 
-renormname = settings['renormname']
+normname = settings['normname']
 setnames = settings['setnames']
 
 for setname in setnames:
-    pattern = os.path.join(plotdir, f"renorm_{setname}_{renormname}*.pdf")
+    pattern = os.path.join(plotdir, f"norm_{setname}_{normname}*.pdf")
     files = sorted(glob.glob(pattern))
-    print("I will create a single pdf file with all the renormalisation plots") 
+    print("I will create a single pdf file with all the normalisation plots") 
 
     # Creating a routine that appends files to the output file
     def append_pdf(inp):
@@ -31,7 +31,7 @@ for setname in setnames:
         append_pdf(PdfReader(open(fil, "rb")))
 
     # Writing all the collected pages to a file
-    outpath = os.path.join(plotdir, f"Combined_{setname}_{renormname}.pdf")
+    outpath = os.path.join(plotdir, f"Combined_{setname}_{normname}.pdf")
     output.write(open(outpath, "wb"))
     # ok, remove the originals
     for ff in files:

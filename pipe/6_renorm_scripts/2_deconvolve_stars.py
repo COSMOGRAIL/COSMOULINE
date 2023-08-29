@@ -26,7 +26,7 @@ askquestions = settings['askquestions']
 workdir = settings['workdir']
 setnames = settings['setnames']
 
-renorm_stars = settings['renorm_stars']
+norm_stars = settings['norm_stars']
 subsampling_factor = settings['subsampling_factor']
 
 redo = False
@@ -103,7 +103,7 @@ def doOneDeconvolution(decfile):
     return kwargs_final, extra_fields
 
 
-for star in renorm_stars:
+for star in norm_stars:
     # for each star, prepare and stuff
     deckeyfilenums, deckeynormuseds, deckeys, decdirs,\
             decfiles, decskiplists, deckeypsfuseds, ptsrccats = importSettings(star, decnormfieldname="None", decname="noback")

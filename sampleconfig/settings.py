@@ -16,9 +16,7 @@ lensMag  = 19.0
 # ("big-old-never-backuped-disk")
 workdir = "/scratch/COSMOULINE/WFI_PSJ0030-1525/"
 
-
 #------------------------ SWITCHES -----------------------------------------
-
 
 # A switch to tell if these testlist-flags should be used.
 # If these flags are set, the scripts will run only on your subset of images.
@@ -26,45 +24,33 @@ thisisatest = False
 # A switch to use soft links instead of true file copies whenever possible 
 # (you might not want this for some reasons)
 uselinks = True
-
 # A switch to make all scripts skip any questions
 askquestions = False
-
 # A switch to display image by image plots that are normally not needed. For debugging etc.
 # If True, the database will not be updated !
 # You should typically use this in connection with thisisatest = True ...
 checkplots = False
 # This is used by : 1_character_scripts/4_skystats.py, 3b_measureseeing.py
-
 # A switch to save figures that would otherwise be shown.
 # Good to keep this on True if you work over a slow connection. Saved into plotdir.
 savefigs = True
-
 # A switch to ring a bell if some (long) scripts have finished or want to talk to you.
 withsound = False
-
 # A switch to tell if you want pngs to be transformed into jpg
 makejpgarchives = False
-
 # A switch to reduce the verbosity of the fortran MCS programs :
 silencemcs = True
-
 # A switch to tell the scripts that you are running an update with the existing settings.
 # To be set to true ONLY if you work in all_update_scripts !!
 update = False
-
 #If you want only your test sample whan checking the png :
 sample_only = False
-
-
 # Max number of CPU cores to use (0 = automatic, meaning that all available cores will be used) :
 maxcores = 7
 # Only some scripts run on multiple cores. It is noramlly fine to leave this on 0.
 # You might want to use the manual setting for instance if someone is already using some cores for other jobs etc. 
 
 #------------------------ IMPORTATION --------------------------------------
-
-
 telescopename = "WFI"
 # Available telescopenames :
 # Mercator, EulerC2, EulerCAM, HCT, SMARTSandicam, Liverpool
@@ -80,11 +66,8 @@ telescopename = "WFI"
 # but you can add more. 
 setnames = ["844"]
 
-
 # Where are these images ?
 baseraw = "/scratch/COSMOULINE/WFI_PSJ0030-1525/raw_dir/"
-
-
 
 # usually, I keep each band in separate directories like this:
 rawdirs = [join(baseraw, setname) for setname in setnames]
@@ -104,13 +87,12 @@ rawdirs = [join(baseraw, setname) for setname in setnames]
 trim_vertical = 0
 trim_horizontal = 0
 # set to zero to not use.
-if trim_vertical > 0 and not telescopename in ['WFI', 'VST']:
-    raise RuntimeError("Are you sure you want to trim??? comment me out if yes.")
+if trim_vertical > 0 and telescopename not in ['WFI', 'VST']:
+    raise RuntimeError("Are you sure you want to trim vertically??? comment me out if yes.")
 if trim_horizontal > 0:
-    raise RuntimeError("Are you sure you want to trim??? comment me out if yes.")
+    raise RuntimeError("Are you sure you want to trim horizontally??? comment me out if yes.")
 
 #------------------------ ASTROCALC ----------------------------------------
-
 # a string (format = "Xephem"-like catalog entry) 
 # specifing the target coordinates.
 # In this case, we have : 
@@ -120,47 +102,14 @@ if trim_horizontal > 0:
 # ABOVE.
 xephemlens = f"{lensName},f|Q,{lensRA},{lensDEC},{lensMag:.01f},2000"
 
-
-
-
-
 # Now you can run all the scripts until the alignment !
 
 #------------------------ ALIGNMENT ----------------------------------------
-
-
 # reference image name (for alignment, single one for all bands) :
 refimgname = "844_WFI.2021-09-10T04:53:56.457"
 
 # photometric and PSF reference images (one per band!)
 refimgname_per_band = {"844": "844_WFI.2021-09-10T04:53:56.457"}
-
-
-#------------------------ SEXTRACTOR PHOTOMETRY READOUT --------------------
-
-# No need to touch this, same for the fields below.
-sexphotomname = "sexphotom1"	
-
-# Fields you want in the database. Not restricted to photometry, you could add any fields.
-# Note the convention : if you ask sextractor for 3 apertures, those fields will be named
-# FLUX_APER, FLUX_APER1, FLUX_APER2 (this is done by astroasciidata, not by sextractor)
-# Do not forget to update both default.sex and default.param if you want to make changes to
-# the apertures.
-
-sexphotomfields = [
-    {"sexname":"FLUX_AUTO", "dbname":"auto_flux", "type":"float"},
-    {"sexname":"FLUX_APER", "dbname":"ap20_flux", "type":"float"},
-    {"sexname":"FLUX_APER1", "dbname":"ap30_flux", "type":"float"},
-    {"sexname":"FLUX_APER2", "dbname":"ap60_flux", "type":"float"},
-    {"sexname":"FLUX_APER3", "dbname":"ap90_flux", "type":"float"},
-    {"sexname":"FLUX_APER4", "dbname":"ap120_flux", "type":"float"},
-    {"sexname":"FLUXERR_AUTO", "dbname":"auto_flux_err", "type":"float"},
-    {"sexname":"FLUXERR_APER", "dbname":"ap20_flux_err", "type":"float"},
-    {"sexname":"FLUXERR_APER1", "dbname":"ap30_flux_err", "type":"float"},
-    {"sexname":"FLUXERR_APER2", "dbname":"ap60_flux_err", "type":"float"},
-    {"sexname":"FLUXERR_APER3", "dbname":"ap90_flux_err", "type":"float"},
-    {"sexname":"FLUXERR_APER4", "dbname":"ap120_flux_err", "type":"float"}
-]
 
 #------------------------ DEEP FIELD COMBINATION (FACULTATIVE) -------------
 
@@ -169,20 +118,20 @@ sexphotomfields = [
 combibestname = "best1"
 # aim for a combination that give ~ 50 images, as we load all of them
 # in memory when combining them. 
-combibestmaxseeing = 0.8 	# Maximum seeing, in arcseconds
-combibestmaxell = 0.1 		# Maximum ellipticity (field "ell")
-combibestmaxmedcoeff = 1.25	# Maximum medcoeff (ref image has 1.0)
-combibestmaxstddev = 80.0 	# Maximum sky stddev, in ADU
+combibestmaxseeing = 0.8 	 # Maximum seeing, in arcseconds
+combibestmaxell = 0.1 		 # Maximum ellipticity (field "ell")
+combibestmaxmedcoeff = 1.25  # Maximum medcoeff (ref image has 1.0)
+combibestmaxstddev = 80.0 	 # Maximum sky stddev, in ADU
 
 #------------------------ IMAGE STACKING (FACULTATIVE) ---------------------
 
 # Choose a name for your combination. It should reflect the normalization coeff 
-# that you're using ('medcoeff' or 'renormabc1' if you computed some new one)
+# that you're using ('medcoeff' or 'normabc1' if you computed some new one)
 # Suggestion for names : 'medcoeff1' for your first try using the medcoeff
 combinightname = "medcoeff1"
 
 # you can choose which coeff you want to use for the combination
-combinightrenormcoeff = 'medcoeff'	
+combinightnormcoeff = 'medcoeff'	
 
 
 #------------------------ PSF CONSTRUCTION ---------------------------------
@@ -196,7 +145,7 @@ combinightrenormcoeff = 'medcoeff'
 # THESE ARE TAKEN FROM YOUR normstars.cat CATALOGUE BUILT IN 4_norm_scripts!
 psfname = "abijlt"
 
-stampsize = 8 # arcsecond
+stampsize = 8.0  # arcsecond
 subsampling_factor = 2
 
 # create a summary plot for each image as we build the psfs
@@ -206,11 +155,10 @@ dopsfplots = True
 # The otherway round, do not put "new" in that string
 # if you build your PSF with the old codes !
 # This is not used to switch the programs automatically,
-# but to recognize which PSF was used afterwards.
+# but to recognize which PSF was used afterward.
 
 # General remark : such names will be used in filenames...
 # no funny symbols or spaces please !
-
 
 # Sensitivity of cosmic ray detection. 
 # Lower values = more sensitive = more detections
@@ -226,40 +174,45 @@ cosmicssigclip = 6.0
 # use maxpixelvaluecoeff = 0.78
 
 maxpixelvaluecoeff = 0.78
+#-------------------------- NORMALIZATION ----------------------------------
 
-#------------------------ OBJECT EXTRACTION --------------------------------
+# Choose a name for the new normalization coefficient:
+normname = "norm_acd"
 
-objname = "b"	# Give a name to the object you want to extract.
-			# Typically, "a" if you extract star "a", and
-			# "lens" if you extract the lens ...
-			# If you want to play with different cosmics or so, there
-			# is no problem to extract the same object under different
-			# names !
+norm_stars = normname.split('_')[1]
+# (something that reflects the sources... like "normabc")
+# Make it short ... but start it with the letters norm
 
-objnames = ["lens", "a", "b", "c", "d", "e", "f", "g",
-                    "h", "i", "j", "k", "l", "m", "n", "o","p",
-                    "q", "r", "s", "t", "u", "v", "w",
-                    "x", "y", "z", "aa", "ab", "ac", "ad"]
-			# As above, but all extractions are performed in a single scrip
-			# 12_all_extrnancosm.py
-			# More efficient on some configurations (like if IO flow is limited)
+# Which sources do you want to use for the normalization
+# (give (deckey, sourcename) ):
+# NEW : the FIRST one of the sources below will be used as a reference
+# to scale the coeffs between different telescopes!
+psftouse = 'abijlt'
+normsources = [
+   [
+    (f'dec_{setname}_noback_{starname}_None_{psftouse}', starname)
+       for starname in norm_stars
+   ] for setname in setnames
+]
+
+# You can than change these before running 2_plot_star_curves_NU.py,
+# to get curves for other stars.
+
 
 #------------------------ DECONVOLUTION ------------------------------------
 # Choose a name for your deconvolution. No need to reflect the source.
 # Examples : "full", "test"
-decname = "back1"
-
+decname = "full"
 
 # Select which object you want to deconvolve : give an existing objname.
 decobjname = "lens"		
 # You don't have to set the objname in the "OBJECT EXTRACTION" section.
 
-
 # The normalization coefficient to apply to the image prior to deconv:
-decnormfieldname = "renorm_1"	
+decnormfieldname = "norm_1"	
 # "None" is special, it means a coeff of 1.0 for every image.
 # The name of the default sextractor photometry is "medcoeff"
-# If you choose a renormalization, give an existing renormname.
+# If you choose a normalization, give an existing normname.
 
 # The PSF(s) you want to use : give one or more psfnames in form of a list.
 decpsfnames = ["abijlt"]
@@ -272,43 +225,19 @@ makeautoskiplist = True
 
 # this will produce one deconvolution by object, by decname, by 
 # normalisation, by psfname, and by setname. 
-# in particular you do not have to specify it here, but for a given
+# in particular, you do not have to specify it here, but for a given
 # set of parameters defined here there will be e.g. 4 deconvolutions
 # happening at once if you have 4 setnames. 
 
 # name of your point sources in order:
 pointsourcesnames = ['A', 'B', 'C', 'D']
 
-#------------------------ RENORMALIZATION ----------------------------------
-
-# Choose a name for the new renormalization coefficient:
-renormname = "renorm_acd"	
-
-renorm_stars = renormname.split('_')[1]
-# (something that reflects the sources... like "renormabc")
-# Make it short ... but start it with the letters renorm
-
-# Which sources do you want to use for the renormalization 
-# (give (deckey, sourcename) ):
-# NEW : the FIRST one of the sources below will be used as a reference 
-# to scale the coeffs between different telescopes!
-psftouse = 'abijlt'
-renormsources = [
-   [
-    (f'dec_{setname}_noback_{starname}_None_{psftouse}', starname)
-       for starname in renorm_stars
-   ] for setname in setnames
-]
-
-# You can than change these before running 2_plot_star_curves_NU.py, 
-# to get curves for other stars.
-
 #------------------------ PLOTS ETC ----------------------------------------
 
-plotnormfieldname = None#"renorm_bdfghijlnop"
+plotnormfieldname = None#"norm_bdfghijlnop"
 # Used only for the quicklook plots, after the deconvolution :
 # None -> we normalize with the coeffs used for the deconvolution.
-# renormname -> we use these coeffs instead. Allows for a first check.
+# normname -> we use these coeffs instead. Allows for a first check.
 # Note that this does NOT affect the content of the database in any way !
 
 
@@ -327,7 +256,7 @@ lc_to_sum = None
 
 
 # Name of the deconvolution (see the README file that comes with the db ...) :
-deconvname = "dec_844_back1_lens_renorm_1_abijlt"
+deconvname = "dec_844_back1_lens_norm_1_abijlt"
 
 
 ################### Section for addfluxes.py ###########################
@@ -346,11 +275,11 @@ outputname = lensName
 sourcenames = ["A", "B"]
 
 # Name of the normalization coeff to use :
-normcoeffname = "renorm_1"
-# In principle it is also ok to put "medcoeff", as for the renorm itself it works in the same way.
+normcoeffname = "norm_1"
+# In principle it is also ok to put "medcoeff", as for the norm itself it works in the same way.
 # Note : aside of the coefficients alone, we also read the fields (example) :
-# renormabcfg1_err	float, absolute error on the coeff
-# renormabcfg1_comment	string of ints, like "5" giving the number of stars for this coeff.
+# normabcfg1_err	float, absolute error on the coeff
+# normabcfg1_comment	string of ints, like "5" giving the number of stars for this coeff.
 
 # Telescope- and set- names that you want to process "together" :
 # Do not forget some image sets, check the README to see what you have in your db !

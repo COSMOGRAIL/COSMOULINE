@@ -1,7 +1,7 @@
 """
 Now that the coeffs are in the db, you might want to plot curves
-(very similar to those made by the renormalize script), but for other stars,
-not involved in the renormalization.
+(very similar to those made by the normalize script), but for other stars,
+not involved in the normalization.
 """
 
 import numpy as np
@@ -17,19 +17,19 @@ from config import imgdb, settings, plotdir
 from modules.kirbybase import KirbyBase
 
 
-renormname = settings['renormname']
+normname = settings['normname']
 setnames = settings['setnames']
-allrenormsources = settings['renormsources']
+allnormsources = settings['normsources']
 
 db = KirbyBase(imgdb)
 
 
-for setname, renormsources in zip(setnames, allrenormsources):
-    print("I will plot lightcurves using renormalization coefficient called :")
-    print(renormname)
+for setname, normsources in zip(setnames, allnormsources):
+    print("I will plot lightcurves using normalization coefficient called :")
+    print(normname)
     print("for the sources")
-    for renormsource in renormsources:
-        print(renormsource)
+    for normsource in normsources:
+        print(normsource)
     
     
    
@@ -40,9 +40,9 @@ for setname, renormsources in zip(setnames, allrenormsources):
     print(f"{len(allimages)} images in total.")
     
     
-    for renormsource in renormsources:
-        deckey = renormsource[0]
-        sourcename = renormsource[1]
+    for normsource in normsources:
+        deckey = normsource[0]
+        sourcename = normsource[1]
         print(deckey)
         
         deckeyfilenumfield = "decfilenum_" + deckey
@@ -60,28 +60,28 @@ for setname, renormsources in zip(setnames, allrenormsources):
         airmasses = np.array([image["airmass"] for image in images])
         skylevels = np.array([image["skylevel"] for image in images])
     
-        renormcoeffs = np.array([image[renormname] for image in images])
+        normcoeffs = np.array([image[normname] for image in images])
         
-        renormfluxes = fluxes*renormcoeffs
-        renormerrors = errors*renormcoeffs
-        ref = np.median(renormfluxes)
+        normfluxes = fluxes*normcoeffs
+        normerrors = errors*normcoeffs
+        ref = np.median(normfluxes)
         
         mhjds = np.array([image["mhjd"] for image in images])
         
         plt.figure(figsize=(15,15))
     
-        plt.errorbar(mhjds, renormfluxes/ref, yerr=renormerrors/ref, 
+        plt.errorbar(mhjds, normfluxes/ref, yerr=normerrors/ref, 
                                               ecolor=(0.8, 0.8, 0.8), 
                                               linestyle="None", 
                                               marker="None")
-        plt.scatter(mhjds, renormfluxes/ref, s=12, 
+        plt.scatter(mhjds, normfluxes/ref, s=12, 
                                              c=airmasses, 
                                              vmin=1.0, vmax=1.5, 
                                              edgecolors='none', 
                                              zorder=20)
         
     
-        plt.title(f"Source {sourcename}, {deckey}, normalized with {renormname}")
+        plt.title(f"Source {sourcename}, {deckey}, normalized with {normname}")
         plt.xlabel("MHJD")
         plt.ylabel("Flux in electrons / median")
         plt.grid(True)
@@ -94,7 +94,7 @@ for setname, renormsources in zip(setnames, allrenormsources):
         #cbar.set_label('Raw skylevel [electrons]')
         
         if settings['savefigs']:
-            fname = f"renorm_{setname}_{renormname}_renormflux_{sourcename}.pdf"
+            fname = f"norm_{setname}_{normname}_normflux_{sourcename}.pdf"
             plotfilepath = os.path.join(plotdir, fname)
             plt.savefig(plotfilepath)
             print(f"Wrote {plotfilepath}")

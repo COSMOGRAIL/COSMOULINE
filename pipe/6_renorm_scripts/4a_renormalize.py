@@ -7,23 +7,23 @@ from astropy.stats import sigma_clip
 sys.path.append(os.path.dirname(sys.path[0]))
 sys.path.append('..')
 from config import imgdb, settings, plotdir, dbbudir,\
-                   renormerrfieldname, renormcommentfieldname
+                   normerrfieldname, normcommentfieldname
 from modules.variousfct import proquest, backupfile
 from modules.kirbybase import KirbyBase
 
 db = KirbyBase(imgdb, fast=True)
 
 askquestions = settings['askquestions']
-renormname = settings['renormname']
-allrenormsources = settings['renormsources']
+normname = settings['normname']
+allnormsources = settings['normsources']
 setnames = settings['setnames']
 
 
-print("You want to calculate a renormalization coefficient called:")
-print(renormname)
+print("You want to calculate a normalization coefficient called:")
+print(normname)
 print("using the sources")
-for renormsource in allrenormsources[0]:
-    print(renormsource)
+for normsource in allnormsources[0]:
+    print(normsource)
 
 
 refimgname_per_band = settings['refimgname_per_band']
@@ -31,7 +31,7 @@ refimgname_per_band = settings['refimgname_per_band']
 
 allimages = []
 
-for setname, renormsources in zip(setnames, allrenormsources):
+for setname, normsources in zip(setnames, allnormsources):
     print(" --------- " + setname + " --------- ")
     refimgname = refimgname_per_band[setname]
     # Sort them like this, to ensure that points of one night are side by side
@@ -60,9 +60,9 @@ for setname, renormsources in zip(setnames, allrenormsources):
                             if image["telescopename"] == telescopename]
         print(f"{len(telimages)} images")
         
-        for j, renormsource in enumerate(renormsources):
-            deckey = renormsource[0]
-            sourcename = renormsource[1]
+        for j, normsource in enumerate(normsources):
+            deckey = normsource[0]
+            sourcename = normsource[1]
             deckeyfilenumfield = f"decfilenum_{deckey}"
             fluxfieldname = f"out_{deckey}_S_flux"
             errorfieldname = f"out_{deckey}_S_shotnoise"
@@ -99,8 +99,8 @@ for setname, renormsources in zip(setnames, allrenormsources):
             if len(image["tmp_indivcoeffs"]) == 0:
                 # bummer. Then we will just write 0.0, 
                 # to be sure that this one will pop out.
-                renormcoeff = 0.0
-                renormcoefferr = 0.0
+                normcoeff = 0.0
+                normcoefferr = 0.0
                 
             else :
                 # weighted average with rejection
@@ -110,16 +110,16 @@ for setname, renormsources in zip(setnames, allrenormsources):
                 
                 filtered_weights = 1./_dcoeffs[~clipped.mask]
                 filtered_values = _coeffs[~clipped.mask]
-                renormcoeff = np.average(filtered_values,
+                normcoeff = np.average(filtered_values,
                                          weights=filtered_weights)
-                weighted_variance = np.sum(filtered_weights * (filtered_values - renormcoeff) ** 2) / np.sum(filtered_weights)
-                renormcoefferr = weighted_variance**0.5
+                weighted_variance = np.sum(filtered_weights * (filtered_values - normcoeff) ** 2) / np.sum(filtered_weights)
+                normcoefferr = weighted_variance**0.5
                 
                 
             
             #  the important value at this step:
-            image["tmp_coeff"] = renormcoeff 
-            image["tmp_coefferr"] = renormcoefferr
+            image["tmp_coeff"] = normcoeff 
+            image["tmp_coefferr"] = normcoefferr
             # now each image has such a tmp_coeff.
     
     
@@ -141,7 +141,7 @@ for setname, renormsources in zip(setnames, allrenormsources):
     if len(refimage["tmp_indivcoeffs"]) == 0:
         print("You did not deconvolve the reference image.")
         print("Warning: I will not scale the",
-              "renormalization coeffs as usual!")
+              "normalization coeffs as usual!")
         
         refnewcoeff = np.median(np.array([image["tmp_coeff"] 
                                           for image in bandimages]))
@@ -150,8 +150,8 @@ for setname, renormsources in zip(setnames, allrenormsources):
         refnewcoeff = refimage["tmp_coeff"]
         
     for image in bandimages:
-        image["renormcoeff"] = image["tmp_coeff"] / refnewcoeff
-        image["renormcoefferr"] = image["tmp_coefferr"] / refnewcoeff
+        image["normcoeff"] = image["tmp_coeff"] / refnewcoeff
+        image["normcoefferr"] = image["tmp_coefferr"] / refnewcoeff
         
         # And we keep track of the number of stars used
         # to calculate this particular coeff:
@@ -165,16 +165,16 @@ for setname, renormsources in zip(setnames, allrenormsources):
     # sets figure size
     plt.figure(figsize=(15,15))
     
-    renormcoeffs = np.array([image["renormcoeff"] for image in bandimages])
-    errs = np.array([image["renormcoefferr"] for image in bandimages])
+    normcoeffs = np.array([image["normcoeff"] for image in bandimages])
+    errs = np.array([image["normcoefferr"] for image in bandimages])
     
 
     
-    plt.errorbar(np.arange(len(renormcoeffs)), 
-                 renormcoeffs, yerr=errs,
+    plt.errorbar(np.arange(len(normcoeffs)), 
+                 normcoeffs, yerr=errs,
                  linestyle="None", 
                  marker=".", 
-                 label=renormname, 
+                 label=normname, 
                  color="red")
     
     # and show the plot
@@ -188,7 +188,7 @@ for setname, renormsources in zip(setnames, allrenormsources):
     
     if settings['savefigs']:
         plotfilepath = os.path.join(plotdir, 
-                           f"renorm_{setname}_{renormname}.pdf")
+                           f"norm_{setname}_{normname}.pdf")
         plt.savefig(plotfilepath)
         print(f"Wrote {plotfilepath}")
     else:
@@ -201,26 +201,26 @@ print("Ok, I will now add these coefficients to the database.")
 proquest(askquestions)
 
 # As we will tweak the database, do a backup first
-backupfile(imgdb, dbbudir, renormname)
+backupfile(imgdb, dbbudir, normname)
 
 
 
 
-if renormname in db.getFieldNames(imgdb):
-    print("The field", renormname, "already exists in the database.")
+if normname in db.getFieldNames(imgdb):
+    print("The field", normname, "already exists in the database.")
     print("I will erase it.")
     proquest(askquestions)
-    db.dropFields(imgdb, [renormname])
-    if renormerrfieldname in db.getFieldNames(imgdb):
-        db.dropFields(imgdb, [renormerrfieldname])
-    if renormcommentfieldname in db.getFieldNames(imgdb):
-        db.dropFields(imgdb, [renormcommentfieldname])
+    db.dropFields(imgdb, [normname])
+    if normerrfieldname in db.getFieldNames(imgdb):
+        db.dropFields(imgdb, [normerrfieldname])
+    if normcommentfieldname in db.getFieldNames(imgdb):
+        db.dropFields(imgdb, [normcommentfieldname])
 
 db.pack(imgdb) # to erase the blank lines
 
-db.addFields(imgdb, [f'{renormname}:float', 
-                     f'{renormerrfieldname}:float', 
-                     f'{renormcommentfieldname}:str'])
+db.addFields(imgdb, [f'{normname}:float', 
+                     f'{normerrfieldname}:float', 
+                     f'{normcommentfieldname}:str'])
 
 widgets = [progressbar.Bar('>'), ' ',
            progressbar.ETA(), ' ',
@@ -232,9 +232,9 @@ for i, image in enumerate(allimages):
     pbar.update(i)
     db.update(imgdb, ['recno'], 
                      [image['recno']], 
-                     {renormname: float(image["renormcoeff"]), 
-                      renormerrfieldname : float(image["renormcoefferr"]), 
-                      renormcommentfieldname: str(int(image["nbcoeffstars"]))})
+                     {normname: float(image["normcoeff"]), 
+                      normerrfieldname : float(image["normcoefferr"]), 
+                      normcommentfieldname: str(int(image["nbcoeffstars"]))})
 
 pbar.finish()
 

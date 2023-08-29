@@ -10,7 +10,7 @@ from config import settings
 from modules.deconv_utils import readout_object
 
 
-renorm_stars = settings['renorm_stars']
+norm_stars = settings['norm_stars']
 
-for star in renorm_stars:
+for star in norm_stars:
     readout_object(star, decname="noback", decnormfieldname="None")

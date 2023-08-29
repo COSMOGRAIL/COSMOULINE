@@ -35,7 +35,7 @@ nightmaxnormcoeff = settings['nightmaxnormcoeff']
 nightminnbimg = settings['nightminnbimg']
 writeheader = settings['writeheader']
 showplots = settings['showplots']
-renormname = settings['renormname']
+normname = settings['normname']
 
 
 
@@ -72,7 +72,7 @@ images = [image for image in images if image["ell"] <= imgmaxell]
 print(f"Rejected because ell > {imgmaxell:.2f} : {int(before - len(images))}")
 
 before = len(images)
-images = [image for image in images if image["skylevel"]*image[renormname] <= imgmaxrelskylevel] # We rescale the sky level in the same way as for source fluxes.
+images = [image for image in images if image["skylevel"]*image[normname] <= imgmaxrelskylevel] # We rescale the sky level in the same way as for source fluxes.
 print(f"Rejected because relskylevel > {imgmaxrelskylevel:.2f} : {int(before - len(images))}")
 
 
@@ -125,7 +125,7 @@ for image in images:
 
     image[normcoeffname + "_sigma"] = image[normcoeffname + "_err"] 
 
-    # - Combining shotnoise and renormsigma *per image*, in preparation for later calculations
+    # - Combining shotnoise and normsigma *per image*, in preparation for later calculations
     # Error on f(x*y) = sqrt(x**2 * y_err**2 + y**2 * x_err**2)
     # where : y = fluxfieldname +/- shotnoisefieldname
     #         x = normcoeffname +/- normcoeffname_sigma
@@ -264,7 +264,7 @@ All errors are computed for the *mean/median* of a night's measurements (i.e. "d
 
 To add : the same but for single images of that night, i.e., without dividing by sqrt(nbimgs)
 6 : theoretical shotnoise errror only
-7 : shotnoise + renorm
+7 : shotnoise + norm
 8 : mad
 
 """
@@ -286,7 +286,7 @@ for i, sourcename in enumerate(sourcenames):
     normshotnoises = normshotnoises / sqrtnbimgs
     magerrs0 = 2.5 * np.log10(1.0 + normshotnoises / normfluxes)
 
-    ##### Errorbar 1 : shotnoise combined with renormalization error, also divided by sqrtnbimgs.
+    ##### Errorbar 1 : shotnoise combined with normalization error, also divided by sqrtnbimgs.
     # We have already calculated the relative coeff errors. Turning them into absolute ones and combining with shotnoise :
     normnormcoefferrs = normfluxes * medrelnormcoeffsigmas / sqrtnbimgs  # We divide by sqrt n (normshotnoises is already divided, see error 0 !)
     normcombierrors = np.sqrt(normnormcoefferrs ** 2 + normshotnoises ** 2)
@@ -294,7 +294,7 @@ for i, sourcename in enumerate(sourcenames):
 
     # assert np.all(magerrs1 > magerrs0)
 
-    ##### Errorbar 2 : Also the median shotnoise combined with median renormalization error of a typical image in this night.
+    ##### Errorbar 2 : Also the median shotnoise combined with median normalization error of a typical image in this night.
     # The difference is that here (and only for the calculation of the error bar),
     # the median of the fluxes is taken even before normalization (Why ?? Bad idea I think).
     # As always, the genreral formula for the combined error of flux*normcoeff = sqrt(normcoeff**2 * shotnoise**2 + flux**2 * normcoefferr**2).
@@ -304,7 +304,7 @@ for i, sourcename in enumerate(sourcenames):
         (np.asarray(mednormcoeffs) ** 2 * medshotnoises ** 2) + (medfluxes ** 2 * mednormcoeffsigmas ** 2)) / sqrtnbimgs
     magerrs2 = 2.5 * np.log10(1.0 + medcombierrors / normfluxes)
 
-    ##### Errorbar 3 : Median of combined error per image (of shotnoise and renormerr), divided by the number of images per night
+    ##### Errorbar 3 : Median of combined error per image (of shotnoise and normerr), divided by the number of images per night
     # The ingredients are the same as for errorbar 1, just the medians are taken "later".
     combinighterrors = np.fabs(np.array(groupfct.values(nights, combierrorfieldname, normkey=None)['median']))
     combinighterrors = combinighterrors / sqrtnbimgs

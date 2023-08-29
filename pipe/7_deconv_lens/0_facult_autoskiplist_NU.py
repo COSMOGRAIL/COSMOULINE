@@ -2,7 +2,7 @@
 #   deconvolution, according to very simple criteria specified below.
 #    This is perfectly facultative !
 
-#    Do this for the lens, no need to run it for the renormalization stars etc 
+#    Do this for the lens, no need to run it for the normalization stars etc 
 #   (as the bad images will be skiped for the lens anyway)
 
 import numpy as np

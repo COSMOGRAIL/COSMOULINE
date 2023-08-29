@@ -21,8 +21,8 @@
 # db = KirbyBase(imgdb, fast=True)
 
 # askquestions = settings['askquestions']
-# renormname = settings['renormname']
-# allrenormsources = settings['renormsources']
+# normname = settings['normname']
+# allnormsources = settings['normsources']
 # setnames = settings['setnames']
 # decnormfieldname = settings['decnormfieldname']
 # workdir = settings['workdir']

@@ -75,10 +75,10 @@ readme.append("\nDeconvolution sources :")
 readme.extend(deconvolutionsreadout)
 
 
-renorms = [fieldname for fieldname in fieldnames if fieldname[0:6] == "renorm"]
+norms = [fieldname for fieldname in fieldnames if fieldname[0:6] == "norm"]
 
-readme.append("\nRenorms :")
-readme.extend(renorms)
+readme.append("\nnorms :")
+readme.extend(norms)
 
 
 readmetxt = "\n".join(readme)

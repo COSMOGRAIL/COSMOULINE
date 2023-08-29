@@ -178,7 +178,7 @@ for deckey, ptsrccat, deckeyfilenum, deckeynormused in \
                                     transform=ax.transAxes)
     
     if plotnormfieldname:
-        titletext3 = f"Renormalized with {plotnormfieldname}"
+        titletext3 = f"normalized with {plotnormfieldname}"
         ax.text(0.02, 0.92, titletext3, verticalalignment='top',
                                         horizontalalignment='left',
                                         transform=ax.transAxes)

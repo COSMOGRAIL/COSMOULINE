@@ -5,41 +5,15 @@ from pathlib import Path
 from settingsReader import Settings
 
 # ---------------------------------------------------------------------------
-# User settings :
+# User settings
 # ---------------------------------------------------------------------------
 
+# ----------------------- COMPUTER SETUP -----------------------------
 # Choose a computer :
 computer = "fred"
-
-# The pipeline dir that contains all the scripts (and this "config.py" ) :
-pipedir = "/home/fred/Documents/COSMOULINE/pipe/"
-
-# The configuration directory that contains the configuration files :
-# ("small-precious-frequently-backuped-disk")
-# The scripts do only read, but never write, from here !
-configdir = "/scratch/COSMOULINE/WFI_PSJ0030-1525/config/"
-#---------------------------------------------------------------------------
-# All further settings are made into the configdir.
-# You should normally not have to change other lines of this config.py
-#---------------------------------------------------------------------------
-
-
-# to get access to all our modules without installing anything :
-sys.path.append(os.path.join(pipedir, "modules"))
-
-# also I want to get rid of the global variables everywhere.
-# add the config dir to the path. (Later use a json for the config)
-sys.path.append(configdir)
-# Read "global parameters" of the lens / deconvolution :
-# print(os.path.join(configdir, "settings.py"))
-
-
-settings = Settings(configdir)
-
-
 # sometimes we call python from inside the scripts.
 python = "python"
-# ----------------------- COMPUTER SETUP -----------------------------
+# here define `sex` (path to your sextractor binary) and `python`.
 if computer=="vivien":
     sex = "/bin/sex"
     #sex = "~/modules/ureka/Ureka/bin/sex"
@@ -68,26 +42,35 @@ if computer=="martin":
 # ---------------------------------------------------------------------------
 if computer=="fred":
     sex = "/usr/bin/sex"
-    python = "/home/fred/anaconda3/bin/python"
-    python = "/home/fred/anaconda3/envs/starred-env/bin/python"
+    python = "/scratch/mambaforge/envs/starred-env/bin/python"
+# ---------------------------------------------------------------------------
+
+# ----------------------- DIRECTORIES --------- -----------------------------
+
+# The pipeline dir that contains all the scripts (and this "config.py")
+# by default, "here"
+pipedir = str(Path(__file__).parent)
+
+# The configuration directory that contains the configuration files :
+# ("small-precious-frequently-backuped-disk")
+# The scripts do only read, but never write, from here !
+configdir = "/scratch/COSMOULINE/WFI_PSJ0030-1525/config/"
+#---------------------------------------------------------------------------
+# All further settings are made into the configdir.
+# You should normally not have to change other lines of this config.py
+#---------------------------------------------------------------------------
+
+# to get access to all our modules without installing anything :
+sys.path.append(os.path.join(pipedir, "modules"))
+
+# also I want to get rid of the global variables everywhere.
+# add the config dir to the path. (Later use a json for the config)
+sys.path.append(configdir)
+# Read "global parameters" of the lens / deconvolution :
+# print(os.path.join(configdir, "settings.py"))
 
 
-# Path to compiled programs :
-
-mcsf77dir = os.path.join(pipedir, "progs", "MCSf77")
-
-if computer == "vivien":
-    mcsf77dir = '/home/vivien/modules/MCSf77'
-
-
-prefix = ""
-extractexe = prefix + os.path.join(mcsf77dir, "extract.exe")
-psfexe = prefix + os.path.join(mcsf77dir, "psf.exe")
-deconvexe = prefix + os.path.join(mcsf77dir, "deconv.exe")
-if settings['silencemcs'] == True:
-    psfexe = prefix + os.path.join(mcsf77dir, "psf_silence.exe")
-    deconvexe = prefix + os.path.join(mcsf77dir, "deconv_silence.exe")
-
+settings = Settings(configdir)
 
 # ------------------------ GENERAL CONFIG ---------------------------------
 workdir = settings['workdir']
@@ -99,39 +82,20 @@ imgdb = os.path.join(workdir, "database.dat")
 # The database is automatically backuped here.
 dbbudir = os.path.join(workdir, "backups")    
 
-# Alignment etc is done here
+# Image processing etc is done here:
 alidir = os.path.join(workdir, "ali/")      
-# Some plots will go here (not used anymore)  
-plotdir = os.path.join(workdir, "plots/")    
-
-# Image lists (line format : imgname comment 
-# (you can leave blank lines and use "#" to comment a line !)) :
-imgkicklist = os.path.join(configdir, "kicklist.txt")    
-# Images that get "gogogo" set to False by the extrascript "kickimg.py",
-# as they simply cannot be used (too faint, cosmic on lens, etc)
-# No other script uses that list.
-
-
-testlist = os.path.join(configdir, "testlist.txt")            
-# This is an "allow list" for test runs (e.g. psf construction, ...).
-# Write images + comments on this list, and use the extrascri   pt "set_testlist.py"
-# to set the "testlist" and "testcomment" flags in the database.
-# This list is also handy if you want to rebuild some handpicked psfs after 
-# a change of some parameters for instance !
-
-
-# File with the coordinates of the regions
-regionscat = os.path.join(configdir, 'regions.cat')
+# We'll store the plots there:
+plotdir = os.path.join(workdir, "plots/")
 
 # File with the gaia regions
 all_gaia_filename = os.path.join(workdir, 'all_gaia_detections.csv')
 filtered_gaia_filename = os.path.join(workdir, 'filtered_gaia_detections.csv')
 
 # ------------------------------ DEFRINGING ---------------------------------
-# do you want to work on defringed images (if they exists ?)
+# do you want to defringe your images? (make sure they're dithered ...)
 if settings['telescopename'] in ["WFI", "LCO"]:
     defringed = True
-else :
+else:
     defringed = False
 
 
@@ -142,10 +106,9 @@ combibestkey = "combi_" + settings['combibestname']
 
 # ------------------------ COMBINATION BY NIGHT ------------------------------
 
-combinightdirname = 'combinight_'  + settings['combinightname']
+combinightdirname = 'combinight_' + settings['combinightname']
 
 combinightdirpath = os.path.join(workdir, combinightdirname)
-
 
 # ------------------------ PSF CONSTRUCTION ---------------------------------
 
@@ -170,18 +133,20 @@ if not extracteddir.exists():
 
 cosmicslabelfile = extracteddir / 'cosmics_labels.json'
 
-
-# file with psf star coordinates (lineformat : "somename x y")
-psfstarcat = os.path.join(configdir, psfkey + ".cat")
+# we expect the fit of the PSF to sometimes fail! This is why we have this file, "psfkicklist" that for a given
+# PSF name (usually a list of named stars, e.g., `abc`, per the cosmouline tradition) where the user can add
+# the images for which the PSF construction went wrong.
 psfkicklist = os.path.join(configdir, psfkey + "_skiplist.txt")
-# Its a black list *after* the psf construction (i.e. that will be used for the deconvolution)
+# It's a disallow list used after the psf construction (i.e. that will be used for the deconvolution)
 # Note that this can potentially be read by various scripts : this is why
 # It is important to KEEP THIS LIST IN YOUR CONFIGDIR, FOR EVERY PSF, AND WITH THIS PRECISE NAME !
 
 
 # ------------------------ DECONVOLUTION ------------------------------------
 
-# I like to do many deconvolutions... we could choose an explicit deckey like :
+# each deconvolution has a name: given by the setname (usually filter of observation), an identifier (decname),
+# the object being deconvolved (usually `lens` or a star name, e.g. `a`), a normalization name, and the names of the
+# PSFs.
 deckeys = [ "dec" \
        + "_" + setname \
        + "_" + settings['decname'] \
@@ -191,9 +156,6 @@ deckeys = [ "dec" \
          for setname in settings['setnames']]
 
 
-# where the initial position and intensities are written
-ptsrccats = [os.path.join(configdir, deckey + "_ptsrc.cat") 
-                 for deckey in deckeys]
 # put here images that you do not want to include 
 # in this particular deconvolution.
 decskiplists = [os.path.join(configdir, deckey + "_skiplist.txt")
@@ -208,39 +170,22 @@ deckeypsfuseds = ["decpsf_" + deckey
 # coeff that was actually used
 deckeynormuseds = ["decnorm_" + deckey
                     for deckey in deckeys]
-# Don't even think of changing this last one (hard coded in : renorm)
+# Don't even think of changing this last one (hard coded in : norm)
 maindecdir = os.path.join(workdir, "deconvolutions")
-decdirs  = [os.path.join(maindecdir, deckey) 
-                for deckey in deckeys]
+decdirs = [os.path.join(maindecdir, deckey)
+               for deckey in deckeys]
 decfiles = [os.path.join(decf, 'stamps-noisemaps-psfs.h5') 
                 for decf in decdirs]
 
 
 
-# ------------------------ RENORMALIZATION ----------------------------------
+# -------------------------- NORMALIZATION ----------------------------------
 
-renormerrfieldname = settings['renormname'] + "_err"
-renormcommentfieldname = settings['renormname'] + "_comment"
+normerrfieldname = settings['normname'] + "_err"
+normcommentfieldname = settings['normname'] + "_comment"
 
 
 # ---------------------------------------------------------------------------
-
-
-# F77 MCS config files templates (no need to change anything here)
-
-extract_template_filename = os.path.join(configdir, "template_extract.txt")
-psf_template_filename = os.path.join(configdir, "template_psfmofsour8.txt")
-
-old_extract_template_filename = os.path.join(configdir, "template_old_extract.txt")
-old_psfm_template_filename = os.path.join(configdir, "template_old_psfmof.txt")
-old_lambda_template_filename = os.path.join(configdir, "template_old_lambda.txt")
-
-in_template_filename = os.path.join(configdir, "template_in.txt")
-deconv_template_filename = os.path.join(configdir, "template_deconv.txt")
-
-# ---------------------------------------------------------------------------
-
-
 # check for some general dirs
 
 if not os.path.isdir(pipedir):
@@ -276,10 +221,5 @@ pklgenericfilepath = os.path.join(configdir, f"{lensName}_db.pkl")
 dbcopyfilepath = os.path.join(configdir, filename + "_db.dat")
 
 # ---------------------------------------------------------------------------
-
-
 print(f"### Config dir: {configdir} ###")
-
 # ---------------------------------------------------------------------------
-
-

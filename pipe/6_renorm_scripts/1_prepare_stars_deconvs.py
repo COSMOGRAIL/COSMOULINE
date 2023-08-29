@@ -12,8 +12,8 @@ sys.path.append('..')
 from config import settings
 from modules.prepare_deconvolution import prepare_deconvolution
 
-renorm_stars = settings['renorm_stars']
+norm_stars = settings['norm_stars']
 
-for star in renorm_stars:
+for star in norm_stars:
     # norm coefficient: 1 everywhere
     prepare_deconvolution(star, decnormfieldname="None", decname="noback")

@@ -1,5 +1,5 @@
 #
-#	write a report about the renormalization
+#	write a report about the normalization
 #	not sure if useful... let's see
 #
 
@@ -10,13 +10,13 @@ sys.path.append(os.path.dirname(sys.path[0]))
 # if ran interactively, append the parent manually as sys.path[0] 
 # will be emtpy.
 sys.path.append('..')
-from config import imgdb, settings, renormerrfieldname, renormcommentfieldname
+from config import imgdb, settings, normerrfieldname, normcommentfieldname
 from modules.kirbybase import KirbyBase
 
-renormname = settings['renormname']
+normname = settings['normname']
 workdir = settings['workdir']
 
-fields = ['imgname', renormname, renormerrfieldname, renormcommentfieldname]
+fields = ['imgname', normname, normerrfieldname, normcommentfieldname]
 
 
 db = KirbyBase(imgdb)
@@ -32,12 +32,12 @@ for setname in sorted(list(usedsetnames)):
 	setreport = db.select(imgdb, ['gogogo','treatme','setname'], 
                                  [True, True, setname],
                                  fields, 
-                                 sortFields=[renormname], 
+                                 sortFields=[normname], 
                                  returnType='report')
 	reporttxt += setreport
 		
 
-reportname = "report_renorm_" + renormname + ".txt"
+reportname = "report_norm_" + normname + ".txt"
 
 reporttxtfile = open(os.path.join(workdir, reportname), "w")
 reporttxtfile.write(reporttxt)
