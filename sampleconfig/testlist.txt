@@ -1,7 +1,0 @@
-#
-#	A few images to run tests on.
-#	Same format as for the kicklist.
-#	Usually you'll want to put the refimage here as well.
-#
-
-
