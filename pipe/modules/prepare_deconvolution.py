@@ -51,7 +51,7 @@ from config import dbbudir, imgdb, settings, configdir, computer,\
 from modules.variousfct import proquest, readimagelist, mterror,\
                                backupfile, notify
 from modules.kirbybase import KirbyBase
-from settings_manager import importSettings
+from modules.deconv_utils import importSettings
 
 db = KirbyBase(imgdb)  
 
@@ -63,11 +63,16 @@ decobjname = settings['decobjname']
 refimgname_per_band = settings['refimgname_per_band']
 setnames = settings['setnames']
 
-def prepare_deconvolution(decobjname, decnormfieldname):
+
+def prepare_deconvolution(decobjname, decname=None, decnormfieldname=None):
+    if decname is None:
+        decname = settings['decname']
+    if decnormfieldname is None:
+        decnormfieldname = settings['decnormfieldname']
     # assemble all the files given a normalization coefficient and a psf
     # (for a deconvolution)
     deckeyfilenums, deckeynormuseds, deckeys, decdirs, decfiles,\
-        decskiplists, deckeypsfuseds, ptsrccats = importSettings(decobjname)
+        decskiplists, deckeypsfuseds, ptsrccats = importSettings(decobjname, decname, decnormfieldname)
             
     #%%
 

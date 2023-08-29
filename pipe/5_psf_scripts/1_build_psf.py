@@ -40,13 +40,11 @@ redo = 1
 # Parameters
 subsampling_factor = 2
 n_iter_initial = 20
-n_iter = 1000 #epoch for adabelief
+n_iter = 3000 #epoch for adabelief
 
 
-lambda_scales = 1
-lambda_hf = 1
 lambda_positivity = 0.
-include_moffat = False
+include_moffat = True
 regularize_full_psf = False
 convolution_method = 'fft'
 method_analytical = 'trust-constr'
@@ -298,7 +296,7 @@ def buildPSF(image, noisemap):
                     noisemap**2, len(image), 
                     regularization_terms='l1_starlet',
                     regularization_strength_scales=1.,#lambda_scales, 
-                    regularization_strength_hf=30.,
+                    regularization_strength_hf=20.,
                     regularization_strength_positivity=lambda_positivity, 
                     W=W, 
                     regularize_full_psf=regularize_full_psf)
@@ -310,7 +308,7 @@ def buildPSF(image, noisemap):
         
     optimiser_optax_option = {
                                 'max_iterations':n_iter, 'min_iterations':None,
-                                'init_learning_rate':3e-4, 'schedule_learning_rate':True,
+                                'init_learning_rate':1e-4, 'schedule_learning_rate':True,
                                 # important: restart_from_init True
                                 'restart_from_init':True, 'stop_at_loss_increase':False,
                                 'progress_bar':True, 'return_param_history':True

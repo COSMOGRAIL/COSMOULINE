@@ -29,17 +29,7 @@ setnames = settings['setnames']
 renorm_stars = settings['renorm_stars']
 subsampling_factor = settings['subsampling_factor']
 
-decname = settings['decname']
-decnormfieldname = settings['decnormfieldname']
-
-
 redo = False
-
-if not decname == 'noback' or not decnormfieldname == 'None':
-    print("Your decname is not 'noback' or your decnormfieldname is not 'None'.")
-    print("Please make set them this way to be consistent with the COSMOULINE tradition.")
-    print("Also, during the normalization we will looks for deconvs named `noback`.")
-    sys.exit()
 
 def doOneDeconvolution(decfile):
     
@@ -112,10 +102,11 @@ def doOneDeconvolution(decfile):
     
     return kwargs_final, extra_fields
 
+
 for star in renorm_stars:
-    # for each star
+    # for each star, prepare and stuff
     deckeyfilenums, deckeynormuseds, deckeys, decdirs,\
-            decfiles, decskiplists, deckeypsfuseds, ptsrccats = importSettings(star)
+            decfiles, decskiplists, deckeypsfuseds, ptsrccats = importSettings(star, decnormfieldname="None", decname="noback")
 
     for decfile, decdir in zip(decfiles, decdirs):
         plotfile = os.path.join(decdir, f"deconv_star_{star}_loss_history.jpg")

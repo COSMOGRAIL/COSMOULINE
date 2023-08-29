@@ -15,18 +15,21 @@ from config import dbbudir, imgdb, settings, computer
 from modules.variousfct import notify, backupfile
 from modules.kirbybase import KirbyBase
 
-def importSettings(decobjname):
+def importSettings(decobjname, decname=None, decnormfieldname=None):
     """
     returns all the deconvolution keys given an object name
     """
     
     from config import settings, configdir
     workdir = settings['workdir']
-    decname = settings['decname']
-    decnormfieldname = settings['decnormfieldname']
+    if decname is None:
+        decname = settings['decname']
+    if decnormfieldname is None:
+        decnormfieldname = settings['decnormfieldname']
     decpsfnames = settings['decpsfnames']
     setnames = settings['setnames']
-    
+
+    maindecdir = os.path.join(workdir, "deconvolutions")
 
     decskiplists, deckeyfilenums, deckeypsfuseds  = [], [], []
     deckeynormuseds, decdirs, deckeys, decfiles = [], [], [], []
@@ -44,7 +47,7 @@ def importSettings(decobjname):
         deckeypsfuseds.append(deckeypsfused)
         deckeynormused = "decnorm_" + deckey
         deckeynormuseds.append(deckeynormused)
-        decdir = os.path.join(workdir, deckey)
+        decdir = os.path.join(maindecdir, deckey)
         decdirs.append(decdir)
         decfile = os.path.join(decdir, 'stamps-noisemaps-psfs.h5')
         decfiles.append(decfile)
@@ -76,7 +79,12 @@ def rebin(a, newshape):
     return eval(''.join(evList))
 
 
-def readout_object(object_name):
+def readout_object(object_name, decname=None, decnormfieldname=None):
+
+    if decname is None:
+        decname = settings['decname']
+    if decnormfieldname is None:
+        decnormfieldname = settings['decnormfieldname']
     
     pointsourcesnames = settings['pointsourcesnames']
 
@@ -91,7 +99,8 @@ def readout_object(object_name):
 
     
     deckeyfilenums, deckeynormuseds, deckeys, decdirs,\
-           decfiles, decskiplists, deckeypsfuseds, ptsrccats = importSettings(object_name)
+           decfiles, decskiplists, deckeypsfuseds, ptsrccats = importSettings(object_name, decname=decname,
+                                                                              decnormfieldname=decnormfieldname)
 
     for deckey, decskiplist, deckeyfilenum, setname, ptsrccat, \
             deckeypsfused, deckeynormused, decdir, decfile in \

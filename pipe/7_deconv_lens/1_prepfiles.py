@@ -58,4 +58,4 @@ if decname == 'noback' or  decnormfieldname == 'None':
 
 
 
-prepare_deconvolution('lens', decnormfieldname) 
+prepare_deconvolution('lens', decname=decname, decnormfieldname=decnormfieldname)

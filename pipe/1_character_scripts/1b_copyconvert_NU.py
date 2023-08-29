@@ -45,6 +45,7 @@ print("I will copy/convert %i images." % (nbrofimages))
 proquest(askquestions)
 
 trim_vertical = settings['trim_vertical']
+trim_horizontal = settings['trim_horizontal']
 
 
 for i, image in enumerate(images):
@@ -60,12 +61,13 @@ for i, image in enumerate(images):
             print("Image already exists. I skip...")
             #pass
             continue
-        
 
     pixelarray, header = fromfits(image['rawimg'])
     
     if trim_vertical > 0:
         pixelarray = pixelarray[:, trim_vertical:-trim_vertical]
+    if trim_horizontal > 0:
+        pixelarray = pixelarray[trim_horizontal:-trim_horizontal, :]
     
     pixelarray = pixelarray * image['gain']
     # so that we have an image in electrons and not in ADU

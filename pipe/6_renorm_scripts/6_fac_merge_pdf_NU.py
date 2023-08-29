@@ -2,6 +2,7 @@ from PyPDF2 import PdfWriter, PdfReader
 import glob
 import sys
 import os
+from pathlib import Path
 # if ran as a script, append the parent dir to the path
 sys.path.append(os.path.dirname(sys.path[0]))
 # if ran interactively, append the parent manually as sys.path[0] 
@@ -18,7 +19,7 @@ for setname in setnames:
     print("I will create a single pdf file with all the renormalisation plots") 
 
     # Creating a routine that appends files to the output file
-    def append_pdf(inp,out):
+    def append_pdf(inp):
         [output.add_page(inp.pages[page_num]) for page_num in range(len(inp.pages))]
 
     # Creating an object where pdf pages are appended to
@@ -26,11 +27,13 @@ for setname in setnames:
 
     # Appending two pdf-pages from two different files
 
-    for fil in files : 
-        append_pdf(PdfReader(open(fil,"rb")),output)
-        
+    for fil in files:
+        append_pdf(PdfReader(open(fil, "rb")))
 
     # Writing all the collected pages to a file
     outpath = os.path.join(plotdir, f"Combined_{setname}_{renormname}.pdf")
     output.write(open(outpath, "wb"))
+    # ok, remove the originals
+    for ff in files:
+        Path(ff).unlink()
 

@@ -15,8 +15,7 @@ sys.path.append('..')
 from config import dbbudir, imgdb, settings, computer
 from modules.variousfct import notify, backupfile
 from modules.kirbybase import KirbyBase
-from settings_manager import importSettings
-from modules.deconv_utils import rebin
+from modules.deconv_utils import rebin, importSettings
 
 
 pointsourcesnames = settings['pointsourcesnames']
@@ -40,7 +39,7 @@ uselinks = settings['uselinks']
 
     
 deckeyfilenums, deckeynormuseds, deckeys, decdirs,\
-           decfiles, decskiplists, deckeypsfuseds, ptsrccats = importSettings('lens')
+           decfiles, decskiplists, deckeypsfuseds, ptsrccats = importSettings('lens', decname=decname, decnormfieldname=decnormfieldname)
 
 
 

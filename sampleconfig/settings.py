@@ -5,7 +5,7 @@ from os.path import join
 lensName = "PSJ0030-1525"
 # here you can be more precise if you want:
 lensRA   = "00:30:00.00"
-lensDEC  = "15:25:00.00"
+lensDEC  = "-15:25:00.00"
 # an estimate of the magnitude, not too important:
 lensMag  = 19.0
 
@@ -101,10 +101,13 @@ rawdirs = [join(baseraw, setname) for setname in setnames]
 # e.g., if trim_vertical = 1000:
 # init height: 4000, final height: 2000
 # shape (2000, 4000) --> shape (2000, 2000)
-trim_vertical = 1000
+trim_vertical = 0
+trim_horizontal = 0
 # set to zero to not use.
 if trim_vertical > 0 and not telescopename in ['WFI', 'VST']:
-	raise RuntimeError("Are you sure you want to trim??? comment me out if yes.")
+    raise RuntimeError("Are you sure you want to trim??? comment me out if yes.")
+if trim_horizontal > 0:
+    raise RuntimeError("Are you sure you want to trim??? comment me out if yes.")
 
 #------------------------ ASTROCALC ----------------------------------------
 
@@ -131,43 +134,6 @@ refimgname = "844_WFI.2021-09-10T04:53:56.457"
 
 # photometric and PSF reference images (one per band!)
 refimgname_per_band = {"844": "844_WFI.2021-09-10T04:53:56.457"}
-
-
-
-# dimensions you want for the aligned images (you have to start at pixels (1,1), no choice)
-if telescopename == "WFI" or telescopename == "VST":
-    dimx = 2022
-    dimy = 4000
-else :
-    dimx = 3600
-    dimy = 3600
-# currently this is NOT BEING USED ANYWHERE. Remove in the future? 
-# or implement a crop of the data to save space. 
-
-# Where is the lens? THESE CAN BE AUTO-FILLED BY 
-# THE SCRIPT 4_norm_scripts/0_pick_normstars.py 
-# using the menu at the top left of the GUI that appears.
-lensregion = "[1008:1055 , 2023:2062]"
-# Region of empty sky (to estimate stddev), 100 x 100 pixel is more then enough.
-emptyregion = "[923:969 , 1969:2007]"
-# These regions apply to the aligned images.
-
-# And now some alignment parameters that you should actually not have to change at all.
-
-# Tolerance in pixels when identifying stars and finding the transformation.
-identtolerance = 5.
-# 5.0 should work (even 2.0 does), higher values would be required in case of strong distortion.
-
-identminnbrstars = 5
-# number of stars that must match for the finding to be sucessfull
-# a default value would be half of the number of alignment stars for instance.
-# minimum is 3 of course. 5 is fine, it will work well in nearly all cases.
-# A small number will give higher probability of wrong alignment
-
-identfindmindist = 300
-# distances (in pixels) of stars to consider for finding pairs in the algorithm
-# 300 pixels is good. Put smaller values if you have only a few close stars available for alignment.
-
 
 
 #------------------------ SEXTRACTOR PHOTOMETRY READOUT --------------------

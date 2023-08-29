@@ -92,7 +92,7 @@ db.addFields(imgdb, ['skylevel:float'])
 
 def updateDB(db, skylevel, image):
     db.update(imgdb, ['recno'], [image['recno']],
-              {'skylevel': skylevel})
+              {'skylevel': float(skylevel)})
 
 
 for i, (skylevel,image) in enumerate(zip(skylevels,images)):

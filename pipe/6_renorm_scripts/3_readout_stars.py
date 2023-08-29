@@ -13,4 +13,4 @@ from modules.deconv_utils import readout_object
 renorm_stars = settings['renorm_stars']
 
 for star in renorm_stars:
-    readout_object(star)
+    readout_object(star, decname="noback", decnormfieldname="None")

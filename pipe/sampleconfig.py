@@ -179,24 +179,6 @@ psfkicklist = os.path.join(configdir, psfkey + "_skiplist.txt")
 # It is important to KEEP THIS LIST IN YOUR CONFIGDIR, FOR EVERY PSF, AND WITH THIS PRECISE NAME !
 
 
-# ------------------------ OBJECT EXTRACTION --------------------------------
-# single extraction
-
-objkey = "obj_" + settings['objname']   # Don't touch, it would screw more than you can think of !
-objdir = os.path.join(workdir, objkey)  # Don't touch, same...
-objkeyflag = "flag_" + objkey           # Don't touch
-objcosmicskey = objkey + "_cosmics"     # Don't touch
-
-objcoordcat = os.path.join(configdir, objkey + ".cat")
-
-# multiple serial extractions
-objkeys = ["obj_" + objname for objname in settings['objnames']]
-objdirs = [os.path.join(workdir, o) for o in objkeys]
-objkeyflags = ["flag_" + o for o in objkeys]
-objcosmicskeys = [o + "_cosmics" for o in objkeys]
-objcoordcats = [os.path.join(configdir, o + ".cat") for o in objkeys]
-
-
 # ------------------------ DECONVOLUTION ------------------------------------
 
 # I like to do many deconvolutions... we could choose an explicit deckey like :
@@ -227,7 +209,8 @@ deckeypsfuseds = ["decpsf_" + deckey
 deckeynormuseds = ["decnorm_" + deckey
                     for deckey in deckeys]
 # Don't even think of changing this last one (hard coded in : renorm)
-decdirs  = [os.path.join(workdir, deckey) 
+maindecdir = os.path.join(workdir, "deconvolutions")
+decdirs  = [os.path.join(maindecdir, deckey) 
                 for deckey in deckeys]
 decfiles = [os.path.join(decf, 'stamps-noisemaps-psfs.h5') 
                 for decf in decdirs]
@@ -277,6 +260,8 @@ if not os.path.isdir(plotdir):
     os.mkdir(plotdir)
 if not os.path.isdir(dbbudir):
     os.mkdir(dbbudir)
+if not os.path.isdir(maindecdir):
+    os.mkdir(maindecdir)
 # ---------------------------------------------------------------------------
 
 ############ Building the filenames ##############
