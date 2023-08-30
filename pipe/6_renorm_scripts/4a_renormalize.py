@@ -106,7 +106,7 @@ for setname, normsources in zip(setnames, allnormsources):
                 # weighted average with rejection
                 _coeffs = np.array(image["tmp_indivcoeffs"])
                 _dcoeffs = np.array(image["tmp_indivcoeffserr"])
-                clipped = sigma_clip(_coeffs, sigma=3)
+                clipped = sigma_clip(_coeffs, sigma=2.5)
                 
                 filtered_weights = 1./_dcoeffs[~clipped.mask]
                 filtered_values = _coeffs[~clipped.mask]
@@ -156,9 +156,6 @@ for setname, normsources in zip(setnames, allnormsources):
         # And we keep track of the number of stars used
         # to calculate this particular coeff:
         image["nbcoeffstars"] = len(image["tmp_indivcoeffs"])
-            
-    
-    
     
     # gather the treated images in allimages:
     allimages += bandimages

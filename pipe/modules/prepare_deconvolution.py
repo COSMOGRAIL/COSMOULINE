@@ -74,7 +74,6 @@ def prepare_deconvolution(decobjname, decname=None, decnormfieldname=None):
     deckeyfilenums, deckeynormuseds, deckeys, decdirs, decfiles,\
         decskiplists, deckeypsfuseds, ptsrccats = importSettings(decobjname, decname, decnormfieldname)
             
-    #%%
 
     # an awful for loop on all the bands:
     # this will prepare one deconvolution per setname. 

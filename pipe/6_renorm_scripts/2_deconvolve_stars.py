@@ -81,7 +81,7 @@ def doOneDeconvolution(decfile):
 
 
     optimiser_optax_option = {
-                                'max_iterations':1500, 'min_iterations':None,
+                                'max_iterations':3000, 'min_iterations':None,
                                 'init_learning_rate':5e-3, 'schedule_learning_rate':True,
                                 'restart_from_init':True, 'stop_at_loss_increase':False,
                                 'progress_bar':True, 'return_param_history':True

@@ -23,23 +23,19 @@ from starred.utils.noise_utils import propagate_noise
 
 sys.path.append(os.path.dirname(sys.path[0]))
 sys.path.append('..')
-from config import settings, psfsfile, extracteddir,\
-                   cosmicsmasksfile, noisefile, imgdb,\
-                   psfkeyflag
+from config import settings, psfsfile, extracteddir, imgdb, psfkeyflag
 from modules.variousfct import mterror
 from modules.kirbybase import KirbyBase
 from modules.plot_psf import plot_psf
-#%%
-
 
 ###############################################################################
 ###############################################################################
 ###################### PARAMS
-redo = 1
+redo = True
 
 # Parameters
-subsampling_factor = 2
-n_iter_initial = 20
+subsampling_factor = settings['subsampling_factor']
+n_iter_initial = 60
 n_iter = 3000 #epoch for adabelief
 
 
@@ -47,7 +43,7 @@ lambda_positivity = 0.
 include_moffat = True
 regularize_full_psf = False
 convolution_method = 'fft'
-method_analytical = 'trust-constr'
+method_analytical = 'Newton-CG'
 
 ###############################################################################
 ###############################################################################
@@ -56,7 +52,6 @@ method_analytical = 'trust-constr'
 dopsfplots = settings['dopsfplots'] 
 psfname = settings['psfname']
 psfstars = psfname
-
 
 
 if dopsfplots:
@@ -112,7 +107,6 @@ for imgname in imgnames:
     db.update(imgdb, ['imgname'], [imgname], {psfkeyflag: True})
 
 
-    
 # a utility to load the data of one image:
 def getData(imgname):
     data, noise, cosmicsmasks = [], [], []
@@ -123,19 +117,11 @@ def getData(imgname):
             noise.append(container['noise'][s][()])
             cosmicsmasks.append(container['cosmicsmasks'][s][()])
 
-            
-
     cosmicsmasks = np.array(cosmicsmasks)
     data = np.array(data)
     noise = np.array(noise)
     # mask cosmics here.
     noise[cosmicsmasks] = 1e8
-    # for each image, if huge cosmic, discard image (probably a star trail)
-    # for im, no in zip(noisemap, cosmicsmask):
-        # print(no.sum())
-        # if no.sum() > 40:
-            # im[...] = 1e8
-
     return data, noise
 
 
@@ -147,9 +133,9 @@ _image, _ = getData(imgnames[0])
 model = PSF(image_size=_image[0].shape[0], number_of_sources=len(_image), 
             upsampling_factor=subsampling_factor, 
             convolution_method=convolution_method,
-            include_moffat=include_moffat)
+            include_moffat=include_moffat,
+            elliptical_moffat=True)
   
-
 
 smartguess = lambda im: model.smart_guess(im, fixed_background=True)
 
@@ -196,98 +182,61 @@ def buildPSF(image, noisemap):
     # Parameter initialization. 
     
     kwargs_init, kwargs_fixed, kwargs_up, kwargs_down = smartguess(image)
-    #smartguess doesn't know about cosmics, other stars ...
-    kwargs_init['kwargs_gaussian']['x0'] *= 0
-    kwargs_init['kwargs_gaussian']['y0'] *= 0
-    cc = [0.1, 0.1, 0.1, 0.1]
-    kwargs_up['kwargs_gaussian']['x0'] = cc
-    kwargs_up['kwargs_gaussian']['y0'] = cc
-    kwargs_down['kwargs_gaussian']['x0'] = [-e for e in cc]
-    kwargs_down['kwargs_gaussian']['y0'] = [-e for e in cc]
-    
-    """
+
+    # smartguess doesn't know about cosmics, other stars ...
+    # so we'll be a bit careful.
+    medx0 = np.median(kwargs_init['kwargs_gaussian']['x0'])
+    medy0 = np.median(kwargs_init['kwargs_gaussian']['y0'])
+    kwargs_init['kwargs_gaussian']['x0'] = medx0 * np.ones_like(kwargs_init['kwargs_gaussian']['x0'])
+    kwargs_init['kwargs_gaussian']['y0'] = medy0 * np.ones_like(kwargs_init['kwargs_gaussian']['y0'])
+
+
     parameters = ParametersPSF(kwargs_init, 
                                kwargs_fixed, 
                                kwargs_up=kwargs_up, 
                                kwargs_down=kwargs_down)
-    
-    
 
-
-    loss = Loss(image, model, parameters, noisemap**2, len(image), 
+    loss = Loss(image, model, parameters, noisemap**2, len(image),
                 regularization_terms='l1_starlet', 
                 regularization_strength_scales=0, 
-                regularization_strength_hf=0) 
-        
-    # to avoid recompiling at every loop, we update optimizers
-    # if we already created them, rather than creating new ones:
-    # if not optim:
+                regularization_strength_hf=0)
+
     optim = Optimizer(loss, 
                       parameters, 
-                      # method=method_analytical)
-                      method='adabelief')
-    # else:
-    #     optim._loss = loss
-    #     optim._param = parameters 
-    #     optim._metrics.param_history = []
+                      method=method_analytical)
     
     # fit the moffat:
-    # best_fit, logL_best_fit, extra_fields, runtime = optim.minimize(maxiter=n_iter_initial, 
-    #                                                                 restart_from_init=True,
-    #                                                                 use_grad=True, 
-    #                                                                 use_hessian=False, 
-    #                                                                 use_hvp=True)
-    
-    # 
-    
-    optimiser_optax_option = {
-                                'max_iterations':n_iter, 'min_iterations':None,
-                                'init_learning_rate':1e-2, 'schedule_learning_rate':True,
-                                # important: restart_from_init True
-                                'restart_from_init':True, 'stop_at_loss_increase':False,
-                                'progress_bar':True, 'return_param_history':True
-                              }           
-    
-    best_fit, logL_best_fit, extra_fields, runtime = optim.minimize(**optimiser_optax_option)
-    
-    
-    
+    best_fit, logL_best_fit, extra_fields, runtime = optim.minimize(maxiter=n_iter_initial,
+                                                                    restart_from_init=True)
+
     kwargs_partial = parameters.args2kwargs(best_fit)
+
     # now moving on to the background.
-    # compute noise level in starlet space, also propagate poisson noise
-    W = propagate_noise(model, noisemap, kwargs_partial, 
-                        wavelet_type_list=['starlet'], 
-                        method='SLIT', num_samples=100,
-                        seed=1, likelihood_type='chi2', 
-                        verbose=False, 
-                        upsampling_factor=subsampling_factor)[0]
-    
     # Release backgound, fix the moffat
     kwargs_fixed = {
-        'kwargs_moffat': {'fwhm': kwargs_partial['kwargs_moffat']['fwhm'], 
+        'kwargs_moffat': {'fwhm_x': kwargs_partial['kwargs_moffat']['fwhm_x'], 
+                          'fwhm_y': kwargs_partial['kwargs_moffat']['fwhm_y'],
+                          'phi': kwargs_partial['kwargs_moffat']['phi'],
                           'beta': kwargs_partial['kwargs_moffat']['beta'], 
                           'C': kwargs_partial['kwargs_moffat']['C']},
-        'kwargs_gaussian': {},
+        'kwargs_gaussian': {
+                          #'a': kwargs_partial['kwargs_gaussian']['a'],
+                          #'x0': kwargs_partial['kwargs_gaussian']['x0'],
+                          #'y0': kwargs_partial['kwargs_gaussian']['y0'],
+            },
         'kwargs_background': {},
     }
-    """
-    kwargs_fixed = {
-        'kwargs_moffat': {},
-        'kwargs_gaussian': {},
-        'kwargs_background': {},
-    }
-    parametersfull = ParametersPSF(kwargs_init, 
+
+    parametersfull = ParametersPSF(kwargs_partial,
                                    kwargs_fixed, 
                                    kwargs_up, 
                                    kwargs_down)
 
-    W = None
-    
     topass = np.nanmedian(noisemap, axis=0)
     topass = np.expand_dims(topass, (0,))
     W = propagate_noise(model, topass, kwargs_init, 
                         wavelet_type_list=['starlet'], 
-                        method='SLIT', num_samples=100,
+                        method='MC', num_samples=100,
                         seed=1, likelihood_type='chi2', 
                         verbose=False, 
                         upsampling_factor=subsampling_factor)[0]
@@ -295,36 +244,25 @@ def buildPSF(image, noisemap):
     lossfull = Loss(image, model, parametersfull, 
                     noisemap**2, len(image), 
                     regularization_terms='l1_starlet',
-                    regularization_strength_scales=1.,#lambda_scales, 
-                    regularization_strength_hf=20.,
+                    regularization_strength_scales=1.,
+                    regularization_strength_hf=2.,
                     regularization_strength_positivity=lambda_positivity, 
                     W=W, 
                     regularize_full_psf=regularize_full_psf)
     
 
-        
     optimfull = Optimizer(lossfull, parametersfull, method='adabelief')
     
         
     optimiser_optax_option = {
                                 'max_iterations':n_iter, 'min_iterations':None,
-                                'init_learning_rate':1e-4, 'schedule_learning_rate':True,
+                                'init_learning_rate': 1e-4, 'schedule_learning_rate':True,
                                 # important: restart_from_init True
                                 'restart_from_init':True, 'stop_at_loss_increase':False,
                                 'progress_bar':True, 'return_param_history':True
                               }           
     
     best_fit, logL_best_fit, extra_fields, runtime = optimfull.minimize(**optimiser_optax_option)
-    
-    # optimfull = Optimizer(lossfull, parametersfull, method=method_analytical)
-
-    
-    # best_fit, logL_best_fit, extra_fields, runtime = optimfull.minimize(maxiter=100, 
-    #                                                                     restart_from_init=True,
-    #                                                                     use_grad=True, 
-    #                                                                     use_hessian=False, 
-    #                                                                     use_hvp=True)
-    
     
     kwargs_final = parametersfull.args2kwargs(best_fit)
     
@@ -338,21 +276,15 @@ def buildPSF(image, noisemap):
     
     ###########################################################################
     return kwargs_final, narrowpsf, numpsf, moffat, fullmodel, residuals, extra_fields
-#%%
 
-# decoy for first loop: we don't have compiled models yet.
-# optimtools = {'optim': None, 'optimfull': None}
 
-#%%
 from time import time
 times = []
-# noises = []
-# images = []
-for i,image in enumerate(images):
+
+for i, image in enumerate(images):
     
     imgname = image['imgname']
     t0 = time()
-    
     
     # load stamps and noise maps for this image
     data, noisemap = getData(imgname)

@@ -69,7 +69,7 @@ and re-run this script.
             mask.buildmask(verbose=False)
             
             print("You masked %i pixels of star %s." % (np.sum(mask.mask), s))
-            ds9masks[s] = mask.mask
+            ds9masks[s] = mask.mask.T
         else:
             print("No mask file for star %s." % (s))
             

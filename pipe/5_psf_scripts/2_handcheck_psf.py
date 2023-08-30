@@ -10,7 +10,7 @@ from modules.kirbybase import KirbyBase
 from modules.variousfct import notify
 
 def construct_image_path(img_name):
-    return os.path.join(workdir, psfkey, 'plots',  f"{img_name}.png")
+    return os.path.join(psfsplotsdir,  f"{img_name}.png")
     #return os.path.join(workdir, f"{psfkey}_png",
 
 def update_image_display(img_name):
